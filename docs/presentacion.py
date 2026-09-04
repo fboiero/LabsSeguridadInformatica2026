@@ -8,7 +8,13 @@ presentacion.py — CyberLab UTN · presentación de terminal (curses, bien hack
 
 Solo biblioteca estándar. La animación necesita una terminal real (TTY).
 """
-import curses, random, sys, time
+import curses, math, random, sys, time
+
+def _put(stdscr, y, x, ch, attr):
+    h, w = stdscr.getmaxyx()
+    if 0 <= y < h and 0 <= x < w - 1:
+        try: stdscr.addstr(y, x, ch, attr)
+        except curses.error: pass
 
 # ── paleta (índices de color-pair) ───────────────────────────────────────
 G, C, A, V, W, D, R, H = 1, 2, 3, 4, 5, 6, 7, 8   # green cyan amber violet white dim red head
@@ -262,6 +268,50 @@ def boot_sequence(stdscr):
     stdscr.refresh(); time.sleep(0.55)
     stdscr.nodelay(False); stdscr.erase()
 
+# ── radar / sonar (escena "escaneando") ──────────────────────────────────
+def radar_scan(stdscr, sweeps=2):
+    h, w = stdscr.getmaxyx()
+    cy, cx = h // 2, max(10, w // 2 - 8)
+    r = max(5, min(h // 2 - 3, w // 4 - 6))
+    rnd = random.Random(1337)
+    targets = [(rnd.uniform(0, 2 * math.pi), rnd.uniform(0.35, 0.92)) for _ in range(6)]
+    primary = targets[2]
+    stdscr.nodelay(True)
+    steps = 64
+    for t in range(sweeps * steps + 1):
+        ang = (t % steps) / steps * 2 * math.pi
+        vueltas = t / steps
+        stdscr.erase()
+        for rf in (1.0, 0.66, 0.33):                     # anillos
+            rr = r * rf
+            for d in range(0, 360, 4):
+                a = math.radians(d)
+                _put(stdscr, cy + int(rr * math.sin(a)), cx + int(2 * rr * math.cos(a)), ".", cp(D))
+        _put(stdscr, cy, cx, "+", cp(G, True))            # centro
+        for k in range(0, 7):                             # barrido con estela
+            a = ang - k * 0.055
+            col = H if k == 0 else (G if k < 3 else D)
+            ch = "*" if k == 0 else "/"
+            for rr in range(1, r):
+                _put(stdscr, cy + int(rr * math.sin(a)), cx + int(2 * rr * math.cos(a)), ch, cp(col, k == 0))
+        for i, (ta, td) in enumerate(targets):            # blips
+            bx = cx + int(2 * (td * r) * math.cos(ta)); by = cy + int((td * r) * math.sin(ta))
+            lit = ((ang - ta) % (2 * math.pi)) < 0.55
+            if (ta, td) == primary and vueltas >= 1:
+                _put(stdscr, by, bx, "O", cp(A, True))
+                _put(stdscr, by, bx + 2, "phantomcorp", cp(A, True))
+            else:
+                _put(stdscr, by, bx, "O" if lit else "o", cp(G if lit else D, lit))
+        locked = vueltas >= 1.5
+        _put(stdscr, 1, 3, "[ TARGET LOCKED ]  phantomcorp" if locked else "[ SCANNING PERIMETER ]  buscando objetivos...",
+             cp(A if locked else G, True))
+        _put(stdscr, h - 2, 3, f"hosts detectados: {len(targets)}   ·   sweep {int(vueltas)+1}/{sweeps}", cp(D))
+        stdscr.refresh()
+        if stdscr.getch() != -1: break
+        time.sleep(0.028)
+    time.sleep(0.45)
+    stdscr.nodelay(False); stdscr.erase()
+
 # ── efecto "desencriptado" de un bloque ASCII ────────────────────────────
 def decrypt_reveal(stdscr, art, y0, col, w, center, m, frames=13):
     noise = "01<>|/\\=+*#$%&@ABCDEF01ﾘﾂ▓▒░"
@@ -342,7 +392,9 @@ def run(stdscr, intro=True):
     curses.curs_set(0); _init_colors()
     if intro:
         try:
-            boot_sequence(stdscr); matrix_rain(stdscr)
+            boot_sequence(stdscr)          # logs de arranque + ACCESS GRANTED
+            radar_scan(stdscr)             # radar barriendo -> TARGET LOCKED
+            matrix_rain(stdscr, 2.0)       # lluvia de Matrix
         except curses.error: pass
     i = 0
     show = lambda j, anim=None: draw_slide(stdscr, j, animate=(SLIDES[j].get("art") is not None) if anim is None else anim)
