@@ -19,6 +19,32 @@ rule(){ printf '%s' "$GR"; printf '─%.0s' $(seq 1 "${1:-72}"); printf '%s\n' "
 kick(){ printf '\n%s// %s%s\n\n' "$G$B" "$1" "$R"; }
 type_out(){ local s="$1"; local i; for ((i=0;i<${#s};i++)); do printf '%s' "${s:$i:1}"; sleep 0.006; done; printf '\n'; }
 
+# ── lluvia de Matrix (intro) ─────────────────────────────────────────────
+matrix_rain(){
+  [ -t 1 ] || return 0; [ "${NO_COLOR:-}" = "" ] || return 0
+  local cols lines; cols=$(tput cols 2>/dev/null || echo 80); lines=$(tput lines 2>/dev/null || echo 24)
+  local chars='0123456789<>|/\=+*[]{}#$%&@ABCDEFabcdefλψχφΣ'
+  local -a drop; local c
+  for ((c=1;c<=cols;c++)); do drop[c]=$(( RANDOM % lines + 1 )); done
+  printf '\033[?25l\033[2J'                      # oculta cursor, limpia
+  local frames=${1:-55} f y ch idx
+  for ((f=0; f<frames; f++)); do
+    for ((c=1; c<=cols; c++)); do
+      (( RANDOM % 3 )) && continue                # ~1/3 de columnas por frame
+      y=${drop[c]}
+      idx=$(( RANDOM % ${#chars} )); ch=${chars:idx:1}
+      printf '\033[%d;%dH\033[38;5;231m%s' "$y" "$c" "$ch"         # cabeza brillante
+      (( y>1 )) && { idx=$(( RANDOM % ${#chars} )); printf '\033[%d;%dH\033[38;5;48m%s' "$((y-1))" "$c" "${chars:idx:1}"; }
+      (( y>3 )) && { idx=$(( RANDOM % ${#chars} )); printf '\033[%d;%dH\033[38;5;28m%s' "$((y-3))" "$c" "${chars:idx:1}"; }
+      (( y>7 )) && printf '\033[%d;%dH ' "$((y-7))" "$c"           # borra la cola
+      drop[c]=$(( y+1 )); (( drop[c] > lines )) && drop[c]=$(( RANDOM % 3 + 1 ))
+    done
+    printf '\033[0m'
+    read -rsn1 -t 0.045 _k && break                # saltear con cualquier tecla
+  done
+  printf '\033[0m\033[?25h\033[2J\033[H'           # restaura cursor y limpia
+}
+
 TOTAL=14
 
 # ── slides ───────────────────────────────────────────────────────────────
@@ -199,6 +225,7 @@ draw(){ clear 2>/dev/null || printf '\033[2J\033[H'; render "$i"
   echo; rule
   printf '%s  [%02d/%02d]  %s← →/espacio$R%s avanzar · %sp$R atrás · %sg$R ir · %sq$R salir%s\n' \
     "$GR" "$i" "$TOTAL" "$G" "$GR" "$G" "$G" "$RED" "$GR" "$R"; }
+[ "${1:-}" = "--no-intro" ] || matrix_rain      # lluvia de Matrix (saltear: tecla, o --no-intro)
 draw
 while true; do
   IFS= read -rsn1 key
