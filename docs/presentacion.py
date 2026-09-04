@@ -8,7 +8,7 @@ presentacion.py — CyberLab UTN · presentación de terminal (curses, bien hack
 
 Solo biblioteca estándar. La animación necesita una terminal real (TTY).
 """
-import curses, math, random, sys, time
+import curses, locale, math, random, sys, time
 
 def _put(stdscr, y, x, ch, attr):
     h, w = stdscr.getmaxyx()
@@ -130,7 +130,7 @@ SLIDES = [
    L(("│ ", D), ("ATACANTE", W), ("   │────────▶│ ", D), ("VÍCTIMA", G), ("    │───────▶│ ", D), ("DB INTERNA", W), (" │", D)),
    L(("│ ", D), ("tu consola", D), (" │         │ ", D), ("2 redes", D), ("    │         │ ", D), ("crown", D), ("      │", D)),
    L(("└─────┬──────┘         └────────────┘         └─────▲──────┘", D)),
-   L(("      ", D), ("╎  ✗ sin ruta directa — segmentado ", R), ("            │", D)),
+   L(("      ", D), (":  ✗ sin ruta directa — segmentado ", R), ("            │", D)),
    L(("      ", D), ("└──────────────────────────────────────────────┘", R)),
    L(("", W)),
    L(("El atacante no llega a la DB. La víctima vive en las dos redes: el trampolín.", D)),
@@ -141,7 +141,7 @@ SLIDES = [
    L(("│ ", D), ("LLM razona", W), ("│────────▶│ ", D), ("GUARDRAIL", V), (" │─────▶│ ", D), ("TOOL", W), ("      │", D)),
    L(("│ ", D), ("¿qué tool?", D), ("│         │ ", D), ("¿alcance?", D), (" │      │ ", D), ("nmap/curl", D), (" │", D)),
    L(("└─────▲─────┘         └─────┬─────┘      └─────┬─────┘", D)),
-   L(("      ", D), ("│  resultado ↺      ", G), ("│ ✗ fuera        ", A), ("│", G)),
+   L(("      ", D), ("│  resultado <~      ", G), ("│ ✗ fuera        ", A), ("│", G)),
    L(("      ", G), ("└───────────────────┴─────[ ", G), ("✗ BLOQUEA", A), (" ]", G)),
    L(("", W)),
    L(("El LLM razona; tu código pone las manos (tools) y los límites (guardrails).", D)),
@@ -149,7 +149,7 @@ SLIDES = [
  ]},
  # 10 · detección
  {"kicker": "Unidad 10 · Detección y evasión", "lines": [
-   L(("?q=UNION SELECT      ──▶ ┌──────────┐ ──match──▶  ", W), ("🚫 ALERTA", R)),
+   L(("?q=UNION SELECT      ──▶ ┌──────────┐ ──match──▶  ", W), ("[X] ALERTA", R)),
    L(("                        │ ", D), ("IDS·firma", C), (" │", D)),
    L(("?q=UNION/**/SELECT   ──▶ │ ", D), ("\\s+select", D), (" │ ─no match▶ ", D), ("✓ evadido", A)),
    L(("                        └──────────┘", D)),
@@ -186,7 +186,7 @@ SLIDES = [
    L(("▸ grupos 4–5 en entregas/      ▸ flags: pudiste · informe: entendiste", W)),
    L(("▸ los commits de todos cuentan ▸ uso de IA declarado (obligatorio)", W)),
    L(("", W)),
-   L(("⚠ Uso responsable. ", A), ("Solo contra los contenedores de la cátedra. Ley 26.388.", D)),
+   L(("[!] Uso responsable. ", A), ("Solo contra los contenedores de la cátedra. Ley 26.388.", D)),
  ]},
  # 14 · fin
  {"center": True, "art": (FIN, G), "lines": [
@@ -203,7 +203,7 @@ N = len(SLIDES)
 # ── lluvia de Matrix ─────────────────────────────────────────────────────
 def matrix_rain(stdscr, seconds=2.6):
     h, w = stdscr.getmaxyx()
-    chars = "01<>|/\\=+*[]{}#$%&@ABCDEFλψχφ"
+    chars = "01<>|/\\=+*[]{}#$%&@ABCDEF"
     drops = [random.randint(-h, 0) for _ in range(w)]
     stdscr.nodelay(True); stdscr.erase()
     end = time.time() + seconds
@@ -252,7 +252,7 @@ def boot_sequence(stdscr):
     # barra de progreso
     barw = min(46, w - 12); y += 1
     for f in range(barw + 1):
-        fill = "█" * f + "░" * (barw - f)
+        fill = "#" * f + "." * (barw - f)
         pct = int(f * 100 / barw)
         try:
             stdscr.addstr(y, 4, "handshake [", cp(D))
@@ -390,7 +390,7 @@ def firewall_breach(stdscr, seconds=4.2):
 
 # ── efecto "desencriptado" de un bloque ASCII ────────────────────────────
 def decrypt_reveal(stdscr, art, y0, col, w, center, m, frames=13):
-    noise = "01<>|/\\=+*#$%&@ABCDEF01ﾘﾂ▓▒░"
+    noise = "01<>|/\\=+*#$%&@ABCDEF#*+.:"
     stdscr.nodelay(True)
     for f in range(frames + 1):
         pr = f / frames
@@ -503,6 +503,10 @@ def dump():
             print("".join(t for t, _ in line))
 
 def main():
+    try:
+        locale.setlocale(locale.LC_ALL, "")
+    except locale.Error:
+        pass
     if "--all" in sys.argv:
         dump(); return
     intro = "--no-intro" not in sys.argv
