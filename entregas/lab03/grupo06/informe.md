@@ -142,7 +142,15 @@ En `verify_password()`, la comparación entre el hash calculado y el almacenado 
 
 ---
 
+## 3. Parte B.2 — TOTP
 
+## Por qué TOTP frena el robo de una contraseña
+
+TOTP agrega un segundo factor de autenticación basado en un código temporal generado a partir de un secreto compartido. Por eso, aunque un atacante robe la contraseña, no puede iniciar sesión si no posee también el secreto necesario para generar el código TOTP válido. Esto permite frenar ataques como el credential stuffing analizado en la Parte A.
+
+## Qué no protege TOTP
+
+TOTP no protege frente a todos los ataques. Por ejemplo, un atacante puede realizar phishing en tiempo real y reutilizar el código antes de que expire. Tampoco protege si se compromete el dispositivo o el secreto TOTP, ni frente al robo de una sesión ya autenticada.
 
 ## 5. Fuentes consultadas
 1. OWASP Cheat Sheet Series. (s.f.). *Credential Stuffing Prevention Cheat Sheet*. OWASP Foundation. https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html
