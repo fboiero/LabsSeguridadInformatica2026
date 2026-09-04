@@ -269,7 +269,12 @@ def boot_sequence(stdscr):
     stdscr.nodelay(False); stdscr.erase()
 
 # ── radar / sonar (escena "escaneando") ──────────────────────────────────
-def radar_scan(stdscr, sweeps=2):
+# Velocidad del radar (ajustá acá):
+RADAR_SWEEPS = 2        # cuántas vueltas completas da el haz
+RADAR_DELAY  = 0.020    # segundos por cuadro — MÁS chico = MÁS rápido; MÁS grande = MÁS lento
+RADAR_STEPS  = 56       # cuadros por vuelta — MÁS chico = giro más veloz
+
+def radar_scan(stdscr, sweeps=RADAR_SWEEPS):
     h, w = stdscr.getmaxyx()
     cy, cx = h // 2, max(10, w // 2 - 8)
     r = max(5, min(h // 2 - 3, w // 4 - 6))
@@ -277,7 +282,7 @@ def radar_scan(stdscr, sweeps=2):
     targets = [(rnd.uniform(0, 2 * math.pi), rnd.uniform(0.35, 0.92)) for _ in range(6)]
     primary = targets[2]
     stdscr.nodelay(True)
-    steps = 64
+    steps = RADAR_STEPS
     for t in range(sweeps * steps + 1):
         ang = (t % steps) / steps * 2 * math.pi
         vueltas = t / steps
@@ -308,8 +313,8 @@ def radar_scan(stdscr, sweeps=2):
         _put(stdscr, h - 2, 3, f"hosts detectados: {len(targets)}   ·   sweep {int(vueltas)+1}/{sweeps}", cp(D))
         stdscr.refresh()
         if stdscr.getch() != -1: break
-        time.sleep(0.028)
-    time.sleep(0.45)
+        time.sleep(RADAR_DELAY)
+    time.sleep(0.35)
     stdscr.nodelay(False); stdscr.erase()
 
 # ── firewall vulnerado · candado que se abre ─────────────────────────────
