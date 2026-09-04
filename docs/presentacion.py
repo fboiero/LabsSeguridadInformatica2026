@@ -312,6 +312,82 @@ def radar_scan(stdscr, sweeps=2):
     time.sleep(0.45)
     stdscr.nodelay(False); stdscr.erase()
 
+# ── firewall vulnerado · candado que se abre ─────────────────────────────
+PADLOCK_CLOSED = [
+    r"     _____     ",
+    r"    /     \    ",
+    r"   |       |   ",
+    r"   |       |   ",
+    r" __|       |__ ",
+    r"|             |",
+    r"|    _____    |",
+    r"|   |     |   |",
+    r"|   | (o) |   |",
+    r"|   |_____|   |",
+    r"|             |",
+    r"|_____________|",
+]
+PADLOCK_OPEN = [
+    r"     _____     ",
+    r"    /     \____",
+    r"   |          |",
+    r"   |           ",
+    r" __|           ",
+    r"|             |",
+    r"|    _____    |",
+    r"|   |     |   |",
+    r"|   | (o) |   |",
+    r"|   |_____|   |",
+    r"|             |",
+    r"|_____________|",
+]
+
+def firewall_breach(stdscr, seconds=4.2):
+    h, w = stdscr.getmaxyx()
+    stdscr.nodelay(True)
+    lw = max(len(l) for l in PADLOCK_CLOSED)
+    lh = len(PADLOCK_CLOSED)
+    py = max(2, h // 2 - lh // 2)
+    def puts(y, x, s, attr):
+        for j, ch in enumerate(s):
+            _put(stdscr, y, x + j, ch, attr)
+    def draw_wall(crack):
+        row = "[==]" * (w // 4 + 2)
+        for y in range(h):
+            off = (y % 2) * 2
+            line = row[off:off + w]
+            for x, ch in enumerate(line):
+                if crack and random.random() < crack:
+                    continue
+                _put(stdscr, y, x, ch, cp(D))
+    def draw_lock(art, color, jit=0):
+        px = (w - lw) // 2 + jit
+        for i in range(lh):                      # foco: limpia la caja
+            puts(py + i, px - 1, " " * (lw + 2), curses.A_NORMAL)
+        for i, line in enumerate(art):
+            puts(py + i, px, line, cp(color, True))
+    steps = int(seconds / 0.05)
+    for t in range(steps):
+        pr = t / steps
+        stdscr.erase()
+        draw_wall(0.0 if pr < 0.75 else (pr - 0.75) * 1.4)
+        if pr < 0.78:
+            jit = random.choice([-1, 0, 0, 1]) if pr > 0.28 else 0
+            blink = R if int(t * 0.5) % 2 else A
+            draw_lock(PADLOCK_CLOSED, blink, jit)
+            puts(1, 3, f"[ BREACHING FIREWALL ]  intento {int(pr * 99999):05d}", cp(R, True))
+            barw = min(40, w - 16); f = int(pr / 0.78 * barw)
+            puts(h - 2, 3, "brute-force [" + "#" * f + "-" * (barw - f) + "]", cp(A))
+        else:
+            draw_lock(PADLOCK_OPEN, G, 0)
+            puts(1, 3, "[ FIREWALL BREACHED ]  candado abierto — ACCESS", cp(G, True))
+            puts(h - 2, 3, "handshake ok · perimetro superado", cp(G))
+        stdscr.refresh()
+        if stdscr.getch() != -1: break
+        time.sleep(0.05)
+    time.sleep(0.5)
+    stdscr.nodelay(False); stdscr.erase()
+
 # ── efecto "desencriptado" de un bloque ASCII ────────────────────────────
 def decrypt_reveal(stdscr, art, y0, col, w, center, m, frames=13):
     noise = "01<>|/\\=+*#$%&@ABCDEF01ﾘﾂ▓▒░"
@@ -394,7 +470,8 @@ def run(stdscr, intro=True):
         try:
             boot_sequence(stdscr)          # logs de arranque + ACCESS GRANTED
             radar_scan(stdscr)             # radar barriendo -> TARGET LOCKED
-            matrix_rain(stdscr, 2.0)       # lluvia de Matrix
+            firewall_breach(stdscr)        # candado que se abre -> FIREWALL BREACHED
+            matrix_rain(stdscr, 1.8)       # lluvia de Matrix
         except curses.error: pass
     i = 0
     show = lambda j, anim=None: draw_slide(stdscr, j, animate=(SLIDES[j].get("art") is not None) if anim is None else anim)
