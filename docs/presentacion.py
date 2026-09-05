@@ -419,43 +419,71 @@ def decrypt_reveal(stdscr, art, y0, col, w, center, m, frames=13):
     stdscr.nodelay(False)
 
 # ── dibujo de una slide ──────────────────────────────────────────────────
-def put_line(stdscr, y, x, segs, center=False, w=0):
-    if center:
-        total = sum(len(t) for t, _ in segs)
-        x = max(2, (w - total) // 2)
-    for text, color in segs:
-        if not text:
-            continue
-        try:
-            stdscr.addstr(y, x, text, cp(color, bold=(color in (G, H, A))))
-        except curses.error:
-            pass
-        x += len(text)
+NOISE = "01<>|/=+*#$%&@ABCDEFabcdef#*+."
 
-def draw_slide(stdscr, idx, animate=False):
-    stdscr.erase()
+def _scr(t, p):    # scramble: cada char es final (prob p) o ruido
+    return "".join(c if (c == " " or random.random() < p) else random.choice(NOISE) for c in t)
+
+def _put_str(stdscr, y, x, s, attr):
     h, w = stdscr.getmaxyx()
-    s = SLIDES[idx]
-    center = s.get("center", False)
+    if 0 <= y < h and 0 <= x < w - 1:
+        try: stdscr.addstr(y, x, s[:w - 1 - x], attr)
+        except curses.error: pass
+
+def _footer(idx):
+    return [(f"[{idx+1:02d}/{N}]  ", D), ("← →/espacio", G), (" avanzar · ", D),
+            ("p", G), (" atrás · ", D), ("g", G), (" ir · ", D), ("q", R), (" salir", D)]
+
+def _layout(stdscr, idx):
+    h, w = stdscr.getmaxyx()
+    s = SLIDES[idx]; center = s.get("center", False)
     m = max(3, (w - 74) // 2) if not center else 2
-    y = 2
+    ops = []; y = 2
     if s.get("kicker"):
-        put_line(stdscr, y, m, [("// " + s["kicker"], G)]); y += 2
+        ops.append((y, m, [("// " + s["kicker"], G)])); y += 2
     if s.get("art"):
         art, col = s["art"]
-        if animate:
-            decrypt_reveal(stdscr, art, y, col, w, center, m)
         for line in art:
-            put_line(stdscr, y, m, [(line, col)], center=center, w=w); y += 1
+            x = max(2, (w - len(line)) // 2) if center else m
+            ops.append((y, x, [(line, col)])); y += 1
         y += 1
     elif s.get("title"):
-        put_line(stdscr, y, m, [("» " + s["title"], W)]); y += 2
+        ops.append((y, m, [("» " + s["title"], W)])); y += 2
     for line in s["lines"]:
-        put_line(stdscr, y, m, line, center=center, w=w); y += 1
-    foot = [(f"[{idx+1:02d}/{N}]  ", D), ("← →/espacio", G), (" avanzar · ", D),
-            ("p", G), (" atrás · ", D), ("g", G), (" ir · ", D), ("q", R), (" salir", D)]
-    put_line(stdscr, h - 1, 2, foot)
+        x = max(2, (w - sum(len(t) for t, _ in line)) // 2) if center else m
+        ops.append((y, x, line)); y += 1
+    return ops, h, w
+
+def _paint(stdscr, ops, h, idx, p=1.0):
+    stdscr.erase()
+    for y, x, segs in ops:
+        xx = x
+        for text, color in segs:
+            t = text if p >= 1.0 else _scr(text, p)
+            _put_str(stdscr, y, xx, t, cp(color, bold=(color in (G, H, A))))
+            xx += len(text)
+    fx = 2
+    for text, color in _footer(idx):
+        _put_str(stdscr, h - 1, fx, text, cp(color, bold=(color in (G, H, A)))); fx += len(text)
     stdscr.refresh()
+
+def draw_slide(stdscr, idx, animate=False, frames=9):
+    ops, h, w = _layout(stdscr, idx)
+    if not animate:
+        _paint(stdscr, ops, h, idx, 1.0); return
+    stdscr.nodelay(True)                       # efecto "decode": ruido -> texto
+    for f in range(frames + 1):
+        p = f / frames
+        _paint(stdscr, ops, h, idx, p)
+        if p < 1.0:
+            k = stdscr.getch()
+            if k != -1:                        # tecla = saltar animación y no perder el input
+                _paint(stdscr, ops, h, idx, 1.0)
+                try: curses.ungetch(k)
+                except curses.error: pass
+                break
+            time.sleep(0.03)
+    stdscr.nodelay(False)
 
 def goto_prompt(stdscr):
     h, w = stdscr.getmaxyx()
@@ -479,8 +507,8 @@ def run(stdscr, intro=True):
             matrix_rain(stdscr, 1.8)       # lluvia de Matrix
         except curses.error: pass
     i = 0
-    show = lambda j, anim=None: draw_slide(stdscr, j, animate=(SLIDES[j].get("art") is not None) if anim is None else anim)
-    show(0, anim=intro)          # el logo se "desencripta" al abrir
+    show = lambda j: draw_slide(stdscr, j, animate=True)   # cada slide "decodea" al entrar
+    show(0)
     while True:
         k = stdscr.getch()
         if k in (ord("q"), ord("Q")):
