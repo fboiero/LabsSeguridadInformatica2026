@@ -50,6 +50,22 @@ FIN = [
  "  ███████╗██╗███╗   ██╗", "  ██╔════╝██║████╗  ██║", "  █████╗  ██║██╔██╗ ██║",
  "  ██╔══╝  ██║██║╚██╗██║", "  ██║     ██║██║ ╚████║", "  ╚═╝     ╚═╝╚═╝  ╚═══╝",
 ]
+SKULL = [
+ "        _.,----,._        ",
+ "      .:'        `:.      ",
+ "    .:'            `:.    ",
+ "   ::                ::   ",
+ "  ::    .-.    .-.    ::  ",
+ "  ::   (o o)  (o o)   ::  ",
+ "  ::    `-'    `-'    ::  ",
+ "   ::        ^       ::   ",
+ "    ::    .-===-.   ::    ",
+ "     ::  ( |||| )  ::     ",
+ "      `:.  `--'  .:'      ",
+ "        `:.,__,.:'        ",
+ "       |  |  |  |  |      ",
+ "       '--'--'--'--'      ",
+]
 
 def L(*seg):  # una línea = lista de (texto, color)
     return list(seg)
@@ -189,7 +205,7 @@ SLIDES = [
    L(("[!] Uso responsable. ", A), ("Solo contra los contenedores de la cátedra. Ley 26.388.", D)),
  ]},
  # 14 · fin
- {"center": True, "art": (FIN, G), "lines": [
+ {"center": True, "art": (SKULL, G), "lines": [
    L(("", W)),
    L(("El humano ", W), ("dirige", G), (". La máquina ejecuta.", W)),
    L(("La diferencia entre un pentester y un delincuente es la autorización,", D)),
@@ -393,6 +409,32 @@ def firewall_breach(stdscr, seconds=4.2):
     time.sleep(0.5)
     stdscr.nodelay(False); stdscr.erase()
 
+# ── calavera · SYSTEM PWNED ──────────────────────────────────────────────
+def skull_scene(stdscr):
+    h, w = stdscr.getmaxyx()
+    sw = max(len(l) for l in SKULL); sh = len(SKULL)
+    x0 = max(1, (w - sw) // 2); y0 = max(0, (h - sh) // 2 - 1)
+    stdscr.nodelay(True)
+    for f in range(9):                        # la calavera se decodea desde el ruido
+        p = f / 8
+        stdscr.erase()
+        for i, line in enumerate(SKULL):
+            _put_str(stdscr, y0 + i, x0, line if p >= 1 else _scr(line, p), cp(G, True))
+        stdscr.refresh()
+        if stdscr.getch() != -1: break
+        time.sleep(0.05)
+    msg = "S Y S T E M   P W N E D"
+    sub = "root@phantomcorp:~# whoami  ->  root"
+    for b in range(7):                        # parpadeo rojo/ambar
+        for i, line in enumerate(SKULL):
+            _put_str(stdscr, y0 + i, x0, line, cp(G, True))
+        _put_str(stdscr, y0 + sh + 1, max(1, (w - len(msg)) // 2), msg, cp(R if b % 2 == 0 else A, True))
+        _put_str(stdscr, y0 + sh + 2, max(1, (w - len(sub)) // 2), sub, cp(D))
+        stdscr.refresh()
+        if stdscr.getch() != -1: break
+        time.sleep(0.16)
+    stdscr.nodelay(False); stdscr.erase()
+
 # ── efecto "desencriptado" de un bloque ASCII ────────────────────────────
 def decrypt_reveal(stdscr, art, y0, col, w, center, m, frames=13):
     noise = "01<>|/\\=+*#$%&@ABCDEF#*+.:"
@@ -504,6 +546,7 @@ def run(stdscr, intro=True):
             boot_sequence(stdscr)          # logs de arranque + ACCESS GRANTED
             radar_scan(stdscr)             # radar barriendo -> TARGET LOCKED
             firewall_breach(stdscr)        # candado que se abre -> FIREWALL BREACHED
+            skull_scene(stdscr)            # calavera -> SYSTEM PWNED
             matrix_rain(stdscr, 1.8)       # lluvia de Matrix
         except curses.error: pass
     i = 0
