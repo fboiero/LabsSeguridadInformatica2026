@@ -6,10 +6,10 @@
 
 ## 0. Declaración de uso de IA
  
- *Herramienta:* Muse Spark (OpenCode) y Gemini (Antigravity).
- *Uso:* Redacción de Parte A (§1) a partir de fuentes primarias (Mateo), generación de código en `cripto.py` para fuerza bruta sobre XOR (Matías), y redacción técnica de B.2.1 junto con la implementación de `mac_ingenuo()` (Álvaro).
- *Partes afectadas:* Informe (Sección 1 por @gerbaudo19, Sección 2 y código XOR por @matiasmariatticasc, Sección 3.1 y `mac_ingenuo` por @ColqueAlvaro).
- *Verificación:* Se verificaron las fórmulas contra RFC 6979. Para la Parte B.1, se ejecutó localmente el script verificando que la clave `0x37` y el mensaje del Memo fueran correctos. Para la Parte B.2.1, se verificó el cálculo de `mac_ingenuo()` contra la salida de `hashlib.sha256` y se validó el modelo teórico del ataque de extensión de longitud sobre la construcción Merkle-Damgård.
+ *Herramienta:* Muse Spark (OpenCode), Gemini (Antigravity) y Cline (VS Code).
+ *Uso:* Redacción de Parte A (§1) a partir de fuentes primarias (Mateo), generación de código en `cripto.py` para fuerza bruta sobre XOR (Matías), redacción técnica de B.2.1 junto con la implementación de `mac_ingenuo()` (Álvaro), y redacción de B.2.2/B.2.3 más mini-research tema B (Gonzalo con Cline).
+ *Partes afectadas:* Informe (Sección 1 por @gerbaudo19, Sección 2 y código XOR por @matiasmariatticasc, Sección 3.1 y `mac_ingenuo` por @ColqueAlvaro, Secciones 3.2/3.3 por @Gonza149). `research.md` tema B por @Gonza149.
+ *Verificación:* Se verificaron las fórmulas contra RFC 6979. Para la Parte B.1, se ejecutó localmente el script verificando que la clave `0x37` y el mensaje del Memo fueran correctos. Para la Parte B.2.1, se verificó el cálculo de `mac_ingenuo()` contra la salida de `hashlib.sha256` y se validó el modelo teórico del ataque de extensión de longitud sobre la construcción Merkle-Damgård. Para B.2.2/B.2.3 se ejecutó `mac --modo hmac` (`5ec4a52...b902e`) y `compare_digest` True/False, y se contrastó la construcción HMAC contra RFC 2104/4231.
 
 ## 1. Parte A — Análisis de la falla: Sony PS3 y ECDSA
 
@@ -120,7 +120,20 @@ Un atacante en la red intercepta este paquete. Sin conocer `clave_secreta`:
 ---
 
 *(A cargo de P4: Gonzalo)*
-**B.2.2 cómo lo resuelve HMAC · B.2.3 tiempo constante**
+
+### B.2.2 — Cómo lo resuelve HMAC estructuralmente
+
+HMAC (RFC 2104, instanciado como HMAC-SHA256 en RFC 4231) no es `hash(clave || mensaje)` con otro nombre: es una construcción de doble hash con la clave mezclada dos veces mediante pads distintos, `HMAC(K, m) = H((K' XOR opad) || H((K' XOR ipad) || m))`, donde `K'` es la clave normalizada al tamaño de bloque (64 bytes en SHA-256) e `ipad`/`opad` son las constantes `0x36` y `0x5c` repetidas. El hash interno protege el mensaje y el hash externo protege el resultado del interno, de modo que la clave nunca aparece como simple prefijo del flujo que procesa la función de compresión. Nuestra implementación en `cripto.py` usa exactamente esa construcción vía `hmac.new(clave, msg, hashlib.sha256).hexdigest()`, no un hash manual.
+
+Esto rompe el ataque de length-extension por dos motivos encadenados. Primero, el digest que ve el atacante es el del hash *externo*, cuyo estado interno no le sirve para continuar el hash *interno* donde está el mensaje: reanudar la compresión desde `HMAC(K, M)` no equivale a reanudarla desde `SHA-256(K || M)`. Segundo, para forjar `HMAC(K, M || extra)` el atacante necesitaría conocer el estado intermedio `H((K' XOR ipad) || M)`, que nunca se expone, o conocer `K'` para recomputar ambas capas, que es el secreto. Conocer solo la longitud de la clave —suficiente contra el MAC ingenuo— ya no alcanza. En nuestro ejemplo local esto se ve en que `mac --modo ingenuo` y `mac --modo hmac` para `secreta`/`pago 100` dan digests totalmente distintos (`a8cc54c0...` vs `5ec4a52...`): solo el segundo resiste la reanudación.
+
+El límite que HMAC no mueve hay que decirlo para no sobredimensionarlo: al ser simétrico, quien verifica conoce la misma clave que quien emite, así que no aporta no repudio (cualquiera de los dos pudo generar el tag) ni resuelve la distribución segura de la clave. Tampoco cifra el mensaje ni frena replays de un par mensaje/tag ya válido. Lo que sí garantiza, y es lo que pide la consigna, es que sin la clave no se puede extender ni forjar un tag válido aunque se intercepten pares anteriores.
+
+### B.2.3 — Comparación en tiempo constante (`verificar_mac`)
+
+Comparar dos tags hex con `==` filtra información por tiempo porque la comparación de `str`/`bytes` en CPython hace retorno temprano: recorre ambos operandos y devuelve `False` en la primera posición distinta. El tiempo de respuesta depende entonces de cuántos bytes iniciales adivinó bien el atacante, que con acceso al verificador dispone de un oráculo temporal: fija todos los bytes menos el primero, prueba los 256 valores, se queda con el que tarda un poco más, y repite posición por posición hasta reconstruir un tag válido sin conocer la clave. Con suficientes muestras y promediado estadístico el ataque funciona incluso por red con jitter, y es el canal lateral clásico contra verificadores de MAC, tokens de sesión y enlaces de restablecimiento.
+
+`verificar_mac()` lo evita con `hmac.compare_digest(esperado, recibido)`, que recorre siempre la totalidad de ambos operandos con el mismo número de operaciones y sin retorno temprano, de modo que el tiempo no depende del contenido comparado. Lo verificamos localmente: `compare_digest(tag, tag)` da `True` y `compare_digest(tag, tag_alterado_en_2_chars)` da `False` sin fuga útil. No hace la comparación irrompible —solo cierra ese oráculo concreto—, por eso la defensa completa suma mensajes de error uniformes y limitación de intentos. Un ejemplo concreto en este lab: un endpoint que acepta `?msg=pago 100&tag=<hmac>` y compara con `==` permitiría a un atacante forjar un tag para `msg=pago 9999` byte a byte; con `compare_digest` ese camino se corta de raíz.
 
 ## 4. Bitácora
 
@@ -132,7 +145,9 @@ Un atacante en la red intercepta este paquete. Sin conocer `clave_secreta`:
 # python src/cripto.py romper --hex $(cat data/muestra/reto_xor.hex)
 # B.2.1 - Ejecución mac_ingenuo (Álvaro):
 # python src/cripto.py mac --clave secreta --msg "pago 100" --modo ingenuo
-# Salida esperada: a8cc54c07b3acb7470c25ab9eea5234bfa2562e37298eee275e39a457004b725
-# (Pendiente para P4: modo hmac y verificación)
+# Salida obtenida: a8cc54c07b3acb7470c25ab9eea5234bfa2562e37298eee275e39a457004b725
+# B.2.2/B.2.3 - Ejecución mac_hmac + verificar (Gonzalo):
 # python src/cripto.py mac --clave secreta --msg "pago 100" --modo hmac
+# Salida obtenida: 5ec4a52407221836a66e8d654d914aaa4b18bd31cf31907348bcd292677b902e
+# Verificación tiempo constante: hmac.compare_digest(tag, tag) -> True; con tag alterado -> False
 ```
