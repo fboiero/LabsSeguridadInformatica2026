@@ -240,6 +240,10 @@ que ese ataque no funcione?*
 
 **Respuesta:**
 
+SHA-256 es una función pública, por lo que cualquiera puede recalcular el digest de un archivo modificado y sobrescribir el manifiesto. Al verificar, `verificar` compara el hash recalculado contra el hash guardado, pero ambos valores quedan bajo control del atacante, así que el resultado será `OK`. El esquema actual solo detecta corrupción accidental o errores de copia, sin tener en cuenta a un adversario activo con el mismo privilegio de escritura.
+
+Para que el ataque no funcione las opciones son: firmar digitalmente el manifiesto con una clave privada, reemplazar el hash simple por un HMAC-SHA256 con una clave guardada fuera del directorio verificado, o almacenar el manifiesto en un medio inmutable o servidor remoto. En la práctica esto es guardar el manifiesto en otro host, en un commit firmado de Git. Sin ese ancla externa de confianza, `generar + verificar` no aporta seguridad frente a manipulación intencional.
+
 ---
 
 ### 2. Qué agrega HMAC y qué no
@@ -249,6 +253,10 @@ parte importante: ¿qué **no** resuelve HMAC? Pensá en el no repudio y en
 quién conoce la clave.*
 
 **Respuesta:**
+
+HMAC-SHA256 agrega tanto autenticidad como integridad. El tag se calcula como `HMAC(K, mensaje)` usando una clave secreta `K` compartida. Con un hash simple cualquiera puede recalcular `SHA-256(mensaje)` y crear un valor válido. Con HMAC solo quien conoce `K` puede producir un tag que el verificador acepte. Por eso el subcomando `mac` prueba a la vez que el mensaje no fue alterado y que lo generó alguien del grupo que posee el secreto.
+
+HMAC al ser simétrico, el emisor y verificador conocen la misma `K` dando por entendido que cualquiera de los dos pudo haber creado el tag. Ante un tercero o un juez no se puede probar quién lo generó, entonces se necesita firma digital asimétrica con clave privada exclusiva del firmante. HMAC tampoco aporta confidencialidad, ni protege contra replay (un par mensaje/tag válido anterior puede reenviarse), ni sirve de nada si la clave se filtra o se comparte por un canal inseguro.
 
 ---
 
@@ -260,7 +268,13 @@ sean aceptables, o ninguno? Fundamentá con al menos una fuente.*
 
 **Respuesta:**
 
-**Fuente:**
+Hoy es computacionalmente factible encontrar dos entradas distintas `M1 != M2` con el mismo digest. En MD5 hay colisiones en segundos y de prefijo elegido usadas en la práctica por el malware Flame para forjar certificados. En SHA-1 el proyecto SHAttered demostró la primera colisión completa con unas 2^63 evaluaciones, y en 2020 el ataque SHAmbles logró colisiones de prefijo elegido, lo que invalida su uso en firmas digitales y certificados. La resistencia a preimagen y segunda preimagen (recuperar la entrada dado el digest) sigue costando del orden de 2^128 en MD5 y 2^160 en SHA-1 y no está rota en la práctica, pero el margen de seguridad colapsó y los estándares las declaran inseguras para uso criptográfico.
+
+Siguen siendo aceptables para la detección de corrupción accidental, checksums no críticos, tablas hash internas o identificadores de contenido. Git sigue usando SHA-1 con detección de colisiones mientras completa su migración a SHA-256, porque en ese contexto la amenaza no es un atacante forjando commits a voluntad. Son inaceptables para firmas digitales, certificados TLS, almacenamiento de contraseñas y cualquier protocolo donde la colisión permita suplantación.
+
+**Fuentes:**
+
+Stevens, M., Bursztein, E., Karpman, P., Albertini, A. y Markov, Y. (2017). *The first collision for full SHA-1*. Google Security Blog / CWI Amsterdam. https://shattered.io. Leurent, G. y Peyrin, T. (2020). SHA-1 is a Shambles: First chosen-prefix collision on SHA-1. En *Advances in Cryptology – EUROCRYPT 2020*. https://sha-mbles.github.io. Turner, S. y Chen, L. (2011). *RFC 6151: Updated Security Considerations for the MD5 Message-Digest Algorithm*. IETF. https://www.rfc-editor.org/rfc/rfc6151. Polk, T., Chen, L., Turner, S. y Hoffman, P. (2011). *RFC 6194: Security Considerations for the SHA-0 and SHA-1 Message-Digest Algorithms*. IETF. https://www.rfc-editor.org/rfc/rfc6194.
 
 ---
 
@@ -272,6 +286,10 @@ concreto que esto previene.*
 
 **Respuesta:**
 
+El operador `==` sobre `str` o `bytes` en Python implementa una comparación con retorno temprano: recorre ambos operandos byte a byte y devuelve `False` en cuanto encuentra la primera diferencia. El tiempo que tarda la comparación depende entonces de cuántos bytes iniciales del tag adivinó correctamente el atacante. Se prueban los 256 valores del primer byte y se queda con el que tarda un poco más en responder, luego repite con el segundo byte, y así reconstruye el tag válido sin conocer la clave. Con suficientes muestras y promediado estadístico este ataque de canal lateral funciona incluso a través de la red, y es especialmente grave en verificadores de HMAC, tokens de sesión o enlaces de restablecimiento.
+
+`hmac.compare_digest()` lo evita recorriendo siempre la totalidad de ambos operandos, ejecutando el mismo número de operaciones elementales y sin retorno temprano, de modo que el tiempo de ejecución no depende del contenido comparado. Elimina la fuga por tiempo y cierra ese oráculo concreto. Por eso la rúbrica del laboratorio exige `compare_digest()` en el subcomando `mac` y penaliza el uso de `==`.
+
 ---
 
 ### 5. SHA-256 para contraseñas: mala idea
@@ -281,6 +299,10 @@ una mala elección para almacenar contraseñas? ¿Qué se usa en su lugar y qué
 propiedad tienen esas funciones que SHA-256 no tiene?*
 
 **Respuesta:**
+
+Si la base guarda directamente `SHA-256(password)`, quien la roba puede probar diccionarios, listas de contraseñas filtradas y fuerza bruta a una gran velocidad, en paralelo contra todos los usuarios a la vez. Además, sin sal única por usuario, dos cuentas con la misma contraseña comparten el mismo digest, lo que permite tablas arcoíris y cracking masivo amortizado.
+
+En su lugar se usan funciones de derivación de clave específicas para contraseñas, con sal aleatoria única por usuario y costo configurable. La recomendación actual de OWASP es Argon2id, scrypt, bcrypt o PBKDF2 con un número alto de iteraciones. La propiedad que tienen y SHA-256 no tiene es que cada verificación cuesta, por ejemplo, unos 100 ms y varios MB de RAM, lo que lo vuelve inviable para probar miles de millones de candidatos y neutraliza la ventaja de GPUs y ASICs. NIST SP 800-63B y OWASP Password Storage Cheat Sheet exigen siempre función lenta con sal única y, opcionalmente, un pepper secreto del servidor.
 
 ---
 
