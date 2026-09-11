@@ -1,21 +1,23 @@
 # Informe — Laboratorio 03 · Autenticación
 
-*Grupo:* 06 · *Integrantes:* 
+_Grupo:_ 06 · _Integrantes:_
+
 - Beccereca, Martín - martinbeccereca
 - Benito, María Belén
 - De Miguel, Alejo - AlejoDM
 - Giudici, Tomás - TomasGiudici
-- Suppo, Carolina 
+- Suppo, Carolina - carosuppo
 
-*Fecha:* 
+_Fecha:_
 
 ---
 
 ## 0. Declaración de uso de IA
-- *Herramientas utilizadas:* Claude Code.
-- *Finalidad del uso:* Estructuración del informe Markdown.
-- *Partes generadas o asistidas:* Estructuración del esquema del informe.
-- *Verificación:* Todos los datos históricos, volúmenes de registros expuestos, detalles criptográficos y fuentes bibliográficas fueron contrastados y verificados manualmente contra publicaciones de seguridad primarias.
+
+- _Herramientas utilizadas:_ Claude Code.
+- _Finalidad del uso:_ Estructuración del informe Markdown.
+- _Partes generadas o asistidas:_ Estructuración del esquema del informe.
+- _Verificación:_ Todos los datos históricos, volúmenes de registros expuestos, detalles criptográficos y fuentes bibliográficas fueron contrastados y verificados manualmente contra publicaciones de seguridad primarias.
 
 ---
 
@@ -26,11 +28,11 @@ sobre la tabla del enunciado.
 
 ### Qué se explota (la falla)
 
-El *credential stuffing* no rompe ningún algoritmo criptográfico ni explota una
+El _credential stuffing_ no rompe ningún algoritmo criptográfico ni explota una
 vulnerabilidad de software: explota una práctica humana, el reuso de
 contraseñas entre sitios distintos. El atacante no adivina contraseñas al
 azar (eso sería fuerza bruta clásica) ni prueba una única contraseña contra
-muchas cuentas (eso sería *password spraying*); en cambio, automatiza el
+muchas cuentas (eso sería _password spraying_); en cambio, automatiza el
 ingreso de pares usuario/contraseña reales, filtrados previamente en la
 brecha de otro servicio no relacionado, contra el sistema objetivo. La
 apuesta del atacante es estadística: si una fracción de esos usuarios reusó su
@@ -79,7 +81,7 @@ queda frenado porque no tiene el secreto compartido necesario para generar el
 código de un solo uso.
 
 **Verificación contra contraseñas comprometidas.** El estándar NIST SP
-800-63B-4 (parte de las *Digital Identity Guidelines* Rev. 4, publicadas en
+800-63B-4 (parte de las _Digital Identity Guidelines_ Rev. 4, publicadas en
 su versión final en julio de 2025) exige explícitamente que el verificador
 rechace contraseñas conocidas por haber sido filtradas: "Verifiers SHALL
 compare the prospective secret against a blocklist that contains known
@@ -103,12 +105,11 @@ tres guías coincidan en un enfoque de defensa en capas. Pero el MFA es,
 de las tres, la que corta el ataque incluso cuando la contraseña filtrada es
 válida.
 
-
 ## 2. Parte B.1 — Contraseñas
 
 ### Por qué el salt tiene que ser único por usuario
 
-El *salt* es un valor pseudoaleatorio criptográficamente seguro (generado mediante `secrets.token_bytes`) que se combina con la contraseña antes de aplicar la función de derivación de clave. Debe ser único para cada usuario y registro por dos razones fundamentales:
+El _salt_ es un valor pseudoaleatorio criptográficamente seguro (generado mediante `secrets.token_bytes`) que se combina con la contraseña antes de aplicar la función de derivación de clave. Debe ser único para cada usuario y registro por dos razones fundamentales:
 
 1. **Evitar la deducción de contraseñas idénticas entre usuarios:**
    Si dos usuarios eligen la misma contraseña en un esquema sin salt o con un salt global fijo, sus hashes resultantes en la base de datos serían idénticos.
@@ -126,9 +127,8 @@ Las funciones criptográficas de hash generales (como SHA-256 o MD5) fueron dise
 
 1. **Asimetría frente a hardware acelerador:**
    Un atacante con hardware masivamente paralelo puede calcular miles de millones de hashes SHA-256 directos por segundo en un ataque de fuerza bruta offline contra una base de datos filtrada.
-   
 2. **Estiramiento de clave y factor de trabajo:**
-   PBKDF2 (*Password-Based Key Derivation Function 2*) introduce un costo computacional parametrizable mediante un número de iteraciones. La función encadena repetidamente HMAC-SHA256, forzando a calcular 200.000 derivaciones consecutivas para un solo intento de contraseña.
+   PBKDF2 (_Password-Based Key Derivation Function 2_) introduce un costo computacional parametrizable mediante un número de iteraciones. La función encadena repetidamente HMAC-SHA256, forzando a calcular 200.000 derivaciones consecutivas para un solo intento de contraseña.
 
 3. **Impacto asimétrico (Defensa vs. Ataque):**
    - **Para el servidor legítimo:** Calcular 200.000 iteraciones toma aproximadamente entre 30ms y 80ms en un hilo de CPU estándar. Este tiempo es completamente imperceptible para un usuario humano que inicia sesión una sola vez.
@@ -138,7 +138,7 @@ Las funciones criptográficas de hash generales (como SHA-256 o MD5) fueron dise
 
 ### Comparación en tiempo constante
 
-En `verify_password()`, la comparación entre el hash calculado y el almacenado se realiza estrictamente con `hmac.compare_digest()` en lugar del operador de igualdad estándar `==`. El operador `==` compara byte a byte y retorna `False` al encontrar el primer byte discordante (*early exit*), produciendo variaciones medibles en el tiempo de respuesta. Un atacante podría explotar esta fuga mediante un canal lateral de temporización (*timing attack*) para reconstruir el hash derivado byte a byte. `hmac.compare_digest()` garantiza que la comparación tome exactamente el mismo tiempo independientemente de cuántos bytes coincidan.
+En `verify_password()`, la comparación entre el hash calculado y el almacenado se realiza estrictamente con `hmac.compare_digest()` en lugar del operador de igualdad estándar `==`. El operador `==` compara byte a byte y retorna `False` al encontrar el primer byte discordante (_early exit_), produciendo variaciones medibles en el tiempo de respuesta. Un atacante podría explotar esta fuga mediante un canal lateral de temporización (_timing attack_) para reconstruir el hash derivado byte a byte. `hmac.compare_digest()` garantiza que la comparación tome exactamente el mismo tiempo independientemente de cuántos bytes coincidan.
 
 ---
 
@@ -153,8 +153,9 @@ TOTP agrega un segundo factor de autenticación basado en un código temporal ge
 TOTP no protege frente a todos los ataques. Por ejemplo, un atacante puede realizar phishing en tiempo real y reutilizar el código antes de que expire. Tampoco protege si se compromete el dispositivo o el secreto TOTP, ni frente al robo de una sesión ya autenticada.
 
 ## 5. Fuentes consultadas
-1. OWASP Cheat Sheet Series. (s.f.). *Credential Stuffing Prevention Cheat Sheet*. OWASP Foundation. https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html
-2. OWASP Foundation. (s.f.). *Credential stuffing*. https://owasp.org/www-community/attacks/Credential_stuffing
-3. OWASP Cheat Sheet Series. (s.f.). *Password Storage Cheat Sheet*. OWASP Foundation. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-4. National Institute of Standards and Technology. (2025). *NIST SP 800-63B-4 — Digital Identity Guidelines: Authentication and Authenticator Management, Revision 4*. https://pages.nist.gov/800-63-4/sp800-63b.html
-5. BleepingComputer. (2020, 13 de abril). *Over 500,000 Zoom accounts sold on hacker forums, the dark web*. https://www.bleepingcomputer.com/news/security/over-500-000-zoom-accounts-sold-on-hacker-forums-the-dark-web/
+
+1. OWASP Cheat Sheet Series. (s.f.). _Credential Stuffing Prevention Cheat Sheet_. OWASP Foundation. https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html
+2. OWASP Foundation. (s.f.). _Credential stuffing_. https://owasp.org/www-community/attacks/Credential_stuffing
+3. OWASP Cheat Sheet Series. (s.f.). _Password Storage Cheat Sheet_. OWASP Foundation. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+4. National Institute of Standards and Technology. (2025). _NIST SP 800-63B-4 — Digital Identity Guidelines: Authentication and Authenticator Management, Revision 4_. https://pages.nist.gov/800-63-4/sp800-63b.html
+5. BleepingComputer. (2020, 13 de abril). _Over 500,000 Zoom accounts sold on hacker forums, the dark web_. https://www.bleepingcomputer.com/news/security/over-500-000-zoom-accounts-sold-on-hacker-forums-the-dark-web/
