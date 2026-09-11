@@ -137,6 +137,7 @@ LabsSeguridadInformatica2026/
 ## Documentación
 
 - [Guía del curso](docs/GUIA-DEL-CURSO.md) — qué es el práctico, el arco completo y cómo se trabaja.
+- [Guía dinámica de clases](docs/GUIA-DINAMICA-CLASES.md) — cada clase explicada con gancho, ejemplo y dato hacker (para engancharse).
 - [Guía para docentes](docs/PARA-DOCENTES.md) — diseño pedagógico, corrección y cómo crear labs nuevos.
 - [Arquitectura del motor](docs/ARQUITECTURA.md) — cómo funciona por dentro.
 - [Presentación (terminal)](docs/presentacion.py) — deck ASCII **bien hacker** (Python/curses): intro con lluvia de Matrix, `./docs/presentacion.py` (← → navegar · `q` salir).
