@@ -7,9 +7,9 @@
 ## 0. Declaración de uso de IA
  
  *Herramienta:* Muse Spark (OpenCode) y Gemini (Antigravity).
- *Uso:* Redacción de Parte A (§1) a partir de fuentes primarias (Mateo), y generación de código en `cripto.py` para fuerza bruta sobre XOR (Matías).
- *Partes afectadas:* Informe (Sección 1 por @gerbaudo19, Sección 2 y código XOR por @matiasmariatticasc).
- *Verificación:* Se verificaron las fórmulas contra RFC 6979. Para la Parte B.1, se ejecutó localmente el script verificando que la clave `0x37` y el mensaje del Memo fueran correctos.
+ *Uso:* Redacción de Parte A (§1) a partir de fuentes primarias (Mateo), generación de código en `cripto.py` para fuerza bruta sobre XOR (Matías), y redacción técnica de B.2.1 junto con la implementación de `mac_ingenuo()` (Álvaro).
+ *Partes afectadas:* Informe (Sección 1 por @gerbaudo19, Sección 2 y código XOR por @matiasmariatticasc, Sección 3.1 y `mac_ingenuo` por @ColqueAlvaro).
+ *Verificación:* Se verificaron las fórmulas contra RFC 6979. Para la Parte B.1, se ejecutó localmente el script verificando que la clave `0x37` y el mensaje del Memo fueran correctos. Para la Parte B.2.1, se verificó el cálculo de `mac_ingenuo()` contra la salida de `hashlib.sha256` y se validó el modelo teórico del ataque de extensión de longitud sobre la construcción Merkle-Damgård.
 
 ## 1. Parte A — Análisis de la falla: Sony PS3 y ECDSA
 
@@ -72,17 +72,67 @@ El cifrado XOR con una clave de un solo byte (8 bits) es completamente inseguro 
 
 ## 3. Parte B.2 — Autenticación
 
-*(A cargo de P3/P4)*
-**B.2.1 length-extension · B.2.2 cómo lo resuelve HMAC · B.2.3 tiempo constante**
+### B.2.1 — Ataque de Length-Extension sobre `sha256(clave || mensaje)`
+
+#### ¿Por qué permite un ataque de length-extension?
+La vulnerabilidad se debe directamente a la arquitectura de las funciones de hash basadas en la **construcción Merkle-Damgård**, como SHA-256:
+
+1. **Estructura iterativa y estado interno:**
+   SHA-256 divide el mensaje de entrada en bloques fijos de 512 bits (64 bytes). Mantiene un estado interno de 256 bits compuesto por 8 registros de 32 bits ($H_0, H_1, \dots, H_7$), los cuales se inicializan con constantes fijas estandarizadas (el vector de inicialización o IV).
+2. **Función de compresión:**
+   Cada bloque $M_i$ es procesado junto con el estado acumulado mediante una función de compresión $f$, de modo que el estado subsiguiente es $S_i = f(S_{i-1}, M_i)$.
+3. **Esquema de relleno (padding):**
+   Al final de la entrada se agrega un byte `0x80` (bit `1`), una secuencia de ceros (`0x00`) y finalmente un entero de 64 bits que codifica la longitud total del mensaje original en bits, redondeando la longitud a un múltiplo exacto de 512 bits.
+4. **Digest final como reflejo del estado interno:**
+   El resultado final del hash devuelto por SHA-256 **es exactamente el estado interno de los registros tras procesar el último bloque acolchado**. No existe ninguna transformación secreta posterior ni truncamiento protector.
+
+Por ende, si se define una MAC de forma ingenua como:
+$$\text{MAC} = \text{SHA-256}(clave \parallel mensaje)$$
+el atacante que intercepta el mensaje y el hash resultante está recibiendo en bandeja el estado interno completo de la función de compresión tras haber procesado $(clave \parallel mensaje \parallel pad_1)$.
+
+#### ¿Cómo opera el ataque sin conocer la clave?
+Un atacante que intercepta el mensaje legítimo $M$ y su supuesto MAC $H = \text{SHA-256}(K \parallel M)$:
+
+1. **No necesita la clave $K$, solo su longitud:** Aunque desconozca los bytes de la clave secreta $K$, basta con que conozca o estime su longitud $|K|$ (fácilmente determinable si es fija por especificación, ej. 16 o 32 bytes, o deducible mediante unas pocas pruebas).
+2. **Reconstruye el relleno original ($pad_1$):** Conociendo $|K|$ y la longitud del mensaje interceptado $|M|$, el atacante calcula matemáticamente el relleno exacto $pad_1$ que aplicó la víctima en su cálculo original.
+3. **Reanuda la compresión desde el estado interceptado:** Descompone el hash interceptado $H$ en los 8 registros de 32 bits e inicializa con ellos los registros internos de SHA-256 (reemplazando el IV estándar).
+4. **Calcula la extensión:** A partir de ese estado intermedio, el atacante alimenta a la función de compresión los bytes arbitrarios adicionales que desea añadir ($M_{\text{extra}}$) junto con el nuevo padding final $pad_2$.
+5. **Resultado:** El nuevo hash obtenido es matemáticamente idéntico a:
+   $$H' = \text{SHA-256}(K \parallel M \parallel pad_1 \parallel M_{\text{extra}})$$
+   El atacante genera así una firma perfectamente válida para el mensaje extendido $(M \parallel pad_1 \parallel M_{\text{extra}})$ sin haber sabido jamás la clave $K$.
+
+#### ¿Qué podría falsificar un atacante sin conocer la clave? (Ejemplo concreto)
+Supongamos un servicio que recibe peticiones estructuradas (por ejemplo, parámetros URL, query strings o transacciones) autenticadas con esta construcción ingenua:
+
+- **Mensaje original:** `accion=transferir&monto=100&para=juan`
+- **MAC legítimo generado por el cliente:** `sha256(clave_secreta || "accion=transferir&monto=100&para=juan")`
+
+Un atacante en la red intercepta este paquete. Sin conocer `clave_secreta`:
+1. Calcula el relleno $pad_1$ correspondiente a la longitud de `clave_secreta || msg`.
+2. Define los datos a inyectar al final: `&para=atacante&monto=100000`.
+3. Inicia SHA-256 con el estado obtenido del MAC interceptado y calcula el hash de la extensión.
+4. Envía al servidor la carga maliciosa:
+   `accion=transferir&monto=100&para=juan<pad1>&para=atacante&monto=100000`
+   junto con el nuevo hash falsificado.
+
+**Impacto:** Cuando el servidor recibe la solicitud, computa `sha256(clave_secreta || mensaje_recibido)`. Como la concatenación coincide byte a byte con lo procesado por el atacante, la validación de la MAC es **exitosa**. La gran mayoría de los analizadores de parámetros (parsers HTTP/query strings) toman el **último** valor recibido para claves duplicadas, por lo que el servidor ejecuta la transferencia a favor del atacante por un monto de $100.000, vulnerando por completo la autenticidad y la integridad de los datos.
+
+---
+
+*(A cargo de P4: Gonzalo)*
+**B.2.2 cómo lo resuelve HMAC · B.2.3 tiempo constante**
 
 ## 4. Bitácora
 
 ```bash
 # Parte A no requiere ejecución - análisis documental con fuentes [1][2][3]
-# Verificación de Parte B (para P2/P3 cuando implementen):
+# Verificación de Parte B:
 # cd entregas/lab02/grupo12
 # python data/generar_datos.py
 # python src/cripto.py romper --hex $(cat data/muestra/reto_xor.hex)
+# B.2.1 - Ejecución mac_ingenuo (Álvaro):
 # python src/cripto.py mac --clave secreta --msg "pago 100" --modo ingenuo
+# Salida esperada: a8cc54c07b3acb7470c25ab9eea5234bfa2562e37298eee275e39a457004b725
+# (Pendiente para P4: modo hmac y verificación)
 # python src/cripto.py mac --clave secreta --msg "pago 100" --modo hmac
 ```

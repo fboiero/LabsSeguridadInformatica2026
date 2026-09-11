@@ -60,8 +60,7 @@ def mac_ingenuo(clave: bytes, msg: bytes) -> str:
     """Devuelve sha256(clave || msg) en hex. Es lo que MUCHA gente hace...
     y es vulnerable a length-extension. Lo implementás para después romperlo
     conceptualmente en el informe."""
-    # TODO: implementá esto (una línea).
-    raise NotImplementedError("Completá mac_ingenuo()")
+    return hashlib.sha256(clave + msg).hexdigest()
 
 def mac_hmac(clave: bytes, msg: bytes) -> str:
     """Devuelve el HMAC-SHA256 en hex. Esta es la forma CORRECTA."""
