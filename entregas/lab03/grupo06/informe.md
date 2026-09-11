@@ -14,10 +14,13 @@ _Fecha:_
 
 ## 0. Declaración de uso de IA
 
-- _Herramientas utilizadas:_ Claude Code.
-- _Finalidad del uso:_ Estructuración del informe Markdown.
-- _Partes generadas o asistidas:_ Estructuración del esquema del informe.
-- _Verificación:_ Todos los datos históricos, volúmenes de registros expuestos, detalles criptográficos y fuentes bibliográficas fueron contrastados y verificados manualmente contra publicaciones de seguridad primarias.
+- **Herramientas utilizadas:** Claude Code y ChatGPT (OpenAI).
+
+-- **Finalidad del uso:** Se utilizó como herramienta de apoyo para la estructuración del informe en formato Markdown, la búsqueda y selección inicial de fuentes de consulta, la organización del texto correspondiente al mini-research, la revisión de la rúbrica y la organización de la bitácora de pruebas.
+
+- **Partes generadas o asistidas:** Estructuración del esquema del informe y asistencia en la organización y redacción del contenido del mini-research.
+
+- **Verificación:** La información y las fuentes obtenidas con asistencia de IA fueron revisadas y verificadas por los integrantes del grupo antes de incorporarlas a la entrega. Los conceptos técnicos y el contenido final fueron contrastados con las fuentes bibliográficas citadas.
 
 ---
 
@@ -151,6 +154,67 @@ TOTP agrega un segundo factor de autenticación basado en un código temporal ge
 ## Qué no protege TOTP
 
 TOTP no protege frente a todos los ataques. Por ejemplo, un atacante puede realizar phishing en tiempo real y reutilizar el código antes de que expire. Tampoco protege si se compromete el dispositivo o el secreto TOTP, ni frente al robo de una sesión ya autenticada.
+
+## 4. Bitácora de pruebas
+
+Para verificar el funcionamiento de las implementaciones correspondientes a B.1 y B.2 se ejecutaron pruebas desde la terminal.
+
+### Prueba de generación de hash PBKDF2
+
+```bash
+python src/auth.py hash --password 'Phantom-2026!'
+```
+
+Resultado:
+
+```text
+pbkdf2_sha256$200000$3e30ebaf1b76edf4184af14b3c425feb$74135466481bdc6dc8e5007c65ce53f08198761f6e6ce45d0102160b5ec1dc8a
+```
+
+El resultado confirma que la contraseña se almacena utilizando PBKDF2 con SHA-256, 200.000 iteraciones y un salt aleatorio.
+
+### Prueba de verificación de contraseña
+
+```bash
+python src/auth.py verify --password 'Phantom-2026!' --registro 'pbkdf2_sha256$200000$3e30ebaf1b76edf4184af14b3c425feb$74135466481bdc6dc8e5007c65ce53f08198761f6e6ce45d0102160b5ec1dc8a'
+```
+
+Resultado:
+
+```text
+OK
+```
+
+También se realizó una prueba utilizando una contraseña incorrecta para comprobar que el registro no sea validado:
+
+```powershell
+$registro = python src/auth.py hash --password "Phantom-2026!"
+python src/auth.py verify --password "ContraseñaIncorrecta" --registro $registro
+```
+
+Resultado:
+
+```text
+FALLO
+```
+
+De esta manera se comprobó que `verify_password()` acepta la contraseña correcta y rechaza una contraseña que no corresponde al registro almacenado.
+
+### Prueba de TOTP
+
+Se utilizó el vector de prueba indicado para RFC 6238:
+
+```bash
+python src/auth.py totp --secret 12345678901234567890 --t 59
+```
+
+Resultado:
+
+```text
+287082
+```
+
+El resultado coincide con el vector esperado, verificando el funcionamiento de la implementación TOTP.
 
 ## 5. Fuentes consultadas
 
