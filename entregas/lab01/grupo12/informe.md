@@ -144,85 +144,134 @@ entrada de blog).*
 
 ## B.1 — Evidencia de ejecución
 
-*Pegá la salida real de cada comando. No la transcribas a mano: copiala tal
-cual sale de la terminal.*
-
 ### Generación del manifiesto
 
 ```
 $ python3 src/integridad.py generar --dir data/muestra --salida manifest.sha256
-
-(pegar salida)
+Manifiesto generado: manifest.sha256
+Directorio base:     data/muestra
+Archivos indexados:  4
 ```
 
 ### Verificación sobre un directorio íntegro
 
 ```
 $ python3 src/integridad.py verificar --dir data/muestra --manifiesto manifest.sha256
-$ echo "código de salida: $?"
+Directorio:  data/muestra
+Manifiesto:  manifest.sha256
 
-(pegar salida)
+  OK             4
+  MODIFICADO     0
+  FALTANTE       0
+  NUEVO          0
+
+INTEGRIDAD VERIFICADA — sin diferencias contra el manifiesto.
+$ echo "código de salida: $?"
+código de salida: 0
 ```
 
 ### Detección de la modificación de un byte
 
-*Esta prueba es obligatoria y tiene una penalización específica en la rúbrica
-si falla.*
-
 ```
 $ printf 'X' >> data/muestra/transferencia.txt
 $ python3 src/integridad.py verificar --dir data/muestra --manifiesto manifest.sha256
-$ echo "código de salida: $?"
+Directorio:  data/muestra
+Manifiesto:  manifest.sha256
 
-(pegar salida — debe reportar MODIFICADO y salir con 1)
+  OK             3
+  MODIFICADO     1
+  FALTANTE       0
+  NUEVO          0
+
+Hallazgos:
+  [MODIFICADO] transferencia.txt
+
+INTEGRIDAD COMPROMETIDA — 1 hallazgo(s).
+$ echo "código de salida: $?"
+código de salida: 1
 ```
 
 ### Detección de archivo faltante y de archivo nuevo
 
 ```
-(pegar los comandos que usaron y la salida)
+$ python3 data/generar_datos.py
+$ rm data/muestra/politica_seguridad.md
+$ touch data/muestra/backdoor.sh
+$ python3 src/integridad.py verificar --dir data/muestra --manifiesto manifest.sha256
+Directorio:  data/muestra
+Manifiesto:  manifest.sha256
+
+  OK             3
+  MODIFICADO     0
+  FALTANTE       1
+  NUEVO          1
+
+Hallazgos:
+  [FALTANTE] politica_seguridad.md
+  [NUEVO] backdoor.sh
+
+INTEGRIDAD COMPROMETIDA — 2 hallazgo(s).
+$ echo "código de salida: $?"
+código de salida: 1
 ```
 
 ### Efecto avalancha
 
 ```
 $ python3 src/integridad.py avalancha --a "transferencia: $1000" --b "transferencia: $1001"
+mensaje A: "transferencia: $1000"
+  SHA-256: 341511c4c817d55f30c81e212d0e82b0b16dd5a58d49fe5e45c9d5c998ab794a
+mensaje B: "transferencia: $1001"
+  SHA-256: 5fb87fd7adf8a226f61c666a3ed140b147501b8a1b8e1822e57fc4b3925323d9
 
-(pegar salida)
+Distancia de Hamming: 139 de 256 bits (54.30 %)
+Efecto avalancha: para entradas distintas se espera un valor cercano al 50 %.
 ```
 
-**Distancia obtenida:** ____ bits de 256 (____ %)
+**Distancia obtenida:** 139 bits de 256 (54.30 %)
 
-*¿Coincide con lo esperado? ¿Qué esperaban antes de correrlo?*
+El resultado coincide plenamente con lo esperado. En una función de hash criptográfica segura, una alteración ínfima en la entrada (en este caso, un único carácter y apenas unos pocos bits entre `$1000` y `$1001`) genera un cambio pseudoaleatorio que afecta aproximadamente a la mitad de los bits de salida. Dado que SHA-256 produce un digest de 256 bits, el valor teórico esperado ronda los 128 bits (50 %); el resultado obtenido (139 bits, 54.30 %) refleja un comportamiento estadístico normal y evidencia claramente el efecto avalancha.
 
 ### HMAC
 
 ```
 $ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000"
-
-(pegar salida)
+mensaje:      "transferir 1000"
+HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 ```
 
 ```
-$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000" --verificar <tag válido>
-$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000" --verificar <tag alterado>
+$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000" --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+mensaje:      "transferir 1000"
+HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+tag recibido: 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 
-(pegar ambas salidas)
+TAG VÁLIDO — el mensaje es auténtico e íntegro.
+$ echo "código de salida: $?"
+código de salida: 0
+
+$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000" --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9ff
+mensaje:      "transferir 1000"
+HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+tag recibido: 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9ff
+
+TAG INVÁLIDO — el mensaje fue alterado o la clave no es la correcta.
+$ echo "código de salida: $?"
+código de salida: 1
 ```
 
 ---
 
 ## B.2 — Decisiones de implementación
 
-*Qué decisiones tuvieron que tomar que el enunciado no resolvía por ustedes.
-Ejemplos: cómo trataron los enlaces simbólicos, qué hicieron con los archivos
-vacíos, cómo excluyeron el manifiesto del recorrido, qué pasa si el directorio
-está vacío. Una o dos oraciones por decisión.*
-
 | Decisión | Qué hicimos | Por qué |
 |---|---|---|
-| | | |
-| | | |
+| **Exclusión del archivo de manifiesto** | Comparamos las rutas normalizadas mediante `Path.resolve()` tanto al generar como al verificar. | Si el archivo de manifiesto reside dentro del directorio recorrido, incluirlo causaría una paradoja de cálculo y reportaría un falso positivo (`NUEVO`) en verificaciones subsiguientes. |
+| **Normalización de rutas a formato POSIX** | Utilizamos `.relative_to(directorio).as_posix()` para registrar cada camino relativo con `/`. | Garantiza la interoperabilidad multiplataforma: un manifiesto generado en Windows (donde el separador es `\`) se verifica limpiamente en sistemas Linux/macOS. |
+| **Filtrado estricto de elementos** | Procesamos únicamente rutas donde `p.is_file()` sea verdadero, omitiendo directorios intermedios. | Los directorios no poseen un flujo binario para hashear directamente; procesar solo archivos regulares asegura lecturas por bloques limpias y sin excepciones. |
+| **Ordenamiento determinista de claves** | Ordenamos alfabéticamente las claves del diccionario con `dict(sorted(...))` y las listas resultantes de cada estado. | Un manifiesto se audita y versiona; garantizar un orden determinista evita discrepancias espurias en herramientas de control de versiones (`git diff`) entre distintas ejecuciones. |
+| **Cálculo de distancia de Hamming a nivel de bits** | Aplicamos el operador XOR (`^`) byte a byte sobre los bytes crudos (`.digest()`) y contamos con `.bit_count()`. | Comparar sobre la representación hexadecimal introduce errores graves, ya que cada dígito hex abarca 4 bits; el efecto avalancha se mide con exactitud sobre los 256 bits reales. |
+| **Comparación de MAC en tiempo constante** | Empleamos `hmac.compare_digest()` tras normalizar los tags a minúsculas, descartando el operador `==`. | Previene ataques de canal lateral basados en tiempo (timing attacks), donde un atacante mide la latencia de respuesta para deducir el tag byte por byte. |
 
 ---
 
@@ -295,15 +344,12 @@ lee y suma. No es relleno: es donde se ve si entendieron el problema.*
 
 ## Distribución del trabajo
 
-*Quién hizo qué. Tiene que ser consistente con el historial de commits.*
-
 | Integrante | Aportes |
 |---|---|
-| | |
-| | |
-| | |
-| | |
-| | |
+| Mateo Gerbaudo | Inicialización del repositorio, Parte A (A.2 activo afectado y A.4 encadenamiento). |
+| Matias Mariatti | Parte A (A.1 cronología, A.3 matriz CIA, A.5 controles mitigantes y A.6 fuentes). |
+| Alvaro Colque | Parte B: implementación en Python de `integridad.py` (TODOs 1 a 4), ejecución de pruebas y evidencias B.1, decisiones de implementación B.2. |
+| Gonzalo | Parte B: preguntas de análisis B.3. |
 
 ---
 
@@ -315,11 +361,10 @@ lee y suma. No es relleno: es donde se ve si entendieron el problema.*
 
 **¿El grupo usó asistentes de IA en este trabajo?**  Sí
  
- *Si la respuesta es No, firmen igual la sección y pasen al final.*
- 
  | Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto |
  |---|---|---|---|
  | Gemini (Antigravity) | Búsqueda de fuentes históricas, redacción y armado de commits | Sección A.1 (Cronología) | Verificando manualmente que las fechas coincidieran con la historia oficial del FBI y LLNL. |
+ | Gemini (Antigravity) | Asistencia en la implementación de funciones de hash/HMAC y redacción de decisiones | Sección B.1 y B.2 | Ejecución directa de los comandos en terminal, validación del código de retorno ($?) y verificación contra la rúbrica de cátedra. |
 
 **Declaración:**
 
