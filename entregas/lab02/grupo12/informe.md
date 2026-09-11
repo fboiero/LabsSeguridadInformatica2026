@@ -5,11 +5,11 @@
 **Caso Parte A:** Sony PS3 (ECDSA) — reutilización del nonce `k` (#2)
 
 ## 0. Declaración de uso de IA
-
-*Herramienta:* Muse Spark (OpenCode) para estructurar el análisis y contrastar fuentes.
-*Uso:* redacción de Parte A (§1) a partir de fuentes primarias indicadas abajo, y verificación de la fórmula de recuperación de clave.
-*Partes afectadas:* Solo §1 Parte A (este commit, autor @gerbaudo19). El resto del informe queda para los otros integrantes.
-*Verificación:* se contrastó cada afirmación con las 3 fuentes citadas en §1.5; las fórmulas se verificaron contra FIPS 186-4 §4 y RFC 6979.
+ 
+ *Herramienta:* Muse Spark (OpenCode) y Gemini (Antigravity).
+ *Uso:* Redacción de Parte A (§1) a partir de fuentes primarias (Mateo), y generación de código en `cripto.py` para fuerza bruta sobre XOR (Matías).
+ *Partes afectadas:* Informe (Sección 1 por @gerbaudo19, Sección 2 y código XOR por @matiasmariatticasc).
+ *Verificación:* Se verificaron las fórmulas contra RFC 6979. Para la Parte B.1, se ejecutó localmente el script verificando que la clave `0x37` y el mensaje del Memo fueran correctos.
 
 ## 1. Parte A — Análisis de la falla: Sony PS3 y ECDSA
 
@@ -56,7 +56,19 @@ Sony debió generar `k` único e impredecible por cada firma, ya sea con un gene
 
 ## 2. Parte B.1 — Romper el XOR
 
-*(A cargo de P2 — Mariatti, Matias. Completar con clave hallada `0x37`, mensaje en claro `Memo interno PhantomCorp...` y explicación de por qué clave de 1 byte es trivial por fuerza bruta 256 intentos + scoring por frecuencia.)*
+**Comando de ejecución:**
+```bash
+python src/cripto.py romper --hex (cat data/muestra/reto_xor.hex)
+```
+
+**Salida obtenida:**
+```text
+clave=0x37
+Memo interno PhantomCorp: la clave del wifi de invitados es Phantom-Guest-2026. No compartir fuera de la empresa.
+```
+
+**Análisis:**
+El cifrado XOR con una clave de un solo byte (8 bits) es completamente inseguro porque el espacio de claves es minúsculo (solo 256 combinaciones posibles). Esto permite realizar un ataque de fuerza bruta exhaustivo en fracciones de segundo. Al iterar sobre las 256 claves, descifrar el texto y pasarle una función de "scoring" que cuenta los caracteres más frecuentes en el lenguaje natural (espacios, vocales, letras comunes como n, s, r, l), el algoritmo puede deducir instantáneamente cuál es el texto plano correcto y, por ende, la clave utilizada.
 
 ## 3. Parte B.2 — Autenticación
 
