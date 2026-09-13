@@ -111,6 +111,29 @@ referencia son *t*=1, *p*=4, *m*=2 GiB, o *t*=3 y 64 MiB en entornos
 restringidos; OWASP lo pone como primera opción con *m*=19 MiB, *t*=2, *p*=1
 como mínimo (OWASP, 2024).
 
+### Verificación empírica con la biblioteca estándar
+
+Para no quedarme en la teoría, medí el costo de una verificación con cada
+esquema usando solo `hashlib`, en el mismo espíritu del lab (script en
+`src/kdf_demo.py`, corrido con Python 3.11 en un contenedor Linux sin GPU):
+
+```
+sha256(password)                       0.002 ms/intento  ~     407,997 intentos/s
+sha256(salt || password)               0.001 ms/intento  ~   1,032,844 intentos/s
+pbkdf2_hmac sha256, c=600000         347.601 ms/intento  ~           3 intentos/s
+scrypt N=2^17 r=8 p=1 (128 MiB)      446.612 ms/intento  ~           2 intentos/s
+```
+
+Las dos primeras líneas están limitadas por el intérprete de Python, no por
+SHA-256; en C sobre GPU son cinco órdenes de magnitud más rápidas. Lo
+relevante es la relación: agregar salt no cambia el costo por intento, y la
+KDF lo multiplica por más de 10⁵. Para un usuario legítimo, 350 ms en el
+login es imperceptible; para un atacante con 117 millones de hashes, es la
+diferencia entre terminar en la tarde y no terminar nunca. `hashlib.scrypt`
+y `hashlib.pbkdf2_hmac` vienen en la stdlib desde Python 3.6 (Python Software
+Foundation, s. f.); Argon2 requiere un paquete externo, que por eso no se
+usó acá.
+
 ### Qué elegir y cómo mantenerlo
 
 La recomendación práctica de OWASP (2024) ordena las opciones: Argon2id
