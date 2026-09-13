@@ -1,4 +1,4 @@
- # Mini-research — Laboratorio 02
+# Mini-research — Laboratorio 02
 
 **Grupo:** 07
 **Autor:** Lautaro Mariño — @lautaromarino0

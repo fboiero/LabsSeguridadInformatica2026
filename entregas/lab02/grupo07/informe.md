@@ -10,9 +10,9 @@
 
 **¿El grupo usó asistentes de IA en este trabajo?** Sí.
 
-| Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto | Claude (Anthropic) — Cowork | Búsqueda y contraste de fuentes sobre derivación de claves (PBKDF2, bcrypt, scrypt, Argon2); asistencia en la redacción del mini-research y en el script de medición. | `research.md` (tema C) y `src/kdf_demo.py`. | Se accedió a cada una de las fuentes citadas y comprobó el dato afirmado en cada una; los tiempos publicados salen de ejecutar `python3 src/kdf_demo.py`; el texto fue revisado y reformulado antes de commitear. Detalle en la declaración al final de `research.md`. |
+| Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto |
 |---|---|---|---|
-|
+| Claude (Anthropic) — Cowork | Búsqueda y contraste de fuentes sobre derivación de claves (PBKDF2, bcrypt, scrypt, Argon2); asistencia en la redacción del mini-research y en el script de medición. | `research.md` (tema C) y `src/kdf_demo.py`. | Se accedió a cada una de las fuentes citadas y comprobó el dato afirmado en cada una; los tiempos publicados salen de ejecutar `python3 src/kdf_demo.py`; el texto fue revisado y reformulado antes de commitear. Detalle en la declaración al final de `research.md`. |
 
 *El grupo declara que comprende el contenido íntegro de lo entregado y que puede explicar y defender oralmente cualquier parte del código y del análisis, independientemente de la asistencia recibida.*
 
