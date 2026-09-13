@@ -148,4 +148,49 @@ otra dependencia.
 ---
 
 ## Fuentes (mín. 3, verificables)
+
+Todas las URL fueron abiertas y contrastadas el 13/09/2026. Se marca
+[PRIMARIA] la fuente original (estándar, paper, autor del análisis) y
+[SECUNDARIA] la cobertura periodística.
+
+1. [PRIMARIA] Biryukov, A., Dinu, D., Khovratovich, D., & Josefsson, S. (2021).
+   *Argon2 memory-hard function for password hashing and proof-of-work
+   applications* (RFC 9106). IETF. https://www.rfc-editor.org/rfc/rfc9106.html
+2. [PRIMARIA] Chick3nman. (2022). *Hashcat v6.2.6 benchmark on the Nvidia RTX
+   4090*. GitHub Gist. https://gist.github.com/Chick3nman/32e662a5bb63bc4f51b847bb422222fd
+3. [PRIMARIA] Ducklin, P. (2013, 4 de noviembre). *Anatomy of a password
+   disaster – Adobe's giant-sized cryptographic blunder*. Naked Security,
+   Sophos. https://nakedsecurity.sophos.com/2013/11/04/anatomy-of-a-password-disaster-adobes-giant-sized-cryptographic-blunder/
+4. [PRIMARIA] Kamp, P.-H. (2012). LinkedIn password leak: Salt their hide.
+   *ACM Queue, 10*(6). https://queue.acm.org/detail.cfm?id=2254400
+5. [SECUNDARIA] Krebs, B. (2016, 18 de mayo). *As scope of 2012 breach expands,
+   LinkedIn to again reset passwords for some users*. Krebs on Security.
+   https://krebsonsecurity.com/2016/05/as-scope-of-2012-breach-expands-linkedin-to-again-reset-passwords-for-some-users/
+6. [PRIMARIA] Moriarty, K., Kaliski, B., & Rusch, A. (2017). *PKCS #5:
+   Password-based cryptography specification version 2.1* (RFC 8018). IETF.
+   https://www.rfc-editor.org/rfc/rfc8018.html
+7. [PRIMARIA] National Institute of Standards and Technology. (2025). *Digital
+   identity guidelines: Authentication and authenticator management* (NIST SP
+   800-63B-4). https://pages.nist.gov/800-63-4/sp800-63b.html
+8. [PRIMARIA] OWASP Foundation. (2024). *Password storage cheat sheet*. OWASP
+   Cheat Sheet Series. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+9. [PRIMARIA] Percival, C., & Josefsson, S. (2016). *The scrypt password-based
+   key derivation function* (RFC 7914). IETF. https://www.rfc-editor.org/rfc/rfc7914.html
+10. [PRIMARIA] Provos, N., & Mazières, D. (1999). A future-adaptable password
+    scheme. En *Proceedings of the FREENIX Track: 1999 USENIX Annual Technical
+    Conference*. USENIX. https://www.usenix.org/legacy/events/usenix99/provos/provos.pdf
+11. [PRIMARIA] Python Software Foundation. (s. f.). *hashlib — Secure hashes and
+    message digests: Key derivation*. Recuperado el 13 de septiembre de 2026, de
+    https://docs.python.org/3/library/hashlib.html#key-derivation
+
+---
+
 ## Reflexión (3–5 líneas)
+
+Lo que más me quedó es que en este tema el algoritmo "bueno" es el que hace lo
+contrario de lo que uno espera de la criptografía: ser lento y gastar memoria.
+Todo el lab gira alrededor de la misma idea —XOR de un byte, `sha256(clave||msg)`,
+`sha256(password)`— y es que una primitiva sólida usada para lo que no fue
+diseñada no protege nada. La otra lección es que el hash de contraseñas no se
+"configura y se olvida": el costo que era alto en 2017 hoy es el piso, y la
+tabla de OWASP se actualiza cada año por eso.
