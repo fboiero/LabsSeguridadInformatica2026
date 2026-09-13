@@ -70,5 +70,59 @@ Pero la salt sola no frena la fuerza bruta contra **un** usuario: el atacante
 simplemente concatena la salt conocida a cada candidato. Hace falta la segunda
 mitad.
 
+### Funciones de derivación de clave: hacer lento a propósito
+
+Una KDF de contraseñas (*password-based key derivation function*) toma la
+contraseña y la salt y devuelve una clave, pero está diseñada para que cada
+evaluación cueste **mucho** y ese costo sea **ajustable**.
+
+**PBKDF2** (RFC 8018, §5.2) itera una PRF —normalmente HMAC-SHA256— *c* veces.
+El propio RFC cuantifica el efecto: "un contador de iteraciones *c* aumenta la
+fortaleza de una contraseña en log₂(*c*) bits contra ataques por prueba", y
+recomienda un mínimo de 1.000 iteraciones (Moriarty et al., 2017). Ese mínimo
+es de 2017; OWASP hoy recomienda 600.000 iteraciones para PBKDF2-HMAC-SHA256
+(OWASP, 2024). Su limitación: es *compute-hard* pero no *memory-hard*; una GPU
+o un ASIC lo paralelizan tan bien como a SHA-256, solo *c* veces más lento.
+
+**bcrypt** (Provos & Mazières, 1999) parte de la observación que da título al
+paper: "la longitud y aleatoriedad de las contraseñas elegidas por usuarios
+permanecen fijas en el tiempo; en contraste, las mejoras de hardware dan a los
+atacantes cada vez más poder de cómputo". La respuesta es un esquema
+*future-adaptable*: un factor de costo exponencial que el administrador sube a
+medida que el hardware mejora, sin cambiar de algoritmo. Se apoya en la
+programación de clave de Blowfish, que usa 4 KiB de tablas y por eso es
+incómoda para GPUs: el mismo benchmark que hacía 22 GH/s de SHA-256 hace
+184 kH/s de bcrypt con costo 5, unas 120.000 veces menos (Chick3nman, 2022).
+
+**scrypt** (Percival & Josefsson, 2016) introduce la *memory-hardness* de
+forma explícita: "busca reducir la ventaja que los atacantes pueden obtener
+usando circuitos paralelos diseñados a medida". Sus parámetros *N*, *r* y *p*
+fijan cuánta RAM debe ocupar cada evaluación; la memoria no se abarata al
+ritmo del cómputo, así que un ASIC que quiera probar un millón de contraseñas
+en paralelo necesita un millón de bloques de 128 MiB.
+
+**Argon2** ganó la Password Hashing Competition y está estandarizado en RFC
+9106 (Biryukov, Dinu, Khovratovich & Josefsson, 2021). Tiene tres variantes:
+Argon2d (acceso a memoria dependiente de los datos, máxima resistencia a
+GPUs pero vulnerable a canales laterales), Argon2i (acceso independiente,
+resistente a canales laterales) y **Argon2id**, híbrida y obligatoria de
+implementar, que el RFC recomienda como opción por defecto. Los parámetros de
+referencia son *t*=1, *p*=4, *m*=2 GiB, o *t*=3 y 64 MiB en entornos
+restringidos; OWASP lo pone como primera opción con *m*=19 MiB, *t*=2, *p*=1
+como mínimo (OWASP, 2024).
+
+### Qué elegir y cómo mantenerlo
+
+La recomendación práctica de OWASP (2024) ordena las opciones: Argon2id
+primero; scrypt si Argon2 no está disponible; bcrypt con factor de trabajo
+≥ 10 solo en sistemas heredados (y recordando que trunca a 72 bytes); PBKDF2
+únicamente cuando se exige FIPS-140. NIST (2025) agrega la parte que suele
+olvidarse: el factor de costo "*debería* ser tan alto como sea práctico" y
+"*debería* aumentarse con el tiempo". Un hash de contraseñas no es una
+decisión que se toma una vez; es un parámetro que se revisa como cualquier
+otra dependencia.
+
+---
+
 ## Fuentes (mín. 3, verificables)
 ## Reflexión (3–5 líneas)
