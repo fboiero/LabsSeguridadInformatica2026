@@ -1,4 +1,4 @@
-# Mini-research — Laboratorio 02
+ # Mini-research — Laboratorio 02
 
 **Grupo:** 07
 **Autor:** Lautaro Mariño — @lautaromarino0
@@ -194,3 +194,16 @@ Todo el lab gira alrededor de la misma idea —XOR de un byte, `sha256(clave||ms
 diseñada no protege nada. La otra lección es que el hash de contraseñas no se
 "configura y se olvida": el costo que era alto en 2017 hoy es el piso, y la
 tabla de OWASP se actualiza cada año por eso.
+
+---
+
+## Declaración de uso de asistentes de IA
+
+**¿Se usaron asistentes de IA en este trabajo?** Sí.
+
+| Herramienta | Para qué se usó | Qué partes afectó | Cómo se verificó |
+|---|---|---|---|
+| Claude (Anthropic) — Cowork | Lectura del repositorio y del enunciado para acotar el alcance; búsqueda y contraste de fuentes sobre KDF; asistencia en la redacción y estructuración del desarrollo; armado del script de medición `src/kdf_demo.py`. | `research.md` (fuentes y desarrollo) y `src/kdf_demo.py`. | Se accedió a cada una de las 11 URL citadas y se comprobó que existen y contienen el dato afirmado (parámetros de RFC 9106 §4, cita de RFC 8018 §4.1 sobre log₂(c), §3.1.1.2 de SP 800-63B-4, tabla de OWASP, líneas del benchmark de hashcat). Los números de la tabla de tiempos salen de correr el script; los que no pudieron confirmarse contra una fuente se descartaron. El texto final fue revisado y reformulado antes de commitear. |
+
+**Verificación de fuentes:** el integrante declara haber accedido y verificado
+individualmente cada una de las referencias citadas.
