@@ -19,8 +19,33 @@
 
 ## 1. Parte A — Análisis de la falla
 
-**Caso:** _(el asignado)_
-**A.1 — Qué prometía · A.2 — El mal uso · A.3 — Propiedad rota y explotación · A.4 — Lo correcto**
+**Caso:** Sony PlayStation 3 (ECDSA) — reutilización del nonce secreto al firmar
+
+### A.1 — Qué prometía el sistema
+
+La PlayStation 3 utilizaba firmas digitales para sostener una cadena de confianza: el software debía poder verificarse con una clave pública antes de ser aceptado por la plataforma. La promesa de este mecanismo era detectar modificaciones no autorizadas y autenticar que el software provenía del firmante legítimo; por lo tanto, las propiedades relevantes eran principalmente autenticidad e integridad, no confidencialidad. ([fail0verflow, 2010](https://www.cs.cmu.edu/~dst/GeoHot/1780_27c3_console_hacking_2010.pdf); [NIST, 2023](https://csrc.nist.gov/pubs/fips/186-5/final))
+
+### A.2 — El mal uso
+
+El problema no fue que ECDSA estuviera matemáticamente roto, sino que la implementación de Sony reutilizó el mismo valor secreto usado como nonce en más de una firma. En la notación de esta consigna llamamos `k` a ese nonce; la presentación original de fail0verflow usa `m` para el nonce y `k` para la clave privada, por lo que no deben confundirse. En ECDSA, reutilizar el nonce hace que dos firmas distintas compartan el mismo componente `r`, y permite relacionar algebraicamente sus valores `s` y los hashes de los mensajes. ([fail0verflow, 2010](https://www.cs.cmu.edu/~dst/GeoHot/1780_27c3_console_hacking_2010.pdf))
+
+### A.3 — Propiedad rota y explotación
+
+La propiedad rota de forma directa fue la autenticidad de las firmas y, como consecuencia, la integridad de los ejecutables aceptados por la cadena de confianza. Si un atacante observa dos firmas `(r, s1)` y `(r, s2)` sobre mensajes cuyos hashes son `z1` y `z2`, puede calcular `k = (z1 - z2) / (s1 - s2) mod n` y luego recuperar la clave privada `d = (s1 · k - z1) / r mod n`. Con esa clave puede generar firmas válidas sobre software elegido por él; el verificador seguirá aceptándolas porque solo comprueba la firma con la clave pública, no quién calculó realmente el archivo. ([fail0verflow, 2010](https://www.cs.cmu.edu/~dst/GeoHot/1780_27c3_console_hacking_2010.pdf))
+
+La falla no permitía leer directamente información cifrada: el impacto principal estaba en la confianza del proceso de arranque y actualización. Al poder firmar código arbitrario, se podía presentar software modificado como si fuera legítimo, anulando la garantía de integridad que la firma debía proporcionar. ([fail0verflow, 2010](https://www.cs.cmu.edu/~dst/GeoHot/1780_27c3_console_hacking_2010.pdf); [NIST, 2023](https://csrc.nist.gov/pubs/fips/186-5/final))
+
+### A.4 — Lo correcto
+
+La implementación debe generar un nonce secreto, impredecible y nuevo para cada firma, y proteger tanto ese nonce como la clave privada; NIST establece explícitamente que ECDSA requiere un nuevo número aleatorio `k` para cada mensaje firmado. Como alternativa, puede usarse generación determinista de nonces conforme a RFC 6979, que evita depender de una nueva fuente aleatoria durante cada firma sin reutilizar el valor. ([NIST, 2010](https://csrc.nist.gov/files/pubs/fips/186-3/final/docs/fips_186-3.pdf); [Pornin, 2013](https://www.rfc-editor.org/rfc/rfc6979.html))
+
+### Fuentes de la Parte A
+
+- Chaos Computer Club. (2010, 29 de diciembre). *Console Hacking 2010* [Ficha de la presentación]. 27th Chaos Communication Congress. https://fahrplan.events.ccc.de/congress/2010/Fahrplan/events/4087.en.html
+- fail0verflow. (2010, 29 de diciembre). *Console Hacking 2010: PS3 Epic Fail* [Presentación]. https://www.cs.cmu.edu/~dst/GeoHot/1780_27c3_console_hacking_2010.pdf
+- National Institute of Standards and Technology. (2010). *Digital Signature Standard (DSS)* (FIPS PUB 186-3). https://csrc.nist.gov/files/pubs/fips/186-3/final/docs/fips_186-3.pdf
+- National Institute of Standards and Technology. (2023). *Digital Signature Standard (DSS)* (FIPS 186-5). https://csrc.nist.gov/pubs/fips/186-5/final
+- Pornin, T. (2013). *Deterministic usage of the Digital Signature Algorithm (DSA) and Elliptic Curve Digital Signature Algorithm (ECDSA)* (RFC 6979). RFC Editor. https://www.rfc-editor.org/rfc/rfc6979.html
 
 ## 2. Parte B.1 — Romper el XOR
 
