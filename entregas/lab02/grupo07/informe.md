@@ -12,6 +12,7 @@
 
 | Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto |
 |---|---|---|---|
+| OpenAI Codex | Explicación conceptual, implementación y depuración de B.2, y asistencia en la redacción de las respuestas B.2.1–B.2.3. | `src/cripto.py`: `mac_ingenuo()`, `mac_hmac()` y `verificar_mac()`; sección B.2 de `informe.md`. | Se verificó con `src/verificar.py`, comparación contra `hashlib` y `hmac` de la biblioteca estándar, ejecución de la CLI, `py_compile` y `git diff --check`. |
 | Claude (Anthropic) — Cowork | Búsqueda y contraste de fuentes sobre derivación de claves (PBKDF2, bcrypt, scrypt, Argon2); asistencia en la redacción del mini-research y en el script de medición. | `research.md` (tema C) y `src/kdf_demo.py`. | Se accedió a cada una de las fuentes citadas y comprobó el dato afirmado en cada una; los tiempos publicados salen de ejecutar `python3 src/kdf_demo.py`; el texto fue revisado y reformulado antes de commitear. Detalle en la declaración al final de `research.md`. |
 
 *El grupo declara que comprende el contenido íntegro de lo entregado y que puede explicar y defender oralmente cualquier parte del código y del análisis, independientemente de la asistencia recibida.*
@@ -45,7 +46,51 @@ El problema, entonces, no es que XOR sea una operación débil, sino que se util
 
 ## 3. Parte B.2 — Autenticación
 
-**B.2.1 length-extension · B.2.2 cómo lo resuelve HMAC · B.2.3 tiempo constante**
+### B.2.1 — Por qué `sha256(clave || mensaje)` permite length-extension
+
+La construcción ingenua calcula `SHA-256(K || M)`, donde `K` es la clave
+secreta y `M` el mensaje. SHA-256 pertenece a la familia de funciones hash
+iterativas Merkle-Damgård: procesa el mensaje por bloques y el digest final
+representa el estado interno después de procesar también el padding. Por eso,
+cuando un atacante conoce `M` y el MAC, puede usar ese digest como estado
+inicial y continuar el cálculo con un sufijo elegido, sin conocer `K`.
+
+En un caso concreto, si el servidor acepta un mensaje como `pago=100`, el
+atacante puede intentar distintos largos posibles de `K`, calcular el padding
+correspondiente y construir `pago=100 || padding || &admin=true`. Luego genera
+un tag para ese mensaje extendido a partir del tag original y lo envía. El
+servidor vuelve a calcular `SHA-256(K || mensaje_recibido)` y obtiene el mismo
+resultado, aunque el atacante nunca haya recuperado ni adivinado la clave.
+
+### B.2.2 — Cómo lo resuelve HMAC
+
+HMAC no calcula el hash de la clave concatenada directamente con el mensaje.
+Su estructura es, conceptualmente,
+`H((K' XOR opad) || H((K' XOR ipad) || M))`, usando una clave normalizada y
+dos valores de relleno distintos. Primero se calcula un hash interno con una
+clave derivada y luego un hash externo que vuelve a incorporar material secreto.
+
+El atacante solo observa el resultado externo; no recibe el estado interno que
+correspondería a continuar `K || M`. Por eso no puede aplicar un sufijo y
+obtener un tag válido mediante length-extension. HMAC además está diseñado y
+analizado específicamente como un código de autenticación de mensajes, por lo
+que es la construcción apropiada en lugar de inventar una concatenación de
+clave y mensaje.
+
+### B.2.3 — Qué ataque evita `compare_digest`
+
+Una comparación normal con `==` puede detenerse en el primer carácter distinto.
+Un atacante que consulte repetidamente un endpoint que verifica MAC podría
+medir pequeñas diferencias de tiempo: una propuesta que acierta el primer
+carácter del tag puede tardar más que una que falla inmediatamente. Repitiendo
+el proceso, podría recuperar el tag carácter por carácter y finalmente enviar
+un mensaje falsificado.
+
+`hmac.compare_digest()` realiza una comparación adecuada para secretos y evita
+ese retorno temprano dependiente del prefijo coincidente, reduciendo la
+información temporal disponible para el atacante. En `verificar_mac()` se usa
+para distinguir un tag válido de uno inválido sin convertir el tiempo de
+respuesta en un oráculo útil.
 
 ## 4. Bitácora
 
