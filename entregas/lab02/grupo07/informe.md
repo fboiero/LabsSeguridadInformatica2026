@@ -14,6 +14,7 @@
 |---|---|---|---|
 | OpenAI Codex | Explicación conceptual, implementación y depuración de B.2, y asistencia en la redacción de las respuestas B.2.1–B.2.3. | `src/cripto.py`: `mac_ingenuo()`, `mac_hmac()` y `verificar_mac()`; sección B.2 de `informe.md`. | Se verificó con `src/verificar.py`, comparación contra `hashlib` y `hmac` de la biblioteca estándar, ejecución de la CLI, `py_compile` y `git diff --check`. |
 | Claude (Anthropic) — Cowork | Búsqueda y contraste de fuentes sobre derivación de claves (PBKDF2, bcrypt, scrypt, Argon2); asistencia en la redacción del mini-research y en el script de medición. | `research.md` (tema C) y `src/kdf_demo.py`. | Se accedió a cada una de las fuentes citadas y comprobó el dato afirmado en cada una; los tiempos publicados salen de ejecutar `python3 src/kdf_demo.py`; el texto fue revisado y reformulado antes de commitear. Detalle en la declaración al final de `research.md`. |
+| OpenAI Codex — aporte de Fernando | Búsqueda orientativa, contraste de fuentes y asistencia en la organización y redacción inicial del análisis de la falla de Sony PS3. | Sección 1, Parte A, y sus fuentes en `informe.md`. | Fernando consultó los documentos originales de fail0verflow, NIST y RFC 6979; revisó y reformuló el análisis antes de incorporarlo. |
 
 *El grupo declara que comprende el contenido íntegro de lo entregado y que puede explicar y defender oralmente cualquier parte del código y del análisis, independientemente de la asistencia recibida.*
 
