@@ -18,6 +18,11 @@
 - **Partes generadas o asistidas:** Sección 1 — A.1 y A.2.
 - **Verificación:** Las fuentes citadas fueron visitadas y verificadas antes de citarla.
 
+**Herramienta: ChatGPT**
+- **Finalidad del uso:** Apoyo en la redacción del mini-research. 
+- **Partes generadas o asistidas:** research.md (mini-research, Tema C).
+- **Verificación:** Las fuentes citadas fueron visitadas y verificadas antes de citarla.
+
 ## 1. Parte A — Marco aplicado
 
 ### A.1 — Marco elegido y por qué
