@@ -2,10 +2,10 @@
 
 **Grupo:** Grupo 04  
 **Integrantes:**
-- Integrante 1 — `@uRIELoLIVERO`
-- Integrante 2 — `@JereAntunez`
-- Integrante 3 — `@FacundoAnil4`
-- Integrante 4 — `@LelliMatias`
+- Uriel Olivero — `@uRIELoLIVERO`
+- Jeremias Antunez — `@JereAntunez`
+- Facundo Anil — `@FacundoAnil4`
+- Matias Lelli — `@LelliMatias`
 ---
 
 ## 0. Declaración de uso de IA
