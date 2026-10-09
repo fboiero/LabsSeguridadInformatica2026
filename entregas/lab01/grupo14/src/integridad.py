@@ -267,16 +267,22 @@ def verificar_manifiesto(
           Un consumidor que tiene que hacer `.get(clave, [])` es un consumidor
           al que le pasaste un contrato flojo.
     """
-    # ----------------------------------------------------------------------
-    # TODO 2: implementar la clasificación en OK / MODIFICADO / FALTANTE / NUEVO.
-    #         Borrá el `raise` de abajo y escribí tu código.
-    # ----------------------------------------------------------------------
-    raise NotImplementedError(
-        "TODO 2 de 4 — verificar_manifiesto() sin implementar.\n"
-        "  Qué falta: comparar el directorio contra el manifiesto y devolver\n"
-        "  el diccionario con las cuatro categorías OK/MODIFICADO/FALTANTE/NUEVO.\n"
-        "  Leé el docstring de esta función: está la estructura exacta esperada."
-    )
+    del_disco = _archivos_del_directorio(directorio, ruta_manifiesto)
+    del_manifiesto = set(manifiesto)
+
+    ok, modificados = [], []
+    for ruta in del_disco & del_manifiesto:
+        if sha256_archivo(directorio / ruta) == manifiesto[ruta]:
+            ok.append(ruta)
+        else:
+            modificados.append(ruta)
+
+    return {
+        ESTADO_OK: sorted(ok),
+        ESTADO_MODIFICADO: sorted(modificados),
+        ESTADO_FALTANTE: sorted(del_manifiesto - del_disco),
+        ESTADO_NUEVO: sorted(del_disco - del_manifiesto),
+    }
 
 
 # ==========================================================================
