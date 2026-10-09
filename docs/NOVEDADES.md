@@ -1,3 +1,74 @@
+# Novedades — actualización del 09/10/2026
+
+> **Para los alumnos.** Arrancamos el **Bloque 2: ofensiva a mano**. Dejamos de
+> escribir código y empezamos a **atacar** PhantomCorp con herramientas reales.
+> Hay material nuevo para la clase 05-06 y un **diagnóstico de 5 minutos** para
+> que sepas dónde estás parado antes de tirar el primer `nmap`.
+>
+> **Seamos honestos:** veníamos con el acelerador flojo. Las entregas están en
+> los labs 01-03 y hace rato que no se mueven. No pasa nada — pero es hora de
+> **ponerse las pilas**, porque lo que viene es lo bueno, y se construye sobre
+> los fundamentos. Sincronizá tu fork y ponete al día.
+
+## ¿En qué estado estás? Averigualo en 5 minutos
+
+Antes de atacar, un **espejo**. No es nota: es para que VOS sepas si tenés la
+base de los labs 01-04 y si tu entorno está listo. Se autocorrige solo.
+
+```bash
+cp docs/diagnostico-respuestas.txt mi-diagnostico.txt   # tu copia
+# completá mi-diagnostico.txt con tus respuestas
+python3 bin/diagnostico.py mi-diagnostico.txt           # feedback al instante
+```
+
+Te va a devolver uno de cuatro estados — **LISTO**, **CASI**, **REPASAR** o
+**ENTORNO** — y una línea `RESULTADO` que **pegás en tu entrega**. Con eso el
+docente ve cómo llega el curso y ajusta la clase. Detalle en
+[`docs/DIAGNOSTICO-05-06.md`](DIAGNOSTICO-05-06.md).
+
+## Qué más hay de nuevo
+
+### 1. 🎯 Diagnóstico del cruce a ofensiva
+`bin/diagnostico.py` + la plantilla `docs/diagnostico-respuestas.txt`. 8
+preguntas de fundamentos (01-04) + 3 que se contestan **operando el lab 05**.
+Las respuestas van hasheadas, igual que las flags: nada de espiar el código.
+
+### 2. 🧠 Ejercicios nuevos de recon y enumeración
+Seis desafíos para los labs 05-06 que **no se capturan, se razonan**. Casi sin
+flags: acá se entrena el criterio (clasificar, priorizar, planear el ataque),
+que es lo que la rúbrica paga de verdad. →
+[`docs/EJERCICIOS-CLASE-05-06.md`](EJERCICIOS-CLASE-05-06.md)
+
+### 3. 🖥️ Deck de la clase 05-06
+La presentación del cruce a ofensiva, en PowerPoint. →
+[`docs/clase-05-06-cruce-ofensiva.pptx`](clase-05-06-cruce-ofensiva.pptx)
+
+## Cómo bajar las novedades
+
+Sobre tu **fork**, desde la raíz:
+
+```bash
+git checkout main
+git fetch upstream
+git merge upstream/main
+git push origin main
+```
+
+> ¿No tenés `upstream`? Agregalo una vez:
+> `git remote add upstream https://github.com/fboiero/LabsSeguridadInformatica2026.git`
+
+## El plan, sin vueltas
+
+1. **Sincronizá** tu fork (arriba).
+2. **Corré el diagnóstico.** Si te da REPASAR, volvé a los labs 01-04 ESE tema
+   puntual. Si te da ENTORNO, resolvé Docker primero.
+3. **Arrancá el Lab 05** (recon) y asomá el **Lab 06** (enum).
+4. Si vas sobrado, metele los **ejercicios nuevos**.
+
+**Dale que ahora empieza lo que viniste a aprender: romper (con criterio).**
+
+---
+
 # Novedades — actualización del 11/09/2026
 
 > **Para los alumnos.** Desde la clase del **viernes 04/09** el repo creció bastante.
