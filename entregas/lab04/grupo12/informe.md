@@ -14,9 +14,9 @@
 En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`:
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
-- **Alcance de la asistencia:** Asistencia en la estructuración, fundamentación metodológica y redacción técnica de los puntos **A.1** (elección y justificación del marco) y **A.2** (mapeo formal de debilidades a controles oficiales de ISO/IEC 27001:2022 Anexo A).
-- **Partes originadas o modificadas:** Secciones A.1 y A.2 de la Parte A.
-- **Verificación humana:** Se contrastó la taxonomía y codificación de controles contra la versión oficial de la norma **ISO/IEC 27001:2022 (Anexo A)**, verificando que los identificadores (`A.5.17`, `A.5.24`, `A.8.5`, `A.8.13`, `A.8.26`, etc.) correspondan a la norma real y respondan de forma directa a cada debilidad del escenario de PhantomCorp.
+- **Alcance de la asistencia:** Asistencia en la estructuración, fundamentación metodológica y redacción técnica de los puntos **A.1** (elección y justificación del marco) y **A.2** (mapeo formal de debilidades a controles oficiales de ISO/IEC 27001:2022 Anexo A); y en la **Parte B** —implementación de `src/riesgo.py` (`ale`, `roi_control`, `priorizar`), armado de `riesgos.json` y redacción del análisis cuantitativo de **B.1** (ranking por ALE) y **B.2** (ROI del control para el riesgo #1).
+- **Partes originadas o modificadas:** Secciones A.1 y A.2 de la Parte A; y de la Parte B, el código `src/riesgo.py`, el archivo `riesgos.json` y las secciones **B.1** y **B.2**. La sección **B.3** queda pendiente para el equipo.
+- **Verificación humana:** Se contrastó la taxonomía y codificación de controles contra la versión oficial de la norma **ISO/IEC 27001:2022 (Anexo A)**, verificando que los identificadores (`A.5.17`, `A.5.24`, `A.8.5`, `A.8.13`, `A.8.26`, etc.) correspondan a la norma real y respondan de forma directa a cada debilidad del escenario de PhantomCorp. Además, los cálculos de la Parte B se validaron ejecutando `python3 src/verificar.py` (3/3 en verde) y `python3 src/riesgo.py` (`ale`, `roi`, `priorizar`), confirmando los valores del ranking (ALE #1 = 100000) y del ROI del control (1.800).
 
 ---
 
@@ -70,18 +70,67 @@ Analizando el escenario de PhantomCorp, se identifican y mapean **cinco debilida
 
 ---
 
-## 2. Parte B — Riesgo cuantitativo *(Pendiente — a completar por el equipo)*
+## 2. Parte B — Riesgo cuantitativo
 
 ### B.1 — Ranking por ALE
-*Completar `src/riesgo.py` (`ale`, `roi_control`, `priorizar`), armar `riesgos.json` con al menos 4 riesgos del escenario, correr `python3 src/riesgo.py priorizar --archivo riesgos.json` y analizar el ranking obtenido.*
 
-- `[COMPLETAR: Ranking y análisis intuitivo vs cuantitativo]`
+Con `src/riesgo.py` implementado y `riesgos.json` cargado (5 riesgos del escenario de
+la Parte A), `python3 src/riesgo.py priorizar --archivo riesgos.json` devuelve:
+
+| # | Riesgo | SLE | ARO | ALE |
+|--:|---|---:|---:|---:|
+| 1 | Brecha de datos de tarjetas por servidor web público expuesto | 200000 | 0.50 | **100000** |
+| 2 | Robo de cuentas por acceso remoto sin MFA | 80000 | 0.60 | 48000 |
+| 3 | Credential stuffing por contraseñas débiles o reutilizadas | 60000 | 0.80 | 48000 |
+| 4 | Ransomware que cifra el servidor y el backup local en oficina | 150000 | 0.30 | 45000 |
+| 5 | Filtración de DNI de clientes (Ley 25.326) | 40000 | 0.40 | 16000 |
+
+**¿Coincide con la intuición?** En parte. Sí coincide en que la **brecha de datos de
+tarjetas** encabece el ranking: es el activo más sensible (PCI-DSS, datos financieros),
+con una probabilidad alta por tratarse de un servidor web público sin mitigaciones. Es
+el riesgo que "a ojo" también pondríamos primero.
+
+**¿Dónde NO coincide?** En dos lugares, y es lo valioso del análisis cuantitativo:
+
+1. **El ransomware asusta más de lo que el ALE lo posiciona.** Intuitivamente se
+   percibe como el escenario catastrófico (cifra todo, incluido el backup). Pero su
+   ARO es bajo (0.30: exige que el atacante entre, ejecute y llegue al disco antes de
+   detectarlo), así que termina **cuarto (45000)**, por debajo de dos riesgos que
+   "se sienten" menores. El miedo no se traduce 1:1 en pérdida anualizada.
+2. **Dos riesgos muy distintos empatan (48000).** El robo de cuentas sin MFA y el
+   credential stuffing tienen impacto muy distinto por evento (SLE 80000 vs 60000),
+   pero el segundo es más frecuente (ARO 0.80 vs 0.60) y quedan iguales. Esto revela
+   que **frecuencia e impacto se compensan**: una política de contraseñas + MFA ataca
+   *ambos* a la vez, y por eso es una inversión con doble recompensa que el ranking
+   hace visible y la intuición tendería a subestimar.
 
 ### B.2 — ROI del control para el riesgo #1
-- *Control propuesto:* `[COMPLETAR]`
-- *Costo estimado anual:* `[COMPLETAR]`
-- *ALE antes vs ALE después:* `[COMPLETAR]`
-- *Cálculo de ROI y decisión justificada:* `[COMPLETAR]`
+
+Riesgo **#1** del ranking: *brecha de datos de tarjetas por servidor web expuesto*
+(ALE = 100000).
+
+- **Control propuesto:** defensa en profundidad sobre el servidor web y el dato de
+  tarjeta: **WAF** (filtrado de intentos de explotación), **segmentación de red** para
+  aislar el servidor público de la base de datos de tarjetas, y **tokenización** de los
+  números de tarjeta en base de datos (de modo que, aun con acceso, los PAN no estén en
+  claro). Impacto: baja el ARO de **0.50 a 0.15** (no elimina el riesgo, lo reduce).
+- **Costo estimado anual:** **$25.000** (licencia WAF administrado + horas de
+  implementación/segmentación amortizadas + tokenización, mantenimiento incluido).
+- **ALE antes vs ALE después:**
+  - ALE antes = `200000 × 0.50 = ` **$100.000**
+  - ALE después = `200000 × 0.15 = ` **$30.000**
+- **Cálculo de ROI** (`roi_control`, verificado con
+  `python3 src/riesgo.py roi --antes 100000 --despues 30000 --costo 25000`):
+
+  `ROI = (pérdida evitada − costo) / costo = ((100000 − 30000) − 25000) / 25000 =` **1.800**
+
+- **Decisión justificada:** el ROI de **1.8** significa que, por cada $1 invertido, se
+  evitan $1,80 de pérdida anualizada (retorno del 180%). Como es **mayor a 0, el control
+  se paga solo** y sobra margen: **conviene mitigar**. Conviene, además, porque ataca el
+  riesgo #1 del ranking y arrastra un beneficio de cumplimiento (alineación con PCI-DSS),
+  lo que reduce también la exposición a sanciones. Si el costo se duplicara y aún así el
+  ROI siguiera >0, la decisión no cambiaría; recién por encima de un costo de ~$70.000/año
+  el ROI se volvería negativo y habría que reconsiderar el alcance del control.
 
 ### B.3 — Riesgo con respuesta Aceptar o Transferir
 - *Riesgo seleccionado:* `[COMPLETAR]`
@@ -90,10 +139,16 @@ Analizando el escenario de PhantomCorp, se identifican y mapean **cinco debilida
 
 ---
 
-## 3. Anexo — riesgos.json *(Pendiente — a completar por el equipo)*
+## 3. Anexo — riesgos.json
+
+Archivo completo en [`riesgos.json`](./riesgos.json) (5 riesgos del escenario):
 
 ```json
 [
-  // A completar con al menos 4 riesgos: {"nombre": "...", "sle": ..., "aro": ...}
+  { "nombre": "Brecha de datos de tarjetas por servidor web público expuesto", "sle": 200000, "aro": 0.5 },
+  { "nombre": "Robo de cuentas por acceso remoto sin MFA",                    "sle": 80000,  "aro": 0.6 },
+  { "nombre": "Credential stuffing por contraseñas débiles o reutilizadas",    "sle": 60000,  "aro": 0.8 },
+  { "nombre": "Ransomware que cifra el servidor y el backup local en oficina","sle": 150000, "aro": 0.3 },
+  { "nombre": "Filtración de DNI de clientes (Ley 25.326)",                   "sle": 40000,  "aro": 0.4 }
 ]
 ```
