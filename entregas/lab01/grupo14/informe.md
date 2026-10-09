@@ -15,7 +15,7 @@
 
 | Nombre y apellido | Legajo | Usuario de GitHub |
 |---|---|---|
-| Valentina Chiapero | *(completar)* | @*(completar)* |
+| Valentina Chiapero | *(completar)* | @valechiapero |
 | Fede Peron | *(completar)* | @fedeeperon |
 | Laureano Gomez Redondo | *(completar)* | @Laureano-GR |
 | Martín Cesano | *(completar)* | @*(completar)* |
