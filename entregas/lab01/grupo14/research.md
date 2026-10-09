@@ -1,218 +1,57 @@
-# Laboratorio 01 — Mini-research
-
-**Extensión:** 800 a 1000 palabras (sin contar bibliografía)
-**Modalidad:** un tema por grupo, a elección
-**Entrega:** `entregas/lab01/grupoXX/research.md`
-
----
-
-## Por qué se pide esto
-
-Un ingeniero en sistemas que trabaja en seguridad va a tener que leer
-documentación técnica, informes de incidentes y normativa, y va a tener que
-distinguir qué está respaldado de qué es marketing. Esa habilidad no se
-adquiere leyendo resúmenes: se adquiere yendo a la fuente.
-
-No se busca un resumen de Wikipedia con otras palabras. Se busca que tomen una
-posición y la defiendan con evidencia.
-
----
-
-## Temas a elección
-
-Elegí **uno**. Indicá cuál al principio del documento.
-
-### Tema 1 — La evolución del perfil del atacante, 1988 a hoy
-
-De un estudiante de posgrado que libera un gusano por curiosidad a
-organizaciones criminales con estructura empresarial, servicio de atención a
-la víctima y programas de afiliados.
-
-Cuestiones a abordar: qué motivaciones dominaron en cada etapa, cómo cambió la
-relación costo/beneficio del ataque, qué papel jugó la aparición de las
-criptomonedas, y qué implica este cambio para el modelo de amenaza de una PyME
-argentina hoy.
-
-### Tema 2 — La cadena de suministro de software como superficie de ataque
-
-Comprometer al proveedor para llegar a miles de clientes de una sola vez.
-Tomen como referencia el caso SolarWinds/SUNBURST (2020) y el caso Log4Shell
-(2021) — que son distintos entre sí, y esa diferencia es parte del análisis.
-
-Cuestiones a abordar: por qué el modelo de confianza tradicional falla acá,
-qué proponen las iniciativas de **SBOM** (Software Bill of Materials) y
-**SLSA**, y qué límites tienen esas propuestas.
-
-### Tema 3 — La disponibilidad, la propiedad descuidada de la tríada
-
-La confidencialidad se lleva los titulares. Pero para muchas organizaciones, un
-día sin sistemas cuesta más que una filtración de datos.
-
-Cuestiones a abordar: por qué la disponibilidad recibe menos atención en la
-formación y en el presupuesto, cómo el ransomware la convirtió en el vector
-económicamente más rentable, y qué relación tiene con conceptos como RTO, RPO y
-continuidad del negocio.
-
-### Tema 4 — Criptografía post-cuántica
-
-El NIST publicó en 2024 sus primeros estándares de criptografía resistente a
-computadoras cuánticas: **FIPS 203**, **FIPS 204** y **FIPS 205**.
-
-Cuestiones a abordar: qué problema resuelven exactamente (y cuál **no**
-resuelven), qué significa la estrategia *harvest now, decrypt later* para los
-datos que una organización cifra hoy, y qué implica la migración para sistemas
-en producción.
-
-> Ojo con este tema: es el que más ruido tiene en la divulgación. Distinguir lo
-> que dicen los documentos del NIST de lo que dicen los titulares es
-> exactamente el ejercicio.
-
-### Tema 5 — Ley 26.388 y las zonas grises de la divulgación responsable
-
-La Ley 26.388 incorporó al Código Penal argentino las figuras de delitos
-informáticos. La Ley 27.411 aprobó la adhesión al Convenio de Budapest.
-
-Cuestiones a abordar: qué conductas quedaron tipificadas, qué situación tiene
-en la Argentina quien descubre e informa de buena fe una vulnerabilidad en un
-sistema de terceros, y cómo tratan otras jurisdicciones ese mismo problema.
-
-> Trabajen con el texto de la ley, no con notas periodísticas sobre la ley. No
-> hace falta ser abogado; hace falta leer la fuente.
-
----
-
-## Requisitos
-
-### Extensión
-
-Entre **800 y 1000 palabras**, sin contar la bibliografía. Fuera de ese rango
-se penaliza. La restricción es parte del ejercicio: obliga a decidir qué entra
-y qué no.
-
-### Fuentes
-
-- **Mínimo 3 fuentes.**
-- De ellas, **al menos 2 deben ser primarias o arbitradas**.
-
-| Cuenta como primaria o arbitrada | No cuenta |
-|---|---|
-| Documentos del NIST, ISO, IETF (RFC) | Wikipedia |
-| Texto de una ley o resolución oficial | Blogs de divulgación general |
-| Papers con revisión por pares | Notas periodísticas |
-| Informes técnicos oficiales de un fabricante o CERT | Videos de YouTube |
-| Informes forenses de un incidente publicados por la organización afectada | Publicaciones de LinkedIn |
-
-Las fuentes secundarias **se pueden usar** — de hecho son útiles para armar la
-cronología de un hecho. Solo que no cuentan para el mínimo de dos.
-
-### Citación
-
-Formato **APA**. Citas en el cuerpo del texto donde corresponda, y lista
-completa al final.
-
-**Toda fuente citada tiene que existir y ser localizable.** Una cita inventada
-o que no se puede encontrar es **causal de rechazo automático** de la entrega
-completa. Esto no es una formalidad: es lo que distingue un trabajo técnico de
-una opinión.
-
-### Declaración de uso de IA
-
-Obligatoria, al final del documento. Ver el modelo más abajo.
-
-Advertencia específica para este trabajo: **los asistentes de IA fabrican citas
-con mucha facilidad.** Producen referencias con formato impecable, autores
-plausibles y años coherentes que no existen. Si usaste un asistente para
-buscar bibliografía, **verificá cada referencia entrando a la fuente original**
-antes de citarla. Una cita inexistente hunde el trabajo, y la responsabilidad
-es de quien firma.
-
----
-
-## Estructura sugerida
-
-No es obligatoria, pero funciona:
-
-1. **Planteo** (~100 palabras) — cuál es la pregunta y por qué importa.
-2. **Desarrollo** (~600 palabras) — la evidencia, organizada. Acá van las citas.
-3. **Tensión o límite** (~150 palabras) — qué no está resuelto, qué se discute,
-   dónde falla la solución que describiste. Esta sección es la que distingue un
-   trabajo bueno de uno correcto.
-4. **Cierre** (~100 palabras) — qué implica para la práctica profesional.
-
----
-
-## Evaluación
-
-Vale **20 de los 100 puntos** del laboratorio. El desglose está en
-[`rubrica.md`](rubrica.md).
-
-Lo que más pesa: **calidad de las fuentes** y **el análisis propio**. Un
-trabajo que resume correctamente tres fuentes buenas sin agregar nada llega a
-la mitad del puntaje. Lo que sube la nota es la sección de tensión: mostrar que
-entendieron dónde la respuesta no es limpia.
-
----
-
-## Plantilla
-
-```markdown
 # Mini-research — Lab 01
 
-**Grupo:** NN
-**Tema elegido:** N — (título)
-**Cantidad de palabras:** ___ (sin bibliografía)
+**Grupo:** 14
+**Tema elegido:** 4 — Criptografía post-cuántica
+**Cantidad de palabras:** 947 (sin bibliografía ni declaración)
 
 ---
 
 ## Planteo
 
-(...)
+En agosto de 2024 el NIST publicó sus tres primeros estándares de criptografía post-cuántica (PQC): FIPS 203, 204 y 205. La divulgación suele presentarlos como la respuesta a «la computadora cuántica que va a romper toda la criptografía». La pregunta de este trabajo es más acotada: **qué problema resuelven exactamente estos estándares y cuál no**. Nuestra posición es que la PQC reemplaza una pieza precisa (la criptografía de clave pública), que la urgencia real no viene de la computadora cuántica sino de los datos que hoy se están capturando, y que el desafío principal de la migración no es criptográfico sino de inventario e ingeniería.
 
 ## Desarrollo
 
-(...)
+**Qué rompe una computadora cuántica.** La amenaza concreta es el algoritmo de Shor (1997). Shor demostró que una computadora cuántica puede factorizar enteros y calcular logaritmos discretos en tiempo polinomial. Sobre la dificultad de esos dos problemas se apoya casi toda la criptografía de clave pública en uso: RSA en el primer caso, y Diffie-Hellman, ECDH, ECDSA y EdDSA en el segundo. Una computadora cuántica «criptográficamente relevante» (CRQC) que ejecute Shor a escala no debilita estos esquemas: los vuelve inútiles, sin importar el tamaño de clave.
+
+**Qué no rompe.** La criptografía simétrica y las funciones de hash quedan en otra situación. El NIST afirma (Moody et al., 2024) que sus estándares simétricos, incluidos AES, SHA-2 y SHA-3, «son significativamente menos vulnerables a los ataques cuánticos conocidos» que los de clave pública, y que no espera tener que abandonarlos como parte de la migración. Todo primitivo simétrico con al menos 128 bits de seguridad clásica cumple la categoría 1 de seguridad post-cuántica. Este matiz casi no aparece en los titulares. Implica, por ejemplo, que el verificador de integridad con SHA-256 y HMAC que implementamos en la Parte B de este laboratorio **no necesita migrar**. Lo que sí debe migrar es el canal TLS por el que se descargaría ese manifiesto, porque su intercambio de claves y sus certificados usan criptografía asimétrica.
+
+**Qué estandarizó el NIST.** FIPS 203 define ML-KEM, un mecanismo de encapsulamiento de claves basado en retículos modulares, que permite a dos partes establecer un secreto compartido (NIST, 2024). Reemplaza el rol de Diffie-Hellman/ECDH en protocolos como TLS. FIPS 204 (ML-DSA) y FIPS 205 (SLH-DSA, basado solo en funciones de hash) cubren las firmas digitales, el rol de RSA y ECDSA. La elección de dos familias de firma no es redundante: si se descubriera una debilidad en los retículos, SLH-DSA depende únicamente de la seguridad de las funciones de hash, que es la hipótesis mejor entendida.
+
+**Por qué es urgente si la CRQC no existe.** Moody et al. (2024), del NIST, lo dicen explícitamente: los datos cifrados ya están en riesgo por la amenaza *harvest now, decrypt later*, en la que un adversario captura hoy tráfico cifrado para descifrarlo cuando tenga capacidad cuántica. El mismo documento formaliza el razonamiento con el «teorema de Mosca»: si X es la cantidad de años que un dato debe seguir siendo secreto e Y es el tiempo que lleva migrar, hay que empezar antes de que X + Y supere el tiempo Z hasta que exista una CRQC. Una historia clínica o un expediente judicial cifrado en 2026 con ECDH tiene un X de décadas. Si alguien graba hoy esa sesión TLS, la confidencialidad del dato ya está comprometida *a futuro*, aunque nadie la haya roto todavía. En cambio, la autenticación no sufre esta amenaza: una firma solo tiene que ser segura en el momento en que se verifica (Moody et al., 2024). Por eso la prioridad es migrar primero el **intercambio de claves** (ML-KEM) y después las firmas.
+
+**El calendario.** El borrador NIST IR 8547 propone que los algoritmos de clave pública con 112 bits de seguridad (por ejemplo, RSA-2048) queden *deprecados* después de 2030, y que todo RSA y criptografía de curva elíptica quede *prohibido* después de 2035, en línea con la meta de 2035 fijada por el memorando de seguridad nacional NSM-10 de EE. UU. (Moody et al., 2024).
 
 ## Tensión / límites
 
-(...)
+La PQC no resuelve tres problemas, y en ellos está la dificultad real.
+
+Primero, **la confianza en los nuevos supuestos es menor**. RSA tiene más de cuarenta años de criptoanálisis encima, mientras que los esquemas sobre retículos tienen bastante menos exposición en producción. Por eso muchas implementaciones adoptan modos **híbridos** (ECDH + ML-KEM): si uno cae, el otro sostiene la seguridad. Es una cobertura sensata, pero suma complejidad, que es la fuente más habitual de vulnerabilidades.
+
+Segundo, **la PQC no retroactúa**. Migrar en 2030 no protege lo que se capturó en 2024. Para los datos ya interceptados, el daño de *harvest now* es irreversible, y ningún estándar lo arregla.
+
+Tercero, y más importante para una organización común: **el cuello de botella es saber dónde hay criptografía**. El NIST recuerda (Moody et al., 2024) que la integración de un algoritmo nuevo históricamente lleva de 10 a 20 años. La criptografía está escondida en bibliotecas, firmware, dispositivos embebidos que no se pueden actualizar, protocolos de terceros y certificados con vencimientos largos. Una PyME no va a «implementar ML-KEM»: va a depender de que su sistema operativo, su navegador, su VPN y su proveedor de nube lo hagan, y su trabajo es inventariar y exigir. El estándar existe; el inventario, en general, no.
 
 ## Cierre
 
-(...)
+Para la práctica profesional, la conclusión es concreta: hay que tratar la PQC como una migración de **confidencialidad a largo plazo** y no como una amenaza difusa. Eso implica clasificar qué datos tienen un X grande, priorizar los canales que los transportan, armar un inventario criptográfico y preferir componentes con agilidad criptográfica (que permitan cambiar de algoritmo sin rediseñar). Y no gastar esfuerzo en reemplazar SHA-256 o AES-256, que no son el problema.
 
 ---
 
 ## Bibliografía
 
-Formato APA. Marcá cada fuente como [PRIMARIA], [ARBITRADA] o [SECUNDARIA].
-
-1. [PRIMARIA] ...
-2. [ARBITRADA] ...
-3. [SECUNDARIA] ...
+1. **[PRIMARIA]** National Institute of Standards and Technology. (2024). *Module-lattice-based key-encapsulation mechanism standard* (FIPS 203). U.S. Department of Commerce. https://doi.org/10.6028/NIST.FIPS.203
+2. **[PRIMARIA]** Moody, D., Perlner, R., Regenscheid, A., Robinson, A. y Cooper, D. (2024). *Transition to post-quantum cryptography standards* (NIST IR 8547, borrador inicial público). National Institute of Standards and Technology. https://csrc.nist.gov/pubs/ir/8547/ipd
+3. **[ARBITRADA]** Shor, P. W. (1997). Polynomial-time algorithms for prime factorization and discrete logarithms on a quantum computer. *SIAM Journal on Computing, 26*(5), 1484–1509. https://doi.org/10.1137/S0097539795293172
 
 ---
 
 ## Declaración de uso de asistentes de IA
 
-**¿Se usaron asistentes de IA en este trabajo?** Sí / No
+**¿Se usaron asistentes de IA en este trabajo?** Sí
 
 | Herramienta | Para qué | Qué partes afectó | Cómo se verificó |
 |---|---|---|---|
-| | | | |
+| Claude (Anthropic), vía Claude Code | Búsqueda y lectura de las fuentes, propuesta de estructura y redacción del borrador | Todo el documento | Se abrió cada fuente citada y se contrastaron con el texto original las afirmaciones atribuidas (fechas de deprecación 2030/2035, cita sobre *harvest now, decrypt later*, cita sobre criptografía simétrica, datos de FIPS 203). El grupo revisó y validó el borrador. |
 
-**Verificación de fuentes:** el grupo declara haber accedido y verificado
-individualmente cada una de las referencias citadas.
-```
-
----
-
-## Cómo contar las palabras
-
-```bash
-# Contar palabras de un archivo markdown, aproximado
-wc -w research.md
-```
-
-Restá a mano lo que ocupan la bibliografía y la declaración de IA, o contá solo
-las secciones de contenido. No hace falta precisión al dígito: si están entre
-780 y 1020 no hay problema. Si entregan 400 o 1800, sí.
+**Verificación de fuentes:** el grupo declara haber accedido y verificado individualmente cada una de las referencias citadas.
