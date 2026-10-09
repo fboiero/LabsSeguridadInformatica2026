@@ -274,59 +274,80 @@ Además validamos `calcular_mac()` contra el caso de prueba 2 del RFC 4231 (clav
 
 ## B.3 — Preguntas de análisis
 
-> **Se responden con fundamento técnico, no con opinión.** Dos o tres párrafos
-> cada una. Las respuestas de una línea no suman puntos.
-
 ### 1. El manifiesto por sí solo no alcanza
 
-*Un atacante con acceso de escritura al directorio también puede escribir
-`manifest.sha256`. ¿Qué le impide modificar un archivo y regenerar el
-manifiesto para que todo dé `OK`? ¿Qué habría que cambiar en el esquema para
-que ese ataque no funcione?*
-
 **Respuesta:**
+
+Nada se lo impide. El esquema actual detecta cambios *accidentales* o hechos por alguien que no conoce el manifiesto, pero no resiste a un atacante con escritura sobre el directorio. SHA-256 es una función pública y sin clave: cualquiera puede calcular el digest de cualquier archivo. El atacante modifica `transferencia.txt`, corre `integridad.py generar` (o calcula el digest a mano) y sobrescribe `manifest.sha256`. En la siguiente verificación todo da `OK`, porque el verificador compara el disco contra una referencia que también controla el atacante. El problema de fondo es que **el manifiesto es tan confiable como el lugar donde se guarda**: protegimos la integridad de los archivos, pero no la del propio manifiesto.
+
+Para que el ataque no funcione, el atacante tiene que quedar sin capacidad de producir una referencia válida. Hay tres formas de lograrlo, combinables entre sí:
+
+1. **Autenticar el manifiesto con un secreto que el atacante no tenga.** Puede ser un HMAC con una clave que no esté en la máquina monitoreada (lo que implementamos en el subcomando `mac`) o, mejor, una **firma digital** con una clave privada que nunca toque ese equipo. El verificador solo necesita la clave pública, así que comprometer el host no le da al atacante forma de firmar un manifiesto nuevo.
+2. **Guardar el manifiesto fuera del alcance del atacante**: en otro servidor, en un medio de solo lectura o en un almacenamiento con escritura única (WORM). Así funcionan los FIM como Tripwire o AIDE en producción: la base de referencia se guarda fuera de línea o en un host de gestión separado.
+3. **Ejecutar el verificador desde un entorno confiable.** Si el atacante tiene root, también puede reemplazar `integridad.py` por uno que siempre diga `OK`. Por eso la verificación seria se hace desde otro sistema o desde un medio de arranque limpio.
 
 ---
 
 ### 2. Qué agrega HMAC y qué no
 
-*¿Qué propiedad de seguridad aporta HMAC que un hash simple no aporta? Y la
-parte importante: ¿qué **no** resuelve HMAC? Pensá en el no repudio y en
-quién conoce la clave.*
-
 **Respuesta:**
+
+Un hash simple garantiza que el dato coincide con *algún* digest, pero no quién lo calculó, porque cualquiera puede recalcularlo (lo vimos en la pregunta anterior). HMAC incorpora una clave secreta en el cálculo (RFC 2104). Sin la clave es computacionalmente inviable producir un tag válido para un mensaje nuevo, aunque se conozcan muchos pares mensaje–tag. Eso agrega **autenticación del origen de datos**: si el tag verifica, el mensaje lo generó alguien que conoce la clave y no fue modificado desde entonces. En nuestra prueba, cambiar `transferir 1000` por `transferir 1001` sin la clave produjo un tag inválido.
+
+Lo que HMAC **no** resuelve:
+
+- **No repudio.** HMAC es simétrico: emisor y receptor comparten la misma clave. Cuando el receptor recibe un mensaje con un tag válido, sabe que no lo generó él y deduce que fue el emisor. Pero ante un tercero (un juez, un auditor) no puede probarlo, porque él mismo podría haber calculado ese tag. Para no repudio hace falta una **firma digital** con clave privada, donde solo una parte puede firmar y cualquiera puede verificar.
+- **Confidencialidad.** El mensaje viaja en claro: HMAC autentica, no cifra.
+- **Repetición (*replay*).** Un mensaje válido capturado puede reenviarse tal cual y su tag sigue verificando. Si un atacante repite `transferir 1000`, se ejecutan dos transferencias. Hay que incluir un nonce, un número de secuencia o una marca de tiempo dentro de lo autenticado.
+- **Distribución y custodia de la clave.** HMAC supone que la clave ya se compartió de forma segura y que solo la conocen las partes legítimas. Si se filtra, quien la tenga puede falsificar cualquier mensaje y no hay forma de distinguirlo del emisor legítimo.
 
 ---
 
 ### 3. MD5 y SHA-1
 
-*Ambos siguen apareciendo en software en producción. ¿Qué propiedad
-criptográfica se les rompió, exactamente? ¿Hay algún uso en el que todavía
-sean aceptables, o ninguno? Fundamentá con al menos una fuente.*
-
 **Respuesta:**
 
+En los dos casos se rompió la **resistencia a colisiones**: hoy es factible encontrar dos entradas distintas con el mismo digest. En MD5 el ataque es trivial desde mediados de los 2000. El RFC 6151 (Turner y Chen, 2011) registra que el tiempo para hallar colisiones bajó a segundos en una computadora común y concluye que MD5 «ya no es aceptable donde se requiere resistencia a colisiones, como en firmas digitales». En SHA-1, Stevens et al. (2017) publicaron la primera colisión real: dos PDF distintos con el mismo SHA-1. Requirió el equivalente a unas 2^63,1 llamadas a la función de compresión de SHA-1 (unos 6500 años-CPU y 100 años-GPU), mucho menos que los 2⁸⁰ de la fuerza bruta genérica (ataque de cumpleaños). Ninguno de los dos ataques rompe, en la práctica, la **resistencia a preimagen**: dado un digest fijo, sigue sin ser factible encontrar una entrada que lo produzca.
+
+Esa distinción define dónde siguen siendo aceptables. **No** sirven para firmas digitales, certificados, integridad frente a un adversario que puede elegir el contenido (por ejemplo, un instalador que se hashea para publicar su digest) ni para deduplicar datos que pueda controlar un atacante. En todos esos casos el atacante fabrica un par «benigno/malicioso» con el mismo digest. Sí tienen usos aceptables cuando no hay adversario o cuando la seguridad no depende de colisiones:
+
+- **Detección de errores accidentales** (corrupción en una descarga o en un disco), donde nadie está buscando colisiones a propósito.
+- **HMAC-MD5 y HMAC-SHA-1.** La seguridad de HMAC no depende de la resistencia a colisiones de la función subyacente. El mismo RFC 6151 dice que no es urgente quitar HMAC-MD5 de protocolos existentes, aunque no debe incluirse en diseños nuevos.
+
+Nuestra posición es que en diseños nuevos no hay motivo para usarlos: SHA-256 está disponible en todas partes y su costo es comparable.
+
 **Fuente:**
+
+- **[PRIMARIA]** Turner, S. y Chen, L. (2011). *Updated security considerations for the MD5 message-digest and the HMAC-MD5 algorithms* (RFC 6151). IETF. https://www.rfc-editor.org/rfc/rfc6151
+- **[ARBITRADA]** Stevens, M., Bursztein, E., Karpman, P., Albertini, A. y Markov, Y. (2017). The first collision for full SHA-1. En *Advances in Cryptology – CRYPTO 2017* (LNCS 10401, pp. 570–596). Springer. https://eprint.iacr.org/2017/190
 
 ---
 
 ### 4. Comparación en tiempo constante
 
-*¿Por qué comparar un tag de autenticación con `==` puede filtrar información
-al atacante, y cómo lo evita `hmac.compare_digest()`? Describí el ataque
-concreto que esto previene.*
-
 **Respuesta:**
+
+La comparación `==` entre dos cadenas o `bytes` está optimizada para terminar **en cuanto encuentra la primera diferencia**. Por eso su tiempo de ejecución depende de cuántos caracteres iniciales coinciden: un tag con los primeros 10 caracteres correctos tarda un poco más en rechazarse que uno con el primer carácter mal. Esa diferencia es de nanosegundos, pero es medible si se repite muchas veces y se promedia, y filtra información sobre el secreto. Es un **canal lateral de tiempo** (*timing side channel*).
+
+El ataque concreto es la **falsificación del tag byte a byte**. Supongamos un servidor que recibe `(mensaje, tag)` y responde aceptado o rechazado. El atacante quiere que se acepte `transferir 999999`, pero no conoce la clave. Prueba las 256 opciones del primer byte del tag, cada una miles de veces, y mide el tiempo de respuesta. La opción que tarda sistemáticamente más es la correcta, porque la comparación avanzó un byte más antes de fallar. Fija ese byte y repite con el segundo, y así sucesivamente. En lugar de 2²⁵⁶ intentos de fuerza bruta, necesita del orden de 32 × 256 = 8192 posiciones a adivinar (multiplicadas por las repeticiones para filtrar el ruido). Así obtiene un tag válido **sin conocer la clave**, y anula la propiedad de autenticación que daba HMAC.
+
+`hmac.compare_digest()` evita esto porque no corta en la primera diferencia: recorre **siempre todos los bytes** y acumula las diferencias, por ejemplo con OR de los XOR de cada par, para decidir solo al final. La documentación de Python lo describe como un enfoque «diseñado para prevenir el análisis de tiempos evitando el cortocircuito dependiente del contenido». El tiempo pasa a depender solo del largo, que es público (64 caracteres hex), y no del contenido. Por eso la documentación aclara que, como mucho, se podría filtrar el largo o el tipo de los operandos, pero no su valor.
 
 ---
 
 ### 5. SHA-256 para contraseñas: mala idea
 
-*SHA-256 es una función de hash criptográfica sólida. ¿Por qué, entonces, es
-una mala elección para almacenar contraseñas? ¿Qué se usa en su lugar y qué
-propiedad tienen esas funciones que SHA-256 no tiene?*
-
 **Respuesta:**
+
+El problema es que SHA-256 es **rápido**, y para contraseñas la velocidad juega a favor del atacante. El escenario relevante es el robo de la base de hashes, como el robo de datos de Target. Con la base en su poder, el atacante prueba candidatos sin conexión y sin límite de intentos: diccionarios, contraseñas filtradas, variaciones. Una GPU moderna calcula miles de millones de SHA-256 por segundo. Las contraseñas humanas tienen poca entropía, así que la mayoría cae en horas. La unidireccionalidad de SHA-256 no protege acá: el atacante no invierte la función, adivina la entrada y compara. Sin *salt* además se pueden usar tablas precalculadas, y dos usuarios con la misma contraseña tienen el mismo hash.
+
+En su lugar se usan **funciones de derivación de claves para contraseñas**, diseñadas para ser deliberadamente costosas: **Argon2id** (RFC 9106, ganadora de la Password Hashing Competition), **scrypt** y **bcrypt**. Tienen tres propiedades que SHA-256 no tiene:
+
+1. **Costo de trabajo configurable.** Un parámetro de iteraciones regula cuánto tarda cada cálculo. Para el usuario legítimo, 100 ms por login es imperceptible. Para el atacante, multiplica por millones el costo de cada intento. Y el parámetro se puede subir a medida que mejora el hardware.
+2. **Uso intensivo de memoria (*memory-hardness*)** en Argon2 y scrypt. Cada cálculo exige una cantidad grande de RAM (el RFC 9106 recomienda, por ejemplo, 64 MiB o 2 GiB). Eso neutraliza la ventaja de las GPU y los ASIC, que tienen miles de núcleos pero poca memoria por núcleo. Bcrypt no es *memory-hard* en ese sentido, pero también es lento por diseño.
+3. **Salt incorporado.** Cada hash lleva un valor aleatorio único, que invalida las tablas precalculadas y obliga a atacar cada cuenta por separado.
+
+El objetivo de diseño es opuesto: una función de hash criptográfica tiene que ser rápida para hashear gigabytes, y una de contraseñas tiene que ser lenta para resistir la adivinación masiva.
 
 ---
 
