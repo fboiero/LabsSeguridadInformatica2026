@@ -355,53 +355,50 @@ El objetivo de diseño es opuesto: una función de hash criptográfica tiene que
 
 ## Dificultades encontradas
 
-*Qué les costó, dónde se trabaron, qué decidieron y por qué. Esta sección se
-lee y suma. No es relleno: es donde se ve si entendieron el problema.*
+- **Determinar la integridad en el caso Target.** Fue la decisión más discutida de la Parte A. La tentación era marcar «Sí» porque el ataque fue grave, o «No» porque los datos de tarjetas no se modificaron. Terminamos distinguiendo entre la integridad de los *datos* del activo (no se violó) y la de los *sistemas* que los procesan (sí se violó, porque se instaló malware en los POS). Lo dejamos como «Parcial» y lo justificamos en A.3.
+- **Fuentes de la cronología.** Varias fechas del incidente circulan en notas periodísticas con diferencias entre sí. Por ejemplo, el primer acceso aparece como el 12 o el 15 de noviembre según la fuente. Usamos como columna vertebral el informe del Senado de EE. UU., que además cita sus propias fuentes, y donde había discrepancia mostramos las dos fechas.
+- **Versión de Python.** El equipo donde se desarrolló tiene Python 3.9.6, y `int.bit_count()` requiere 3.10. Usamos `bin(n).count("1")`, que es equivalente, y verificamos que el script funciona en ambas versiones.
+- **El `$` en la prueba de avalancha.** Con comillas dobles, `"transferencia: $1000"` se convierte en `transferencia: 000` porque el shell expande `$1`. Lo descubrimos al ver que el mensaje impreso no coincidía con el escrito, y lo resolvimos con comillas simples.
+- **Excluir el manifiesto del recorrido.** Comparar rutas como texto fallaba si una se pasaba con `./` y la otra no. Lo resolvimos normalizando ambas con `resolve()`.
 
 ---
 
 ## Distribución del trabajo
 
-*Quién hizo qué. Tiene que ser consistente con el historial de commits.*
+Por acuerdo del grupo con el docente, cada integrante se hizo cargo de la resolución principal de uno de los laboratorios. Este lab lo resolvió principalmente Valentina Chiapero, y el resto del grupo figura como co-autor en los commits (`Co-authored-by`).
 
 | Integrante | Aportes |
 |---|---|
-| | |
-| | |
-| | |
-| | |
-| | |
+| Valentina Chiapero | Implementación de los cuatro subcomandos, evidencia de ejecución, Parte A, preguntas de análisis y mini-research. |
+| Fede Peron | Fork del repositorio y configuración de colaboradores. *(completar otros aportes)* |
+| Laureano Gomez Redondo | Inicialización del directorio de entrega del lab 01. *(completar otros aportes)* |
+| Martín Cesano | Copia de la plantilla del informe. *(completar otros aportes)* |
+| *(completar)* (@martingaidoo) | *(completar)* |
 
 ---
 
 ## Declaración de uso de asistentes de IA
 
-> **Obligatoria.** No está prohibido usar asistentes de IA. Lo que se evalúa es
-> que entiendan lo que entregan. La omisión de esta declaración es **causal de
-> rechazo automático** de la entrega. Una declaración honesta no baja la nota.
-
-**¿El grupo usó asistentes de IA en este trabajo?**  Sí / No
-
-*Si la respuesta es No, firmen igual la sección y pasen al final.*
+**¿El grupo usó asistentes de IA en este trabajo?**  Sí
 
 | Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto |
 |---|---|---|---|
-| | | | |
-| | | | |
+| Claude (Anthropic), vía Claude Code | Generación de código para los cuatro TODO de `integridad.py` | `src/integridad.py` | Ejecutamos todas las pruebas del enunciado (incluida la del byte modificado), casos borde (directorio con subcarpetas, manifiesto dentro del directorio, digests de distinto largo, entradas idénticas, tag no ASCII) y validamos el HMAC contra el caso de prueba 2 del RFC 4231. |
+| Claude (Anthropic), vía Claude Code | Búsqueda de fuentes y redacción del borrador de la Parte A, las preguntas de análisis y el mini-research | `informe.md` (Partes A y B.3), `research.md` | Abrimos cada fuente citada y contrastamos con el texto original cada fecha, cifra y cita atribuida. Por ejemplo, corregimos la cantidad de estados del acuerdo de 2017 (46 + DC) al compararla con el comunicado oficial. El grupo revisó y validó el contenido. |
 
 **Declaración:**
 
-*El grupo declara que comprende el contenido íntegro de lo entregado y que
-puede explicar y defender oralmente cualquier parte del código y del análisis,
-independientemente de la asistencia recibida.*
+El grupo declara que comprende el contenido íntegro de lo entregado y que puede explicar y defender oralmente cualquier parte del código y del análisis, independientemente de la asistencia recibida.
 
 ---
 
 ## Fuentes consultadas (general)
 
-*Todas las fuentes del trabajo, en formato APA. Las de la Parte A pueden
-repetirse acá o referenciarse a la sección A.6.*
+Las fuentes de la Parte A están en la sección A.6. Las de la pregunta 3 figuran junto a la respuesta. Además:
 
-1.
-2.
-3.
+1. **[PRIMARIA]** Krawczyk, H., Bellare, M. y Canetti, R. (1997). *HMAC: Keyed-hashing for message authentication* (RFC 2104). IETF. https://www.rfc-editor.org/rfc/rfc2104
+2. **[PRIMARIA]** Turner, S. y Chen, L. (2011). *Updated security considerations for the MD5 message-digest and the HMAC-MD5 algorithms* (RFC 6151). IETF. https://www.rfc-editor.org/rfc/rfc6151
+3. **[ARBITRADA]** Stevens, M., Bursztein, E., Karpman, P., Albertini, A. y Markov, Y. (2017). The first collision for full SHA-1. En *Advances in Cryptology – CRYPTO 2017* (LNCS 10401, pp. 570–596). Springer. https://eprint.iacr.org/2017/190
+4. **[PRIMARIA]** Biryukov, A., Dinu, D., Khovratovich, D. y Josefsson, S. (2021). *Argon2 memory-hard function for password hashing and proof-of-work applications* (RFC 9106). IETF. https://www.rfc-editor.org/rfc/rfc9106
+5. **[PRIMARIA]** Python Software Foundation. (s. f.). *hmac — Keyed-hashing for message authentication*. Documentación de Python 3. https://docs.python.org/3/library/hmac.html
+6. **[PRIMARIA]** Nyström, M. (2005). *Identifiers and test vectors for HMAC-SHA-224, HMAC-SHA-256, HMAC-SHA-384, and HMAC-SHA-512* (RFC 4231). IETF. https://www.rfc-editor.org/rfc/rfc4231
