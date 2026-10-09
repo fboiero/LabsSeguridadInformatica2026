@@ -365,15 +365,15 @@ El objetivo de diseño es opuesto: una función de hash criptográfica tiene que
 
 ## Distribución del trabajo
 
-Por acuerdo del grupo con el docente, cada integrante se hizo cargo de la resolución principal de uno de los laboratorios. Este lab lo resolvió principalmente Valentina Chiapero, y el resto del grupo figura como co-autor en los commits (`Co-authored-by`).
+Todo el grupo trabajó en conjunto, repartiéndose las tareas. Con acuerdo del docente, la división se hizo por laboratorio: cada integrante coordinó la resolución de uno de los labs y el resto acompañó como co-autor (por eso los commits de este lab llevan `Co-authored-by` con todos los integrantes). En este laboratorio:
 
 | Integrante | Aportes |
 |---|---|
-| Valentina Chiapero | Implementación de los cuatro subcomandos, evidencia de ejecución, Parte A, preguntas de análisis y mini-research. |
-| Fede Peron | Fork del repositorio y configuración de colaboradores. *(completar otros aportes)* |
-| Laureano Gomez Redondo | Inicialización del directorio de entrega del lab 01. *(completar otros aportes)* |
-| Martín Cesano | Copia de la plantilla del informe. *(completar otros aportes)* |
-| *(completar)* (@martingaidoo) | *(completar)* |
+| Valentina Chiapero | Coordinación del lab 01: implementación de los subcomandos, evidencia de ejecución, Parte A, preguntas de análisis y mini-research. |
+| Fede Peron | Fork del repositorio, configuración de colaboradores y co-autoría del lab. |
+| Laureano Gomez Redondo | Inicialización del directorio de entrega del lab 01 y co-autoría del lab. |
+| Martín Cesano | Copia de la plantilla del informe y co-autoría del lab. |
+| *(completar)* (@martingaidoo) | Co-autoría del lab. |
 
 ---
 
