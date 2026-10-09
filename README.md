@@ -156,6 +156,7 @@ LabsSeguridadInformatica2026/
 - [Presentación (HTML)](docs/presentacion.html) — deck para presentar el práctico (abrila en el navegador).
 - [Presentación (PPT)](docs/CyberLab-UTN.pptx) — la misma, en PowerPoint editable, como respaldo.
 - [Deck Clase 05-06 (PPT)](docs/clase-05-06-cruce-ofensiva.pptx) — cruce a ofensiva (recon + enum). Reproducible: [`docs/presentaciones/clase-05-06/`](docs/presentaciones/clase-05-06/).
+- [Deck Estado + hoja de ruta (PPT)](docs/estado-y-hoja-de-ruta.pptx) — dónde estamos, qué falta y el calendario con fechas. Reproducible: [`docs/presentaciones/estado-hoja-de-ruta/`](docs/presentaciones/estado-hoja-de-ruta/).
 
 ---
 
