@@ -182,16 +182,31 @@ def generar_manifiesto(directorio: Path, salida: Path) -> dict[str, str]:
           inserción, así que esto alcanza.
         · Reusá `sha256_archivo()`. No reescribas el bucle de lectura.
     """
-    # ----------------------------------------------------------------------
-    # TODO 1: implementar el recorrido y la construcción del manifiesto.
-    #         Borrá el `raise` de abajo y escribí tu código.
-    # ----------------------------------------------------------------------
-    raise NotImplementedError(
-        "TODO 1 de 4 — generar_manifiesto() sin implementar.\n"
-        "  Qué falta: recorrer el directorio recursivamente y devolver el\n"
-        "  diccionario {ruta_relativa_posix: digest_sha256}, ordenado por clave.\n"
-        "  Leé el docstring de esta función: están los requisitos y las pistas."
-    )
+    manifiesto = {
+        ruta_relativa: sha256_archivo(directorio / ruta_relativa)
+        for ruta_relativa in _archivos_del_directorio(directorio, salida)
+    }
+    return dict(sorted(manifiesto.items()))
+
+
+def _archivos_del_directorio(directorio: Path, excluir: Path) -> set[str]:
+    """Devuelve las rutas relativas (POSIX) de los archivos regulares de
+    `directorio`, recorriendo recursivamente y excluyendo `excluir`.
+
+    Se comparte entre `generar` y `verificar` para que ambos vean exactamente
+    el mismo conjunto de archivos.
+    """
+    excluir_resuelto = excluir.resolve()
+    rutas = set()
+    for ruta in directorio.rglob("*"):
+        # Solo archivos regulares. Los enlaces simbólicos se ignoran: seguirlos
+        # permitiría que un enlace apunte fuera del directorio monitoreado.
+        if ruta.is_symlink() or not ruta.is_file():
+            continue
+        if ruta.resolve() == excluir_resuelto:
+            continue
+        rutas.add(ruta.relative_to(directorio).as_posix())
+    return rutas
 
 
 # ==========================================================================
