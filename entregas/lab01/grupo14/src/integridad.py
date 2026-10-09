@@ -331,17 +331,13 @@ def distancia_hamming_bits(digest_a: bytes, digest_b: bytes) -> int:
         · `int.bit_count()` cuenta los bits en 1 de un entero (Python 3.10+).
           Si estás en una versión anterior: `bin(n).count("1")`.
     """
-    # ----------------------------------------------------------------------
-    # TODO 3: implementar la distancia de Hamming EN BITS.
-    #         Borrá el `raise` de abajo y escribí tu código.
-    # ----------------------------------------------------------------------
-    raise NotImplementedError(
-        "TODO 3 de 4 — distancia_hamming_bits() sin implementar.\n"
-        "  Qué falta: contar en cuántos BITS (no caracteres hex) difieren\n"
-        "  los dos digests recibidos como bytes crudos.\n"
-        "  Leé el docstring de esta función: la advertencia sobre bits vs. hex\n"
-        "  es el punto del ejercicio."
-    )
+    if len(digest_a) != len(digest_b):
+        raise ValueError(
+            f"los digests tienen distinto largo ({len(digest_a)} y {len(digest_b)} bytes)"
+        )
+    # El XOR de cada par de bytes deja en 1 los bits que difieren; se cuentan.
+    # `bin(n).count("1")` equivale a `n.bit_count()` y funciona también en 3.9.
+    return sum(bin(byte_a ^ byte_b).count("1") for byte_a, byte_b in zip(digest_a, digest_b))
 
 
 # ==========================================================================
