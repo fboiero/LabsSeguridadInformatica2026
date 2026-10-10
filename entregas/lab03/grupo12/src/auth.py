@@ -14,14 +14,25 @@ def hash_password(password: str, salt: bytes = None, iters: int = 200_000) -> st
     """Devuelve una cadena 'pbkdf2_sha256$iters$salt_hex$dk_hex'.
     Pista: secrets.token_bytes para el salt; hashlib.pbkdf2_hmac('sha256', ...).
     ¿Por qué salt por usuario? ¿Por qué 200.000 iteraciones y no una?"""
-    # TODO
-    raise NotImplementedError("Completá hash_password()")
+    if salt is None:
+        salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iters)
+    return f"pbkdf2_sha256${iters}${salt.hex()}${dk.hex()}"
 
 def verify_password(password: str, almacenado: str) -> bool:
     """Verifica una contraseña contra el registro de hash_password().
     DEBE comparar en tiempo constante (hmac.compare_digest)."""
-    # TODO
-    raise NotImplementedError("Completá verify_password()")
+    try:
+        partes = almacenado.split("$")
+        if len(partes) != 4 or partes[0] != "pbkdf2_sha256":
+            return False
+        iters = int(partes[1])
+        salt = bytes.fromhex(partes[2])
+        dk_esperado = bytes.fromhex(partes[3])
+        dk_calculado = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iters)
+        return hmac.compare_digest(dk_calculado, dk_esperado)
+    except Exception:
+        return False
 
 # --- B.2: segundo factor (TOTP / RFC 6238) ---
 def hotp(secret: bytes, contador: int, digitos: int = 6, algo: str = "sha1") -> str:

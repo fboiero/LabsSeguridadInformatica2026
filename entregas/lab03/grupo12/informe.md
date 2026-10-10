@@ -5,9 +5,9 @@
 ## 0. Declaración de uso de IA
 
 *Herramienta:* Gemini (Antigravity).
-*Uso:* Investigación de fuentes sobre el incidente de LinkedIn 2012 y redacción técnica de la Parte A; redacción de la teoría de la Parte B.1 (salt por usuario e iteraciones); redacción técnica y conceptual de la Parte B.2 (mecanismo TOTP bajo RFC 6238 y análisis de vectores que no mitiga).
-*Partes afectadas:* Sección 1 (Parte A), Sección 2 (Parte B.1), Sección 3 (Parte B.2, @ColqueAlvaro) e implementación del método totp() en `src/auth.py`.
-*Verificación:* Se validó que los detalles técnicos del incidente correspondan a la fuga de 2012; que los conceptos de salt e iteraciones en B.1 sean precisos; y que el análisis de TOTP en B.2 describa fielmente el vector del RFC 6238, el secreto compartido sincronizado en ventanas temporales de 30s y los vectores de bypass reales (AiTM/phishing en tiempo real, robo de sesiones y falta de origin-binding).
+*Uso:* Asistencia en la investigación de fuentes sobre el incidente de LinkedIn 2012 y redacción técnica de la Parte A; fundamentación teórica de la Parte B.1 (salt por usuario e iteraciones); fundamentación de la Parte B.2 (mecanismo TOTP bajo RFC 6238 y análisis de vectores que no mitiga); implementación de `hash_password()`, `verify_password()` y `totp()` en `src/auth.py`; y redacción técnica del mini-research sobre hashes lentos (PBKDF2 vs bcrypt vs scrypt vs Argon2) en `research.md`.
+*Partes afectadas:* Sección 1 (Parte A), Sección 2 (Parte B.1), Sección 3 (Parte B.2), Sección 4 (Bitácora), archivo `src/auth.py` y archivo `research.md`.
+*Verificación:* Se validó experimentalmente la ejecución de `src/auth.py` (comandos `hash`, `verify` en tiempo constante y `totp`), se comprobó el vector de prueba oficial del RFC 6238 (resultado `287082`), se ejecutó la suite completa de autoevaluación `verificar.py` obteniendo 3/3 pruebas superadas (3 OK, 0 a revisar, 0 sin implementar), y se verificaron las citas bibliográficas y rigor técnico del análisis y mini-research.
 
 ## 1. Parte A — Análisis de la brecha: LinkedIn 2012
 
@@ -84,9 +84,29 @@ A pesar de su eficacia contra credenciales filtradas y ataques offline, el TOTP 
 ## 4. Bitácora de comandos
 
 ```bash
-# Verificación del cálculo TOTP contra el vector oficial de RFC 6238 (debe retornar 287082)
-python3 src/auth.py totp --secret 12345678901234567890 --t 59
+# 1. Almacenamiento seguro de contraseñas con PBKDF2 y salt aleatorio
+$ python3 src/auth.py hash --password 'Phantom-2026!'
+pbkdf2_sha256$200000$b059044cab26832bdb2434d1ac7c5283$22b70030d98e90f1937d5827247f3cbf45b248f762ce41032f83dc956e182069
 
-# Ejecución del verificador de autoevaluación
-python3 src/verificar.py
+# 2. Verificación de contraseña válida en tiempo constante
+$ python3 src/auth.py verify --password 'Phantom-2026!' --registro 'pbkdf2_sha256$200000$b059044cab26832bdb2434d1ac7c5283$22b70030d98e90f1937d5827247f3cbf45b248f762ce41032f83dc956e182069'
+OK
+
+# 3. Rechazo de contraseña incorrecta
+$ python3 src/auth.py verify --password 'ContraseñaIncorrecta' --registro 'pbkdf2_sha256$200000$b059044cab26832bdb2434d1ac7c5283$22b70030d98e90f1937d5827247f3cbf45b248f762ce41032f83dc956e182069'
+FALLO
+
+# 4. Verificación del cálculo TOTP contra el vector oficial de RFC 6238 (retorna 287082)
+$ python3 src/auth.py totp --secret 12345678901234567890 --t 59
+287082
+
+# 5. Ejecución del verificador de autoevaluación oficial
+$ python3 src/verificar.py
+
+== Lab 03 · Autenticación ==
+  ✓ hash_password / verify_password
+  ✓ salt por usuario (hashes distintos)
+  ✓ totp coincide con el vector del RFC 6238
+
+3 OK · 0 a revisar · 0 sin implementar
 ```
