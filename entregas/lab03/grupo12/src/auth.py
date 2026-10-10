@@ -34,8 +34,12 @@ def hotp(secret: bytes, contador: int, digitos: int = 6, algo: str = "sha1") -> 
 def totp(secret: bytes, t: int = None, paso: int = 30, digitos: int = 6) -> str:
     """TOTP (RFC 6238): HOTP usando como contador el tiempo dividido en pasos.
     Pista: contador = t // paso. Si t es None, usá time.time()."""
-    # TODO
-    raise NotImplementedError("Completá totp()")
+    if isinstance(secret, str):
+        secret = secret.encode("utf-8")
+    if t is None:
+        t = int(time.time())
+    contador = int(t) // paso
+    return hotp(secret, contador, digitos)
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Autenticación (Lab 03).")

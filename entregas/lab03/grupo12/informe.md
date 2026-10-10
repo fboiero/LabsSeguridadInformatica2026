@@ -5,9 +5,9 @@
 ## 0. Declaración de uso de IA
 
 *Herramienta:* Gemini (Antigravity).
-*Uso:* Investigación de fuentes sobre el incidente de LinkedIn 2012 y redacción técnica de la Parte A; redacción de la teoría de la Parte B.1 (salt por usuario e iteraciones).
-*Partes afectadas:* Sección 1 (Parte A), la configuración del grupo (commit de @matiasmariatticasc) y la Sección 2 (Parte B.1, desarrollo teórico). El código (`src/`) y las secciones B.2 y Bitácora quedan intactas para el equipo.
-*Verificación:* Se validó que los detalles técnicos del incidente correspondan históricamente a la fuga de 2012 (6.5 millones de cuentas) y que la falla explotada haya sido el uso exclusivo de SHA-1 sin salt; y que los conceptos de la Parte B.1 (unicidad del salt, inutilización de las rainbow tables y factor de costo de PBKDF2/bcrypt/scrypt/Argon2) respondan a lo pedido por el enunciado.
+*Uso:* Investigación de fuentes sobre el incidente de LinkedIn 2012 y redacción técnica de la Parte A; redacción de la teoría de la Parte B.1 (salt por usuario e iteraciones); redacción técnica y conceptual de la Parte B.2 (mecanismo TOTP bajo RFC 6238 y análisis de vectores que no mitiga).
+*Partes afectadas:* Sección 1 (Parte A), Sección 2 (Parte B.1), Sección 3 (Parte B.2, @ColqueAlvaro) e implementación del método totp() en `src/auth.py`.
+*Verificación:* Se validó que los detalles técnicos del incidente correspondan a la fuga de 2012; que los conceptos de salt e iteraciones en B.1 sean precisos; y que el análisis de TOTP en B.2 describa fielmente el vector del RFC 6238, el secreto compartido sincronizado en ventanas temporales de 30s y los vectores de bypass reales (AiTM/phishing en tiempo real, robo de sesiones y falta de origin-binding).
 
 ## 1. Parte A — Análisis de la brecha: LinkedIn 2012
 
@@ -67,4 +67,26 @@ el hardware actual y se **sube con el tiempo** a medida que el hardware se abara
 
 ## 3. Parte B.2 — TOTP (por qué frena el robo de contraseña; qué NO protege)
 
+**¿Por qué el TOTP frena al atacante que robó la contraseña?**
+La contraseña tradicional es un factor de autenticación basado exclusivamente en **conocimiento** (*"algo que sabés"*). Si un atacante compromete la base de datos de usuarios (como sucedió en la brecha de LinkedIn analizada en la Parte A), realiza ataques de *credential stuffing*, instala un keylogger o intercepta las credenciales estáticas en tránsito, obtiene acceso irrestricto inmediato a cualquier servicio protegido por un único factor.
+
+El mecanismo **TOTP** (*Time-based One-Time Password*, especificado en la RFC 6238) neutraliza este escenario al incorporar un segundo factor independiente basado en **posesión** (*"algo que tenés"*):
+1. **Secreto compartido y derivación temporal:** El servidor y el dispositivo del usuario (por ejemplo, Google Authenticator o una llave de hardware) comparten una clave simétrica secreta (`secret`) acordada durante el enrolamiento. Para verificar un intento de inicio de sesión, ambas partes calculan de manera sincronizada un HMAC-SHA1 sobre un contador de pasos temporales $C = \lfloor t / T_0 \rfloor$, donde $t$ es el tiempo UNIX actual y $T_0$ es el tamaño de la ventana (habitualmente 30 segundos). El resultado se trunca dinámicamente mediante HOTP (RFC 4226) para derivar un código de 6 dígitos numéricos.
+2. **Ventana de validez efímera y no reutilización:** Cada código generado es estrictamente válido durante su ventana de 30 segundos (con una tolerancia mínima admisible para absorber derivas de reloj) y queda invalidado una vez consumido. Por lo tanto, aunque el atacante posea la contraseña estática legítima en texto plano, **no puede autenticarse** a menos que posea en tiempo real el dispositivo físico del usuario que aloja el secreto simétrico y produce el código correspondiente a ese instante.
+
+**¿Qué NO protege el TOTP? (Límites estructurales y vectores de evasión)**
+A pesar de su eficacia contra credenciales filtradas y ataques offline, el TOTP no es infalible y presenta vectores de ataque bien documentados que no logra mitigar:
+- **Phishing en tiempo real / Adversary-in-the-Middle (AiTM):** Herramientas automatizadas de proxy inverso (tales como *Evilginx* o *Muraena*) interceptan simultáneamente el usuario, la contraseña y el código TOTP mientras la víctima los ingresa en un sitio fraudulento clonado. El proxy retransmite el código TOTP al servidor legítimo antes de que expiren los 30 segundos y captura la cookie/token de sesión autenticada resultante. TOTP carece de enlace criptográfico al origen (*origin-binding*), una limitación estructural que sí resuelven estándares asimétricos modernos como **FIDO2 / WebAuthn / Passkeys**.
+- **Robo de cookies y tokens de sesión (Session Hijacking):** TOTP protege el proceso de apretón de manos en el login, pero no las credenciales de sesión activas. Si un atacante compromete el navegador o sistema operativo mediante infostealers (malware tipo RedLine/Lumma), secuestra la cookie de sesión o explota vulnerabilidades como XSS, puede impersonar al usuario sin tener que volver a ingresar contraseñas ni códigos 2FA.
+- **Compromiso del dispositivo del usuario o del secreto semilla:** Si el dispositivo terminal es infectado con malware capaz de leer el almacén de claves, o si el código QR inicial con el secreto simétrico fue capturado o respaldado sin cifrar en la nube, el atacante puede instanciar el generador TOTP en su propio equipo.
+- **Ingeniería social y fatiga de 2FA en canales de recuperación:** Un atacante puede sortear TOTP engañando al soporte técnico para que desactive el segundo factor de la cuenta, o explotando canales de contingencia más débiles (como la recuperación vía SMS sujeta a *SIM swapping*).
+
 ## 4. Bitácora de comandos
+
+```bash
+# Verificación del cálculo TOTP contra el vector oficial de RFC 6238 (debe retornar 287082)
+python3 src/auth.py totp --secret 12345678901234567890 --t 59
+
+# Ejecución del verificador de autoevaluación
+python3 src/verificar.py
+```
