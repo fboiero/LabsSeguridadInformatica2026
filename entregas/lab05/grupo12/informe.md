@@ -14,8 +14,8 @@
 En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`:
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
-- **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados y formato de evidencias.
-- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas) y Sección 2 (Mapa de superficie de ataque y evidencias técnicas).
+- **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados, formato de evidencias y redacción de las respuestas de análisis de la Sección 3 (P1–P5).
+- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas), Sección 2 (Mapa de superficie de ataque y evidencias técnicas) y Sección 3 (Preguntas de análisis P1–P5).
 - **Verificación humana:** Se contrastaron los servicios reales expuestos por el contenedor `phantomcorp` (puertos 21, 80, 8080 y 31337), validando las banderas, versiones extraídas en los banners y los registros oficiales de CVE (como CVE-2015-3306 de ProFTPD 1.3.5 en la base NVD del NIST).
 
 ---
@@ -127,22 +127,72 @@ FLAG{high_port_secret_service}
 
 ---
 
-## 3. Preguntas de análisis *(Pendiente — a completar por el equipo)*
+## 3. Preguntas de análisis
 
 **P1 — El puerto que el escaneo default se perdió.**
-*(A completar por el equipo)*
+
+El puerto perdido fue el **31337**. El escaneo por defecto de `nmap` solo barre los
+**1000 puertos "well-known"** más frecuentes; el 31337 (el puerto "*elite*") queda
+fuera de ese conjunto, por eso el escaneo común ni siquiera lo reporta como cerrado.
+Con `-p-` (los 65535 puertos) sí aparece: `31337/tcp open Elite?`, y al conectarnos con
+`ncat -w2 phantomcorp 31337` devuelve el banner `PhantomCorp maintenance shell v0.1`
+(más la flag). **Regla operativa:** el barrido por defecto da una foto parcial y sesgada
+del objetivo; hay que correr siempre `-p-` (o al menos los rangos altos), porque los
+servicios se esconden a propósito en puertos altos justamente para no figurar en el
+top-1000 y pasar desapercibidos.
 
 **P2 — El servicio dev en producción.**
-*(A completar por el equipo)*
+
+La evidencia concreta está en `curl -s http://phantomcorp:8080/status`, que devuelve
+`{"service":"phantom-dev-api","version":"0.9.3-DEV","debug":true}`. Dos huellas de que
+no estaba pensado para producción: el sufijo **`-DEV`** en la versión y la directiva
+**`"debug": true`** (nmap además lo identifica como `Werkzeug httpd 2.0.1`). Es un
+problema **aunque no tenga un CVE de versión conocido** porque la falla es de
+**configuración**, no de software desactualizado: con `debug:true` en Werkzeug, un
+error no controlado puede disparar la **consola interactiva** del depurador (RCE
+sorteándola con el PIN), y de yapa expone **metadatos internos** del backend por
+`/status`. En síntesis, suma superficie de ataque con un servicio que nunca debió estar
+expuesto a internet.
 
 **P3 — La ironía de `robots.txt`.**
-*(A completar por el equipo)*
+
+`robots.txt` se creó para **SEO** (Robots Exclusion Standard): les pide a los
+*crawlers* de los buscadores qué rutas **no** indexar. La ironía es que es un archivo
+**público**, legible por cualquiera —atacante incluido— y enumera justamente lo
+"sensible": acá declara `Disallow: /admin` y `Disallow: /panel-interno-9x2f`, más un
+comentario de infra (`/panel-interno-9x2f sigue accesible desde afuera. Migrar a VPN.`)
+que de paso filtró que la ruta seguía abierta. Es decir: en lugar de ocultar, **le
+regala al atacante el mapa de qué mirar** — una "seguridad por oscuridad" que en la
+práctica funciona como publicidad de lo oculto. Nosotros lo aprovechamos:
+`curl -s http://phantomcorp/panel-interno-9x2f` → `FLAG{recon_hidden_path}`.
 
 **P4 — Pasivo vs. activo.**
-*(A completar por el equipo)*
+
+**Pasivo:** no toca el objetivo ni deja rastro en sus logs; se nutre de fuentes de
+terceros. En este lab, buscar el **CVE-2015-3306** de ProFTPD 1.3.5 en la base **NVD**
+del NIST fue recon pasivo. **Activo:** interactúa directamente con el target y **queda
+registrado** en él. Todo lo demás fue activo: el `nmap -Pn -sV -p-`, el `ncat` al
+puerto 21, el `curl -sI` al 80, el `curl .../robots.txt` y el `curl ...:8080/status`.
+Lo que **habría quedado en los logs de PhantomCorp**: el barrido de puertos y esas
+peticiones HTTP (los GET a `/robots.txt`, `/panel-interno-9x2f` y `/status`), junto con
+las conexiones a los puertos 21 y 31337 — todas con nuestra IP de origen. La diferencia
+práctica: lo pasivo es silencioso e inadvertido; lo activo es ruidoso y detectable por
+el defensor.
 
 **P5 — Ahora sos el defensor.**
-*(A completar por el equipo)*
+
+Dos medidas concretas, una por hallazgo, para reducir la superficie de ataque:
+
+- **Puerto 31337** (shell de mantenimiento **sin autenticación**, CVSS 9.8, CWE-306):
+  sacarla del perímetro público. No bindearla a `0.0.0.0`; exponerla solo por una
+  interfaz de gestión detrás de un **bastión/VPN** y exigir **autenticación fuerte +
+  MFA**. Así el puerto alto deja de ser alcanzable desde internet y, aun dentro de la
+  red, requiere credenciales.
+- **Puerto 8080** (servicio dev con `debug:true`, CWE-200): quitar **`"debug": true`** y
+  **no publicar el entorno de desarrollo** — bindearlo a `localhost` o a la red interna,
+  o ubicarlo tras un **reverse proxy con ACL** que restrinja por IP de origen. Si debiera
+  coexistir con producción, separar dev y prod en redes distintas y eliminar el endpoint
+  `/status` en el expuesto.
 
 ---
 
