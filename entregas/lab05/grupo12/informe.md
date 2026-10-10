@@ -15,7 +15,7 @@ En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
 - **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados, formato de evidencias y redacción de las respuestas de análisis de la Sección 3 (**P1–P4**); la pregunta **P5** fue redactada por @ColqueAlvaro.
-- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas), Sección 2 (Mapa de superficie de ataque y evidencias técnicas) y Sección 3 (Preguntas de análisis **P1–P4**; **P5** por @ColqueAlvaro).
+- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas), Sección 2 (Mapa de superficie de ataque y evidencias técnicas) y Sección 3 (Preguntas de análisis **P1–P4**; **P5** por @ColqueAlvaro). La Sección 4 (Bitácora de comandos) fue realizada por @matiasmariatticasc.
 - **Verificación humana:** Se contrastaron los servicios reales expuestos por el contenedor `phantomcorp` (puertos 21, 80, 8080 y 31337), validando las banderas, versiones extraídas en los banners y los registros oficiales de CVE (como CVE-2015-3306 de ProFTPD 1.3.5 en la base NVD del NIST). En P5 se verificaron las medidas de remediación y reducción de superficie aplicando el principio de mínimo privilegio y defensa en profundidad.
 
 ---
@@ -199,8 +199,32 @@ Como responsable de defensa de PhantomCorp, analizando el mapa de superficie de 
 
 ---
 
-## 4. Bitácora de comandos *(Pendiente — a completar por el equipo)*
+## 4. Bitácora de comandos
 
 ```bash
-# A completar por el equipo
+# Inicializar y entrar al contenedor atacante
+make setup
+make shell
+
+# Descubrimiento de servicios y puertos
+nmap -Pn -sV -p- phantomcorp
+
+# Recolección de flags
+ncat -w2 phantomcorp 31337 </dev/null
+./ctf submit 05 R1 'FLAG{high_port_secret_service}'
+
+ncat phantomcorp 21
+./ctf submit 05 R2 'FLAG{banner_grab_proftpd_135}'
+
+curl -sI http://phantomcorp/
+./ctf submit 05 R3 'FLAG{http_headers_leak_info}'
+
+curl -s http://phantomcorp/robots.txt
+curl -s http://phantomcorp/panel-interno-9x2f
+./ctf submit 05 R4 'FLAG{recon_hidden_path}'
+
+curl -s http://phantomcorp:8080/status
+./ctf submit 05 R5 'FLAG{dev_service_exposed}'
+
+./ctf status 05
 ```
