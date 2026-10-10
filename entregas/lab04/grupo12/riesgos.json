@@ -1,0 +1,27 @@
+[
+  {
+    "nombre": "Brecha de datos de tarjetas por servidor web público expuesto",
+    "sle": 200000,
+    "aro": 0.5
+  },
+  {
+    "nombre": "Ransomware que cifra el servidor y el backup local en oficina",
+    "sle": 150000,
+    "aro": 0.3
+  },
+  {
+    "nombre": "Robo de cuentas por acceso remoto sin MFA",
+    "sle": 80000,
+    "aro": 0.6
+  },
+  {
+    "nombre": "Credential stuffing por contraseñas débiles o reutilizadas",
+    "sle": 60000,
+    "aro": 0.8
+  },
+  {
+    "nombre": "Filtración de DNI de clientes (Ley 25.326)",
+    "sle": 40000,
+    "aro": 0.4
+  }
+]
