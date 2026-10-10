@@ -14,9 +14,9 @@
 En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`:
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
-- **Alcance de la asistencia:** Asistencia en la estructuración, fundamentación metodológica y redacción técnica de los puntos **A.1** (elección y justificación del marco) y **A.2** (mapeo formal de debilidades a controles oficiales de ISO/IEC 27001:2022 Anexo A); y en la **Parte B** —implementación de `src/riesgo.py` (`ale`, `roi_control`, `priorizar`), armado de `riesgos.json` y redacción del análisis cuantitativo de **B.1** (ranking por ALE) y **B.2** (ROI del control para el riesgo #1).
-- **Partes originadas o modificadas:** Secciones A.1 y A.2 de la Parte A; y de la Parte B, el código `src/riesgo.py`, el archivo `riesgos.json` y las secciones **B.1** y **B.2**. La sección **B.3** queda pendiente para el equipo.
-- **Verificación humana:** Se contrastó la taxonomía y codificación de controles contra la versión oficial de la norma **ISO/IEC 27001:2022 (Anexo A)**, verificando que los identificadores (`A.5.17`, `A.5.24`, `A.8.5`, `A.8.13`, `A.8.26`, etc.) correspondan a la norma real y respondan de forma directa a cada debilidad del escenario de PhantomCorp. Además, los cálculos de la Parte B se validaron ejecutando `python3 src/verificar.py` (3/3 en verde) y `python3 src/riesgo.py` (`ale`, `roi`, `priorizar`), confirmando los valores del ranking (ALE #1 = 100000) y del ROI del control (1.800).
+- **Alcance de la asistencia:** Asistencia en la estructuración, fundamentación metodológica y redacción técnica de los puntos **A.1** (elección y justificación del marco), **A.2** (mapeo formal de debilidades a controles oficiales de ISO/IEC 27001:2022 Anexo A); y en la **Parte B** —implementación de `src/riesgo.py` (`ale`, `roi_control`, `priorizar`), armado de `riesgos.json` y redacción del análisis cuantitativo de **B.1** (ranking por ALE), **B.2** (ROI del control para el riesgo #1) y **B.3** (análisis de respuesta al riesgo: Transferir y Aceptar vs mitigar según costo y ALE).
+- **Partes originadas o modificadas:** Secciones A.1 y A.2 de la Parte A; y de la Parte B, el código `src/riesgo.py`, el archivo `riesgos.json` y las secciones **B.1**, **B.2** y **B.3** (@ColqueAlvaro).
+- **Verificación humana:** Se contrastó la taxonomía y codificación de controles contra la versión oficial de la norma **ISO/IEC 27001:2022 (Anexo A)**, verificando que los identificadores (`A.5.17`, `A.5.24`, `A.8.5`, `A.8.13`, `A.8.26`, etc.) correspondan a la norma real y respondan de forma directa a cada debilidad del escenario de PhantomCorp. Además, los cálculos de la Parte B se validaron ejecutando `python3 src/verificar.py` (3/3 en verde) y `python3 src/riesgo.py` (`ale`, `roi`, `priorizar`), confirmando los valores del ranking (ALE #1 = 100000) y del ROI del control (1.800). En B.3 se fundamentó cuantitativa y cualitativamente la decisión de Transferir mediante ciberseguros y Aceptar cuando el costo del control supera la pérdida anualizada esperada (ROI negativo).
 
 ---
 
@@ -133,9 +133,18 @@ Riesgo **#1** del ranking: *brecha de datos de tarjetas por servidor web expuest
   el ROI se volvería negativo y habría que reconsiderar el alcance del control.
 
 ### B.3 — Riesgo con respuesta Aceptar o Transferir
-- *Riesgo seleccionado:* `[COMPLETAR]`
-- *Respuesta elegida:* `[COMPLETAR: Aceptar o Transferir]`
-- *Justificación (costo de mitigación vs exposición residual):* `[COMPLETAR]`
+
+- **Riesgo seleccionado:** *Riesgo #4 — Ransomware que cifra el servidor y el backup local en oficina* (SLE = $150.000, ARO = 0.30, ALE = $45.000).
+- **Respuesta elegida:** **Transferir** (complementada con la **aceptación** del riesgo residual).
+- **Justificación técnica y cuantitativa:**
+  1. **Límites de la mitigación técnica y costo desproporcionado:**
+     Implementar controles técnicos básicos (como backups inmutables en la nube según el control A.8.13) mitiga parte de la amenaza, pero **no elimina el riesgo catastrófico residual** (*tail risk*): la interrupción prolongada del negocio, la destrucción de equipamiento físico en la oficina por siniestro o la extorsión avanzada. Construir un centro de procesamiento de datos alternativo con redundancia geográfica total en tiempo real (*hot site* tolerante a desastres físicos y ransomware) exigiría una inversión anual superior a $60.000. Al contrastar ese costo contra el ALE de $45.000:
+     $$\text{ROI} = \frac{(45.000 - 10.000) - 60.000}{60.000} = -0.416 \quad (-41.6\%)$$
+     El ROI es negativo: gastar $60.000 anuales para contener una pérdida esperada de $45.000 destruye valor económico para PhantomCorp.
+  2. **Por qué la transferencia es la decisión correcta:**
+     En lugar de incurrir en costos de mitigación desmedidos, la organización decide **transferir el impacto financiero residual** contratando una **póliza de ciberseguro (*Cyber Risk Insurance*)** especializada con una prima anual de **$7.500/año**. La póliza transfiere contractualmente a la aseguradora la cobertura de hasta $200.000 ante eventos de ransomware, cubriendo costos de peritaje forense externo, remediación de infraestructura, honorarios legales, multas y el lucro cesante por interrupción operativa (*Business Interruption*).
+  3. **Cuándo corresponde Aceptar (análisis comparativo):**
+     Para el **Riesgo #5 (Filtración de DNI de clientes, ALE inicial = $16.000)**, una vez aplicadas las políticas de autenticación y cifrado en base de datos, el ALE residual desciende a unos $3.000/año. Adquirir una suite corporativa de *Data Loss Prevention* (DLP) con monitoreo 24/7 que cuesta $15.000 anuales tendría un ROI negativo de $-0.83$. En esa instancia, la decisión técnicamente fundada es **aceptar formalmente el riesgo residual**: el costo del control supera con creces la exposición monetaria esperada, por lo que la dirección aprueba asumir el impacto eventual en lugar de sobredimensionar el presupuesto de seguridad.
 
 ---
 
