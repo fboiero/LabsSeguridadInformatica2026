@@ -14,9 +14,9 @@
 En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`:
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
-- **Alcance de la asistencia:** Asistencia en la estructuración, fundamentación metodológica y redacción técnica de los puntos **A.1** (elección y justificación del marco), **A.2** (mapeo formal de debilidades a controles oficiales de ISO/IEC 27001:2022 Anexo A) y **A.3** (decisiones de mitigación/transferencia); y en la **Parte B** —implementación de `src/riesgo.py` (`ale`, `roi_control`, `priorizar`), armado de `riesgos.json` y redacción del análisis cuantitativo de **B.1** (ranking por ALE), **B.2** (ROI del control para el riesgo #1) y **B.3** (análisis de respuesta al riesgo: Transferir y Aceptar vs mitigar según costo y ALE).
-- **Partes originadas o modificadas:** Secciones A.1 y A.2 de la Parte A (@gerbaudo19); Sección A.3 de la Parte A (@matiasmariatticasc); y de la Parte B, el código `src/riesgo.py`, el archivo `riesgos.json` y las secciones **B.1**, **B.2** y **B.3** (@ColqueAlvaro).
-- **Verificación humana:** Se contrastó la taxonomía y codificación de controles contra la versión oficial de la norma **ISO/IEC 27001:2022 (Anexo A)**, verificando que los identificadores (`A.5.17`, `A.5.24`, `A.8.5`, `A.8.13`, `A.8.26`, etc.) correspondan a la norma real y respondan de forma directa a cada debilidad del escenario de PhantomCorp. Además, los cálculos de la Parte B se validaron ejecutando `python3 src/verificar.py` (3/3 en verde) y `python3 src/riesgo.py` (`ale`, `roi`, `priorizar`), confirmando los valores del ranking (ALE #1 = 100000) y del ROI del control (1.800). En B.3 se fundamentó cuantitativa y cualitativamente la decisión de Transferir mediante ciberseguros y Aceptar cuando el costo del control supera la pérdida anualizada esperada (ROI negativo).
+- **Alcance de la asistencia:** Asistencia en la estructuración, fundamentación metodológica y redacción técnica de los puntos **A.1** (elección y justificación del marco), **A.2** (mapeo formal de debilidades a controles oficiales de ISO/IEC 27001:2022 Anexo A) y **A.3** (decisiones de mitigación/transferencia); en la **Parte B** —implementación de `src/riesgo.py` (`ale`, `roi_control`, `priorizar`), armado de `riesgos.json` y redacción del análisis cuantitativo de **B.1** (ranking por ALE), **B.2** (ROI del control para el riesgo #1) y **B.3** (análisis de respuesta al riesgo: Transferir y Aceptar vs mitigar según costo y ALE); y en la redacción técnica del mini-research sobre **ISO/IEC 27001: qué es un SGSI y el ciclo PDCA** en `research.md`.
+- **Partes originadas o modificadas:** Secciones A.1 y A.2 de la Parte A (@gerbaudo19); Sección A.3 de la Parte A (@matiasmariatticasc); de la Parte B, el código `src/riesgo.py`, el archivo `riesgos.json` y las secciones **B.1**, **B.2** y **B.3** (@ColqueAlvaro); y archivo `research.md`.
+- **Verificación humana:** Se contrastó la taxonomía y codificación de controles contra la versión oficial de la norma **ISO/IEC 27001:2022 (Anexo A)**, verificando que los identificadores (`A.5.17`, `A.5.24`, `A.8.5`, `A.8.13`, `A.8.26`, etc.) correspondan a la norma real y respondan de forma directa a cada debilidad del escenario de PhantomCorp. Además, los cálculos de la Parte B se validaron ejecutando `python3 src/verificar.py` (3/3 en verde) y `python3 src/riesgo.py` (`ale`, `roi`, `priorizar`), confirmando los valores del ranking (ALE #1 = 100000) y del ROI del control (1.800). En B.3 se fundamentó cuantitativa y cualitativamente la decisión de Transferir mediante ciberseguros y Aceptar cuando el costo del control supera la pérdida anualizada esperada (ROI negativo). En el mini-research se corroboraron las citas de ISO/IEC 27001:2022, ISO/IEC 27002:2022 y CISSP CBK.
 
 ---
 
@@ -53,9 +53,9 @@ Analizando el escenario de PhantomCorp, se identifican y mapean **cinco debilida
 
 ---
 
-### A.3 — Respuestas al riesgo para cada debilidad *(Pendiente — a completar por el equipo)*
+### A.3 — Respuestas al riesgo para cada debilidad
 
-*Para cada una de las 5 debilidades mapeadas arriba, indicar la respuesta al riesgo elegida (**mitigar**, **transferir**, **aceptar**, o **evitar**) junto con su correspondiente **justificación técnica y económica**.*
+*Para cada una de las 5 debilidades mapeadas arriba, se detalla la respuesta al riesgo elegida (**mitigar**, **transferir**, **aceptar**, o **evitar**) junto con su correspondiente **justificación técnica y económica**.*
 
 1. **Debilidad 1 (Acceso remoto / MFA):**
    - *Respuesta al riesgo:* **Mitigar**.
