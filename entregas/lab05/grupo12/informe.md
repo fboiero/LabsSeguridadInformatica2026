@@ -14,9 +14,9 @@
 En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`:
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
-- **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados y formato de evidencias.
-- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas) y Sección 2 (Mapa de superficie de ataque y evidencias técnicas).
-- **Verificación humana:** Se contrastaron los servicios reales expuestos por el contenedor `phantomcorp` (puertos 21, 80, 8080 y 31337), validando las banderas, versiones extraídas en los banners y los registros oficiales de CVE (como CVE-2015-3306 de ProFTPD 1.3.5 en la base NVD del NIST).
+- **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados y formato de evidencias; y en la Sección 3, redacción técnica y estratégica de la respuesta defensiva en **P5** (reducción de superficie de ataque en servicios críticos).
+- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas), Sección 2 (Mapa de superficie de ataque y evidencias técnicas) y Sección 3: pregunta **P5** (@ColqueAlvaro).
+- **Verificación humana:** Se contrastaron los servicios reales expuestos por el contenedor `phantomcorp` (puertos 21, 80, 8080 y 31337), validando las banderas, versiones extraídas en los banners y los registros oficiales de CVE (como CVE-2015-3306 de ProFTPD 1.3.5 en la base NVD del NIST). En P5 se verificaron las medidas de remediación y reducción de superficie aplicando el principio de mínimo privilegio y defensa en profundidad.
 
 ---
 
@@ -142,7 +142,22 @@ FLAG{high_port_secret_service}
 *(A completar por el equipo)*
 
 **P5 — Ahora sos el defensor.**
-*(A completar por el equipo)*
+
+Como responsable de defensa de PhantomCorp, analizando el mapa de superficie de ataque obtenido durante el reconocimiento, selecciono dos de los hallazgos más críticos para implementar medidas inmediatas que eliminen y reduzcan drásticamente la exposición perimetral:
+
+1. **Hallazgo 1: Shell de mantenimiento en puerto alto (TCP 31337) sin autenticación**
+   - **Diagnóstico del riesgo:** Se trata de una interfaz administrativa abierta que devuelve control directo al conectarse (`PhantomCorp maintenance shell v0.1`), alojada en un puerto no estándar confiando en la falacia de "seguridad por oscuridad". Al no requerir credenciales ni cifrado, cualquier atacante que realice un barrido de puertos completo (`nmap -p-`) obtiene acceso irrestricto.
+   - **Medidas concretas de reducción de superficie:**
+     - *Eliminación / Enlace local:* Si el servicio no es estrictamente necesario, debe ser dado de baja (`systemctl stop/disable`). Si se requiere para soporte interno, debe vincularse (*bind*) exclusivamente a la interfaz de loopback `127.0.0.1` o a una red de gestión aislada (VLAN OOB / *Out-of-Band*), jamás a `0.0.0.0`.
+     - *Filtrado perimetral estricto:* Configurar reglas de firewall (`iptables` / Security Groups) con política *default-deny*, bloqueando el tráfico entrante a puertos no estándar desde Internet y cerrando el puerto 31337 en el perímetro.
+     - *Canal seguro y autenticación:* Reemplazar esta shell cruda en texto plano por administración vía SSH con llaves criptográficas (deshabilitando autenticación por contraseña), obligando a que cualquier conexión remota se canalice a través de una VPN corporativa con autenticación multifactor (MFA).
+
+2. **Hallazgo 2: Servidor FTP ProFTPD 1.3.5 vulnerable (CVE-2015-3306) en puerto 21**
+   - **Diagnóstico del riesgo:** El servidor corre una versión obsoleta con el módulo `mod_copy` activo por defecto, el cual permite la ejecución de comandos no autenticados (`SITE CPFR` / `SITE CPTO`) para leer y escribir archivos en el sistema de archivos del servidor, habilitando la subida de webshells y RCE. Además, el banner FTP exhibe explícitamente el producto y la versión exacta (`220 ProFTPD 1.3.5 Server`), facilitando la búsqueda inmediata de exploits.
+   - **Medidas concretas de reducción de superficie:**
+     - *Parcheo / Actualización y migración tecnológica:* Actualizar el servicio a una versión mantenida de ProFTPD libre de la vulnerabilidad o, preferentemente, retirar el protocolo FTP en texto plano (que viaja sin cifrar) y migrar la transferencia de archivos a **SFTP** (SSH File Transfer Protocol) o FTPS con certificados TLS vigentes.
+     - *Hardening de configuración inmediata:* Desactivar el módulo vulnerable en la directiva de configuración de ProFTPD (`mod_copy.c`) y ocultar la divulgación de versión en el saludo inicial mediante la directiva `ServerIdent off` (o personalizando el banner para que no revele software ni versión).
+     - *Segmentación perimetral:* Restringir el acceso al puerto 21 a una lista blanca (*allowlist*) de direcciones IP autorizadas o aislar el servicio detrás de un proxy inverso/DMZ, evitando la exposición irrestricta a todo Internet.
 
 ---
 
