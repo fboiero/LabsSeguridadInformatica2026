@@ -14,9 +14,9 @@
 En cumplimiento con el régimen de la cátedra y las pautas de `CONTRIBUTING.md`:
 
 - **Herramienta utilizada:** Asistente IA (Antigravity / Gemini 3.8 Flash).
-- **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados, formato de evidencias y redacción de las respuestas de análisis de la Sección 3 (**P1–P4**); la pregunta **P5** fue redactada por @ColqueAlvaro.
-- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas), Sección 2 (Mapa de superficie de ataque y evidencias técnicas) y Sección 3 (Preguntas de análisis **P1–P4**; **P5** por @ColqueAlvaro). La Sección 4 (Bitácora de comandos) fue realizada por @matiasmariatticasc.
-- **Verificación humana:** Se contrastaron los servicios reales expuestos por el contenedor `phantomcorp` (puertos 21, 80, 8080 y 31337), validando las banderas, versiones extraídas en los banners y los registros oficiales de CVE (como CVE-2015-3306 de ProFTPD 1.3.5 en la base NVD del NIST). En P5 se verificaron las medidas de remediación y reducción de superficie aplicando el principio de mínimo privilegio y defensa en profundidad.
+- **Alcance de la asistencia:** Asistencia en la estructuración técnica del informe, captura y documentación de flags, consolidación del mapa de superficie de ataque con investigación de CVE/CVSS asociados, formato de evidencias, redacción de las respuestas de análisis de la Sección 3 (**P1–P4**) —la pregunta **P5** fue redactada por @ColqueAlvaro—; y asistencia en la investigación y redacción técnica del mini-research sobre **CVE-2015-3306 de ProFTPD 1.3.5 y explotación de `mod_copy`** en `research.md`.
+- **Partes originadas o modificadas:** Sección 1 (Parte práctica — flags capturadas), Sección 2 (Mapa de superficie de ataque y evidencias técnicas), Sección 3 (Preguntas de análisis **P1–P4**; **P5** por @ColqueAlvaro), Sección 4 (Bitácora de comandos por @matiasmariatticasc) y archivo `research.md`.
+- **Verificación humana:** Se contrastaron los servicios reales expuestos por el contenedor `phantomcorp` (puertos 21, 80, 8080 y 31337), validando las banderas, versiones extraídas en los banners y los registros oficiales de CVE (como CVE-2015-3306 de ProFTPD 1.3.5 en la base NVD del NIST, Bugzilla y Exploit-DB). En P5 se verificaron las medidas de remediación y reducción de superficie aplicando el principio de mínimo privilegio y defensa en profundidad.
 
 ---
 
