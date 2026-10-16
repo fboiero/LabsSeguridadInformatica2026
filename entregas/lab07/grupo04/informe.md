@@ -1,6 +1,6 @@
 # Informe — Laboratorio 07 · Explotación
 
-**Grupo:** 04 · **Integrantes:** *(completar nombres — usuarios GitHub)* · **Fecha:** 2026-10-16
+**Grupo:** 04 · **Integrantes:** *Facundo Anil - Antunez Jeremias - Olivero Uriel - Lelli Matias* · **Fecha:** 2026-10-16
 
 ---
 
