@@ -1,6 +1,6 @@
 # Laboratorio 07 — Explotación
 
-**Unidad 7** · <título según programa analítico>
+**Unidad 7** · Explotación: SQLi, inyección de comandos, path traversal e IDOR
 **Modalidad:** grupos de 4 a 5 integrantes
 **Entrega:** fork + Pull Request, en `entregas/lab07/grupoXX/`
 **Entorno:** Docker (se levanta solo)

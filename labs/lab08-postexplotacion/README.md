@@ -1,6 +1,6 @@
 # Laboratorio 08 — Post-explotación y automatización
 
-**Unidad 8** · <título según programa analítico>
+**Unidad 8** · Post-explotación: escalada de privilegios, pivoting y scripting
 **Modalidad:** grupos de 4 a 5 integrantes
 **Entrega:** fork + Pull Request, en `entregas/lab08/grupoXX/`
 **Entorno:** Docker (dos hosts en redes segmentadas)

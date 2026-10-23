@@ -1,6 +1,6 @@
 # Laboratorio 06 — Enumeración de servicios
 
-**Unidad 6** · <título según programa analítico>
+**Unidad 6** · Enumeración: directorios, repositorios expuestos, métodos HTTP y APIs
 **Modalidad:** grupos de 4 a 5 integrantes
 **Entrega:** fork + Pull Request, en `entregas/lab06/grupoXX/`
 **Entorno:** Docker (se levanta solo)
