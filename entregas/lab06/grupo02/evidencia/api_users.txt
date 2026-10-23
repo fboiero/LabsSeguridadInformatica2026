@@ -1,0 +1,21 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "user": "admin",
+            "role": "superuser"
+        },
+        {
+            "id": 2,
+            "user": "jperez",
+            "role": "editor"
+        },
+        {
+            "id": 3,
+            "user": "mgomez",
+            "role": "viewer"
+        }
+    ],
+    "note": "endpoint interno de RRHH - no exponer",
+    "flag": "FLAG{user_enumeration_api}"
+}

@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	bare = false
+[remote "origin"]
+	url = https://git.internal.phantomcorp/intranet.git
+# Un .git expuesto filtra codigo, historia y a veces secretos.
+# FLAG{git_repo_exposed}
+<h1>404 Not Found</h1>

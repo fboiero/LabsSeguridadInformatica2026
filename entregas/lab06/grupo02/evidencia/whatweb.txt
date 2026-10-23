@@ -1,0 +1,1 @@
+[1m[34mhttp://phantomcorp[0m [200 OK] [1mCountry[0m[[0m[22mRESERVED[0m][[1m[31mZZ[0m], [1mHTML5[0m, [1mHTTPServer[0m[[1m[36mPhantomServer/3.7[0m], [1mIP[0m[[0m[22m172.21.0.2[0m], [1mMetaGenerator[0m[[0m[22mPhantomCMS 3.7[0m], [1mTitle[0m[[1m[33mIntranet PhantomCorp[0m], [1mX-Powered-By[0m[[0m[22mPhantomCMS/3.7[0m]

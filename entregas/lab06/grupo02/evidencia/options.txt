@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Fri, 23 Oct 2026 20:52:59 GMT
+Allow: GET, POST, PUT, DELETE, OPTIONS
+X-Dangerous-Methods: FLAG{http_methods_put_enabled}
+
