@@ -1,0 +1,9 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Fri, 30 Oct 2026 00:24:19 GMT
+Content-Type: text/plain; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+PhantomCMS 3.7 (build 2024-11)
+Archivo default del CMS. Si llegaste aca por fingerprinting, bien.
+FLAG{tech_fingerprint_phantomcms}

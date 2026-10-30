@@ -1,0 +1,12 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Fri, 30 Oct 2026 00:17:16 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="generator" content="PhantomCMS 3.7">
+<title>Intranet PhantomCorp</title></head><body>
+<h1>Intranet PhantomCorp S.A.</h1>
+<p>Acceso solo para personal. Portal interno v3.7.</p>
+</body></html>
