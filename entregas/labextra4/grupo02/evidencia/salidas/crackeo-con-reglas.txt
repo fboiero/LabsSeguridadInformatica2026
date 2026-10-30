@@ -1,0 +1,14 @@
+[*] atacando operador (md5)...
+    cayó en 139 intentos, 0.001s (169973 intentos/s)
+[*] atacando analista (sha256)...
+    cayó en 196 intentos, 0.001s (272755 intentos/s)
+[*] atacando admin (sha256)...
+    cayó en 95 intentos, 0.000s (313994 intentos/s)
+[*] atacando root (pbkdf2)...
+    no cayó tras 970 intentos, 131.478s (7 intentos/s)
+  ✓ operador: riverplate
+  ✓ analista: matecocido
+  ✓ admin: phantom2026
+  ✗ root: no cayó (¿falta una regla? ¿es pbkdf2?)
+
+3/4 contraseñas recuperadas

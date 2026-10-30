@@ -1,0 +1,16 @@
+# Crackeo (sin reglas)
+python3 src/cracker.py crackear caso/sombra.txt caso/diccionario.txt
+
+# Crackeo (con reglas de mangling)
+python3 src/cracker.py crackear caso/sombra.txt caso/diccionario.txt --reglas
+
+# Descifrado de loot
+python3 src/cracker.py descifrar caso/loot/operador.enc --password riverplate
+python3 src/cracker.py descifrar caso/loot/analista.enc --password matecocido
+python3 src/cracker.py descifrar caso/loot/admin.enc --password phantom2026
+
+# Flags (corrido desde una copia con LF en ~/ctf-tmp, por CRLF de Windows en el repo)
+./ctf submit extra4 R1 'FLAG{crack_diccionario_md5}'
+./ctf submit extra4 R2 'FLAG{crack_sha256_diccionario}'
+./ctf submit extra4 R3 'FLAG{crack_reglas_mangling}'
+./ctf status extra4
