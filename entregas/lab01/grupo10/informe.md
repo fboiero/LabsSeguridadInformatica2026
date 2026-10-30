@@ -306,6 +306,10 @@ Para almacenar contraseñas se usan funciones de derivación dedicadas, como Arg
 
 Durante la implementación hubo que distinguir la ruta base de los archivos de muestra y la ruta del manifiesto, y usar copias temporales en las pruebas de modificación, faltante y archivo nuevo. También se comprobó que una modificación de un byte cambia el estado y el código de salida. La validación asistida detectó que la terminal Windows requería salida UTF-8 para el autoevaluador.
 
+En una revisión reproducible adicional ejecutada con Python 3.11.1 sobre un directorio temporal, se comprobó que `integridad.py` compila; genera rutas relativas POSIX ordenadas de forma recursiva y excluye el manifiesto; clasifica `OK`, `MODIFICADO`, `FALTANTE` y `NUEVO`; y devuelve códigos 0 sin diferencias y 1 con hallazgos. También se verificaron distancia de Hamming 0/4 bits y error ante longitudes distintas, además de HMAC ausente/válido/inválido. No se modificaron datos del repositorio durante estas pruebas.
+
+La revisión encontró que en esta rama faltan `research.md`, `data/generar_datos.py` y `src/verificar.py`, que figuran en la estructura requerida. Por eso no se pudieron ejecutar esos componentes; sus responsables deben completarlos o confirmar si ya están en otra versión de trabajo.
+
 ## Distribución del trabajo
 
 Distribución de aportes del grupo, basada en el trabajo realizado:
@@ -314,7 +318,7 @@ Distribución de aportes del grupo, basada en el trabajo realizado:
 | ---------------------- | -------------------------------------------------------------------------------- |
 | Belén Rocío Ramello    | Parte A |
 | Carolina Paula Corazza | Implementación inicial de Parte B y pruebas locales.                             |
-| Chiara Agustina Kordek | Revisión y pruebas |
+| Chiara Agustina Kordek | Revisión reproducible de `src/integridad.py`. |
 | Juan Pablo Saby        | Mini-research |
 
 ## Declaración de uso de asistentes de IA
