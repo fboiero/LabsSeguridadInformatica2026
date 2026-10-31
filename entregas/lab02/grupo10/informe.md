@@ -3,7 +3,7 @@
 **Grupo:** 10 · **Integrantes:** *(CORAZZA, CAROLINA - KORDEK, CHIARA - RAMELLO, BELÉN - SABY, JUAN PABLO)* · **Fecha:** 30/10/2026
 
 ## 0. Declaración de uso de IA
-Se utilizó IA generativa (Claude) como herramienta de apoyo en este laboratorio: para planificar y repartir las tareas, supervisar redacción de borradores del código de `src/cripto.py` y de los textos del informe y del mini-research. El código se ejecutó y verificó contra el reto provisto por la cátedra. Los integrantes revisaron el contenido entregado.
+Se utilizó IA generativa (Claude) como herramienta de apoyo en este laboratorio: para planificar y repartir las tareas, supervisar redacción de borradores del código de `src/cripto.py` y de los textos del informe y del mini-research. El código se ejecutó y verificó contra el reto provisto por la cátedra.
 ## 1. Parte A — Análisis de la falla
 <!-- INICIO SECCION 1 -->
 **Caso:** *(el asignado)*
