@@ -1,0 +1,52 @@
+### curl -si -X POST phantomcorp:8080/status
+HTTP/1.0 501 Unsupported method ('POST')
+Server: Werkzeug/2.0.1 Python/3.9.2
+Date: Fri, 30 Oct 2026 13:03:28 GMT
+Connection: close
+Content-Type: text/html;charset=utf-8
+Content-Length: 357
+
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Error response</title>
+    </head>
+    <body>
+        <h1>Error response</h1>
+        <p>Error code: 501</p>
+        <p>Message: Unsupported method ('POST').</p>
+        <p>Error code explanation: 501 - Server does not support this operation.</p>
+    </body>
+</html>
+
+### curl -si -X OPTIONS phantomcorp:8080/status
+HTTP/1.0 501 Unsupported method ('OPTIONS')
+Server: Werkzeug/2.0.1 Python/3.9.2
+Date: Fri, 30 Oct 2026 13:03:28 GMT
+Connection: close
+Content-Type: text/html;charset=utf-8
+Content-Length: 360
+
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Error response</title>
+    </head>
+    <body>
+        <h1>Error response</h1>
+        <p>Error code: 501</p>
+        <p>Message: Unsupported method ('OPTIONS').</p>
+        <p>Error code explanation: 501 - Server does not support this operation.</p>
+    </body>
+</html>
+
+### curl -sI phantomcorp:8080
+HTTP/1.0 501 Unsupported method ('HEAD')
+Server: Werkzeug/2.0.1 Python/3.9.2
+Date: Fri, 30 Oct 2026 13:03:28 GMT
+Connection: close
+Content-Type: text/html;charset=utf-8
+Content-Length: 357
+

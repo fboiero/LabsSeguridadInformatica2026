@@ -1,0 +1,3 @@
+GET /console -> phantom-dev-api. Proba /status [200]
+GET /robots.txt -> phantom-dev-api. Proba /status [200]
+GET /no-existe-xyz -> phantom-dev-api. Proba /status [200]
