@@ -55,7 +55,22 @@ D1 reduce la información pasiva que el encabezado revela, pero no corrige las v
 
 ### P4 — ¿Por qué no conviene quitar comillas con `replace`?
 
-**Pendiente para Carolina:** explicar por qué el filtrado manual depende de los detalles del motor SQL y cómo la consulta parametrizada implementada en D4 mantiene los valores separados de la sintaxis.
+Usar `user.replace("'", "")` elimina un carácter, pero mantiene el problema de fondo: la entrada se concatena dentro de una instrucción SQL. Es un filtro manual cuya eficacia depende del contexto de la consulta y de las reglas de sintaxis y escape del motor; no establece una separación entre datos y código. Además, altera nombres legítimos que contienen apóstrofos. Aunque pueda bloquear un payload puntual, eso no lo convierte en una defensa estructural.
+
+En este laboratorio hay un caso concreto: filtrar solamente `user` deja intacto `pass`, que también se concatenaba en la consulta original. El segundo ataque del verificador usa `user=x` y `pass=' OR 1=1 --`; la comilla cierra el valor de la contraseña, `OR 1=1` vuelve verdadera la condición y `--` comenta el resto. Por eso quitar comillas únicamente del usuario no evita ese bypass. Aplicar filtros manuales a ambos campos tampoco es la solución recomendada: seguiría dependiendo de transformar correctamente cada entrada antes de construir SQL.
+
+La solución implementada en D4, en `objetivo/server.py`, es:
+
+```python
+cur = db.execute(
+    "SELECT user FROM usuarios WHERE user = ? AND password = ?",
+    (user, pwd),
+)
+```
+
+El texto de la consulta es fijo y los dos `?` son marcadores de valores. SQLite recibe `user` y `pwd` por separado, mediante la tupla de parámetros, y los trata como datos, no como instrucciones SQL. Una entrada como `admin'--` se compara como un nombre literal: sus comillas y guiones no pueden modificar el `WHERE` ni comentar la comprobación de contraseña. Lo importante es pasar los valores como segundo argumento de `execute`, sin interpolarlos ni concatenarlos previamente.
+
+La evidencia guardada en `evidencia/salidas/00-verificacion-inicial.txt` muestra que los dos bypass funcionaban; `evidencia/salidas/01-verificacion-final.txt` registra ambos bloqueados tras el cambio. Además, `evidencia/salidas/02-regresion-funcional.txt` confirma que el login legítimo sigue devolviendo HTTP 200 y el inválido HTTP 401. Estas pruebas respaldan el resultado de D4 para los casos ensayados, sin afirmar que el verificador cubra todos los ataques posibles.
 
 ### P5 — Ranking de gravedad
 
