@@ -8,10 +8,9 @@
 
 De acuerdo con lo establecido en `CONTRIBUTING.md`, se declara el uso asistido de herramientas de Inteligencia Artificial durante la resolución y elaboración de este informe:
 
-- **Herramienta utilizada:** Asistente de IA (Gemini / Antigravity).
-- **Finalidad del uso:** Planificación metodológica de auditoría de pruebas, diseño secuencial del protocolo de pruebas defensivas/analíticas, estructuración de evidencias crudas y redacción técnica de explicaciones algebraicas y sintácticas.
-- **Partes originadas o asistidas:** Redacción de la justificación teórica en las preguntas de análisis P1, P2 y P4, estructuración de la tabla de explotación y documentación del mini-research sobre consultas parametrizadas.
-- **Validación humana:** Todas las solicitudes HTTP fueron ejecutadas en vivo contra el entorno controlado Docker de PhantomCorp, verificándose empíricamente las respuestas del servidor web, las trazas de error del motor SQLite, la exfiltración efectiva de las tablas y la validación matemática/criptográfica de los hashes de las flags capturadas mediante el sistema oficial `./ctf submit 07`.
+- **Herramienta utilizada:** Asistente de IA (Claude + gemini/antigravity).
+- **Finalidad del uso:** Planificación metodológica de auditoría de pruebas, diseño secuencial del protocolo de pruebas defensivas/analíticas, colaboración con la auditoría de la salida de CTF.
+Todas las solicitudes HTTP fueron ejecutadas en vivo contra el entorno controlado Docker de PhantomCorp, verificándose empíricamente las respuestas del servidor web, las trazas de error del motor SQLite, la exfiltración efectiva de las tablas y la validación matemática/criptográfica de los hashes de las flags capturadas mediante el sistema oficial `./ctf submit 07`.
 
 ---
 
@@ -208,3 +207,4 @@ curl -s -i -G http://phantomcorp/buscar \
 # 14. Verificar estado final de avance del laboratorio
 ./ctf status 07
 ```
+

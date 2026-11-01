@@ -92,3 +92,4 @@ Para estos casos donde los identificadores deban ser dinámicos, la defensa comp
 ## Reflexión
 
 Comprender el funcionamiento de los *Prepared Statements* a nivel de arquitectura de base de datos desmitifica la seguridad web: demuestra que la prevención de inyecciones no es una tarea de "adivinar qué caracteres prohibir" mediante filtros o sanitización artesanal, sino de diseñar interfaces que preserven el tipado estricto y la separación física entre instrucciones y datos. La seguridad por diseño (*Security by Design*) radica precisamente en apoyarse en garantías sintácticas y compiladas provistas por el compilador o motor, eliminando clases enteras de vulnerabilidades por definición técnica.
+

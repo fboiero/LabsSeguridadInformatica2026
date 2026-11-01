@@ -71,3 +71,4 @@ curl -s -i -G http://phantomcorp/buscar \
 
 # --- Estado consolidado del progreso ---
 ./ctf status 07
+
