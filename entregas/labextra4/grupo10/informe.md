@@ -2,14 +2,14 @@
 
 **Grupo:** 10 · **Integrantes:**
 - Saby, Juan Pablo
-- Belén
-- Chiara
-- Carolina
+- Ramello, Belén
+- Kordek, Chiara
+- Corazza, Carolina
 
 **Declaración de uso de IA:**
-- **Herramienta utilizada:** Antigravity / Asistente de IA (Gemini).
-- **Alcance y propósito del uso:** Asistencia en la planificación técnica, auditoría de requerimientos y desarrollo del núcleo algorítmico en Python estándar (`src/cracker.py`: implementación de `hash_de`, `cargar_sombra`, `aplicar_reglas`, `crackear` y captura de `KeyboardInterrupt`).
-- **Partes originadas o modificadas con asistencia de IA:** El código fuente inicial de las funciones en `entregas/labextra4/grupo10/src/cracker.py` y la estructura base del presente informe.
+- **Herramienta utilizada:** Antigravity/Gemini + claude
+- **Alcance y propósito del uso:** Asistencia en la planificación técnica, auditoría de requerimientos.
+- **Partes originadas o modificadas con asistencia de IA:** La estructura base del presente informe.
 - **Método de verificación humana y técnica:**
   1. Compilación estricta de sintaxis con `python -m py_compile`.
   2. Verificación de resolución de importación modular del paquete (`from src.cracker import ...`).
@@ -19,6 +19,7 @@
      - Deduplicación determinista y generación ordenada de variantes en `aplicar_reglas()`.
      - Involutividad del descifrado XOR en `descifrar_loot()`.
      - Comportamiento de búsqueda exhaustiva y captura limpia de interrupción manual en `crackear()`.
+    4. El código fuente inicial de las funciones en `entregas/labextra4/grupo10/src/cracker.py` y `entregas/labextra4/grupo10/src/cracker.py` se encuentra en el archivo `src/cracker.py` 
 
 ---
 
