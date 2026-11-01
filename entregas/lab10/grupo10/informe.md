@@ -70,4 +70,35 @@ R5 ✓  Encontrar la intrusion en el ruido
 | R4 | `curl -G --data-urlencode 'q=UNION/**/SELECT' http://phantomcorp/api` | HTTP 200; indicó “procesado como benigno” y devolvió R4. |
 | R5 | `curl http://phantomcorp/soc` y filtrado de `ALERT` | Intrusión: `185.220.101.42 - GET /admin/../../etc/passwd 200 ALERT[path-traversal] # intrusion no atribuida`; devolvió R5. |
 
+### Control benigno de `/api`
+
+Desde la consola del atacante en Docker local se ejecutó esta petición normal
+contra `phantomcorp`, usando `q=consulta` en la misma ruta de la prueba R4:
+
+```console
+$ curl -sS -i --max-time 10 -G --data-urlencode q=consulta http://phantomcorp/api
+HTTP/1.0 200 OK
+Server: PhantomSOC/1.0 
+Date: Sun, 01 Nov 2026 18:12:28 GMT
+Content-Type: text/plain; charset=utf-8
+
+200 OK BENIGN
+```
+
+La ejecución terminó con código de salida **0** y la respuesta se conservó en
+`.loot/lab10-control-benigno.txt` (evidencia local no versionada).
+
+Este control compara el parámetro normal `q=consulta` con el evasivo
+`q=UNION/**/SELECT` previamente registrado: ambos recibieron HTTP 200, pero el
+control devolvió `200 OK BENIGN`, mientras que la prueba R4 indicó que había
+procesado como benigno un contenido malicioso; el estado HTTP por sí solo no
+permite distinguir ambos casos.
+
+No se modificaron las reglas del target ni se probaron firmas nuevas, y esta
+petición no demuestra por sí sola qué se registró en el SOC.
+
+**Asistencia de IA en este aporte:** OpenCode (GPT-6.1 Sol) apoyó la ejecución
+y la redacción de este control; el bloque se contrastó con la respuesta real
+guardada desde el contenedor, sin generar ni completar campos de log.
+
 El verificador oficial aceptó las cinco flags: **R1–R5 ✓, 5/5 (100%)**.
