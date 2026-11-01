@@ -42,12 +42,25 @@ El impacto de esta mala configuración no es teórico, sino uno de los hallazgos
 
 ## Fuentes (mín. 3, verificables)
 
-1. **Chacon, S., & Straub, B. (2014).** *Pro Git (2nd Edition) — Chapter 10: Git Internals*. Apress. Disponible en: https://git-scm.com/book/en/v2/Git-Internals-Git-Objects  
-   *(Explica la estructura interna de los objetos Git en disco: commits, trees, blobs y empaquetado zlib).*
-2. **Arthaud, M. (2020).** *git-dumper: A tool to dump a git repository from a website*. Repositorio oficial en GitHub: https://github.com/arthaud/git-dumper  
-   *(Documenta la metodología práctica para consultar recursivamente objetos Git mediante peticiones HTTP sin listado de directorios).*
-3. **Cimpanu, C. / ZDNet & BleepingComputer (2021).** *UN data breach exposed personal data of over 100k staff via exposed Git directories*. Disponible en: https://www.bleepingcomputer.com/news/security/over-100k-un-employee-records-exposed-in-recent-data-breach/  
-   *(Caso real documentado donde el grupo Sakura Samurai utilizó repositorios Git expuestos para comprometer infraestructura y credenciales de la ONU).*
+1. **Git Official Documentation (git-scm.com):**  
+   *Pro Git (Scott Chacon & Ben Straub) — Chapter 10: Git Internals (Git Objects).*  
+   Fuente oficial: https://git-scm.com/book/en/v2/Git-Internals-Git-Objects  
+   *(Detalla la arquitectura de objetos internos de Git: formato binario comprimido con zlib, estructura de commits, trees y blobs).*
+
+2. **MITRE Corporation (Common Weakness Enumeration - CWE):**  
+   *CWE-527: Exposure of Version Control Repository to an Unauthorized Control Sphere.*  
+   Fuente oficial: https://cwe.mitre.org/data/definitions/527.html  
+   *(Estándar internacional de taxonomía de vulnerabilidades que define el riesgo de publicar repositorios de control de versiones en entornos accesibles al público).*
+
+3. **OWASP Foundation (Open Web Application Security Project):**  
+   *OWASP Top 10 — A05:2021 Security Misconfiguration.*  
+   Fuente oficial: https://top10.owasp.org/A05_2021-Security_Misconfiguration/  
+   *(Estándar global de seguridad web que clasifica la exposición de directorios de desarrollo, archivos `.git` y configuraciones por defecto como malas configuraciones críticas).*
+
+4. **OWASP Web Security Testing Guide (WSTG):**  
+   *OWASP Project — Web Security Testing Guide.*  
+   Fuente oficial: https://owasp.org/projects/web-security-testing-guide  
+   *(Guía técnica oficial de auditoría web para la identificación, sondeo y verificación de metadatos y directorios de infraestructura expuestos).*
 
 ---
 
