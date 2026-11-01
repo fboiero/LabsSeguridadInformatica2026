@@ -1,0 +1,12 @@
+[VALIDACION CRIPTOGRAFICA DE FLAG R2]
+Comando ejecutado:
+echo -n 'FLAG{git_repo_exposed}' | sha256sum
+
+Salida generada:
+92b02d1d99a0d169dd0d296b0f195c227f2ba4a2c64de6ee77b6ad53f1c0e495  -
+
+Hash esperado segun retos.manifest:
+92b02d1d99a0d169dd0d296b0f195c227f2ba4a2c64de6ee77b6ad53f1c0e495
+
+Resultado de la comparacion:
+COINCIDENCIA EXACTA (MATCH)
