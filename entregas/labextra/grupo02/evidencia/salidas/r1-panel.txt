@@ -1,0 +1,5 @@
+<h3>Previsualizacion de http://127.0.0.1:9000/</h3><hr><!doctype html><html><body style="font-family:monospace">
+<h2>PhantomCorp — Panel interno (solo localhost)</h2>
+<p>Si estás viendo esto desde afuera, algo salió mal.</p>
+<p>Deploy key: <b>FLAG{ssrf_localhost_panel_interno}</b></p>
+</body></html>

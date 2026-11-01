@@ -1,0 +1,9 @@
+<h3>Previsualizacion de http://phantomcorp-intra/</h3><hr><!doctype html><html><body style="font-family:sans-serif">
+<h1>Intranet PhantomCorp</h1>
+<p><b>USO INTERNO.</b> Si la estás viendo desde afuera, avisá a Seguridad.</p>
+<p>Host: <b>FLAG{ssrf_intranet_descubierta}</b></p>
+<ul>
+  <li><a href="/backups/clientes.json">backup de clientes (temporal, borrar!)</a></li>
+  <li><a href="/salud">estado del servicio</a></li>
+</ul>
+</body></html>

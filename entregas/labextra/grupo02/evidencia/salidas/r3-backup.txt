@@ -1,0 +1,8 @@
+<h3>Previsualizacion de http://phantomcorp-intra/backups/clientes.json</h3><hr>{
+  "_aviso": "backup temporal pre-migracion. NO deberia ser accesible.",
+  "clientes": [
+    {"id": 1, "empresa": "Aconcagua SRL", "cuit": "30-70998877-1"},
+    {"id": 2, "empresa": "Comechingones SA", "cuit": "30-71554433-6"}
+  ],
+  "integridad": "FLAG{ssrf_backup_clientes}"
+}

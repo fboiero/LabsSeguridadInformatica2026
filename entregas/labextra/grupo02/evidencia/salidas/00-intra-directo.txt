@@ -1,0 +1,1 @@
+exit=6 (6 = no se pudo resolver host: segmentacion ok)
