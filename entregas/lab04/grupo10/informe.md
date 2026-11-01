@@ -106,6 +106,37 @@ aunque el sistema se caiga).
 El control se paga casi 1,7 veces por año, así que la decisión fue clara:
 **conviene hacerlo**.
 
+#### Reproducción del cálculo con `src/riesgo.py`
+
+Los siguientes comandos se ejecutaron desde `entregas/lab04/grupo10/`.
+Primero se comprobó el ALE anterior con el SLE de $500 000 y el ARO de 0,1
+registrados para el riesgo #1 en `riesgos.json`:
+
+```console
+$ python src/riesgo.py ale --sle 500000 --aro 0.1
+50000.00
+```
+
+Después se calculó el ROI con los valores del control de esta sección:
+
+```console
+$ python src/riesgo.py roi --antes 50000 --despues 10000 --costo 15000
+1.667
+```
+
+La salida real `1.667` es el redondeo a tres decimales de
+`(50000 - 10000 - 15000) / 15000 = 1,666…`; coincide con el **1,67**
+redondeado a dos decimales que se presentó arriba. No se modificaron los
+cálculos ni los parámetros. El ALE posterior de $10 000 y el costo anual de
+$15 000 siguen siendo estimaciones: ejecutar el programa comprueba la
+aritmética, no valida esos supuestos.
+
+**Diferencia con el ejemplo del README:** allí se usa
+`ale --sle 50000 --aro 0.4`, que devuelve `20000.00`, y
+`roi --antes 20000 --despues 5000 --costo 8000`, que devuelve `0.875`.
+También se ejecutaron esos comandos para contrastarlos. Son un ejemplo de uso
+distinto, no los parámetros ni el ROI del control elegido en B.2.
+
 ### B.3 — Un riesgo a aceptar o transferir (no mitigar)
 
 Se eligio la credencial comprometida de un empleado con acceso remoto (ALE
