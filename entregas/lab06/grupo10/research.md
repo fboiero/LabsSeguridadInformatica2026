@@ -57,11 +57,6 @@ El impacto de esta mala configuración no es teórico, sino uno de los hallazgos
    Fuente oficial: https://top10.owasp.org/A05_2021-Security_Misconfiguration/  
    *(Estándar global de seguridad web que clasifica la exposición de directorios de desarrollo, archivos `.git` y configuraciones por defecto como malas configuraciones críticas).*
 
-4. **OWASP Web Security Testing Guide (WSTG):**  
-   *OWASP Project — Web Security Testing Guide.*  
-   Fuente oficial: https://owasp.org/projects/web-security-testing-guide  
-   *(Guía técnica oficial de auditoría web para la identificación, sondeo y verificación de metadatos y directorios de infraestructura expuestos).*
-
 ---
 
 ## Reflexión (3–5 líneas)
