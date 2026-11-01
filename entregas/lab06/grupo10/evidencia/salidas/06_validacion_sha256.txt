@@ -10,3 +10,4 @@ Hash esperado segun retos.manifest:
 
 Resultado de la comparacion:
 COINCIDENCIA EXACTA (MATCH)
+

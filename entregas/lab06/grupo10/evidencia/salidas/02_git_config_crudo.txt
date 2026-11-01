@@ -11,3 +11,4 @@ X-Powered-By: PhantomCMS/3.7
 	url = https://git.internal.phantomcorp/intranet.git
 # Un .git expuesto filtra codigo, historia y a veces secretos.
 # FLAG{git_repo_exposed}
+

@@ -26,3 +26,4 @@ echo -n 'FLAG{git_repo_exposed}' | sha256sum
 
 # 7. Verificación del estado actualizado del laboratorio
 ./ctf status 06
+

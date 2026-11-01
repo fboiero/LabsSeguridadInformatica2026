@@ -6,10 +6,8 @@
 
 ## 0. Declaración de uso de IA
 
-En cumplimiento con las directivas de `CONTRIBUTING.md`, se declara el uso del asistente de inteligencia artificial Antigravity (Google DeepMind) durante el desarrollo de este reto:
-- **Herramienta utilizada:** Antigravity (modelo Gemini 3.8 Flash).
-- **Finalidad de uso:** Asistencia en la planificación metodológica del reto R2, estructuración del relevamiento técnico, análisis de la estructura interna del protocolo Git (formato de objetos, zlib, árboles y blobs) y redacción técnica del informe.
-- **Partes originadas o modificadas:** Guía paso a paso de exploración de recursos `.git`, estructuración del inventario para R2 y fundamentación técnica de las preguntas P2 y P5.
+En cumplimiento con las directivas de `CONTRIBUTING.md`, se declara el uso del asistente de inteligencia artificial Antigravity + Claude durante el desarrollo de este reto:
+- **Finalidad de uso:** Asistencia en la planificación metodológica del ejercicio, análisis de la estructura interna del protocolo Git (formato de objetos, zlib, árboles y blobs) y redacción técnica del informe.
 - **Verificación:** Todas las hipótesis teóricas fueron contrastadas empíricamente mediante la ejecución de comandos `curl` contra el entorno Docker activo de la cátedra (`phantomcorp`), verificando los códigos de respuesta HTTP, las cabeceras devueltas y validando criptográficamente el hash SHA-256 de la flag contra `retos.manifest`.
 
 ---
@@ -151,3 +149,4 @@ echo -n 'FLAG{git_repo_exposed}' | sha256sum
 ./ctf submit 06 R2 'FLAG{git_repo_exposed}'
 ./ctf status 06
 ```
+

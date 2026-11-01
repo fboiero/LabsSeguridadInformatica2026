@@ -19,3 +19,4 @@ $ ./ctf status 06
    ·  R5     Fingerprinting de tecnologia
 
   ██████░░░░░░░░░░░░░░░░░░░░░░░░  1/5 (20%)
+
