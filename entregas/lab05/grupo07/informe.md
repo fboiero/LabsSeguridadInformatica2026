@@ -19,6 +19,8 @@ Se utilizó el asistente de IA **Claude (Anthropic)**. Según lo que pide el `CO
 - **Cómo se verificó:** cada flag se validó con `./ctf submit`; las versiones de los servicios se confirmaron contra la salida real de los comandos, guardada en `/loot`.
 - _(Completar cada integrante: usos de IA en el mapa, las demás preguntas o el mini-research, si los hubo, y cómo lo verificó.)_
 
+**Lorenzo Blanc — Parte C:** se utilizó **Codex (OpenAI)** para analizar la evidencia de la Parte A, redactar la clasificación de los puertos 8080 y 31337 y responder P1. La verificación consistió en contrastar los banners y datos transcritos en este informe con las afirmaciones de las filas, y consultar la documentación oficial de Werkzeug y Nmap enlazada en las secciones correspondientes. Se distinguieron riesgos potenciales de capacidades comprobadas, sin asignar CVEs ni puntajes sin respaldo. No se repitió el reconocimiento: se reutilizó la evidencia capturada por Guadalupe; los archivos originales de `.loot/` no estaban disponibles en esta copia local.
+
 ---
 
 ## 1. Parte práctica — flags capturadas
@@ -47,8 +49,7 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 
 ## 2. Mapa de superficie de ataque
 
-> ⚠️ **PENDIENTE — Partes B y C del reparto.** (B: puertos **21** y **80** · C: puertos **8080** y **31337**.)
-> Completar la clasificación —CVE relevante, CVSS, criticidad **justificada contra este caso**— usando la evidencia del recon de la Parte A. Recordá: inventar un CVE o afirmar una versión sin evidencia es causal de rechazo; "no pude determinar la versión" es válido.
+> ⚠️ **PENDIENTE — Parte B del reparto:** clasificación de los puertos **21** y **80**. Parte C: puertos **8080** y **31337** completos a partir de la evidencia de la Parte A.
 
 **Datos crudos del recon (Parte A), para construir el mapa:**
 
@@ -61,14 +62,18 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 
 *Evidencia completa en `.loot/`: `01-nmap-allports.txt`, `02-r1-port31337.txt`, `03-r2-ftp-banner.txt`, `04-r3-http-headers.txt`, `05-r4-robots.txt`, `06-r4-oculta.txt`, `07/08/09-r5-8080-*.txt`.*
 
-**Tabla de clasificación (a completar por B y C):**
+**Tabla de clasificación (pendientes las filas de la Parte B):**
 
 | Puerto | Servicio | Versión (evidencia) | ¿Cómo lo identificaste? | CVE relevante | CVSS | Criticidad | Justificación (contra ESTE caso) |
 |---|---|---|---|---|---|---|---|
 | 21 | | | | | | | |
 | 80 | | | | | | | |
-| 8080 | | | | | | | |
-| 31337 | | | | | | | |
+| 8080 | HTTP de desarrollo | Header `Server: Werkzeug/2.0.1 Python/3.9.2`; aplicación `version: 0.9.3-DEV`, `debug: true`. Son versiones distintas: servidor y aplicación. | Evidencia de Guadalupe: `curl -sI phantomcorp:8080/` y `curl -s phantomcorp:8080/status`. | No se atribuye un CVE: el hallazgo es la exposición del servicio dev y su configuración declarada. El banner no prueba una vulnerabilidad explotable. | No asignado: no se calculó un vector CVSS para este hallazgo. | Alta (evaluación cualitativa). | El `/status` accesible revela versión interna y debug activo en una aplicación DEV. Werkzeug advierte que el depurador interactivo permite ejecutar código y no debe exponerse en producción [1]. Esto implica un riesgo potencial grave si esa consola está habilitada y accesible; `debug: true` por sí solo no demuestra acceso a ella ni ejecución de código en este lab. |
+| 31337 | Servicio TCP identificado como "maintenance shell" | Banner `PhantomCorp maintenance shell v0.1`; no identifica un producto comercial ni la versión del sistema operativo. | Evidencia de Guadalupe: hallazgo con `nmap -Pn -p- phantomcorp` y banner con `ncat -w3 phantomcorp 31337 </dev/null`. | Sin CVE identificado para este servicio específico del lab; no se extrapola desde el nombre "shell". | No asignado: no se calculó un vector CVSS para este hallazgo. | Alta (evaluación cualitativa, por su aparente función de mantenimiento). | Servicio no documentado expuesto en un puerto alto: entrega su banner sin autenticación. Eso confirma acceso al servicio y fuga de información, pero no prueba una shell operativa ni ejecución de comandos sin credenciales. Si ofrece funciones administrativas sin autenticación, el impacto podría ser crítico. El número alto del puerto no constituye un control de acceso. |
+
+**Alcance de la Parte C:** clasificación basada en las transcripciones del recon de Guadalupe incluidas arriba; no se realizaron pruebas de explotación. La criticidad expresa una prioridad contextual, no un puntaje CVSS ni una explotación confirmada.
+
+[1] [Werkzeug — Debugging Applications](https://werkzeug.palletsprojects.com/en/stable/debug/): riesgos del depurador y advertencia de no utilizarlo en producción.
 
 ---
 
