@@ -1,0 +1,21 @@
+== GET / ==
+HTTP/1.0 200 OK
+Server: web
+Date: Wed, 28 Oct 2026 23:15:08 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>PhantomCorp</h1><p>Portal de empleados.</p>
+== login legitimo ==
+<h1>Bienvenido, admin</h1>
+== descarga legitima ==
+Manual de la intranet PhantomCorp.
+
+== backup con token ==
+dump_pre_migracion: usuarios=1 OK
+== traversal %2e%2e bloqueado ==
+HTTP/1.0 404 Not Found
+Server: web
+Date: Wed, 28 Oct 2026 23:15:08 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado

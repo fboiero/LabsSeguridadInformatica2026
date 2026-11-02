@@ -1,0 +1,100 @@
+--- labs/labextra3-hardening/objetivo/server.py	2026-10-18 15:30:21.405447400 +0000
++++ entregas/labextra3/grupo02/objetivo/server.py	2026-10-28 23:11:19.702110700 +0000
+@@ -20,13 +20,12 @@
+ El verificador ATACA tu copia. Por cada ataque que YA NO FUNCIONA, te muestra
+ la flag defensiva para entregar con ./ctf submit extra3.
+ """
+-import base64
++import hmac
++import html
+ import os
+ import sqlite3
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+-from urllib.parse import urlparse, parse_qs
+-
+-VERSION = "PhantomServer/2.4.1-debug"   # D1: banner que canta todo
++from urllib.parse import parse_qs
+ 
+ DB = "/tmp/phantom_hardening.db"
+ DESCARGAS = "/tmp/phantom_descargas"    # raíz "pública" de /descargar
+@@ -46,9 +45,13 @@
+ 
+ 
+ class Handler(BaseHTTPRequestHandler):
+-    server_version = VERSION            # D1
++    # D1: banner neutro, sin producto ni versión
++    server_version = "web"
+     sys_version = ""
+ 
++    def version_string(self):
++        return "web"
++
+     def do_GET(self):
+         path, _, qs = self.path.partition("?")
+         params = parse_qs(qs)
+@@ -56,36 +59,43 @@
+         if path == "/":
+             self._html(200, "<h1>PhantomCorp</h1><p>Portal de empleados.</p>")
+         elif path == "/robots.txt":
+-            # D3: el robots delata las rutas sensibles
+-            self._txt(200, "User-agent: *\nDisallow: /backup\nDisallow: /api/status\n")
++            # D3: robots ya no lista rutas sensibles
++            self._txt(200, "User-agent: *\nDisallow:\n")
+         elif path == "/backup":
+-            # D3: y la ruta sensible responde sin autenticación
+-            self._txt(200, "dump_pre_migracion: usuarios=1 OK — BORRAR ESTE ENDPOINT")
+-        elif path == "/api/status":
+-            # D2: endpoint de debug en producción
+-            self._json(200, '{"debug": true, "env": "produccion", '
+-                            '"db": "' + DB + '", "pid": ' + str(os.getpid()) + '}')
++            # D3: la defensa real es la autorización. Sin token configurado, queda cerrado.
++            esperado = os.environ.get("BACKUP_TOKEN", "")
++            recibido = self.headers.get("Authorization", "")
++            if esperado and hmac.compare_digest(recibido, "Bearer " + esperado):
++                self._txt(200, "dump_pre_migracion: usuarios=1 OK")
++            else:
++                self._txt(401, "no autorizado")
++        # D2: endpoint /api/status eliminado (cae en el 404 final)
+         elif path == "/login":
+-            # D4: SQLi clásico — consulta por interpolación de strings
++            # D4: consulta parametrizada
+             user = params.get("user", [""])[0]
+             pwd = params.get("pass", [""])[0]
+             db = sqlite3.connect(DB)
+             cur = db.execute(
+-                "SELECT user FROM usuarios WHERE user = '" + user
+-                + "' AND password = '" + pwd + "'")     # ¡NUNCA así!
++                "SELECT user FROM usuarios WHERE user = ? AND password = ?",
++                (user, pwd))
+             if cur.fetchone():
+-                self._html(200, "<h1>Bienvenido, " + user + "</h1>")
++                self._html(200, "<h1>Bienvenido, " + html.escape(user) + "</h1>")
+             else:
+                 self._html(401, "<h1>Credenciales inválidas</h1>")
+             db.close()
+         elif path == "/descargar":
+-            # D5: path traversal — concatena y lee sin validar
++            # D5: confinamiento al directorio de descargas
+             nombre = params.get("archivo", [""])[0]
+-            ruta = DESCARGAS + "/" + nombre
++            base = os.path.realpath(DESCARGAS)
++            ruta = os.path.realpath(os.path.join(base, nombre))
+             try:
++                dentro = os.path.commonpath([base, ruta]) == base
++            except ValueError:
++                dentro = False
++            if dentro and os.path.isfile(ruta):
+                 with open(ruta, "rb") as fh:
+                     self._txt(200, fh.read(8192).decode("utf-8", "ignore"))
+-            except Exception:
++            else:
+                 self._txt(404, "no encontrado")
+         else:
+             self._txt(404, "404 - no existe")
+@@ -113,5 +123,5 @@
+ if __name__ == "__main__":
+     init_db()
+     puerto = int(os.environ.get("PORT", "8080"))
+-    print(f"PhantomCorp (VULNERABLE) en 0.0.0.0:{puerto}")
++    print(f"PhantomCorp en 0.0.0.0:{puerto}")
+     ThreadingHTTPServer(("0.0.0.0", puerto), Handler).serve_forever()

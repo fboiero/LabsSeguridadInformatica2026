@@ -1,0 +1,13 @@
+python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo02/objetivo
+python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo02/objetivo  # final, 5/5
+# Regresion funcional (servidor parchado en puerto 8081)
+cd entregas/labextra3/grupo02/objetivo
+PORT=8081 BACKUP_TOKEN=prueba123 python3 server.py &
+curl -i http://127.0.0.1:8081/
+curl -s "http://127.0.0.1:8081/login?user=admin&pass=sup3r-s3cr3t0"
+curl -s "http://127.0.0.1:8081/descargar?archivo=manual.txt"
+curl -s -H "Authorization: Bearer prueba123" http://127.0.0.1:8081/backup
+curl -i "http://127.0.0.1:8081/descargar?archivo=%2e%2e%2f%2e%2e%2fetc/passwd"
+# Estado de flags (corrido desde una copia con LF en ~/ctf-tmp, por CRLF de Windows en el repo)
+./ctf submit extra3 D1..D5 (flags impresas por el verificador en 5/5)
+./ctf status extra3
