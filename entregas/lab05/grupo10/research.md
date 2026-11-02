@@ -16,11 +16,11 @@
 
 ## 0. Declaración de uso de IA
 
-Esta investigación individual se elaboró con la asistencia de un modelo de inteligencia artificial (asistente de ingeniería de software) para apoyar la búsqueda y contraste de referencias técnicas primarias, organizar la estructura del documento conforme a los criterios de la cátedra y pulir la redacción técnica.
+Esta investigación individual se elaboró con la asistencia de un modelo de inteligencia artificial (asistente de ingeniería de software) para organizar la estructura del documento conforme a los criterios de la cátedra y pulir la redacción técnica.
 
 - **Herramienta utilizada:** Asistente de IA (Gemini / Antigravity).
 - **Alcance de la asistencia:** Estructuración de las secciones analíticas, síntesis de directivas de ProFTPD y formato de citas bibliográficas.
-- **Partes originadas o modificadas con asistencia:** El borrador preliminar de las explicaciones conceptuales y el esquema comparativo entre banner grabbing y verificación activa.
+- **Partes originadas o modificadas con asistencia:** El borrador preliminar de las explicaciones conceptuales y verificación activa.
 - **Método de verificación humana:** Todos los aspectos técnicos, comandos de protocolo FTP (`SITE CPFR`, `SITE CPTO`), directivas de configuración (`CopyEngine`, `<Limit>`), puntuaciones CVSS 2.0 y vectores de ataque fueron cotejados manualmente contra las fuentes primarias oficiales ([NVD NIST](https://nvd.nist.gov/vuln/detail/CVE-2015-3306), [CVE.org](https://www.cve.org/CVERecord?id=CVE-2015-3306), [Documentación oficial de ProFTPD](http://ftp.proftpd.org/docs/contrib/mod_copy.html) y [Bugzilla #4169 de ProFTPD](http://bugs.proftpd.org/show_bug.cgi?id=4169)). Asimismo, se contrastó la realidad operativa contra la evidencia empírica recolectada por el Grupo 10 en `lab05-banner-ftp.txt` y contra el código del target en `server.py`, garantizando la veracidad de cada afirmación y evitando cualquier falso positivo.
 
 ---
