@@ -12,14 +12,27 @@ Lautaro Mariño — @lautaromarino0
 
 ## 0. Declaración de uso de IA
 
+**Guadalupe Gómez — Parte A:**
+
 Se utilizó el asistente de IA **Claude (Anthropic)**. Según lo que pide el `CONTRIBUTING.md`:
 
 - **Qué herramienta:** Claude (Anthropic).
 - **Qué partes / para qué:** ayudó en el reconocimiento sobre la investigación y elección de técnicas para aplicar en los retos y ayudó a redactar el informe.
 - **Cómo se verificó:** cada flag se validó con `./ctf submit`; las versiones de los servicios se confirmaron contra la salida real de los comandos, guardada en `/loot`.
-- _(Completar cada integrante: usos de IA en el mapa, las demás preguntas o el mini-research, si los hubo, y cómo lo verificó.)_
+- **Pendiente — Lautaro Mariño (Parte B):** incorporar su declaración de uso
+  de IA al completar las filas 21 y 80 y P3.
 
 **Lorenzo Blanc — Parte C:** se utilizó **Codex (OpenAI)** para analizar la evidencia de la Parte A, redactar la clasificación de los puertos 8080 y 31337 y responder P1. La verificación consistió en contrastar los banners y datos transcritos en este informe con las afirmaciones de las filas, y consultar la documentación oficial de Werkzeug y Nmap enlazada en las secciones correspondientes. Se distinguieron riesgos potenciales de capacidades comprobadas, sin asignar CVEs ni puntajes sin respaldo. No se repitió el reconocimiento: se reutilizó la evidencia capturada por Guadalupe; los archivos originales de `.loot/` no estaban disponibles en esta copia local.
+
+**Fernando Cagliero — Parte D:** se utilizó **OpenAI Codex** para investigar
+el modo debug de Werkzeug, redactar `research.md`, P2 y P5, y revisar el armado
+de la entrega. Las afirmaciones se contrastaron con las transcripciones de la
+Parte A y las fuentes primarias de Pallets y MITRE, incluida la documentación
+de Werkzeug 2.0.1. Se verificaron estructura del informe, referencias y
+consistencia de versiones, puertos y medidas propuestas. Se reutiliza el
+reconocimiento de Guadalupe: no se levantó Docker ni se realizaron nuevas
+capturas, explotación o cambios sobre el objetivo. La revisión y los pendientes
+del armado se detallan en la sección 5.
 
 ---
 
@@ -88,7 +101,29 @@ Según el registro de la Parte A, `nmap -Pn -p- phantomcorp` descubrió el **313
 Como regla operativa, haría un barrido TCP completo dentro del alcance autorizado antes de cerrar el mapa, y después identificaría los servicios abiertos mediante versiones y banners. Registraría comandos, cobertura y evidencia; evaluaría UDP por separado, porque este barrido no lo cubre.
 
 **P2 — El servicio dev en producción.**
-> ⚠️ PENDIENTE (Parte D). Evidencia de la Parte A: `Server: Werkzeug/2.0.1` (server de desarrollo de Flask), `version: 0.9.3-DEV`, `debug: true` en el `/status` del 8080.
+
+La evidencia de Guadalupe reúne tres indicios en **8080/tcp**: el header
+`Server: Werkzeug/2.0.1 Python/3.9.2`, la versión de aplicación
+`0.9.3-DEV` y `debug: true` en `/status`. La combinación presenta un servicio
+de desarrollo expuesto a otras máquinas del lab. Las versiones del servidor,
+Python y la aplicación corresponden a componentes distintos; no deben
+confundirse ni usarse para atribuirles automáticamente un CVE.
+
+El problema no depende de encontrar un CVE: la funcionalidad de depuración
+está pensada para el desarrollador. En Werkzeug 2.0.1, una traza puede incluir
+una consola que, si está habilitada la evaluación interactiva (`evalex`) y
+es accesible, permite ejecutar Python en el contexto de la aplicación.
+El PIN no constituye una garantía suficiente para exponerla en producción
+([documentación de Werkzeug 2.0.1](https://github.com/pallets/werkzeug/blob/2.0.1/docs/debug.rst)).
+Además, Flask advierte que el servidor de desarrollo no está diseñado para
+ser particularmente seguro, estable o eficiente en un despliegue de producción
+([guía de despliegue](https://flask.palletsprojects.com/en/stable/deploying/)).
+
+En **este** recon se comprobó la exposición de metadatos y del estado declarado
+de debug. No se demostró una consola accesible ni ejecución remota. Eso limita
+la conclusión técnica, pero no justifica mantener la instancia DEV publicada:
+la información interna facilita el reconocimiento y una depuración interactiva
+expuesta podría ampliar mucho el impacto.
 
 **P3 — La ironía de `robots.txt`.**
 > ⚠️ PENDIENTE (Parte B). Evidencia: el `robots.txt` del 80 listaba `Disallow: /panel-interno-9x2f`, con un comentario de infra admitiendo que "sigue accesible desde afuera".
@@ -102,7 +137,32 @@ En este laboratorio **todo lo que hice fue reconocimiento activo**: el barrido d
 **¿Cuáles de mis acciones habrían quedado en los logs de PhantomCorp?** Todas, porque todas fueron activas: cada conexión TCP y cada petición dejó rastro. La más ruidosa es el `nmap -p-`: sondear los 65535 puertos genera un patrón de conexiones inconfundible para cualquier IDS o revisión de logs. Y cada `curl` dejó su línea en el access-log del servidor web (IP de origen, método, ruta, user-agent y timestamp), incluido el acceso a la ruta "oculta" `/panel-interno-9x2f`.
 
 **P5 — Ahora sos el defensor.**
-> ⚠️ PENDIENTE (Parte D). Dos candidatos fuertes a partir de los hallazgos: cerrar/filtrar el `31337` (o sacar ese "maintenance shell"), y quitar el server dev del `8080` de producción (o al menos desactivar `debug`).
+
+1. **Retirar el servicio de mantenimiento de 31337/tcp.** El barrido completo
+   encontró un servicio no documentado que entrega su banner sin autenticar.
+   Proponemos detenerlo y eliminar su arranque automático y su publicación de
+   red. Mientras se retira, denegar expresamente las conexiones a ese puerto
+   desde redes no autorizadas. Si el mantenimiento es necesario, debe pasar
+   por un acceso administrativo documentado, autenticado y restringido a los
+   responsables. **Comprobación posterior propuesta:** desde la misma red del
+   recon, 31337 ya no debe aparecer abierto ni entregar el banner. Esto elimina
+   una entrada innecesaria sin asumir que el banner demostró una shell operativa.
+
+2. **Retirar la instancia DEV expuesta en 8080/tcp.** Proponemos quitar ese
+   servicio del despliegue de producción. Si su aplicación es necesaria,
+   desplegarla con un servidor WSGI de producción, debug y depurador interactivo
+   deshabilitados, sin recargador automático, y acceso de red solo por el
+   frontal previsto. Restringir también `/status` y evitar que publique versión
+   interna o configuración de depuración, conforme a las recomendaciones de
+   [Flask](https://flask.palletsprojects.com/en/stable/deploying/) y al tratamiento
+   de código debug de [CWE-489](https://cwe.mitre.org/data/definitions/489.html).
+   **Comprobación posterior propuesta:** la instancia DEV del 8080 no acepta
+   conexiones desde la red del atacante, el frontal legítimo sigue disponible
+   y el estado detallado no es público. Cambiar solamente el banner no corrige
+   la exposición de la funcionalidad.
+
+Son medidas y criterios de aceptación propuestos para el rol defensor; no se
+aplicaron al entorno vulnerable de la cátedra durante esta revisión.
 
 ---
 
@@ -133,3 +193,41 @@ curl -sI phantomcorp:8080/ | tee /loot/07-r5-8080-headers.txt
 curl -s  phantomcorp:8080/ | tee /loot/08-r5-8080-root.txt
 curl -s  phantomcorp:8080/status | tee /loot/09-r5-8080-status.txt
 ```
+
+## 5. Revisión del aporte D y estado del armado — Fernando
+
+Revisión documental realizada el **02/11/2026** con Python 3.12.2 y Git Bash
+en Windows. El reconocimiento de la sección 4 fue realizado previamente por
+Guadalupe; sus comandos y las cinco flags se conservaron. Los archivos
+originales de `.loot/` no están presentes en este checkout: para P2, P5 y el
+mini-research se utilizaron las transcripciones de las secciones 1 y 2.
+
+La revisión contrastó las tres versiones del 8080 con la evidencia, verificó
+que P5 contenga dos medidas y sus criterios de aceptación, y distinguió las
+capacidades documentadas del depurador de las observadas en el lab. Las
+tres fuentes del mini-research se consultaron directamente, incluida la
+documentación de Werkzeug 2.0.1. Las comprobaciones propuestas en P5 quedan
+para después de aplicar las medidas; no se presentan como pruebas realizadas.
+
+Desde la raíz del repositorio se ejecutaron:
+
+```bash
+git diff --check
+bash bin/validar-repo.sh
+```
+
+Ambos pasaron. La validación del repositorio comprobó compilación de Python,
+sintaxis shell, manifiestos, documentación y enlaces internos. En Git Bash
+se utilizó una función `python3` que delega en el Python 3.12.2 instalado y
+`PYTHONPYCACHEPREFIX` apuntó a una carpeta temporal externa al repositorio.
+La revisión de sintaxis no sustituye una nueva ejecución del reconocimiento.
+
+**Estado para la entrega final:**
+
+- [x] Parte D: `research.md`, P2, P5 y declaración de IA incorporados.
+- [x] `INTEGRANTES.md` completo, con los datos de la entrega del Lab 04.
+- [ ] Parte B de Lautaro: filas 21 y 80, P3 y su declaración de IA.
+- [ ] Commit propio de Lautaro en esta rama; requisito de las cuatro cuentas.
+
+El PR debe permanecer **en borrador** hasta incorporar esos pendientes y
+revisar nuevamente el mapa y las cinco respuestas de análisis.
