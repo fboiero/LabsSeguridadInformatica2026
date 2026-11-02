@@ -55,7 +55,7 @@ Formato APA. Marcá cada fuente como [PRIMARIA], [ARBITRADA] o [SECUNDARIA].
 
 | Herramienta | Para qué | Qué partes afectó | Cómo se verificó |
 |---|---|---|---|
-| Asistente de IA (Gemini / Antigravity) | Asistencia en la estructuración, redacción inicial y ajuste de extensión de la investigación | Secciones Planteo, Desarrollo, Tensión / límites y Cierre | Revisión manual integral, verificación contra los documentos técnicos primarios de CISA, Mandiant, NTIA y OpenSSF, y comprobación algorítmica del conteo de palabras |
+| Asistente de IA (Gemini / Antigravity) | Asistencia en la estructuración, redacción inicial de la investigación | Secciones Planteo y Cierre | Revisión manual integral, verificación contra los documentos técnicos primarios de CISA, Mandiant, NTIA y OpenSSF, y comprobación algorítmica del conteo de palabras |
 
 **Verificación de fuentes:** el grupo declara haber accedido y verificado individualmente cada una de las referencias citadas.
 
