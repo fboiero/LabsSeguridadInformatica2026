@@ -80,7 +80,12 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 ## 3. Preguntas de análisis
 
 **P1 — El puerto que el escaneo default se perdió.**
-> ⚠️ PENDIENTE (Parte C). Pista de la evidencia: el `31337` solo apareció con `nmap -Pn -p-`; el escaneo default (1000 puertos) no lo veía.
+
+Nmap escanea por defecto los **1000 puertos más frecuentes**, no los puertos del 1 al 1000. `-p-` amplía el rango a **1–65535**; en el comando utilizado en este lab corresponde a TCP, sin incluir UDP ni el puerto 0. `-Pn` omite el descubrimiento previo del host, pero no amplía los puertos examinados. Véase la [documentación oficial de Nmap](https://nmap.org/book/man-port-specification.html).
+
+Según el registro de la Parte A, `nmap -Pn -p- phantomcorp` descubrió el **31337/tcp**, omitido por el barrido común; luego `ncat` devolvió `PhantomCorp maintenance shell v0.1`. La diferencia es la cobertura del escaneo: un puerto no examinado no puede considerarse cerrado. Un puerto alto tampoco garantiza quedar fuera de los 1000 más frecuentes en todas las instalaciones.
+
+Como regla operativa, haría un barrido TCP completo dentro del alcance autorizado antes de cerrar el mapa, y después identificaría los servicios abiertos mediante versiones y banners. Registraría comandos, cobertura y evidencia; evaluaría UDP por separado, porque este barrido no lo cubre.
 
 **P2 — El servicio dev en producción.**
 > ⚠️ PENDIENTE (Parte D). Evidencia de la Parte A: `Server: Werkzeug/2.0.1` (server de desarrollo de Flask), `version: 0.9.3-DEV`, `debug: true` en el `/status` del 8080.
