@@ -1,6 +1,15 @@
 # Informe — Laboratorio 06 · Enumeración
 
-**Grupo:** 10 · **Integrantes:** *(Completar nómina del grupo)* · **Fecha:** 2026-11-01
+**Grupo:** 10 · **Fecha:** 2026-11-03
+
+**Integrantes:**
+
+| Nombre y apellido | Usuario de GitHub |
+|---|---|
+| Belén Rocío Ramello | @belramello |
+| Carolina Paula Corazza | @carocor1 |
+| Chiara Agustina Kordek | @chiarakordek |
+| Juan Pablo Saby | @JuanSaby |
 
 ---
 
