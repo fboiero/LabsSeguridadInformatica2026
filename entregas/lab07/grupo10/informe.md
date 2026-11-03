@@ -12,11 +12,13 @@ De acuerdo con lo establecido en `CONTRIBUTING.md`, se declara el uso asistido d
 - **Finalidad del uso:** Planificación metodológica de auditoría de pruebas, diseño secuencial del protocolo de pruebas defensivas/analíticas, colaboración con la auditoría de la salida de CTF.
 Todas las solicitudes HTTP fueron ejecutadas en vivo contra el entorno controlado Docker de PhantomCorp, verificándose empíricamente las respuestas del servidor web, las trazas de error del motor SQLite, la exfiltración efectiva de las tablas y la validación matemática/criptográfica de los hashes de las flags capturadas mediante el sistema oficial `./ctf submit 07`.
 
+**Asistencia en la revisión de la Parte 5:** se utilizó OpenCode para revisar el informe y el código de `labs/lab07-explotacion/entorno/phantomcorp/server.py`. En esta sesión se levantó/recreó el contenedor local correcto del laboratorio y se ejecutaron solicitudes HTTP para R5 (id=3 y id=1). Se obtuvo la flag del endpoint y se comprobó su SHA-256 contra `retos.manifest`. La consola del atacante no pudo ejecutar `./ctf` por finales de línea CRLF en el script montado; por eso el estado de R5 se validó mediante el hash oficial del manifiesto, no mediante el comando `ctf submit`. R3 y R4 no se ejecutaron en esta sesión.
+
 ---
 
 ## 1. Flags capturadas
 
-Salida literal obtenida mediante `./ctf status 07`:
+Estado documentado tras validar R1, R2 y R5. La evidencia de progreso inicial de R1/R2 está en `evidencia/salidas/ctf_status_final.txt`; la validación de R5, hecha posteriormente, está en `evidencia/salidas/r5_submit_status.txt`:
 
 ```text
   ╭────────────────────────────────────────────────────────────╮
@@ -27,25 +29,28 @@ Salida literal obtenida mediante `./ctf status 07`:
    ✓  R2     SQLi - extraccion de datos con UNION
    ·  R3     Inyeccion de comandos (RCE)
    ·  R4     Path traversal / LFI
-   ·  R5     IDOR - control de acceso roto
+   ✓  R5     IDOR - control de acceso roto
 
-  ████████████░░░░░░░░░░░░░░░░░░  2/5 (40%)
+  3/5 (60%)
 ```
 
 - **Reto R1 (SQLi - bypass de autenticación):** `FLAG{sqli_auth_bypass}` (SHA-256: `9e8f2ecdbb0ad6fdbb0a7775e7a407fecd814d57a623a9aac20dd4767ac13537`)
 - **Reto R2 (SQLi - extracción con UNION):** `FLAG{sqli_union_dump}` (SHA-256: `9f75841558e355415fff4d7de6b1e6c59671c1cfcecc71dfb7fb3632cadfd190`)
+- **Reto R5 (IDOR - control de acceso roto):** `FLAG{idor_broken_access}` (SHA-256: `1a9fc5b9cbef488925fa1c4e1a4da376190a360c5978e0b40b92c1f11ed089b1`)
 
 ---
 
 ## 2. Tabla de explotación
 
+**Alcance de la Parte 5:** R1, R2 y R5 fueron comprobados contra el contenedor local de PhantomCorp. Para R3 y R4 se proponen payloads y se reconstruye su efecto a partir del código fuente; **no se presentan como explotaciones realizadas**. R3 y R4 continúan pendientes de comprobación práctica.
+
 | Vuln | Payload usado | Consulta/comando/ruta resultante | Impacto | Defensa concreta |
 |---|---|---|---|---|
-| **SQLi auth (R1)** | En parámetro `user`: `admin' --` (y `pass=dummy`) | `SELECT id, user, rol FROM users WHERE user = 'admin' --' AND pass = '...'` | **Bypass de autenticación y suplantación de identidad:** Acceso no autorizado directo a la cuenta de máxima jerarquía (`admin`) sin conocer ni validar su contraseña. Quiebre absoluto del control de acceso a nivel de aplicación. | **Consultas preparadas (Prepared Statements):** Desacoplar la compilación SQL del paso de parámetros (`cursor.execute("SELECT id, user, rol, pass FROM users WHERE user = ?", (user,))`). Posteriormente, validar el hash seguro de la contraseña en código de aplicación (`bcrypt.checkpw`) en lugar de compararla dentro de la sentencia SQL. |
-| **SQLi UNION (R2)** | En parámetro `q`: `NOEXISTE' UNION SELECT clave, valor FROM secrets --` | `SELECT nombre, precio FROM productos WHERE nombre LIKE 'NOEXISTE' UNION SELECT clave, valor FROM secrets --'` | **Fuga masiva de información confidencial (Violación de Confidencialidad):** Extracción de tablas internas completas del motor de base de datos (`secrets`, `users`) a través del canal reflejado del catálogo de búsqueda accesible a usuarios anónimos. | **Parametrización estricta de la búsqueda:** Emplear marcadores tipados en el predicado (`cursor.execute("SELECT nombre, precio FROM productos WHERE nombre LIKE ?", (f"%{q}%",))`). Complementar con el principio de mínimo privilegio en el usuario de base de datos limitando permisos `SELECT` solo a la tabla `productos`. |
-| *Command injection (R3)* | *(Asignado a otros integrantes del grupo)* | — | *(En curso de resolución)* | Empleo de APIs seguras sin invocación de subshell (`subprocess.run(["ping", "-c", "1", host], shell=False)`) y validación estricta por lista blanca. |
-| *Path traversal (R4)* | *(Asignado a otros integrantes del grupo)* | — | *(En curso de resolución)* | Resolución y canonicación de rutas absolutas validando que el prefijo pertenezca al directorio público permitido (`os.path.commonpath`). |
-| *IDOR (R5)* | *(Asignado a otros integrantes del grupo)* | — | *(En curso de resolución)* | Verificación de autorización basada en el contexto de la sesión del servidor (`session['user_id']`) y no en identificadores provistos por el cliente en la URL. |
+| **SQLi auth (R1)** | Documentado: `user=admin' --`, `pass=dummy`, en `POST /login`. | `SELECT user, rol FROM users WHERE user='admin' --' AND pass='dummy'` | El comentario elimina la comprobación de contraseña y permite obtener la respuesta del panel administrativo. El servidor del laboratorio no crea una sesión: devuelve el resultado del login en la respuesta. | Buscar al usuario mediante una consulta parametrizada y verificar su contraseña contra un hash seguro. No concatenar los valores recibidos con el SQL. |
+| **SQLi UNION (R2)** | Documentado: `q=NOEXISTE' UNION SELECT clave, valor FROM secrets --`, en `GET /buscar`. | `SELECT nombre, precio FROM productos WHERE nombre LIKE '%NOEXISTE' UNION SELECT clave, valor FROM secrets --%'` | Permite incorporar las columnas `clave` y `valor` de `secrets` a los resultados públicos del buscador, exponiendo información interna. | Mantener fija la consulta `SELECT nombre, precio FROM productos WHERE nombre LIKE ?` y enlazar como dato el patrón de búsqueda completo. Evitar exponer errores SQL al cliente como medida complementaria, no como solución principal. |
+| **Command injection (R3)** | Propuesto, no ejecutado: `host=127.0.0.1; cat /app/flags/cmdi.txt`, en `GET /herramientas/ping`. | `ping -c1 127.0.0.1; cat /app/flags/cmdi.txt 2>&1` | El separador `;` permite que la shell ejecute una segunda instrucción con los permisos del proceso web y lea el archivo indicado. El alcance puede exceder esa lectura. | Evitar la shell y pasar el ejecutable y sus argumentos por separado. Validar el destino como una dirección IP permitida, impedir que se interprete como una opción y limitar tiempo de ejecución y privilegios. |
+| **Path traversal (R4)** | Propuesto, no ejecutado: `archivo=../flags/lfi.txt`, en `GET /descargar`. | `/app/public/../flags/lfi.txt`, que se resuelve como `/app/flags/lfi.txt`. | Permite salir del directorio público y leer archivos ajenos a las descargas, siempre que el proceso web tenga permisos de lectura. | Preferir una lista de archivos descargables identificados por claves internas. Si se admiten rutas, resolverlas de forma canónica y comprobar pertenencia real al directorio público, considerando enlaces simbólicos; no basta comprobar un prefijo textual. |
+| **IDOR (R5)** | Ejecutado: `GET /perfil?id=3` como referencia y luego `GET /perfil?id=1`, sin credenciales. | Consulta fija: `SELECT id,user,rol,nota_privada FROM users WHERE id=?`; para la segunda solicitud el parámetro enlazado es `("1",)`. | La respuesta 200 devuelve `user=admin`, `rol=admin` y `nota_privada` con `FLAG{idor_broken_access}`. Se expone información privada de otro usuario; esto no otorga por sí solo una sesión ni el rol de administrador al solicitante. | Autenticar al solicitante y autorizar cada lectura en el servidor antes de devolver datos. Para un perfil propio, derivar el identificador de la sesión validada; para consultar perfiles ajenos, exigir un permiso explícito. Denegar por defecto y devolver solo los campos necesarios. |
 
 ---
 
@@ -55,7 +60,7 @@ Salida literal obtenida mediante `./ctf status 07`:
 En una arquitectura web vulnerable, la autenticación concatena de forma directa las cadenas recibidas en la solicitud HTTP dentro del texto de la instrucción SQL. En el endpoint `POST /login`, la consulta base sigue el formato:
 
 ```sql
-SELECT id, user, rol FROM users WHERE user = '<input_user>' AND pass = '<input_pass>'
+SELECT user, rol FROM users WHERE user='<input_user>' AND pass='<input_pass>'
 ```
 
 Para que una autenticación sea exitosa bajo este diseño, la cláusula `WHERE` requiere la satisfacción simultánea de dos condiciones booleanas unidas por el operador relacional `AND`:
@@ -68,16 +73,16 @@ Al enviar en el parámetro de usuario el payload `admin' --`:
 
 La sentencia interpretada y evaluada por el motor resulta:
 ```sql
-SELECT id, user, rol FROM users WHERE user = 'admin'
+SELECT user, rol FROM users WHERE user='admin'
 ```
-Dado que existe un registro con `user = 'admin'` en la tabla `users`, el motor evalúa la condición como verdadera y devuelve la fila correspondiente. El backend verifica que el cursor no está vacío, asume que las credenciales fueron validadas y concede una sesión administrativa. El dato ingresado por el cliente rompió la frontera e impuso su propia lógica ejecutable.
+Dado que existe un registro con `user='admin'`, la consulta devuelve su usuario y rol sin comprobar la contraseña. El backend acepta esa fila y devuelve el mensaje del panel administrativo. En esta implementación no se crea una sesión ni una cookie de autenticación: el bypass afecta la respuesta del login. El dato ingresado por el cliente rompió la frontera entre datos e instrucciones.
 
 ---
 
 ### P2 — Por qué el UNION necesita igual número de columnas y cómo averiguarlo
 En el álgebra relacional, el operador de unión ($\cup$) combina las tuplas resultantes de dos relaciones o proyecciones. Para que la operación sea matemáticamente válida y procesable por un motor SQL (propiedad denominada *compatibilidad de unión* o *union-compatibility*):
 1. Ambas subconsultas deben proyectar exactamente la misma **aridad** o **dimensionalidad** (idéntico número de columnas: $N_1 = N_2$).
-2. Los **tipos de datos** de las columnas en posiciones homólogas deben ser compatibles entre sí (por ejemplo, tipos de texto o numéricos convertibles).
+2. Según el motor SQL, también pueden exigirse **tipos compatibles** en posiciones equivalentes. SQLite, utilizado en este laboratorio, admite mezclar valores de distintas clases de almacenamiento en un `UNION`; no debe confundirse esa flexibilidad con el requisito obligatorio de igual cantidad de columnas.
 
 Si las consultas no poseen la misma cantidad de columnas, el optimizador sintáctico no puede hacer corresponder los campos en la estructura de la tupla resultante y aborta con un error inmediato de ejecución (ej. `SELECTs to the left and right of UNION do not have the same number of result columns`).
 
@@ -95,48 +100,45 @@ Cuando no se dispone del código fuente ni de documentación del backend, existe
    Consiste en probar de forma acumulativa literales nulos:
    - `q=' UNION SELECT NULL --` $\rightarrow$ Falla si $N \ne 1$.
    - `q=' UNION SELECT NULL, NULL --` $\rightarrow$ Éxito si $N = 2$.
-   Como el valor `NULL` es compatible con cualquier tipo de datos, esta prueba aisla la determinación del número de columnas sin verse afectada por incompatibilidades de tipos.
+    Usar `NULL` reduce los problemas de compatibilidad de tipos en muchos motores y ayuda a aislar la determinación del número de columnas. Los ejemplos anteriores describen el método; no se repitieron estas pruebas durante la revisión estática.
 
 ---
 
 ### P3 — Qué sigue después del RCE
 *(Contexto de análisis según consigna)*
-Una vez obtenida la Ejecución Remota de Comandos (RCE) en el sistema operativo del servidor, el objetivo primario de un atacante real pasa de la **intrusión** al establecimiento de **persistencia** y la **expansión de acceso** (movimiento lateral), tal como se profundiza en las Unidades 8 y 9:
-1. **Establecimiento de un canal de control interactivo:** Despliegue de una shell reversa cifrada o un implante C2 hacia una infraestructura propia para no depender de inyecciones web HTTP puntuales.
-2. **Persistencia:** Instalación de mecanismos de arranque persistente (cron jobs, servicios systemd o claves SSH autorizadas en `~/.ssh/authorized_keys`).
-3. **Escalamiento de privilegios:** Enumeración del host local (permisos sudo, binarios SUID, capacidades del kernel o secretos en variables de entorno) para migrar desde el usuario del servicio web (`operador` o `www-data`) hacia privilegios de superusuario (`root`).
-4. **Pivoting y reconocimiento de red interna:** Uso del host comprometido como salto para escanear y acceder a segmentos de red aislados no alcanzables desde Internet.
+Después de obtener ejecución remota de comandos, un atacante podría identificar el usuario y los permisos del proceso comprometido, buscar secretos accesibles e intentar elevar privilegios. También podría buscar **persistencia**, es decir, conservar una vía de acceso aunque se cierre la conexión inicial, o usar el servidor como punto de acceso hacia otros sistemas internos.
+
+Esas consecuencias dependen de los permisos y del aislamiento del servicio: RCE no equivale automáticamente a acceso como `root` ni a control del host que ejecuta Docker. En un pentest autorizado, cualquier prueba posterior debe estar incluida en el alcance acordado. En esta revisión no se ejecutaron comandos ni se estableció persistencia; R3 permanece pendiente de comprobación práctica.
 
 ---
 
 ### P4 — Por qué parametrizar mata la SQLi de raíz
-Las defensas perimetrales clásicas (como filtros de caracteres, sanitización con expresiones regulares o detección de firmas) operan sobre el mismo canal de texto y suelen ser eludibles mediante codificaciones alternativas o errores en la expresión de filtrado.
+Una consulta parametrizada mantiene separadas la **estructura SQL** y los **valores recibidos**. Por ejemplo, el buscador debe conservar fija esta instrucción:
 
-Las **consultas parametrizadas (Prepared Statements)** erradican la inyección SQL de raíz porque alteran fundamentalmente el flujo de ejecución en el motor de base de datos a nivel arquitectónico, implementando una **separación física estricta entre el código y los datos**:
+```sql
+SELECT nombre, precio FROM productos WHERE nombre LIKE ?
+```
 
-1. **Fase 1: Preparación y Compilación Sintáctica:**
-   La aplicación envía al motor la sentencia SQL con marcadores de posición abstractos (`?` o `:param`):
-   ```sql
-   SELECT nombre, precio FROM productos WHERE nombre = ?
-   ```
-   El analizador léxico (*lexer*) y el parser sintáctico del motor compilan la instrucción, generan el árbol sintáctico abstracto (AST) y construyen el plan de ejecución relacional. En este punto, **la estructura lógica del comando queda fijada y congelada de forma definitiva**.
+El patrón de búsqueda, incluidos sus `%`, se entrega por separado como valor del parámetro. Si ese valor contiene comillas, `UNION` o `--`, el motor los trata como parte del dato y no como instrucciones que puedan modificar la consulta.
 
-2. **Fase 2: Asignación de Parámetros:**
-   El valor provisto por el usuario se transmite al motor en un paquete binario o canal de datos independiente. El motor asigna el contenido directamente a la variable de memoria del marcador ya compilado.
+La protección no depende de borrar caracteres peligrosos ni de que exista un paquete de red separado: SQLite funciona dentro del propio proceso. Lo importante es usar correctamente el enlace de parámetros y no concatenar la entrada con el SQL. Los parámetros representan valores, no nombres de tablas, columnas o palabras clave; si esos elementos deben variar, se seleccionan mediante una lista permitida definida por la aplicación.
 
-Dado que la fase de análisis sintáctico ya concluyó, el motor trata al parámetro exclusivamente como una **cadena literal de datos**. Si el usuario envía comillas simples (`'`), operadores (`OR`, `UNION`) o caracteres de comentario (`--`), estos son interpretados como simples caracteres tipográficos dentro del valor de búsqueda, imposibilitando físicamente que un dato se transforme en instrucción ejecutable.
+Además, parametrizar evita esta SQLi, **pero no resuelve la autorización**: `/perfil` ya utiliza un parámetro y, aun así, presenta IDOR.
 
 ---
 
 ### P5 — Dónde va el control de acceso (IDOR)
-*(Contexto de análisis según consigna)*
-El control de acceso **jamás puede delegarse ni depender del cliente** (frontend, interfaz gráfica, navegador o parámetros URL manipulables). En la arquitectura web, el cliente corre en un entorno que está bajo control absoluto del usuario (o atacante), quien puede interceptar y modificar cualquier parámetro mediante herramientas de desarrollo, proxies (como Burp Suite) o llamadas directas vía `curl`.
+El control de acceso no puede depender de que el cliente «no cambie el id» porque **el usuario controla la solicitud HTTP**. Puede modificar la URL o enviar una petición sin pasar por la interfaz. Ocultar el identificador, deshabilitar un campo o validar con JavaScript no impide solicitar otro perfil.
 
-El control de acceso debe residir **exclusivamente en el backend (servidor)**, en la capa de lógica de negocio previa al acceso a datos:
-1. El servidor debe asociar el recurso solicitado no solo con el identificador del objeto (`id`), sino con el contexto de la identidad criptográficamente validada del usuario autenticado (extraída de una sesión de servidor o token firmado de forma inviolable, e.g., JWT).
-2. Se debe aplicar el principio de **Autorización Basada en Objetos**: antes de despachar el registro, el backend debe ejecutar una comprobación de pertenencia o rol:
-   $$\text{¿Tiene el usuario } U_{\text{sesión}} \text{ permiso para operar sobre el objeto } O_{\text{solicitado}}?$$
-3. Si la verificación no es satisfactoria, el servidor debe denegar el acceso por defecto (devolviendo `403 Forbidden` o `404 Not Found`).
+En R5, se consultó primero `/perfil?id=3` y se recibió el perfil `jperez` con HTTP 200. Luego se modificó a `/perfil?id=1`; sin autenticación, el servidor respondió HTTP 200 con el perfil `admin` y su `nota_privada`, que contiene `FLAG{idor_broken_access}`. El `id=3` predeterminado es solo un valor por defecto: **no demuestra la identidad del solicitante**. Las solicitudes y respuestas observadas se registran en `evidencia/salidas/r5_perfil_idor.txt`; la secuencia reproducible está en `evidencia/comandos.txt`.
+
+La verificación debe hacerse **en el servidor, en cada solicitud y antes de devolver información protegida**:
+
+1. **Autenticar:** obtener la identidad desde una sesión o credencial validada por el servidor, no desde el `id` recibido en la URL. El servidor actual no implementa sesiones; sería necesario incorporarlas o utilizar otro mecanismo de autenticación válido.
+2. **Autorizar el objeto y la operación:** comprobar si esa identidad puede leer ese perfil y sus campos privados. Si la función es «mi perfil», usar directamente el identificador de la sesión. Si permite consultar perfiles ajenos, exigir un permiso explícito; no basta con que exista una sesión iniciada.
+3. **Denegar por defecto:** si no hay autenticación, rechazar la solicitud; si faltan permisos, devolver `403 Forbidden` o un `404 Not Found` consistente para no revelar la existencia del recurso. No devolver la nota privada y ocultarla después en el navegador.
+
+La consulta de R5 ya utiliza `WHERE id=?`, por lo que cambiar el valor a `1` no es una inyección SQL. Es una referencia válida a un objeto ajeno que el backend entrega sin autorización. Utilizar identificadores difíciles de adivinar puede dificultar su descubrimiento, pero **no sustituye el control de acceso**.
 
 ---
 
@@ -204,7 +206,14 @@ curl -s -i -G http://phantomcorp/buscar \
 # 13. Envío y acreditación de flag R2
 ./ctf submit 07 R2 'FLAG{sqli_union_dump}'
 
-# 14. Verificar estado final de avance del laboratorio
+# 14. Verificar estado de avance luego de R1 y R2 (captura previa a R5)
+./ctf status 07
+
+# --- RETO 5: IDOR ---
+# Solicitud de referencia y modificación del identificador; ver evidencia R5.
+curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=3"
+curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=1"
+./ctf submit 07 R5 'FLAG{idor_broken_access}'
 ./ctf status 07
 ```
 
