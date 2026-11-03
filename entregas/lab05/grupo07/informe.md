@@ -280,8 +280,8 @@ La revisión de sintaxis no sustituye una nueva ejecución del reconocimiento.
 
 - [x] Parte D: `research.md`, P2, P5 y declaración de IA incorporados.
 - [x] `INTEGRANTES.md` completo, con los datos de la entrega del Lab 04.
-- [ ] Parte B de Lautaro: filas 21 y 80, P3 y su declaración de IA.
-- [ ] Commit propio de Lautaro en esta rama; requisito de las cuatro cuentas.
+- [x] Parte B de Lautaro: filas 21 y 80, P3 y su declaración de IA.
+- [x] Commit propio de Lautaro en esta rama; requisito de las cuatro cuentas.
 
 El PR debe permanecer **en borrador** hasta incorporar esos pendientes y
 revisar nuevamente el mapa y las cinco respuestas de análisis.
