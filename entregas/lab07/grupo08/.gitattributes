@@ -1,0 +1,5 @@
+# Los scripts de explotación se montan y ejecutan dentro del contenedor Linux
+# (cyberlab-attacker). Con core.autocrlf=true en Windows, git los dejaría en
+# CRLF en el working tree y bash fallaría con "set: pipefail: invalid option
+# name". Forzar LF para que corran en el target sin importar el SO del que clona.
+*.sh text eol=lf
