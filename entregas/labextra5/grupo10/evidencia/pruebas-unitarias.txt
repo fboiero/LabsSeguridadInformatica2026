@@ -1,0 +1,15 @@
+test_clave_incorrecta (test_jwt_tool.JWTTests.test_clave_incorrecta) ... ok
+test_decodificar (test_jwt_tool.JWTTests.test_decodificar) ... ok
+test_diccionario_y_estadisticas (test_jwt_tool.JWTTests.test_diccionario_y_estadisticas) ... ok
+test_espacios_y_unicode_en_clave (test_jwt_tool.JWTTests.test_espacios_y_unicode_en_clave) ... ok
+test_firma_alterada (test_jwt_tool.JWTTests.test_firma_alterada) ... ok
+test_firma_no_equivale_a_validar_expiracion (test_jwt_tool.JWTTests.test_firma_no_equivale_a_validar_expiracion) ... ok
+test_hmac_independiente (test_jwt_tool.JWTTests.test_hmac_independiente) ... ok
+test_no_encontrado_y_diccionario_vacio (test_jwt_tool.JWTTests.test_no_encontrado_y_diccionario_vacio) ... ok
+test_none_y_malformados (test_jwt_tool.JWTTests.test_none_y_malformados) ... ok
+test_payload_alterado_se_lee_pero_no_valida (test_jwt_tool.JWTTests.test_payload_alterado_se_lee_pero_no_valida) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.019s
+
+OK

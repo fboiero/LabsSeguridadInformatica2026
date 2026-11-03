@@ -1,0 +1,12 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra5                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     El payload viaja en claro (base64 no es cifrado)
+   ✓  R2     Secreto debil crackeado -> token forjado con role=admin
+   ✓  R3     Suplantacion por claim: sub=maria (IDOR via JWT)
+
+  ██████████████████████████████  3/3 (100%)
+
+[ OK ] ¡Lab extra5 COMPLETO! Ponete las pilas con la próxima unidad.
