@@ -18,7 +18,7 @@ Todas las solicitudes HTTP fueron ejecutadas en vivo contra el entorno controlad
 
 ## 1. Flags capturadas
 
-Estado documentado tras validar R1, R2 y R5. La evidencia de progreso inicial de R1/R2 está en `evidencia/salidas/ctf_status_final.txt`; la validación de R5, hecha posteriormente, está en `evidencia/salidas/r5_submit_status.txt`:
+Estado acumulado documentado tras validar R1, R2 y R5. R1/R2 se acreditaron previamente y constan en `evidencia/salidas/ctf_status_final.txt`; R5 se validó después y consta en `evidencia/salidas/r5_submit_status.txt`. La vista 3/5 combina esas evidencias: no es una captura literal de una sola ejecución de `./ctf status 07` en el estado local actual:
 
 ```text
   ╭────────────────────────────────────────────────────────────╮

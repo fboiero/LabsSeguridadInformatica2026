@@ -1,4 +1,4 @@
-﻿  PROGRESO · LAB 07
+﻿PROGRESO · LAB 07
 
    ✓  R1     SQLi - bypass de autenticacion
    ✓  R2     SQLi - extraccion de datos con UNION
@@ -6,13 +6,14 @@
    ·  R4     Path traversal / LFI
    ✓  R5     IDOR - control de acceso roto
 
-  3/5 (60%)
+  ██████████████████░░░░░░░░░░░░  3/5 (60%)
 
 Validación R5: FLAG{idor_broken_access}
 SHA-256(flag): 1a9fc5b9cbef488925fa1c4e1a4da376190a360c5978e0b40b92c1f11ed089b1
 El hash coincide con el registro R5 de labs/lab07-explotacion/retos.manifest.
+
 Validación de R5 realizada con el verificador del laboratorio en una copia temporal de los scripts normalizada a LF:
 
 [ OK ] Reto R5 resuelto: IDOR - control de acceso roto
 
-El verificador confirmó la flag mediante SHA-256 del manifiesto. Estado previo del repo: R1 y R2 ya estaban documentados como validados; R5 fue agregado a .progreso/07.done. Las solicitudes y respuestas HTTP están en r5_perfil_idor.txt.
+El verificador confirmó R5 mediante SHA-256 del manifiesto. Para mostrar progreso acumulado, R1 y R2 se corroboraron con sus evidencias de captura previas (`r1_05_submit.txt`, `r2_06_submit.txt` y `ctf_status_final.txt`), y R5 con el resultado anterior. Esta salida acumulada es una reconstrucción documental a partir de esas evidencias; no es una única ejecución literal de `./ctf status 07` sobre el estado persistido local. Las solicitudes y respuestas HTTP de R5 están en `r5_perfil_idor.txt`.
