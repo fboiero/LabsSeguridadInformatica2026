@@ -100,6 +100,9 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 - **[B6]** OWASP WSTG v4.2. [WSTG-INFO-02 — Fingerprint Web Server](https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/01-Information_Gathering/02-Fingerprint_Web_Server/).
 - **[B7]** MITRE. [CWE-615 — Inclusion of Sensitive Information in Source Code Comments](https://cwe.mitre.org/data/definitions/615.html).
 - **[B8]** MITRE. [CWE-425 — Direct Request](https://cwe.mitre.org/data/definitions/425.html).
+- **[B9]** IETF. [RFC 9309 — Robots Exclusion Protocol](https://www.rfc-editor.org/rfc/rfc9309.html), §1 ("These rules are not a form of access authorization") y §3, Security Considerations.
+- **[B10]** Google Search Central. [Introduction to robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/intro): uso para administrar el tráfico de crawlers; "not a mechanism for keeping a web page out of Google".
+- **[B11]** OWASP WSTG v4.2. [WSTG-INFO-03 — Review Webserver Metafiles for Information Leakage](https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/01-Information_Gathering/03-Review_Webserver_Metafiles_for_Information_Leakage/).
 
 ---
 
@@ -139,7 +142,23 @@ la información interna facilita el reconocimiento y una depuración interactiva
 expuesta podría ampliar mucho el impacto.
 
 **P3 — La ironía de `robots.txt`.**
-> ⚠️ PENDIENTE (Parte B). Evidencia: el `robots.txt` del 80 listaba `Disallow: /panel-interno-9x2f`, con un comentario de infra admitiendo que "sigue accesible desde afuera".
+
+`robots.txt` es el Robots Exclusion Protocol, creado en 1994 y estandarizado en RFC 9309: un archivo público en la raíz del sitio con el que el dueño les **pide** a los crawlers qué rutas no recorrer. Sirve para administrar el tráfico de los buscadores y lo que se indexa, no para proteger nada [B10]. El propio RFC aclara que esas reglas "no son una forma de autorización de acceso" y que listar rutas en el archivo "las expone públicamente y las hace descubribles" (traducción propia) [B9].
+
+En PhantomCorp se ve tal cual. `curl -sS -i http://phantomcorp/robots.txt` devolvió ([15-robots.txt](evidencia/15-robots.txt)):
+
+```
+User-agent: *
+Disallow: /admin
+Disallow: /panel-interno-9x2f
+# Recordatorio infra: /panel-interno-9x2f sigue accesible desde afuera. Migrar a VPN.
+```
+
+Quien lo escribió quería que los buscadores no indexaran el panel, y para lograrlo publicó su ruta exacta. Es un nombre con sufijo arbitrario (`-9x2f`), difícil de adivinar con una wordlist genérica de fuerza bruta. Bastó un `GET` para obtener `HTTP/1.0 200 OK` y la página "Panel interno PhantomCorp" sin credenciales ([18-panel-interno.txt](evidencia/18-panel-interno.txt), flag R4).
+
+La ironía es doble. El archivo pensado para que el panel no aparezca en Google (SEO) funcionó como índice de rutas sensibles para el recon; OWASP lo trata justamente como fuente de fuga de rutas y funcionalidades ocultas (WSTG-INFO-03) [B11]. Y el comentario de infraestructura confirma que la exposición era conocida. Además, `/admin`, también listado, responde 404 ([17-admin.txt](evidencia/17-admin.txt)): el archivo mezcla rutas vigentes con viejas, pero igual le ahorra al atacante la fuerza bruta y le marca qué priorizar.
+
+La ruta solo era secreta por oscuridad. La corrección no es borrar la línea de `robots.txt`: es poner el panel detrás de autenticación y fuera de la red pública (la misma nota dice "Migrar a VPN"). Google recomienda proteger con contraseña lo que no debe ser público, en lugar de esconderlo con `robots.txt` [B10].
 
 **P4 — Pasivo vs. activo.**
 
