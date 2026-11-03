@@ -6,12 +6,9 @@ timeline.py — Ampliación del Lab 11. Reconstruí la línea de tiempo del ataq
 automáticamente, en vez de leer el log a ojo. Solo biblioteca estándar.
 
 Analizar a mano 20 líneas se puede; analizar 200.000 no. Por eso el forense
-scriptea. Completá los TODO y corré:
+scriptea. Desde este directorio:
 
-    python3 timeline.py ../caso/logs/access.log --ip 185.220.101.42
-
-La función parsear_linea() viene YA implementada como referencia: leela, es la
-base de todo.
+    python3 timeline.py ../../../../labs/lab11-forensia/caso/logs/access.log --ip 185.220.101.42
 """
 import argparse
 import re
@@ -32,27 +29,43 @@ def parsear_linea(linea: str):
 
 def construir_timeline(path: str, ip: str = None) -> list:
     """Recorre el log, parsea cada línea y devuelve la lista de eventos.
-    Si `ip` no es None, filtrá SOLO los eventos de esa IP (la del atacante).
-
-    TODO:
-      - abrí el archivo y parseá cada línea con parsear_linea().
-      - descartá las que devuelven None.
-      - si `ip` fue pasada, quedate solo con las de esa IP.
-      - el log ya viene en orden cronológico; no hace falta reordenar.
-    """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá construir_timeline()")
+    Si `ip` no es None, filtra SOLO los eventos de esa IP (la del atacante).
+    El log ya viene en orden cronológico; no hace falta reordenar."""
+    eventos = []
+    with open(path, encoding="utf-8", errors="replace") as log:
+        for linea in log:
+            evento = parsear_linea(linea)
+            if evento is None:
+                continue
+            if ip is not None and evento["ip"] != ip:
+                continue
+            eventos.append(evento)
+    return eventos
 
 
 def clasificar_fase(ruta: str) -> str:
     """Mapea una petición a la fase del ataque, para etiquetar la timeline.
-    Devolvé una etiqueta corta: RECON · ENUM · EXPLOIT · RCE · WEBSHELL · EXFIL.
+    Devuelve RECON · ENUM · EXPLOIT · RCE · WEBSHELL · EXFIL, u OTRO si la ruta
+    no corresponde a ninguna fase.
 
-    TODO: mirá las rutas del caso (login, /api/reporte?cmd=, shell.php,
-    clientes...) y devolvé la fase que corresponde. Pista: usá 'in' sobre la ruta.
+    El orden importa: va de la fase más específica a la más general. El `wget`
+    que baja shell.php viaja por /api/reporte?cmd=, y /portal-rrhh/login contiene
+    a /portal-rrhh. Solo mira la ruta: "/" es RECON también para un usuario
+    legítimo, así que la etiqueta tiene sentido filtrando con --ip.
     """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá clasificar_fase()")
+    if "clientes" in ruta:
+        return "EXFIL"
+    if "shell.php" in ruta:
+        return "WEBSHELL"
+    if "cmd=" in ruta:
+        return "RCE"
+    if "/portal-rrhh/login" in ruta or "/backup/rrhh.conf" in ruta:
+        return "EXPLOIT"
+    if ruta in ("/robots.txt", "/admin", "/login", "/backup", "/portal-rrhh", "/uploads"):
+        return "ENUM"
+    if ruta == "/":
+        return "RECON"
+    return "OTRO"
 
 
 def main() -> int:

