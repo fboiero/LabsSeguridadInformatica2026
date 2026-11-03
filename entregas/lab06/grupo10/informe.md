@@ -15,15 +15,16 @@
 
 ## 0. Declaración de uso de IA
 
-En cumplimiento con las directivas de `CONTRIBUTING.md`, se declara el uso del asistente de inteligencia artificial Antigravity + Claude durante el desarrollo de este reto:
-- **Finalidad de uso:** Asistencia en la planificación metodológica del ejercicio, análisis de la estructura interna del protocolo Git (formato de objetos, zlib, árboles y blobs) y redacción técnica del informe.
-- **Verificación:** Todas las hipótesis teóricas fueron contrastadas empíricamente mediante la ejecución de comandos `curl` contra el entorno Docker activo de la cátedra (`phantomcorp`), verificando los códigos de respuesta HTTP, las cabeceras devueltas y validando criptográficamente el hash SHA-256 de la flag contra `retos.manifest`.
+En cumplimiento con las directivas de `CONTRIBUTING.md`, se declara el uso de **Antigravity + Claude** y **OpenCode con GPT-6.1 Sol (OpenAI)** durante el desarrollo del laboratorio:
+- **Finalidad de uso:** Asistencia en la revisión de la consigna, planificación metodológica, análisis de la estructura interna de Git (objetos, zlib, árboles y blobs), análisis de respuestas de la API y redacción técnica.
+- **Partes asistidas:** Metodología y documentación de la exposición de Git y la enumeración de usuarios; organización de evidencias e integración del informe. OpenCode ejecutó las consultas de la API contra el contenedor autorizado y obtuvo la captura directa de la ventana de Git Bash/Mintty mediante la función de captura de ventanas de Windows.
+- **Verificación:** Los análisis se contrastaron con las solicitudes y respuestas reales de `curl`, sus códigos HTTP y cabeceras. Para el repositorio expuesto se validó el hash SHA-256 de la flag contra `retos.manifest`; para la API se comprobó la aceptación de la flag por el motor oficial y se conservaron las salidas del envío y del estado CTF.
 
 ---
 
 ## 1. Flags capturadas
 
-Salida oficial del comando `./ctf status 06`:
+Registro previo de R2: salida oficial del comando `./ctf status 06`, conservada sin cambios:
 
 ```
   ╭────────────────────────────────────────────────────────────╮
@@ -39,6 +40,22 @@ Salida oficial del comando `./ctf status 06`:
   ██████░░░░░░░░░░░░░░░░░░░░░░░░  1/5 (20%)
 ```
 
+### Validación de R4 — Enumeración de usuarios mediante API
+
+La flag `FLAG{user_enumeration_api}` se recuperó del campo `flag` de la respuesta HTTP de `/api/users`. Se envió con `./ctf submit 06 R4 'FLAG{user_enumeration_api}'`; el motor oficial respondió con código de salida `0`:
+
+```text
+[ OK ] Reto R4 resuelto: Enumeracion de usuarios via API
+```
+
+Evidencia: [envío completo de R4](evidencia/salidas/r4_04_ctf_submit_r4.txt), [estado anterior](evidencia/salidas/r4_03_ctf_status_antes.txt) y [estado posterior](evidencia/salidas/r4_05_ctf_status_despues.txt), sin editar.
+
+![Salida real de ctf status 06 con R4 validado](evidencia/capturas/ctf_status_r4.png)
+
+La imagen es una captura directa de la ventana de Git Bash/Mintty al volver a ejecutar `./ctf status 06`; se conserva también el [registro crudo de esa terminal](evidencia/salidas/r4_07_ctf_status_terminal.txt). Solo se capturó esa ventana, sin recrear la salida en un navegador ni incluir otras aplicaciones.
+
+Antes de ejecutar R4 no existía `.progreso/06.done` en esta copia local: el estado pasó de `0/5` a `1/5`, con R4 marcado. El registro anterior de R2 corresponde a otra ejecución y se conserva como evidencia de ese trabajo; no se fabricó un estado consolidado. `ctf status` devuelve `1` porque el laboratorio completo aún no está resuelto; por eso Mintty muestra `/bin/bash: Exit 1`. Ese aviso no invalida R4: su aceptación está acreditada por `ctf submit`.
+
 ---
 
 ## 2. Inventario de enumeración
@@ -48,7 +65,7 @@ Salida oficial del comando `./ctf status 06`:
 | *(R1 - Pendiente)* | | | | | |
 | **Repositorio Git expuesto (Configuración y URL interna)** | `GET /.git/config` | Petición HTTP directa a rutas predecibles de control de versiones | Código `200 OK`, `Content-Type: text/plain`. Revela `bare = false` y `url = https://git.internal.phantomcorp/intranet.git` junto a comentarios de desarrollo | **Medio** (Demostrado). Divulgación de arquitectura interna y ubicación del repositorio central de código. No escala a Crítico en este servidor porque `.git/objects/` e historial no son accesibles (404) | Permite identificar el nombre del repositorio interno (`intranet.git`) y el dominio de desarrollo (`git.internal.phantomcorp`) para ataques dirigidos de falsificación de peticiones (SSRF) o pivot lateral |
 | *(R3 - Pendiente)* | | | | | |
-| *(R4 - Pendiente)* | | | | | |
+| **R4 — API interna que expone usuarios y roles sin autenticación** | `GET /api/users` | Enumeración dirigida de rutas de API con `curl` y análisis del JSON | [HTTP 200 y listado de usuarios](evidencia/salidas/r4_02_api_users_http.txt); [petición sin credenciales](evidencia/salidas/r4_02_api_users_peticion.txt) | **Medio, valoración cualitativa:** exposición demostrada de tres usuarios, sus identificadores y roles. Permite reconocer cuentas y priorizar objetivos; no demuestra acceso a ellas ni recuperación de contraseñas | Nombres para orientar futuras pruebas de autenticación e IDs `1`, `2` y `3` para investigar autorización por objeto, si el endpoint del Lab 07 utiliza esos mismos identificadores. No demuestra IDOR por sí solo |
 | *(R5 - Pendiente)* | | | | | |
 
 ### Evidencia de soporte del inventario (R2)
@@ -81,6 +98,84 @@ GET http://phantomcorp/.git/index HTTP/1.1 -> 404 Not Found
 GET http://phantomcorp/.git/objects/info/packs HTTP/1.1 -> 404 Not Found
 GET http://phantomcorp/.git/description HTTP/1.1 -> 404 Not Found
 ```
+
+### Evidencia de soporte del inventario (R4)
+
+**Fecha de ejecución:** 2026-11-03.
+
+#### 1. Alcance y entorno
+
+La consigna pide identificar una API interna que lista personal. Se tomó como punto de partida la pista `/api/...` y el ejemplo `/api/users` publicado en el enunciado. Se realizaron únicamente dos solicitudes `GET` al objetivo de la cátedra, sin credenciales, cookies ni cabecera `Authorization`; no se afirma haber inventariado toda la API.
+
+Los contenedores preexistentes correspondían a otros laboratorios. Para no reemplazarlos, se construyó el objetivo del **Lab 06** en el proyecto independiente `lab06-r4-carolina`, con el [Compose de reproducción](evidencia/entorno-r4.compose.yml). La red es interna, sin puertos publicados al host ni montajes del repositorio o de archivos personales. Al finalizar se detuvieron únicamente los dos contenedores de ese proyecto.
+
+No se obtuvo la flag leyendo el código del objetivo ni `solucion.md`; se recuperó de la respuesta HTTP. No se ejecutaron pruebas de autenticación, fuerza bruta ni explotación del Lab 07.
+
+#### 2. Rutas consultadas y respuestas
+
+| Orden | Solicitud | Respuesta observada | Interpretación |
+|---|---|---|---|
+| 1 | `GET http://phantomcorp/api` | `404 Not Found`, `Content-Type: text/html; charset=utf-8` | Esta ruta concreta no devuelve un índice de API; no permite concluir que no existan subrutas. |
+| 2 | `GET http://phantomcorp/api/users` | `200 OK`, `Content-Type: application/json` | Devuelve directamente el listado de personal y la flag, sin iniciar sesión. |
+
+Se conservan la [traza de la petición a `/api`](evidencia/salidas/r4_01_api_peticion.txt) y su [respuesta cruda](evidencia/salidas/r4_01_api_http.txt), incluido el resultado negativo. El código de salida `0` de `curl` indica que completó la transferencia, no que el HTTP 404 sea un resultado exitoso de enumeración.
+
+Extracto de la [solicitud real que permitió enumerar usuarios](evidencia/salidas/r4_02_api_users_peticion.txt):
+
+```text
+> GET /api/users HTTP/1.1
+> Host: phantomcorp
+> User-Agent: curl/8.14.1
+> Accept: */*
+>
+```
+
+Cabeceras y cuerpo de la [respuesta cruda](evidencia/salidas/r4_02_api_users_http.txt). El cuerpo se conserva en una línea, como fue recibido:
+
+```http
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7
+Date: Tue, 03 Nov 2026 19:33:22 GMT
+Content-Type: application/json
+X-Powered-By: PhantomCMS/3.7
+
+{"users": [{"id": 1, "user": "admin", "role": "superuser"}, {"id": 2, "user": "jperez", "role": "editor"}, {"id": 3, "user": "mgomez", "role": "viewer"}], "note": "endpoint interno de RRHH - no exponer", "flag": "FLAG{user_enumeration_api}"}
+```
+
+#### 3. Usuarios identificados y límites de la comprobación
+
+| ID publicado | Usuario publicado | Rol declarado por la API |
+|---|---|---|
+| 1 | `admin` | `superuser` |
+| 2 | `jperez` | `editor` |
+| 3 | `mgomez` | `viewer` |
+
+La API identifica directamente estos tres usuarios del escenario, sin inferirlos mediante diferencias en mensajes de error. La nota `endpoint interno de RRHH - no exponer` refuerza que el listado está destinado a uso interno. No se comprobó si las cuentas permiten iniciar sesión ni si sus roles se aplican correctamente: la evidencia demuestra su publicación, no el control de las cuentas.
+
+La respuesta no incluye contraseñas, hashes, correos ni tokens de sesión. Los nombres y la flag pertenecen al entorno ficticio de la cátedra, no a personas o servicios externos.
+
+#### 4. Riesgo de la exposición
+
+El impacto demostrado es sobre la **confidencialidad**: cualquier cliente con conectividad HTTP al servicio puede obtener el listado observado sin aportar credenciales. No se demostró que el contenedor fuera accesible desde Internet, ni que se pudiera modificar información o afectar la disponibilidad.
+
+Conocer usuarios válidos reduce la incertidumbre para futuras pruebas de autenticación: en lugar de adivinar simultáneamente usuario y contraseña, un atacante puede concentrarse en las cuentas publicadas. El rol `superuser` señala a `admin` como un objetivo potencialmente más valioso, aunque no se hayan probado sus permisos efectivos. Los identificadores consecutivos revelan referencias concretas que pueden orientar la revisión de controles de acceso.
+
+La valoración **media** se fundamenta en la exposición anónima de identidades y roles internos con una sola solicitud, sin evidencia de contraseñas, sesiones, acceso a cuentas ni una cadena de explotación completada. No se asigna un CVSS ni se presenta como una vulnerabilidad crítica sin pruebas que lo respalden.
+
+#### 5. Información aprovechable para el Lab 07
+
+- **Usuarios:** `admin`, `jperez` y `mgomez` son entradas conocidas para planificar pruebas de autenticación autorizadas, sin afirmar que ya se haya obtenido acceso.
+- **Roles declarados:** `superuser`, `editor` y `viewer` permiten definir qué diferencias de permisos deberían revisarse en la fase de explotación.
+- **Identificadores:** `1`, `2` y `3` podrían utilizarse para investigar autorización por objeto en `GET /perfil?id=`, si se confirma que ambas partes del escenario comparten esos IDs. Conocer un ID no habilita por sí mismo a leer el perfil correspondiente.
+
+En R4 no se consultó `/perfil`, no se modificaron identificadores para acceder a perfiles y no se resolvió IDOR. Esa conexión es una hipótesis de trabajo para el Lab 07, no un resultado ya demostrado.
+
+#### 6. Fuentes del análisis de R4
+
+- [Consigna del Lab 06](../../../labs/lab06-enumeracion-de-servicios/README.md), [rúbrica](../../../labs/lab06-enumeracion-de-servicios/docs/rubrica.md) y [protocolo de evidencia](../../../docs/PROTOCOLO-EVIDENCIA.md).
+- [OWASP WSTG v4.2 — Testing for Account Enumeration and Guessable User Account](https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/03-Identity_Management_Testing/04-Testing_for_Account_Enumeration_and_Guessable_User_Account): fundamento del riesgo de revelar usuarios. Sus pruebas sobre autenticación no se ejecutaron aquí; se observó una divulgación directa mediante API.
+- [MITRE — CWE-200](https://cwe.mitre.org/data/definitions/200.html): referencia conceptual sobre exposición de información y confidencialidad, no una clasificación de causa raíz ni una estimación automática de severidad.
+- Documentación oficial de Docker, consultada mediante Context7: [directorio de proyecto de Compose](https://docs.docker.com/reference/cli/docker/compose/) y [redes internas](https://docs.docker.com/reference/compose-file/networks/#internal).
 
 ---
 
@@ -158,4 +253,29 @@ echo -n 'FLAG{git_repo_exposed}' | sha256sum
 ./ctf submit 06 R2 'FLAG{git_repo_exposed}'
 ./ctf status 06
 ```
+
+### Comandos de R4 (2026-11-03)
+
+El listado con las redirecciones, los códigos de salida y las notas de ejecución está incorporado en [evidencia/comandos.txt](evidencia/comandos.txt). Las salidas crudas de R4 están en la carpeta común [evidencia/salidas/](evidencia/salidas/), con prefijo `r4_` para no sobrescribir las de otros retos. Las rutas siguientes corresponden a su ubicación final, después de integrar las evidencias.
+
+```bash
+# Desde la raíz del repositorio: levantar la instancia aislada del Lab 06.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml up -d --build
+
+# Consultas dirigidas a la API, sin autenticación.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml exec -T attacker curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 15 --include --verbose http://phantomcorp/api
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml exec -T attacker curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 15 --include --verbose http://phantomcorp/api/users
+
+# Estado previo, validación de la flag recibida y estado posterior (Git Bash).
+./ctf status 06
+./ctf submit 06 R4 'FLAG{user_enumeration_api}'
+./ctf status 06
+
+# Detener solamente la instancia creada para R4.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml stop
+```
+
+Las salidas de R4 se guardaron mediante redirección de `stdout` y `stderr` a archivos binarios desde `subprocess.run`, sin edición manual ni conversión de codificación. Su reubicación a la carpeta común no cambió sus bytes. Los tres archivos `stderr` vacíos del CTF indican que no hubo mensajes en ese canal. El archivo `r4_06_entorno_stop_stdout.txt` también está vacío porque Docker informó la detención por `stderr`, conservado en `r4_06_entorno_stop_stderr.txt`. Estos archivos vacíos son registros de canales sin mensajes, no evidencias pendientes de completar.
+
+Para reproducir se necesita Docker y la imagen local `cyberlab-attacker`, construida con la preparación oficial del curso. En Windows, los comandos `./ctf` se ejecutan con Git Bash. Las IP y fechas pueden variar al recrear el entorno; las evidencias originales no deben sobrescribirse al repetir las pruebas.
 
