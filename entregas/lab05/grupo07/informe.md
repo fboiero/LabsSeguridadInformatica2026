@@ -62,7 +62,7 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 
 ## 2. Mapa de superficie de ataque
 
-> ⚠️ **PENDIENTE — Parte B del reparto:** clasificación de los puertos **21** y **80**. Parte C: puertos **8080** y **31337** completos a partir de la evidencia de la Parte A.
+> **Parte B** (Lautaro): puertos **21** y **80**, con una re-verificación propia adjunta en `evidencia/` (sección 4). **Parte C** (Lorenzo): puertos **8080** y **31337**, a partir de la evidencia de la Parte A.
 
 **Datos crudos del recon (Parte A), para construir el mapa:**
 
@@ -75,18 +75,31 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 
 *Evidencia completa en `.loot/`: `01-nmap-allports.txt`, `02-r1-port31337.txt`, `03-r2-ftp-banner.txt`, `04-r3-http-headers.txt`, `05-r4-robots.txt`, `06-r4-oculta.txt`, `07/08/09-r5-8080-*.txt`.*
 
-**Tabla de clasificación (pendientes las filas de la Parte B):**
+**Tabla de clasificación:**
 
 | Puerto | Servicio | Versión (evidencia) | ¿Cómo lo identificaste? | CVE relevante | CVSS | Criticidad | Justificación (contra ESTE caso) |
 |---|---|---|---|---|---|---|---|
-| 21 | | | | | | | |
-| 80 | | | | | | | |
+| 21 | FTP | Banner `220 ProFTPD 1.3.5 Server (PhantomCorp FTP)` ([12-ftp-banner.txt](evidencia/12-ftp-banner.txt)); `nmap -sV` informa `21/tcp open ftp ProFTPD 1.3.5` ([11-nmap-sV-21-80.txt](evidencia/11-nmap-sV-21-80.txt)). La versión sale **solo del saludo**: el servicio envía una segunda línea `214` y corta la conexión sin procesar `USER` ni `SITE HELP` ([13-ftp-comandos.txt](evidencia/13-ftp-comandos.txt)). | Banner grabbing con `ncat` (Guadalupe, R2). Re-verificación con `nmap -Pn -sV -p 21,80` y una sesión `ncat` que envió `USER anonymous` y `SITE HELP`: no hubo respuesta a ningún comando. | **CVE-2015-3306**: el módulo `mod_copy` de ProFTPD 1.3.5 permite leer y escribir archivos arbitrarios con `SITE CPFR`/`SITE CPTO` sin autenticación [B1]. Relacionado: CVE-2019-12815 (`mod_copy`, versiones hasta 1.3.5b) [B2]. | CVE-2015-3306: **10.0** en CVSS v2 (NVD, `AV:N/AC:L/Au:N/C:C/I:C/A:C`) y 10.0 en CVSS 3.1 (CISA-ADP, `AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H`) [B1]. CVE-2019-12815: 9.8 en CVSS 3.1 (NVD) [B2]. | **Crítica** por la versión anunciada; explotabilidad no confirmada en este lab. | La versión del banner coincide exactamente con la afectada por CVE-2015-3306, que CISA incorporó al catálogo KEV el 08/10/2026 por explotación activa [B1][B3], y existe un módulo público de Metasploit para ella [B4]. Si el servicio fuera ProFTPD 1.3.5 con `mod_copy` cargado, un atacante sin credenciales podría copiar archivos con los permisos del demonio FTP, por ejemplo hacia el directorio que publica el servidor del puerto 80. **En este lab no se pudo confirmar**: el servicio corta la sesión después del saludo, así que no hay evidencia de `mod_copy` ni de comandos FTP operativos, y un banner puede estar falseado o desactualizado. Queda como crítica porque es la hipótesis de mayor impacto a verificar en el Lab 07, y porque anunciar la versión exacta le ahorra al atacante el fingerprinting. |
+| 80 | HTTP (portal corporativo) | Headers `Server: PhantomServer/2.4.1` y `X-Powered-By: PhantomCMS 2.4.1` ([14-http-headers.txt](evidencia/14-http-headers.txt)); `nmap -sV` informa `PhantomServer/2.4.1` pero no reconoce el producto (`1 service unrecognized`, [11-nmap-sV-21-80.txt](evidencia/11-nmap-sV-21-80.txt)). | `curl -I` (Guadalupe, R3). Re-verificación con `curl -sS -I`, `nmap -sV`, `robots.txt`, el index y las dos rutas listadas en `robots.txt`. | **Sin CVE.** La búsqueda por palabra clave en NVD (API 2.0, 02/11/2026) devuelve 0 resultados para `PhantomCMS` y para `PhantomServer` [B5]: son productos del escenario. No se extrapolan CVEs de otros servidores web. | No aplica: sin CVE no hay CVSS publicado, y no se calculó un vector propio. | **Media** (evaluación cualitativa). | El problema es de configuración, no de versión: (1) los headers anuncian producto y versión y filtran un header interno `X-Backend-Flag`, lo que facilita el fingerprinting [B6]; (2) `robots.txt` lista `/panel-interno-9x2f` con el comentario "sigue accesible desde afuera" ([15-robots.txt](evidencia/15-robots.txt)); (3) esa ruta responde **200 sin credenciales** con la página "Panel interno PhantomCorp" ([18-panel-interno.txt](evidencia/18-panel-interno.txt)), es decir, una URL que se presenta como restringida no aplica ninguna autorización (CWE-425) [B8]; (4) el HTML del index conserva `TODO(infra): sacar el panel interno de produccion antes del go-live` ([16-index.txt](evidencia/16-index.txt)), información sensible en comentarios (CWE-615) [B7]. No la califico como alta porque lo observado es contenido estático: el panel no mostró formularios, datos de clientes ni funciones administrativas. Subiría si en la fase siguiente expusiera funciones. `/admin`, también listado, responde 404 ([17-admin.txt](evidencia/17-admin.txt)). |
 | 8080 | HTTP de desarrollo | Header `Server: Werkzeug/2.0.1 Python/3.9.2`; aplicación `version: 0.9.3-DEV`, `debug: true`. Son versiones distintas: servidor y aplicación. | Evidencia de Guadalupe: `curl -sI phantomcorp:8080/` y `curl -s phantomcorp:8080/status`. | No se atribuye un CVE: el hallazgo es la exposición del servicio dev y su configuración declarada. El banner no prueba una vulnerabilidad explotable. | No asignado: no se calculó un vector CVSS para este hallazgo. | Alta (evaluación cualitativa). | El `/status` accesible revela versión interna y debug activo en una aplicación DEV. Werkzeug advierte que el depurador interactivo permite ejecutar código y no debe exponerse en producción [1]. Esto implica un riesgo potencial grave si esa consola está habilitada y accesible; `debug: true` por sí solo no demuestra acceso a ella ni ejecución de código en este lab. |
 | 31337 | Servicio TCP identificado como "maintenance shell" | Banner `PhantomCorp maintenance shell v0.1`; no identifica un producto comercial ni la versión del sistema operativo. | Evidencia de Guadalupe: hallazgo con `nmap -Pn -p- phantomcorp` y banner con `ncat -w3 phantomcorp 31337 </dev/null`. | Sin CVE identificado para este servicio específico del lab; no se extrapola desde el nombre "shell". | No asignado: no se calculó un vector CVSS para este hallazgo. | Alta (evaluación cualitativa, por su aparente función de mantenimiento). | Servicio no documentado expuesto en un puerto alto: entrega su banner sin autenticación. Eso confirma acceso al servicio y fuga de información, pero no prueba una shell operativa ni ejecución de comandos sin credenciales. Si ofrece funciones administrativas sin autenticación, el impacto podría ser crítico. El número alto del puerto no constituye un control de acceso. |
 
 **Alcance de la Parte C:** clasificación basada en las transcripciones del recon de Guadalupe incluidas arriba; no se realizaron pruebas de explotación. La criticidad expresa una prioridad contextual, no un puntaje CVSS ni una explotación confirmada.
 
 [1] [Werkzeug — Debugging Applications](https://werkzeug.palletsprojects.com/en/stable/debug/): riesgos del depurador y advertencia de no utilizarlo en producción.
+
+**Alcance de la Parte B:** las filas 21 y 80 se apoyan en la evidencia de Guadalupe (banner FTP y headers) y en una re-verificación propia contra el target oficial del lab, adjunta en `evidencia/10` a `18` y descripta en la sección 4. No se intentó explotar `mod_copy` ni ninguna otra vulnerabilidad: el CVE del puerto 21 se asigna a la **versión anunciada** y su aplicabilidad real queda para el Lab 07. Prioridad resultante del mapa: 21 (crítica, potencial) > 8080 y 31337 (altas) > 80 (media, confirmada).
+
+**Fuentes de la Parte B** (consultadas el 02/11/2026):
+
+- **[B1]** NIST NVD. [CVE-2015-3306](https://nvd.nist.gov/vuln/detail/CVE-2015-3306). Descripción, CVSS v2 de NVD, CVSS 3.1 de CISA-ADP, CWE-284 y fecha de alta en KEV (08/10/2026), verificados también en el registro de la API 2.0 y en [cve.org](https://www.cve.org/CVERecord?id=CVE-2015-3306).
+- **[B2]** NIST NVD. [CVE-2019-12815](https://nvd.nist.gov/vuln/detail/CVE-2019-12815). `mod_copy` en ProFTPD hasta 1.3.5b; CVSS 3.1 9.8.
+- **[B3]** The Hacker News (09/10/2026). [CISA agrega cinco fallas al KEV tras su explotación por Flax Typhoon](https://thehackernews.com/2026/10/flax-typhoon-exploits-five-flaws-as.html), entre ellas CVE-2015-3306.
+- **[B4]** Rapid7. [ProFTPD 1.3.5 Mod_Copy Command Execution](https://www.rapid7.com/db/modules/exploit/unix/ftp/proftpd_modcopy_exec/), módulo de Metasploit que usa `SITE CPFR`/`SITE CPTO` sin autenticación.
+- **[B5]** NIST NVD API 2.0. Búsquedas [`keywordSearch=PhantomCMS`](https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=PhantomCMS) y [`keywordSearch=PhantomServer`](https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=PhantomServer): `totalResults: 0`.
+- **[B6]** OWASP WSTG v4.2. [WSTG-INFO-02 — Fingerprint Web Server](https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/01-Information_Gathering/02-Fingerprint_Web_Server/).
+- **[B7]** MITRE. [CWE-615 — Inclusion of Sensitive Information in Source Code Comments](https://cwe.mitre.org/data/definitions/615.html).
+- **[B8]** MITRE. [CWE-425 — Direct Request](https://cwe.mitre.org/data/definitions/425.html).
 
 ---
 
@@ -193,6 +206,28 @@ curl -sI phantomcorp:8080/ | tee /loot/07-r5-8080-headers.txt
 curl -s  phantomcorp:8080/ | tee /loot/08-r5-8080-root.txt
 curl -s  phantomcorp:8080/status | tee /loot/09-r5-8080-status.txt
 ```
+
+### Re-verificación de la Parte B (puertos 21 y 80, P3) — Lautaro, 02/11/2026
+
+Para no clasificar solo a partir de transcripciones, se volvió a operar contra el target del Lab 05. **Entorno distinto al de la Parte A:** sandbox Linux sin Docker, asistido por Claude (ver sección 0). Se ejecutó sin modificaciones el target oficial `labs/lab05-reconocimiento/entorno/phantomcorp/server.py` con `python3`, que es el mismo `CMD` de su Dockerfile, y `phantomcorp` se resolvió a `127.0.0.1` con una entrada en `/etc/hosts`; por eso `nmap` muestra `rDNS record for 127.0.0.1: localhost`. No se leyó el código del target. Herramientas: Nmap 7.94SVN, Ncat 7.94SVN y curl. Hora del sandbox: `2026-11-03T01:36:05+00:00`, es decir 02/11/2026 22:36 (UTC−3).
+
+```bash
+date -Is | tee 10-fecha-parte-b.txt
+nmap -Pn -sV -p 21,80 phantomcorp -oN 11-nmap-sV-21-80.txt
+ncat -w3 phantomcorp 21 </dev/null | tee 12-ftp-banner.txt
+# ¿el 21 acepta comandos después del saludo?
+{ sleep 1; printf 'USER anonymous\r\n'; sleep 1; printf 'SITE HELP\r\n'; sleep 1; printf 'QUIT\r\n'; sleep 1; } \
+  | ncat -w5 -v phantomcorp 21 2>&1 | tee 13-ftp-comandos.txt
+curl -sS -I http://phantomcorp/ > 14-http-headers.txt
+curl -sS -i http://phantomcorp/robots.txt > 15-robots.txt
+curl -sS -i http://phantomcorp/ > 16-index.txt
+curl -sS -i http://phantomcorp/admin > 17-admin.txt
+curl -sS -i http://phantomcorp/panel-interno-9x2f > 18-panel-interno.txt
+```
+
+Resultados: el banner del 21 y los headers `Server`/`X-Powered-By` del 80 coinciden con lo registrado por Guadalupe. Lo nuevo: el 21 cierra la conexión tras el saludo (`Ncat: Broken pipe.`) sin responder a `USER` ni a `SITE HELP`; `nmap -sV` identifica el 21 solo por el banner y no reconoce el producto del 80; `/admin` da 404 y `/panel-interno-9x2f` da 200 sin credenciales. Los archivos se adjuntan en `evidencia/` con los fines de línea CRLF de HTTP normalizados a LF.
+
+Para repetirlo con el entorno de la cátedra: `./ctf lab 05`, `make shell` y los mismos comandos con salida en `/loot/`.
 
 ## 5. Revisión del aporte D y estado del armado — Fernando
 
