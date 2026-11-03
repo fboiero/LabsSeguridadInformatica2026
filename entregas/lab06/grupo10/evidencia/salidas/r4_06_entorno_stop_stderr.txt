@@ -1,0 +1,4 @@
+ Container lab06-r4-carolina-phantomcorp-1 Stopping 
+ Container lab06-r4-carolina-attacker-1 Stopping 
+ Container lab06-r4-carolina-phantomcorp-1 Stopped 
+ Container lab06-r4-carolina-attacker-1 Stopped 

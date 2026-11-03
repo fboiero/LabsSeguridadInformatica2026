@@ -27,3 +27,81 @@ echo -n 'FLAG{git_repo_exposed}' | sha256sum
 # 7. Verificación del estado actualizado del laboratorio
 ./ctf status 06
 
+# ----------------------------------------------------------------------
+# Lab 06 — R4 — Grupo 10 — 2026-11-03
+# Comandos del procedimiento R4, en orden. Directorio: raíz del repositorio.
+# Las rutas de configuración y redirección se muestran con su ubicación
+# final tras integrar las evidencias; las solicitudes, opciones y resultados
+# no cambiaron. Las salidas crudas se reubicaron sin editar sus bytes.
+# No se incluyen pruebas de otros retos ni del Lab 07.
+#
+# Ejecución real: Docker desde PowerShell; ./ctf mediante
+# C:\Program Files\Git\bin\bash.exe -c, con LANG=C.UTF-8,
+# LC_ALL=C.UTF-8 y NO_COLOR=1.
+# La redirección stdout/stderr se hizo abriendo archivos en modo binario
+# exclusivo (xb) y pasándolos a subprocess.run en Python 3.12.
+# Los símbolos > y 2> expresan esas redirecciones, no copias manuales.
+# Los stderr del CTF quedaron vacíos porque no hubo mensajes en ese canal;
+# el stdout de stop quedó vacío porque Docker informó la detención por stderr.
+# Se conservan tal como fueron capturados; no son resultados pendientes.
+#
+# Preparación: los contenedores preexistentes correspondían a laboratorios
+# anteriores (09/10). No se iniciaron ni reemplazaron. Se creó un proyecto
+# independiente, sin puertos publicados y con red interna.
+
+# R4.1. Construir el objetivo del Lab 06 y levantar la instancia aislada.
+# Código de salida: 0.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml up -d --build > entregas/lab06/grupo10/evidencia/salidas/r4_00_entorno_stdout.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_00_entorno_stderr.txt
+
+# R4.2. Comprobar la ruta base sugerida por la pista /api/...
+# Código de salida de curl: 0; respuesta HTTP: 404.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml exec -T attacker curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 15 --include --verbose http://phantomcorp/api > entregas/lab06/grupo10/evidencia/salidas/r4_01_api_http.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_01_api_peticion.txt
+
+# R4.3. Consultar el endpoint de usuarios del ejemplo de la consigna.
+# Código de salida de curl: 0; respuesta HTTP: 200.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml exec -T attacker curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 15 --include --verbose http://phantomcorp/api/users > entregas/lab06/grupo10/evidencia/salidas/r4_02_api_users_http.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_02_api_users_peticion.txt
+
+# Se leyó el JSON de la respuesta con json.loads de Python y se extrajo
+# su campo flag. No se leyó el código del target ni solucion.md.
+
+# R4.4. Consultar el estado local antes de enviar R4 (Git Bash).
+# Código de salida: 1; el motor devuelve 1 si el lab no está completo.
+# Estado real: 0/5; .progreso/06.done aún no existía en esta copia.
+# Una impresión posterior en PowerShell falló por codificación; la salida
+# ya estaba guardada en el archivo y no fue modificada.
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r4_03_ctf_status_antes.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_03_ctf_status_antes_stderr.txt
+
+# R4.5. Validar con el motor oficial la flag recibida por HTTP (Git Bash).
+# Código de salida: 0; R4 aceptado.
+./ctf submit 06 R4 'FLAG{user_enumeration_api}' > entregas/lab06/grupo10/evidencia/salidas/r4_04_ctf_submit_r4.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_04_ctf_submit_r4_stderr.txt
+
+# R4.6. Registrar el estado posterior (Git Bash).
+# Código de salida: 1 por lab incompleto; R4 aparece resuelto, 1/5.
+# No se reenviaron flags de otros integrantes para alterar ese estado.
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r4_05_ctf_status_despues.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_05_ctf_status_despues_stderr.txt
+
+# R4.7. Detener únicamente los contenedores creados para R4.
+# Código de salida: 0.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml stop > entregas/lab06/grupo10/evidencia/salidas/r4_06_entorno_stop_stdout.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_06_entorno_stop_stderr.txt
+
+# R4.8. Obtener una captura directa de la terminal, en lugar de la
+# visualización en navegador que se había generado inicialmente.
+# Se abrió una ventana Git Bash/Mintty en la raíz del repositorio, con
+# LANG=C.UTF-8, LC_ALL=C.UTF-8 y NO_COLOR=1, y se ejecutó lo siguiente.
+# PATH prioriza Git Bash para evitar resolver bash.exe como WSL.
+# set -x registra el comando realmente ejecutado antes de mostrar su salida.
+export PATH=/usr/bin:/bin:$PATH
+set -x
+./ctf status 06
+# Código de salida: 1 por laboratorio incompleto; R4 permanece resuelto.
+# Mintty guardó su registro crudo con la opción -l en:
+# evidencia/salidas/r4_07_ctf_status_terminal.txt
+# La función PrintWindow de Windows capturó únicamente esa ventana.
+# El PNG se guardó sin retoques en evidencia/capturas/ctf_status_r4.png,
+# reemplazando la anterior visualización en navegador.
+# No se inició Docker, no se hicieron peticiones de red y no se enviaron flags.
+
+# Para reproducir, no sobrescribir las evidencias originales.
+# ./ctf submit actualiza el progreso local ignorado por Git (.progreso/06.done).
+# Los comandos y las evidencias anteriores de R2 se conservaron sin cambios.
+
