@@ -24,3 +24,5 @@ Persisten límites. Un gestor central se convierte en un activo crítico: una id
 ## Reflexión
 
 El gestor de secretos mejora el control y la trazabilidad, pero no vuelve inocua una credencial filtrada. La defensa útil combina acceso mínimo, corta duración cuando sea posible, rotación probada y revocación rápida. En el escenario del laboratorio, encontrar un secreto en un archivo debe llevar a evaluar su alcance y reemplazarlo, no solo a borrar la evidencia.
+
+A lo largo de los laboratorios anteriores se fue avanzando desde el reconocimiento y la enumeración hasta la explotación y la post-explotación. Muchas de estas tareas repetitivas pueden automatizarse mediante scripts, lo que permite procesar información de forma más rápida y ordenada. De cara a la orquestación que se aborda en el Laboratorio 09, automatizar no significa dejar todo en manos de una herramienta: definir la autorización, respetar los límites del alcance y evaluar el impacto de cada acción sigue siendo responsabilidad del criterio humano.
