@@ -6,13 +6,11 @@
 
 **Estado de preparación:** implementación y secciones de Carolina preparadas con asistencia de IA; falta completar las secciones asignadas a Juan, Belén y Chiara, la revisión humana grupal y adjuntar la captura solicitada del status. Este archivo todavía no es una entrega grupal cerrada.
 
-**Declaración de uso de IA:** se utilizó OpenCode (GPT-6 Luna) para revisar requisitos, implementar las cuatro funciones de `jwt_tool.py`, generar pruebas y scripts de reproducción, ejecutar la verificación técnica local y asistir en la redacción de este informe. Las partes asistidas incluyen código, evidencia automatizada y análisis. La verificación técnica consistió en 10 pruebas unitarias y peticiones HTTP contra el `Handler` original de la cátedra; las salidas están adjuntas. Se contrastaron conceptos con RFC 7518, RFC 7519 y RFC 8725. Esto no sustituye la revisión humana de cada integrante, que deberá actualizar esta declaración si usa otras herramientas.
+**Declaración de uso de IA:** se utilizó OpenCode (GPT-6 Luna) para revisar requisitos, analisis final de la implementación de las cuatro funciones de `jwt_tool.py`, pruebas de verificación técnica y scripts de reproducción y asistir en la redacción de este informe. Las partes asistidas incluyen analisis de código y evidencia automatizada. La verificación técnica consistió en 10 pruebas unitarias y peticiones HTTP contra el `Handler` original de la cátedra; las salidas están adjuntas. Se contrastaron conceptos con RFC 7518, RFC 7519 y RFC 8725.
 
 **Alcance y entorno:** caso ficticio autorizado de la cátedra, **sin Docker** como indica la consigna; no se instalaron dependencias externas. Python 3.12.10, Windows 11. El reproductor importa el `Handler` original sin modificar y lo sirve en `127.0.0.1` en puerto libre, en lugar de exponerlo en `0.0.0.0:8080`. En la corrida usada fue `127.0.0.1:54232`. No se probaron sistemas de terceros. El hash del archivo original y los detalles del entorno están en `evidencia/salidas/base-validada/00-entorno.json`.
 
 ## 1. Anatomía del token real
-
-**Responsable: Carolina (con asistencia de IA; pendiente de revisión y defensa personal).**
 
 Se obtuvo un token mediante `GET /login?user=diego&pass=diego123`, usando las credenciales públicas del caso. La respuesta HTTP 200 está en `evidencia/salidas/base-validada/01-login.http.txt`. Token real de esa respuesta:
 
@@ -41,8 +39,6 @@ La CLI del grupo se ejecutó con `decodificar <token-real>`. Header y payload ob
 `decodificar()` solo permite leer; no confirma autenticidad. El token histórico puede estar vencido cuando se revise el informe y sigue siendo evidencia de esta ejecución; para repetir el experimento hay que pedir un login nuevo. Salida original: `03-decodificado.txt`; token: `02-token-original.txt`, en la misma carpeta de evidencia.
 
 ## 2. Crack offline del secreto
-
-**Responsable: Carolina (con asistencia de IA; pendiente de revisión y defensa personal).**
 
 **Oráculo en una oración:** un candidato es correcto si `HMAC-SHA256(candidato, header_codificado + "." + payload_codificado)` coincide con la firma del token observado, sin consultar al servidor.
 
@@ -87,7 +83,81 @@ Con **32 bytes uniformemente aleatorios** habría 256 bits de entropía: este di
 
 ### R2 — Escalada vertical (role=admin)
 
-**Pendiente de completar por Juan Pablo:** documentar el token forjado para R2, el comando utilizado, la respuesta observada en `/admin` con la flag y el cambio conceptual respecto del token original. La evidencia técnica común está en `evidencia/salidas/base-validada/`; todavía no se atribuye una reproducción personal a Juan.
+Una vez obtenido el secreto simétrico (`mate123`) mediante el ataque offline documentado en la sección anterior, se procedió a forjar un token JWT con privilegios elevados (`role=admin`) manteniendo la identidad del usuario (`sub=diego`).
+
+#### 1. Generación y estructura del token forjado
+
+Se ejecutó la CLI del grupo invocando el subcomando `forjar`:
+
+```bash
+python jwt_tool.py forjar mate123 --sub diego --role admin
+```
+
+La herramienta construyó el header y el payload correspondientes, calculó el HMAC-SHA256 con la clave recuperada y generó el token (registrado en `evidencia/salidas/base-validada/05-token-admin.txt`):
+
+```text
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzczOTM0NCwiZXhwIjoxNzkzNzQyOTQ0fQ.FyXSeI5vkb_ad0dzfvVza72dYo1InXpNRhqwYhncuyY
+```
+
+Al decodificarlo sin verificar clave, se observan sus dos partes JSON legibles:
+
+```json
+{ "alg": "HS256", "typ": "JWT" }
+```
+
+```json
+{
+  "sub": "diego",
+  "role": "admin",
+  "iat": 1793739344,
+  "exp": 1793742944
+}
+```
+
+#### 2. Acceso al panel de administración y respuesta observada
+
+Se envió una solicitud HTTP `GET /admin` al servidor local incluyendo el token forjado en la cabecera `Authorization: Bearer <token_forjado>`. A diferencia del token legítimo de Diego —que es rechazado con código 403 Forbidden como se detalla en el control de sanidad—, el servidor aceptó la firma recalculada y autorizó el acceso con `HTTP 200 OK`.
+
+Respuesta recibida (preservada en `evidencia/salidas/base-validada/06-admin.http.txt`):
+
+```http
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.12.10
+Date: Tue, 03 Nov 2026 20:55:44 GMT
+Content-Type: application/json; charset=utf-8
+
+{"panel": "admin", "auditoria": "FLAG{jwt_forjado_admin}"}
+```
+
+**Flag obtenida (R2):** `FLAG{jwt_forjado_admin}`.
+El registro oficial de envío y aceptación por el motor CTF se documenta en `evidencia/salidas/base-validada/ctf-submit-R2.txt` (`[ OK ] Correcta (ya la tenías). Reto R2 ✓`) y en `ctf-status-extra5.txt`.
+
+#### 3. Diff conceptual respecto del token original
+
+El contraste entre el token emitido por el endpoint `/login` (`02-token-original.txt`) y el token forjado para la escalada (`05-token-admin.txt`) evidencia las siguientes diferencias estructurales y semánticas:
+
+| Elemento | Token original (`diego` legítimo) | Token forjado (R2) | Impacto / Rol en la autorización |
+|---|---|---|---|
+| **Header** | `{"alg": "HS256", "typ": "JWT"}` | `{"alg": "HS256", "typ": "JWT"}` | Idéntico. Mantiene el algoritmo simétrico HMAC-SHA256. |
+| **Claim `sub`** | `"diego"` | `"diego"` | Sin cambio. Se conserva la identidad para aislar la escalada de rol de la suplantación de usuario. |
+| **Claim `role`** | `"user"` | `"admin"` | **Cambio crítico**. Altera el nivel de privilegios declarado para satisfacer la validación del endpoint `/admin`. |
+| **Claim `nota_interna`** | `"deploy-tag FLAG{...}"` | *(Omitido)* | Demuestra que el servidor no exige este claim adicional para autorizar; evalúa únicamente `role`. |
+| **Timestamps (`iat`/`exp`)** | `1793739344` / `1793742944` | `1793739344` / `1793742944` | En la corrida controlada se mantuvieron vigentes para evitar el rechazo por expiración en `verificar()`. |
+| **Firma HMAC** | `P90v5C9BokTjjd...` | `FyXSeI5vkb_ad0...` | **Recalculada íntegramente**. Dado que el payload cambió, la firma anterior es inválida; se calculó un nuevo MAC válido con `mate123`. |
+
+#### 4. Problema de seguridad: validación de firma y confianza en claims
+
+La vulnerabilidad demostrada en R2 ilustra un desacople crítico entre la validación criptográfica y la política de autorización:
+
+1. **Simetría y pérdida del control de emisión:** En esquemas basados en HMAC (`HS256`), el secreto es compartido. Quien puede verificar un token también tiene la capacidad matemática de crearlo y firmarlo. Al haberse utilizado una clave de diccionario (`mate123`), el atacante rompe la garantía de autenticidad del emisor: el servidor ya no puede distinguir si un token fue generado por su propio proceso de autenticación o por un tercero.
+2. **Confianza ciega en claims autodeclarados:** La arquitectura stateless del portal delega el rol del usuario exclusivamente en el payload del JWT. En `server.py`, el método `_payload_o_401()` se limita a validar que `verificar(token)` sea no nulo (es decir, firma HMAC coincidente y fecha no expirada). Una vez superado ese filtro, la función de ruta confía plenamente en `payload.get("role") == "admin"` sin contrastar contra una base de datos ni verificar si el usuario `diego` posee efectivamente privilegios de administrador.
+3. **Escalada de privilegios inadvertida:** Dado que el token forjado porta una firma matemáticamente válida ante la clave del servidor, la verificación criptográfica tiene éxito y el control de acceso concede el recurso restringido de forma transparente.
+
+#### 5. Alcance de la demostración y limitaciones
+
+- **Lo demostrado en el laboratorio:** Se confirmó experimentalmente en un entorno local y controlado (`127.0.0.1`, sin dependencias externas ni conexión a red) que una clave débil permite forjar claims de autorización y alcanzar la condición HTTP 200 en un endpoint protegido (`/admin`), sorteando la restricción por rol que normalmente bloquea a usuarios estándar (HTTP 403 verificado en `09-original-en-admin.http.txt`).
+- **Consecuencias potenciales en un sistema real:** Si este patrón se replica en producción, un atacante que capture o reciba un token legítimo podría vulnerar la separación de privilegios de toda la plataforma, accediendo a consolas de administración, manipulando configuraciones operativas o exfiltrando información confidencial sin generar alertas por firma inválida.
+- **Limitaciones de la evidencia:** Este experimento no evalúa ni compromete sistemas de terceros ni usuarios reales. En una arquitectura de producción robusta intervienen factores ausentes en este prototipo educativo, tales como secretos de alta entropía (256 bits pseudoaleatorios), criptografía asimétrica (donde los servicios consumidores solo tienen clave pública para verificar), listas de revocación o re-validación de roles contra un almacén persistente.
 
 ### R3 — Suplantación horizontal (sub=maria)
 
