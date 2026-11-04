@@ -31,8 +31,8 @@ Parte A y las fuentes primarias de Pallets y MITRE, incluida la documentación
 de Werkzeug 2.0.1. Se verificaron estructura del informe, referencias y
 consistencia de versiones, puertos y medidas propuestas. Se reutiliza el
 reconocimiento de Guadalupe: no se levantó Docker ni se realizaron nuevas
-capturas, explotación o cambios sobre el objetivo. La revisión y los pendientes
-del armado se detallan en la sección 5.
+capturas, explotación o cambios sobre el objetivo. La revisión del armado y
+su cierre documental se detallan en la sección 5.
 
 ---
 
@@ -94,7 +94,7 @@ Las 5 flags se capturaron **operando las herramientas** contra `phantomcorp`, no
 
 - **[B1]** NIST NVD. [CVE-2015-3306](https://nvd.nist.gov/vuln/detail/CVE-2015-3306). Descripción, CVSS v2 de NVD, CVSS 3.1 de CISA-ADP, CWE-284 y fecha de alta en KEV (08/10/2026), verificados también en el registro de la API 2.0 y en [cve.org](https://www.cve.org/CVERecord?id=CVE-2015-3306).
 - **[B2]** NIST NVD. [CVE-2019-12815](https://nvd.nist.gov/vuln/detail/CVE-2019-12815). `mod_copy` en ProFTPD hasta 1.3.5b; CVSS 3.1 9.8.
-- **[B3]** The Hacker News (09/10/2026). [CISA agrega cinco fallas al KEV tras su explotación por Flax Typhoon](https://thehackernews.com/2026/10/flax-typhoon-exploits-five-flaws-as.html), entre ellas CVE-2015-3306.
+- **[B3]** CISA. [Known Exploited Vulnerabilities Catalog — registro JSON oficial](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json). El registro de `CVE-2015-3306` indica `dateAdded: 2026-10-08`; se reconfirmó en el catálogo del 03/11/2026 durante el cierre documental.
 - **[B4]** Rapid7. [ProFTPD 1.3.5 Mod_Copy Command Execution](https://www.rapid7.com/db/modules/exploit/unix/ftp/proftpd_modcopy_exec/), módulo de Metasploit que usa `SITE CPFR`/`SITE CPTO` sin autenticación.
 - **[B5]** NIST NVD API 2.0. Búsquedas [`keywordSearch=PhantomCMS`](https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=PhantomCMS) y [`keywordSearch=PhantomServer`](https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=PhantomServer): `totalResults: 0`.
 - **[B6]** OWASP WSTG v4.2. [WSTG-INFO-02 — Fingerprint Web Server](https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/01-Information_Gathering/02-Fingerprint_Web_Server/).
@@ -143,7 +143,7 @@ expuesta podría ampliar mucho el impacto.
 
 **P3 — La ironía de `robots.txt`.**
 
-`robots.txt` es el Robots Exclusion Protocol, creado en 1994 y estandarizado en RFC 9309: un archivo público en la raíz del sitio con el que el dueño les **pide** a los crawlers qué rutas no recorrer. Sirve para administrar el tráfico de los buscadores y lo que se indexa, no para proteger nada [B10]. El propio RFC aclara que esas reglas "no son una forma de autorización de acceso" y que listar rutas en el archivo "las expone públicamente y las hace descubribles" (traducción propia) [B9].
+`robots.txt` es el Robots Exclusion Protocol, creado en 1994 y estandarizado en RFC 9309: un archivo público en la raíz del sitio con el que el dueño les **pide** a los crawlers qué rutas no recorrer. Sirve para administrar el rastreo; no garantiza que una URL desaparezca del índice del buscador ni controla el acceso al recurso [B10]. El propio RFC aclara que esas reglas "no son una forma de autorización de acceso" y que listar rutas en el archivo "las expone públicamente y las hace descubribles" (traducción propia) [B9].
 
 En PhantomCorp se ve tal cual. `curl -sS -i http://phantomcorp/robots.txt` devolvió ([15-robots.txt](evidencia/15-robots.txt)):
 
@@ -162,11 +162,11 @@ La ruta solo era secreta por oscuridad. La corrección no es borrar la línea de
 
 **P4 — Pasivo vs. activo.**
 
-El reconocimiento **pasivo** recolecta información **sin tocar** el objetivo (por ejemplo `whois`, `dig`/DNS público, certificados, OSINT): no genera tráfico contra el target, así que es casi indetectable y de bajo riesgo legal. El **activo** **interactúa** con el objetivo —le manda paquetes o peticiones— y por eso queda registrado en sus logs y requiere autorización.
+El reconocimiento **pasivo** recolecta información **sin tocar** el objetivo (por ejemplo `whois`, `dig`/DNS público, certificados, OSINT): no genera tráfico contra el target, así que es casi indetectable y de bajo riesgo legal. El **activo** **interactúa** con el objetivo —le manda paquetes o peticiones— y por eso puede quedar registrado en sus logs y requiere autorización.
 
 En este laboratorio **todo lo que hice fue reconocimiento activo**: el barrido de puertos (`nmap -Pn -p- phantomcorp`), el banner grabbing con `ncat` contra el FTP (21) y el servicio oculto (31337), y las peticiones HTTP con `curl` contra el 80 y el 8080 (headers, `robots.txt`, `/panel-interno-9x2f`, `/status`). No hice recon pasivo porque `phantomcorp` es un host **interno**, sin dominio ni DNS público, así que `whois`/`dig` no aplicaban; en un engagement real el pasivo iría **primero**, justamente para no alertar al objetivo antes de tener autorización.
 
-**¿Cuáles de mis acciones habrían quedado en los logs de PhantomCorp?** Todas, porque todas fueron activas: cada conexión TCP y cada petición dejó rastro. La más ruidosa es el `nmap -p-`: sondear los 65535 puertos genera un patrón de conexiones inconfundible para cualquier IDS o revisión de logs. Y cada `curl` dejó su línea en el access-log del servidor web (IP de origen, método, ruta, user-agent y timestamp), incluido el acceso a la ruta "oculta" `/panel-interno-9x2f`.
+**¿Cuáles de mis acciones habrían quedado en los logs de PhantomCorp?** Todas son potencialmente registrables porque interactúan con el objetivo, pero el registro efectivo depende de la configuración. El barrido `nmap -p-` puede dejar un patrón de sondeos en registros de red, firewall o IDS; no implica que cada conexión aparezca en un log de la aplicación. Las peticiones de `curl`, incluido el acceso a `/panel-interno-9x2f`, podrían aparecer en el access-log HTTP con IP, método, ruta, user-agent y fecha si ese registro está habilitado. Los banners obtenidos con `ncat` también podrían generar registros de conexión en cada servicio. Como no se adjuntaron logs del servidor o del IDS, se distinguen esos rastros esperables de registros efectivamente comprobados.
 
 **P5 — Ahora sos el defensor.**
 
@@ -283,5 +283,31 @@ La revisión de sintaxis no sustituye una nueva ejecución del reconocimiento.
 - [x] Parte B de Lautaro: filas 21 y 80, P3 y su declaración de IA.
 - [x] Commit propio de Lautaro en esta rama; requisito de las cuatro cuentas.
 
-El PR debe permanecer **en borrador** hasta incorporar esos pendientes y
-revisar nuevamente el mapa y las cinco respuestas de análisis.
+### Cierre documental — Fernando, 03/11/2026
+
+Se integraron los cinco commits de Lautaro, incluidos su declaración de IA,
+las filas 21 y 80, P3 y los nueve archivos de la re-verificación. Se revisaron
+las cuatro filas del mapa, las cinco respuestas, el mini-research y las
+declaraciones de los cuatro integrantes. Los apartados anteriores conservan
+las fechas y atribuciones de cada operación.
+
+La revisión final contrastó las capturas de FTP, headers, `robots.txt` y panel
+con las afirmaciones de la Parte B. Se reconfirmaron en la API de NVD los
+vectores y puntajes de CVE-2015-3306 (10.0 en v2 y v3.1, con proveedores
+distintos) y CVE-2019-12815 (9.8 en v3.1). Se reemplazó una referencia de prensa
+por el catálogo KEV oficial de CISA, que confirma la fecha de incorporación
+del primer CVE. También se precisó que `robots.txt` controla rastreo, no
+autorización ni exclusión garantizada del índice, y que las acciones activas
+son registrables sin afirmar que existan logs que no se adjuntaron.
+
+Se repitieron las comprobaciones de estructura, tablas, referencias locales,
+fuentes externas, sintaxis de los bloques bash y alcance de Git, además de la
+validación general del repositorio. La revisión sigue siendo documental:
+no se repitió el reconocimiento ni se ejecutaron exploits. La aplicabilidad
+real de `mod_copy` y del depurador interactivo conserva los límites indicados
+en el mapa.
+
+Con las partes completas y commits de las cuatro cuentas, el PR existente
+`Lab 05 — Grupo 07` queda preparado para salir de borrador y pasar a revisión
+de la cátedra. La aprobación docente y la ejecución del CI remoto se verifican
+por separado del resultado de las pruebas locales.
