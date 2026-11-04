@@ -15,6 +15,8 @@ La guía NIST SP 800-94 explica clases de sistemas IDS/IPS y considera SIEM como
 
 Un caso pequeño como el SOC del laboratorio puede pensarse como una regla de correlación: una solicitud sospechosa más un código de respuesta exitoso o una secuencia rara de accesos debería elevar una alerta, aunque el patrón exacto no coincida con una expresión simple. Para que esa regla sirva, el equipo debe medir ruido y falsos positivos, guardar el evento original, registrar qué regla generó la alerta y revisar los casos que quedaron fuera. Las firmas y la correlación se complementan: una aporta rapidez sobre patrones conocidos; la otra puede revelar relaciones y comportamientos que no estaban codificados como una cadena única.
 
+El evento R5 permite relacionar la investigación con lo observado en la práctica. En la salida de `/soc` aparece una solicitud externa a una ruta sospechosa, mezclada entre numerosos registros de actividad normal. Aunque el servidor respondió con un código HTTP 200 y la etiqueta `ALERT[path-traversal]`, eso no demuestra por sí solo que el archivo haya sido obtenido. En un entorno real, un SIEM con correlación basada en reglas (NIST, s. f.) podría ayudar a destacar este tipo de eventos y relacionarlos con otros registros para facilitar su análisis. En nuestro caso, la salida era estática, por lo que no se realizó una correlación automática.
+
 ## Fuentes
 
 1. [PRIMARIA] Kent, K., & Souppaya, M. (2006). *Guide to computer security log management* (NIST Special Publication 800-92). National Institute of Standards and Technology. https://csrc.nist.gov/pubs/sp/800/92/final
