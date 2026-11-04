@@ -3,7 +3,19 @@
 - **Grupo:** 10
 - **Integrantes:** Belén Rocío Ramello (`@belramello`), Carolina Paula Corazza (`@carocor1`), Chiara Agustina Kordek (`@chiarakordek`) y Juan Pablo Saby (`@JuanSaby`).
 - **Fecha:** 30/10/2026
-**Declaración de uso de IA:** completar por el grupo antes de entregar, según la consigna.
+**Declaración de uso de asistentes de IA:**
+
+De acuerdo con lo normado en `CONTRIBUTING.md` y `docs/PROTOCOLO-EVIDENCIA.md`:
+
+- **¿El grupo utilizó asistentes de IA en este trabajo?** Sí.
+
+| Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto |
+|---|---|---|---|
+| Antigravity (Google DeepMind / Gemini) | redacción técnica de explicaciones analíticas, síntesis de argumentos gerenciales y revisión conceptual frente a guías OWASP. | Redacción y fundamentación técnica en las secciones de análisis P4 y P5 de `informe.md`. | Validación manual por parte de los integrantes y analsis transversal final por el agente integrado en Antigravity contrastando cada afirmación técnica contra el código de `server.py`, las corridas reales del verificador (`verificar-defensa.py`, `verificar-regresion.py`) y las salidas crudas en `evidencia/salidas/`. |
+
+*El grupo declara que comprende el contenido íntegro de lo entregado y que cualquiera de sus integrantes puede explicar y defender oralmente en vivo cada parte del código, de los parches y del análisis presentado, independientemente de la asistencia recibida.*
+
+---
 
 ## 1. Tabla de defensas
 
@@ -74,7 +86,35 @@ La evidencia guardada en `evidencia/salidas/00-verificacion-inicial.txt` muestra
 
 ### P5 — Ranking de gravedad
 
-**Pendiente para Juan:** ordenar D1–D5 según impacto y justificar la primera posición con la evidencia del laboratorio, aclarando qué demuestra y qué no demuestra cada prueba.
+A partir de las pruebas ejecutadas y los efectos comprobados en el laboratorio, se establece la siguiente priorización de los hallazgos de seguridad (ordenados de mayor a menor criticidad):
+
+| Puesto | Hallazgo | Severidad | Justificación resumida |
+|---|---|---|---|
+| **#1** | **D4** — SQL Injection en `/login` | **Crítica** | Anulación total del control de acceso; permite autenticarse como administrador sin credenciales legítimas. |
+| **#2** | **D5** — Path Traversal en `/descargar` | **Alta** | Ruptura del confinamiento del sistema de archivos; permite leer archivos arbitrarios del servidor host. |
+| **#3** | **D3** — Ruta `/backup` expuesta sin autenticación | **Media** | Fuga directa de recurso administrativo sensible listado abiertamente en `robots.txt`. |
+| **#4** | **D2** — Endpoint `/api/status` activo en producción | **Baja-Media** | Divulgación de metadatos internos (modo debug, PID, ruta absoluta de base de datos) que asiste al atacante. |
+| **#5** | **D1** — Banner informativo en encabezado `Server` | **Baja / Informativa** | Reconocimiento pasivo de tecnología y versión (`PhantomServer/2.4.1-debug`); no compromete datos por sí solo. |
+
+#### Justificación del puesto #1 para la gerencia
+
+Si tuviéramos que presentar este análisis ante la dirección o gerencia de la empresa, el hallazgo prioritario e insoslayable es **D4 (SQL Injection en `/login`)**.
+
+La autenticación es el perímetro fundamental que sostiene la confianza, la confidencialidad y la auditoría de cualquier aplicación corporativa. D4 no representa una simple fuga de datos aislada, sino la quiebra absoluta de ese mecanismo de control: mediante una única petición HTTP no autenticada (`/login?user=admin'--&pass=x` o `/login?user=x&pass=' OR 1=1 --`), cualquier usuario externo puede suplantar la identidad del administrador (`admin`) y obtener acceso inmediato a la aplicación con privilegios plenos. Desde la perspectiva de negocio y gestión de riesgos, que una entidad no autorizada pueda asumir el rol de mayor jerarquía operativa destruye la trazabilidad de las acciones y compromete de raíz la integridad de las operaciones de la empresa.
+
+#### Relación con los efectos observados y jerarquía de riesgos
+
+- **D4 vs. D5 (Nivel Crítico/Alto):** D5 es un hallazgo de severidad muy alta porque quiebra el aislamiento entre el servidor web y el sistema operativo subyacente, permitiendo la lectura arbitraria de archivos fuera de la carpeta pública de descargas (en el lab, la lectura de `/etc/passwd` o de la fixture externa con `root:lab-extra-fixture`). No obstante, en este entorno D5 se limitó a una lectura no autenticada de archivos del host; no otorgó capacidades de escritura ni ejecución remota de comandos. En cambio, D4 concedió acceso interactivo directo con la máxima identidad de la aplicación (`admin`), motivo por el cual encabeza la prioridad. Ambos hallazgos interactúan además de forma peligrosa: con D5 se podría apuntar a leer el archivo de base de datos SQLite cuya ruta absoluta fue expuesta por D2.
+- **D3 (Nivel Medio):** Ocupa una posición intermedia. El verificador demostró que `/backup` devolvía HTTP 200 sin exigir autenticación alguna, además de encontrarse señalada públicamente en `robots.txt`. En un entorno productivo real, un endpoint de backup desprotegido suele ser crítico si contiene volcados de bases de datos o secretos; en la prueba concreta del laboratorio, el impacto demostrado se limitó a un mensaje estático de migración, por lo que su severidad observada es menor que la de D4 y D5.
+- **D2 y D1 (Nivel Bajo):** Son hallazgos de exposición de información. D2 reveló parámetros del entorno productivo (`debug: true`, PID y la ruta interna de la base de datos). Aunque no permite tomar control directo del servidor, provee información valiosa que alimenta otros ataques (como la ruta exacta de la base de datos para intentar descargarla mediante D5). Finalmente, D1 es el hallazgo de menor prioridad: divulgar `PhantomServer/2.4.1-debug` facilita la fase de reconocimiento pasivo del atacante, pero por sí solo no altera el estado de la aplicación ni expone datos del negocio.
+
+#### Limitaciones de la evidencia y alcance demostrado
+
+Para no confundir el impacto potencial teórico con el impacto efectivamente demostrado en las pruebas de laboratorio (`evidencia/salidas/00-verificacion-inicial.txt`, `evidencia/salidas/01-verificacion-final.txt` y `evidencia/salidas/02-regresion-funcional.txt`), deben señalarse las siguientes limitaciones:
+
+1. **Alcance de la inyección SQL (D4):** Las pruebas demostraron de manera concluyente el *bypass* de autenticación mediante dos entradas específicas (`admin'--` y `' OR 1=1 --`). Sin embargo, no se demostró la ejecución de consultas múltiples destructivas (como `DROP` o `UPDATE`) ni la ejecución de comandos en el sistema operativo. El controlador utiliza la biblioteca estándar `sqlite3` de Python y el método `execute()`, el cual procesa una única sentencia SQL por invocación y no admite *stacked queries* separadas por punto y coma. Tampoco se demostró extracción masiva de datos mediante `UNION SELECT`, ya que la vista solo proyecta el identificador de usuario en el mensaje de bienvenida.
+2. **Naturaleza de la lectura en Path Traversal (D5):** La evidencia confirmó que la aplicación permitía leer archivos arbitrarios legibles por el proceso fuera de la ruta autorizada. La prueba no demostró escritura, borrado ni ejecución remota de código (LFI/RFI ejecutable). Asimismo, la prueba original del verificador apuntaba a `/etc/passwd` (propio de entornos Unix/Linux), lo cual en Windows requirió generar una fixture controlada externa para verificar que la vulnerabilidad residía en la lógica de la aplicación y no en un falso positivo por inexistencia del archivo objetivo.
+3. **Representatividad del verificador automático:** Los scripts `verificar-defensa.py` y `verificar-regresion.py` constituyen pruebas funcionales y dinámicas acotadas a patrones conocidos. Que los cinco ataques hayan arrojado resultado bloqueado demuestra que los vectores probados fueron neutralizados con éxito, pero no equivale a una prueba exhaustiva de ausencia total de otras vulnerabilidades o variantes no contempladas en las pruebas.
 
 ## 5. Conclusión
 
