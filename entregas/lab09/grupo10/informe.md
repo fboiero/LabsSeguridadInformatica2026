@@ -4,6 +4,7 @@
 **Proveedor usado:** mock
 
 ## 0. Declaración de uso de IA
+utilización de ChatGPT como herramienta de apoyo para analizar el funcionamiento del agente, revisar las decisiones tomadas durante la ejecución y comparar el enfoque de un LLM con el de un script fijo. También lo utilicé para organizar y mejorar la redacción de las secciones asignadas. El análisis y la versión final fueron revisados por el equipo, tomando como referencia el código y las evidencias reales del laboratorio.
 
 ## 1. Flags capturadas
 
@@ -167,6 +168,16 @@ corrida; no se modificó ninguno de esos archivos.
 
 ### 3.2 Aciertos y errores
 
+Mirando la corrida en detalle, podemos separar las decisiones que tuvieron sentido práctico de los problemas que surgieron durante la ejecución:
+
+- **Inicio con Nmap y falta de reacción al fallo:** Intentar un escaneo inicial sobre `phantomcorp` era el paso lógico para ver qué puertos estaban abiertos. El error estuvo en cómo se manejó el resultado: la herramienta dio timeout tras 60 segundos y el agente no intentó adaptarse (por ejemplo, probando puertos puntuales o verificando conectividad básica). Simplemente descartó el fallo y pasó a la siguiente acción porque su lista así lo indicaba.
+- **Seguimiento de pistas con `robots.txt`:** Revisar `robots.txt` y usar la ruta que apareció allí (`/vault-interno-x7`) fue el comportamiento más acertado de la secuencia. Es justo lo que haríamos manualmente: buscar pistas públicas y verificar qué contienen sin salir del alcance.
+- **Rutas de API que aparecieron de la nada:** Probar `/api/debug` y `/api/token` trajo información útil (una flag y un token), pero no fue producto de una deducción. En las respuestas anteriores no había enlaces ni menciones a esas rutas; el agente fue directo a ellas porque venían escritas en su plan, no porque haya hecho enumeración o razonamiento.
+- **El POST al vault con credencial fija:** Enviar el token por POST a `/api/vault` completó la consigna, pero expone una limitación importante del mock: no extrajo el token de la respuesta del paso 6, sino que usó una constante ya escrita en el código (`T-9f3k-vault`). Si el servidor hubiera generado un token dinámico o distinto, la acción habría fallado.
+- **Intento de escaneo a una IP externa (`8.8.8.8`):** Fue el error más crítico. El agente intentó escanear una dirección pública fuera del laboratorio autorizado. En una auditoría real esto violaría el acuerdo de trabajo. La acción no llegó a ejecutarse únicamente porque el control en `herramientas.py` la frenó antes de mandar tráfico.
+
+Lo principal que aprendemos de esta corrida es a no confundir un resultado exitoso con una decisión inteligente: varias acciones trajeron flags, pero casi todas funcionaron porque el plan ya estaba armado a medida del laboratorio y no porque el agente haya entendido lo que estaba haciendo.
+
 ### 3.3 El guardrail (R4)
 
 ### 3.4 Otros guardrails que agregaríamos
@@ -176,6 +187,18 @@ corrida; no se modificó ninguno de esos archivos.
 ### P1 — el loop de tool-use
 
 ### P2 — LLM vs. script fijo
+
+La diferencia principal está en cómo deciden qué hacer:
+
+- **Un script fijo (como el `recolector.py` del Lab 08)** tiene los pasos definidos de antemano en el código. Si le pedimos recorrer legajos del 1 al 250, va a hacer exactamente eso: es rápido, predecible y no gasta recursos de más. El problema es que no tiene ninguna flexibilidad; si la API cambia el nombre de un parámetro o devuelve un formato inesperado, el script se rompe salvo que un programador lo modifique a mano.
+- **Un agente con un LLM real** busca aportar criterio sobre la marcha. Podría leer texto en lenguaje natural, notar que `robots.txt` prohíbe una ruta, entender que un mensaje dice *"usá este token en tal endpoint"* y armar el siguiente pedido HTTP sin que nadie le haya escrito esa secuencia exacta de antemano. También podría leer que Nmap dio timeout y decidir probar directamente por HTTP al puerto 80.
+
+Sin embargo, esta corrida dejó en evidencia que **el `ClienteMock` funcionó como un script rígido disfrazado de agente:**
+- No interpretó el texto del paso 6 para extraer el token: el valor `"T-9f3k-vault"` ya estaba hardcodeado en la lista del mock.
+- Cuando Nmap falló en el paso 1, no recalculó nada; siguió con el plan fijo.
+- Propuso escanear `8.8.8.8` simplemente porque estaba anotado en la lista, sin evaluar si correspondía.
+
+La automatización permite acelerar el trabajo repetitivo, pero un script tradicional solo hace lo que le ordenamos, mientras que un modelo de lenguaje puede intentar acciones imprevistas o salirse del objetivo si no tiene límites técnicos que lo contengan. Por eso, en seguridad ofensiva no alcanza con darle herramientas a un modelo: los límites (como el chequeo de alcance) tienen que estar asegurados por código y no depender de la voluntad del agente.
 
 ### P3 — ventaja del diseño agnóstico
 
