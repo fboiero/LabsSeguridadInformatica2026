@@ -53,7 +53,54 @@ El diseño debe evitar repetir un nonce/IV bajo la misma clave, derivar claves d
 <!-- FIN SECCION 2 -->
 ## 3. Parte B.2 — Autenticación
 <!-- INICIO SECCION 3 -->
-**B.2.1 length-extension · B.2.2 cómo lo resuelve HMAC · B.2.3 tiempo constante**
+### B.2.1 — Ataque de length-extension
+
+SHA-256 sigue la construcción Merkle–Damgård [2]: el mensaje se rellena (*padding*) y se procesa en bloques de 512 bits, es decir, 64 bytes. El relleno agrega un bit en 1, luego ceros y, al final, la longitud del mensaje original como un entero de 64 bits [1]. Cada bloque actualiza un estado interno, y el resumen final es simplemente ese estado después de procesar el último bloque [1]. En otras palabras, el hash publicado *es* el estado interno de la función en ese punto.
+
+Por eso, si un servidor usa `h = sha256(K || m)` como MAC, un atacante que conoce `h`, el mensaje `m` y la longitud de la clave `K` (pero no la clave) puede falsificar un MAC válido [2]:
+
+1. Calcula el *padding* que la función agregó a `K || m`, para lo cual solo necesita la longitud total, no el contenido de `K`.
+2. Usa `h` como estado inicial y continúa el cálculo del hash sobre un sufijo `s` elegido por él.
+3. Obtiene un MAC válido para el mensaje `m || padding || s`, sin haber conocido nunca `K`.
+
+**Ejemplo:** el servidor recibe `monto=100&destino=ana` junto con su MAC. El atacante construye `monto=100&destino=ana<padding>&destino=atacante` y calcula el MAC correspondiente a partir del original. Al recibirlo, el servidor recalcula `sha256(K || mensaje_extendido)`, obtiene exactamente ese valor y acepta el mensaje como auténtico. Si al procesar los parámetros toma el último valor de `destino`, la transferencia termina en la cuenta del atacante.
+
+Hay dos detalles a tener en cuenta. Primero, el atacante necesita la longitud de `K` para calcular el *padding*; si no la conoce, puede probar con las longitudes posibles, que suelen ser pocas. Segundo, el mensaje falsificado contiene en el medio los bytes del *padding*, que el atacante no puede evitar [2].
+
+El ataque no requiere romper SHA-256 ni encontrar colisiones: aprovecha la forma en que se construyó el MAC. El problema es un mal uso de la función, porque `sha256(clave || mensaje)` no es una construcción de MAC.
+
+### B.2.2 — Cómo lo resuelve HMAC
+
+HMAC, definido en el RFC 2104, aplica la función de hash dos veces con dos claves derivadas de `K` [3]:
+
+```
+HMAC(K, m) = H( (K ⊕ opad) || H( (K ⊕ ipad) || m ) )
+```
+
+`ipad` es el byte `0x36` repetido y `opad` el byte `0x5C` repetido, ambos con la longitud del bloque de la función (`B = 64` bytes para SHA-256). Si la clave es más corta que el bloque se completa con ceros, y si es más larga primero se hashea [3].
+
+La estructura anidada es la que impide la extensión. El hash interno, `H((K ⊕ ipad) || m)`, produce un valor intermedio que nunca se publica. Lo único que ve el atacante es la salida del hash externo, que procesa ese valor intermedio después de un bloque que depende de otra clave derivada, `K ⊕ opad`. Para extender el mensaje, el atacante tendría que continuar el hash *interno*, cuyo estado no conoce; y continuar el hash externo a partir del resultado público no le sirve, porque eso no corresponde al MAC de ningún mensaje extendido. Por eso HMAC no es vulnerable a este ataque [2], aunque use internamente una función Merkle–Damgård como SHA-256.
+
+Según el propio RFC 2104, la construcción fue presentada y analizada criptográficamente por Bellare, Canetti y Krawczyk en Crypto '96 [3].
+
+### B.2.3 — Comparación en tiempo constante (timing attacks)
+
+Un ataque de temporización aprovecha que un sistema tarda distinto tiempo según los datos que procesa, por ejemplo por optimizaciones que evitan operaciones innecesarias o por ramificaciones condicionales [5]. Comparar dos cadenas con `==` es un caso típico: la comparación se corta en el primer carácter distinto, así que el tiempo de respuesta crece con la cantidad de caracteres iniciales correctos.
+
+**Ejemplo:** el servidor verifica un MAC HMAC-SHA256 de 64 caracteres hexadecimales (256 bits) comparándolo con `==`. El atacante envía un mensaje con un MAC inventado y prueba los 16 valores posibles del primer carácter (`0`–`9`, `a`–`f`). Mide cuánto tarda cada respuesta, repitiendo cada prueba muchas veces para promediar el ruido. El valor cuya respuesta tarda un poco más es el correcto, porque la comparación avanzó un carácter más. Fija ese carácter y repite el procedimiento con el segundo, y así sucesivamente. Cada posición cuesta como máximo 16 pruebas, así que en total son del orden de 64 × 16 = 1.024 pruebas (multiplicadas por las repeticiones necesarias), frente a las 16⁶⁴ combinaciones de la fuerza bruta. Al final obtiene un MAC válido sin conocer la clave.
+
+`hmac.compare_digest` evita esta fuga porque no corta la comparación según el contenido: devuelve el mismo resultado que `a == b`, pero usa un método diseñado para impedir el análisis de tiempos [4]. Así, el tiempo no revela cuántos caracteres coinciden. Según la documentación, si las entradas tienen longitudes distintas el tiempo podría revelar sus tipos y longitudes, pero no sus valores [4]. Esto no es un problema para un MAC, porque su longitud es fija y pública.
+
+En la práctica, el ruido de la red dificulta el ataque, pero no lo vuelve imposible. Crosby, Wallach y Riedi mostraron que, filtrando adecuadamente las mediciones, se pueden distinguir diferencias de 15 a 100 µs a través de Internet y de hasta 100 ns en una red local [6]. Kocher ya había advertido que los sistemas criptográficos en red están en riesgo cuando el atacante puede medir tiempos con precisión razonable [5]. Por eso, además de comparar en tiempo constante, conviene limitar la cantidad de intentos de verificación por cliente.
+
+### Fuentes
+
+1. Eastlake 3rd, D., & Hansen, T. (2011). *US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)* (RFC 6234). IETF. https://www.rfc-editor.org/rfc/rfc6234
+2. Wikipedia. (s. f.). *Length extension attack*. Consultado el 5 de noviembre de 2026. https://en.wikipedia.org/wiki/Length_extension_attack
+3. Krawczyk, H., Bellare, M., & Canetti, R. (1997). *HMAC: Keyed-Hashing for Message Authentication* (RFC 2104). IETF. https://www.rfc-editor.org/rfc/rfc2104
+4. Python Software Foundation. (s. f.). *hmac — Keyed-Hashing for Message Authentication*. Documentación de Python 3. https://docs.python.org/3/library/hmac.html
+5. Kocher, P. C. (1996). *Timing Attacks on Implementations of Diffie-Hellman, RSA, DSS, and Other Systems*. Advances in Cryptology — CRYPTO '96, LNCS 1109, 104–113. https://paulkocher.com/doc/TimingAttacks.pdf
+6. Crosby, S. A., Wallach, D. S., & Riedi, R. H. (2009). *Opportunities and Limits of Remote Timing Attacks*. ACM Transactions on Information and System Security, 12(3), artículo 17. https://doi.org/10.1145/1455526.1455530
 
 <!-- FIN SECCION 3 -->
 ## 4. Bitácora
