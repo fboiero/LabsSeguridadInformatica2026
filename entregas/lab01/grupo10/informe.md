@@ -325,18 +325,19 @@ Distribución de aportes del grupo, basada en el trabajo realizado:
 
 | Integrante             | Aportes realizados                                                               |
 | ---------------------- | -------------------------------------------------------------------------------- |
-| Belén Rocío Ramello    | Parte A |
+| Belén Rocío Ramello    | Parte A: verificación de todas las fuentes y corrección de A.1–A.6 sobre la versión inicial redactada por Carolina (reemplazo de fuentes no localizables, cifras de afectados corregidas, integridad reclasificada como «No», controles justificados con el informe de la GAO). |
 | Carolina Paula Corazza | Implementación inicial de Parte B y pruebas locales.                             |
 | Chiara Agustina Kordek | Revisión reproducible de `src/integridad.py`. |
 | Juan Pablo Saby        | Mini-research |
 
 ## Declaración de uso de asistentes de IA
 
-**¿El grupo usó asistentes de IA en este trabajo?** Sí. Entre las herramientas utilizadas se encuentra OpenCode, que brindó apoyo para la implementación y revisión.
+**¿El grupo usó asistentes de IA en este trabajo?** Sí. Las herramientas utilizadas fueron OpenCode, que brindó apoyo para la implementación y revisión, y Claude Code, que se usó para verificar y corregir la Parte A.
 
 | Herramienta                | Para qué se usó                                                                                     | Qué partes del entregable afectó                                                         | Cómo se verificó                                                                                  |
 | -------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | OpenCode / asistente de IA | Apoyo para implementar Parte B y preparar un plan de contribuciones entre los integrantes del grupo | Código de `src/integridad.py` y propuestas de revisión para `informe.md` y `research.md` | Autoevaluador del curso y pruebas adicionales locales llevadas a cabo por los propios integrantes |
+| Claude Code (Anthropic) | Verificación de las fuentes de la Parte A (apertura de cada enlace y búsqueda de las fuentes primarias correctas) y redacción asistida de las correcciones de A.1–A.6 | Secciones A.1–A.6 de `informe.md` | Cada afirmación se contrastó con el texto de la fuente original: informe GAO-18-559 (con número de página), comunicado de Equifax en la SEC, boletín S2-045 de Apache y comunicado del CFPB |
 
 **Declaración:** El grupo declara el uso de asistencia de IA indicado arriba. Cada integrante es responsable de comprender y respaldar sus propios aportes.
 
