@@ -94,10 +94,16 @@ Las respuestas de servicios contienen strings identificadas como flags, pero el 
 ## 3. Preguntas de análisis
 
 **P1 — El puerto que el escaneo default se perdió.**  
-**Pendiente — responsable: Belén.** Redactar la respuesta usando la evidencia real de `nmap -Pn phantomcorp` y `nmap -Pn -p- phantomcorp`, explicar qué cambió entre los escaneos y extraer una regla operativa propia.
+La pregunta da por hecho que el escaneo por defecto omitió un servicio, pero la evidencia del grupo no lo confirma. Sin `-p`, Nmap revisa los 1.000 puertos más frecuentes según su archivo `nmap-services`; con `-p-` recorre todo el rango, del 1 al 65.535 [P1]. Así lo muestran las capturas. `lab05-nmap-default.txt` informa «Not shown: 996 closed tcp ports», es decir, 1.000 puertos revisados con cuatro abiertos. `lab05-nmap-all-ports.txt` informa «Not shown: 65531 closed tcp ports», es decir, 65.535 puertos revisados. Los dos escaneos encontraron los mismos cuatro puertos abiertos: 21, 80, 8080 y 31337. En esta ejecución, entonces, `-p-` no descubrió ningún servicio nuevo. El puerto 31337 ya aparecía en el escaneo común, porque figura entre los 1.000 puertos que Nmap considera frecuentes. Lo que agregó el barrido completo fue certeza: confirmó que no había otros puertos TCP abiertos fuera de ese conjunto, a cambio de un tiempo mayor (3,17 s contra 0,68 s en este contenedor).
+
+La lección operativa tiene dos partes. Primero, el alcance del escaneo se define según la autorización y el objetivo. El escaneo común sirve como primera aproximación rápida, pero solo el barrido completo permite afirmar que no quedan servicios escondidos en puertos altos. En una red real, donde un servicio puede escucharse en cualquier puerto, conviene correr ambos. Segundo, no hay que dar por ocurrido un resultado esperado. La guía anticipaba que el servicio estaría fuera de los puertos por defecto, pero el informe tiene que reflejar lo que mostraron las salidas, no lo que se esperaba encontrar.
 
 **P2 — El servicio dev en producción.**  
 **Pendiente — responsable: Belén.** Fundamentar con la salida de Nmap para 8080 y la respuesta real de `/status`; explicar el riesgo del servicio dev expuesto incluso sin atribuir un CVE no comprobado.
+
+#### Fuentes de P1 y P2
+
+- **[P1] [PRIMARIA]** Lyon, G. (s. f.). *Port Specification and Scan Order*. Nmap Reference Guide. https://nmap.org/book/man-port-specification.html — Por defecto, Nmap revisa los 1.000 puertos más frecuentes de cada protocolo; `-p-` recorre del 1 al 65.535.
 
 **P3 — La ironía de `robots.txt`.**  
 `robots.txt` comunica a los rastreadores qué rutas se les solicita que no rastreen; no controla quién puede abrirlas. RFC 9309 aclara que sus reglas no son autorización de acceso y que publicar rutas allí puede hacerlas descubribles ([RFC 9309, sección 3](https://www.rfc-editor.org/rfc/rfc9309.html#section-3)). En este laboratorio, `lab05-robots.txt` muestra `Disallow: /panel-interno-9x2f` y hasta comenta que la ruta sigue accesible desde afuera. La petición posterior a esa ruta devolvió HTTP 200 y el contenido del panel (`lab05-hidden-panel.txt`). Por eso el archivo facilitó la enumeración, pero la evidencia de la respuesta muestra que no protegía el recurso.
