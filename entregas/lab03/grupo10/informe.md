@@ -339,6 +339,36 @@ Referencias abiertas y contrastadas para esta sección. Su numeración es local 
 
 ### Dificultades encontradas
 
+- **Historial del fork.** La rama `main` del fork quedó desactualizada y con una historia distinta de la del repositorio de la cátedra, que fue reescrita. Para evitar que el PR arrastrara archivos ajenos a la entrega, la rama `lab03-grupo10` se creó a partir de `upstream/main` y no de `main`. Un intento de traer cambios desde la rama `main` del fork produjo conflictos en archivos del enunciado; se canceló con `git merge --abort` y se dejó la rama local igual a la remota.
+- **Dependencia entre tareas.** Las pruebas automatizadas se escribieron en paralelo con la implementación, por lo que su primera ejecución falló con `NotImplementedError` (sección 4.2). Una vez integrado `auth.py`, se volvieron a ejecutar y las 15 pruebas pasaron (sección 4.1).
+- **Entorno Windows.** El registro del hash contiene el carácter `$`, que PowerShell y Git Bash interpretan como variable si se usan comillas dobles; por eso todos los comandos de `verify` usan comillas simples. Además, el comando disponible es `python` y no `python3`, y fue necesario definir `PYTHONUTF8=1` para que la consola mostrara correctamente los símbolos de `verificar.py`.
+- **Número de iteraciones.** Se mantuvieron las 200.000 iteraciones que el enunciado fija como valor predeterminado, para no modificar las firmas del esqueleto, aunque la guía de OWASP consultada recomienda hoy 600.000 para PBKDF2-HMAC-SHA-256. La diferencia se documenta en las secciones 2.2 y 4.2.
+
 ### Distribución del trabajo
 
+La distribución coincide con el historial de commits de la rama `lab03-grupo10`.
+
+| Integrante | Aportes realizados |
+|---|---|
+| Belén Rocío Ramello | Coordinación del laboratorio: estructura de la entrega, implementación de `hash_password`, `verify_password` y `totp` en `src/auth.py`, integración del código, secciones 2, 3 y 4.1, y cierre del informe. |
+| Carolina Paula Corazza | Pruebas automatizadas (`src/pruebas_auth.py`) y medición del costo de PBKDF2 según el número de iteraciones (sección 4.2). |
+| Chiara Agustina Kordek | Mini-research: TOTP frente a FIDO2/WebAuthn (`research.md`). |
+| Juan Pablo Saby | Parte A: análisis del credential stuffing a partir del caso Roku 2024 (sección 1). |
+
 ### Fuentes consultadas
+
+Lista general de las referencias del informe. Cada sección conserva su numeración local; entre corchetes se indica con qué clave se cita cada fuente. Las fuentes del mini-research figuran en `research.md`.
+
+1. **[PRIMARIA]** Roku, Inc. (2024, 12 de abril). *Protecting your Roku account*. Roku Blog. https://www.roku.com/blog/protecting-your-account — Citada como [A1].
+2. **[PRIMARIA]** Office of the Maine Attorney General. (2024). *Data Breach Notifications: Roku, Inc.* State of Maine Data Breach Database. https://apps.web.maine.gov/online/aeviewer/ME/ — Citada como [A2].
+3. **[PRIMARIA]** OWASP Foundation. (2020). *OWASP Automated Threat Handbook: Web Applications* (OAT-008: Credential Stuffing). https://owasp.org/www-project-automated-threats-to-web-applications/ — Citada como [A3].
+4. **[PRIMARIA]** National Institute of Standards and Technology. *Digital Identity Guidelines: Authentication and Lifecycle Management* (NIST SP 800-63B). https://doi.org/10.6028/NIST.SP.800-63b — Citada como [A4].
+5. **[PRIMARIA]** National Institute of Standards and Technology. (2025). *Digital Identity Guidelines: Authentication and Authenticator Management* (NIST SP 800-63B-4). https://pages.nist.gov/800-63-4/sp800-63b.html — Citada como [B3].
+6. **[PRIMARIA]** M'Raihi, D., Machani, S., Pei, M., & Rydell, J. (2011, mayo). *TOTP: Time-Based One-Time Password Algorithm* (RFC 6238). RFC Editor. https://www.rfc-editor.org/rfc/rfc6238 — Citada como [A5], [1] y [B6].
+7. **[PRIMARIA]** Moriarty, K. (Ed.), Kaliski, B., & Rusch, A. (2017, enero). *PKCS #5: Password-Based Cryptography Specification Version 2.1* (RFC 8018). RFC Editor. https://www.rfc-editor.org/rfc/rfc8018 — Citada como [B1].
+8. **[PRIMARIA]** OWASP Foundation. (s. f.). *Password Storage Cheat Sheet*. OWASP Cheat Sheet Series. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html — Citada como [2] y [B2].
+9. **[PRIMARIA]** Kali Linux. (2026, 25 de mayo). *wordlists*. Kali Linux Tools. https://www.kali.org/tools/wordlists/ — Citada como [3].
+10. **[PRIMARIA]** Python Software Foundation. (s. f.). *hashlib — Secure hashes and message digests*. https://docs.python.org/3.12/library/hashlib.html — Citada como [4].
+11. **[PRIMARIA]** Python Software Foundation. (s. f.). *time — Time access and conversions*. https://docs.python.org/3.12/library/time.html — Citada como [5].
+12. **[PRIMARIA]** Python Software Foundation. (s. f.). *secrets — Generate secure random numbers for managing secrets*. https://docs.python.org/3/library/secrets.html — Citada como [B4].
+13. **[PRIMARIA]** Python Software Foundation. (s. f.). *hmac — Keyed-Hashing for Message Authentication*. https://docs.python.org/3/library/hmac.html — Citada como [B5].
