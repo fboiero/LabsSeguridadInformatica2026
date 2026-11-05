@@ -38,21 +38,27 @@
 
 ## A.2 — Activo afectado
 
-**Activo principal:** Información personal identificable de consumidores estadounidenses almacenada en sistemas de Equifax: nombres, fechas de nacimiento, direcciones y números de Seguro Social [3, 4].
+**Activo principal:** Los datos personales de consumidores de EE. UU. almacenados en bases de datos de Equifax accesibles desde su portal de disputas en línea: nombres, números de Seguro Social, fechas de nacimiento, direcciones y, en algunos casos, números de licencia de conducir, de unos 143 millones de personas según el anuncio inicial [3], cifra que luego se corrigió a 145,5 millones [2, p. 19].
 
-**Por qué es el principal:** La combinación de identificadores personales es difícil de cambiar y puede facilitar fraude y robo de identidad durante un período prolongado. Es el activo prioritario porque la exposición afectó directamente a consumidores y fue el impacto central comunicado por Equifax [4].
+**Por qué es el principal:** Es el activo con mayor volumen afectado y el más difícil de reemplazar: un número de Seguro Social o una fecha de nacimiento no se pueden "cambiar" como una contraseña o una tarjeta, por lo que su exposición permite fraude y robo de identidad durante años. Por eso se prioriza por encima de los demás activos, aunque estos también eran sensibles.
 
-**Otros activos afectados:** Números de tarjetas de crédito de aproximadamente 209.000 consumidores y documentos de disputas de crédito de aproximadamente 182.000 personas, según el anuncio de Equifax [4]. Estas categorías son subconjuntos y no deben sumarse sin revisar posibles solapamientos.
+**Otros activos afectados (en orden de prioridad):**
+
+1. **Credenciales de acceso sin cifrar** (usuarios y contraseñas) guardadas en un repositorio de datos: no son datos de consumidores, pero son el activo que permitió a los atacantes pasar de las 3 bases del portal a 48 bases adicionales [2, p. 12]. Se priorizan segundas porque multiplicaron el alcance de la brecha.
+2. **Números de tarjeta de crédito** de unos 209.000 consumidores [3].
+3. **Documentos de disputa** con datos personales de unos 182.000 consumidores, como facturas de servicios presentadas como prueba [2, p. 19; 3].
+
+Las categorías 2 y 3 son subconjuntos de personas que pueden solaparse con el activo principal, por lo que sus cifras no deben sumarse.
 
 ## A.3 — Matriz CIA
 
-| Propiedad        | ¿Se violó?    | Evidencia concreta                                                                                                                                                                                                     |
-| ---------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Confidencialidad | Sí            | Equifax informó acceso no autorizado y exposición de información personal de aproximadamente 147 millones de personas [4].                                                                                             |
-| Integridad       | No demostrado | Las fuentes citadas documentan acceso y extracción de información, pero no identifican qué registro de consumidores habría sido alterado. Con la evidencia citada no se afirma una violación de integridad.            |
-| Disponibilidad   | Parcial       | El informe del Congreso describe que Equifax desconectó la aplicación web de disputas durante la respuesta [3]. Esto afectó ese servicio, pero no demuestra que todos los servicios de Equifax quedaran indisponibles. |
+| Propiedad        | ¿Se violó? | Evidencia concreta                                                                                                                                                                                                                                                       |
+| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Confidencialidad | Sí         | Los atacantes ejecutaron unas 9.000 consultas y extrajeron en pequeños lotes datos personales de al menos 145,5 millones de personas [2, pp. 12, 19], incluidos números de Seguro Social y fechas de nacimiento [3].                                                      |
+| Integridad       | No         | Las fuentes describen consultas y extracción de datos, no su modificación. Equifax informó que no encontró evidencia de actividad no autorizada en sus bases centrales de informes de crédito de consumidores y comerciales [3]. Ninguna fuente identifica un dato alterado. |
+| Disponibilidad   | Parcial    | El 30/07/2017 Equifax desconectó el portal de disputas en línea como respuesta al incidente [2, p. 14]. La interrupción fue de ese servicio puntual y la decidió el defensor; no hay evidencia de indisponibilidad del resto de los servicios.                            |
 
-**Justificación ampliada de la propiedad más discutible:** La disponibilidad es la más discutible porque hay que distinguir la desconexión de una aplicación específica de una indisponibilidad general. El informe del Congreso describe la desconexión de la aplicación web de disputas durante la respuesta [3], por lo que la interrupción se clasifica como parcial y acotada a ese servicio. La extracción no demuestra por sí sola indisponibilidad de bases de datos ni de todos los servicios. La integridad se deja como “no demostrado” porque las fuentes citadas no especifican datos alterados.
+**Justificación ampliada de la propiedad más discutible:** La disponibilidad es la más difícil de determinar. Por un lado, el atacante no buscó ni provocó una caída: su objetivo era extraer datos sin ser detectado, y durante 76 días el sistema funcionó con normalidad [2, p. 12]. Por otro lado, el incidente sí dejó a los consumidores sin el portal de disputas, porque Equifax tuvo que desconectarlo para contener el ataque [2, p. 14]. Se marca como "Parcial" porque hubo una pérdida real de disponibilidad causada por el incidente, pero acotada a un servicio y producto de la contención, no del ataque. En cambio, la integridad se marca como "No" y no como "Parcial": como indica la consigna, si no se puede mostrar qué dato fue alterado, la respuesta es "No", y las fuentes solo documentan lectura y extracción, además de que Equifax afirmó no haber encontrado actividad no autorizada en sus bases centrales de crédito [3].
 
 ## A.4 — Encadenamiento amenaza → vulnerabilidad → impacto
 
