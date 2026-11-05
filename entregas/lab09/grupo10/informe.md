@@ -1,6 +1,6 @@
 # Informe — Laboratorio 09 · Agentes de pentest
 
-**Grupo:** 10 · **Integrantes:** Belén Rocío Ramello — @belramello · Carolina Paula Corazza — @carocor1 · Chiara Agustina Kordek — @chiarakordek · Juan Pablo Saby — @JuanSaby · **Fecha:**
+**Grupo:** 10 · **Integrantes:** Belén Rocío Ramello — @belramello · Carolina Paula Corazza — @carocor1 · Chiara Agustina Kordek — @chiarakordek · Juan Pablo Saby — @JuanSaby · **Fecha:** 2026-11-05
 **Proveedor usado:** mock
 
 ## 0. Declaración de uso de IA
@@ -8,7 +8,100 @@ utilización de ChatGPT como herramienta de apoyo para analizar el funcionamient
 
 ## 1. Flags capturadas
 
+Las cinco flags se recuperaron de una corrida real del agente contra el `phantomcorp` local y se validaron con el motor oficial. Salida de `./ctf status 09`:
+
+```text
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 09                     │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     El agente hace recon y encuentra el primer flag
+   ✓  R2     El agente enumera y sigue la ruta oculta
+   ✓  R3     El agente detecta la API expuesta
+   ✓  R4     El guardrail rechaza un objetivo fuera de alcance
+   ✓  R5     Tu agente encadena token->vault (esqueleto completo)
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 09 COMPLETO! Ponete las pilas con la próxima unidad.
+```
+
+Los valores no se transcriben en esta sección (cada integrante los obtiene de su propia corrida); el detalle de la corrida que los produjo está en la sección 2.
+
 ## 2. Tu agente
+
+Completé los tres TODO del loop de tool-use en `src/agente_esqueleto.py`: (1) cortar el loop cuando la acción es de tipo `final`; (2) ejecutar la tool elegida con `ejecutar_tool(nombre, argumentos)` e imprimir el paso para que la corrida sirva de transcript; (3) realimentar al LLM con `[{"id": accion["id"], "output": salida}]`. Agregué además el aviso al alcanzar `MAX_PASOS` con un `else` del `for`. La corrida se hizo en modo `mock` desde la consola `cyberlab-attacker`, con las tools ejecutándose de verdad contra el `phantomcorp` local:
+
+```text
+
+[paso 1] -> nmap_scan({'host': 'phantomcorp'})
+    error nmap: Command '['nmap', '-Pn', '-sV', '--top-ports', '50', 'phantomcorp']' timed out after 60 seconds
+
+[paso 2] -> http_get({'url': 'http://phantomcorp/'})
+    HTTP 200
+    Server: PhantomCapstone/1.0 
+    Date: Thu, 05 Nov 2026 16:09:41 GMT
+    Content-Type: text/plain; charset=utf-8
+    X-Recon-Flag: FLAG{agente_primer_recon}
+    
+    PhantomCorp Capstone. Auditame.
+    [+] FLAG NUEVA: FLAG{agente_primer_recon}
+
+[paso 3] -> http_get({'url': 'http://phantomcorp/robots.txt'})
+    HTTP 200
+    Server: PhantomCapstone/1.0 
+    Date: Thu, 05 Nov 2026 16:09:41 GMT
+    Content-Type: text/plain; charset=utf-8
+    
+    User-agent: *
+    Disallow: /vault-interno-x7
+
+[paso 4] -> http_get({'url': 'http://phantomcorp/vault-interno-x7'})
+    HTTP 200
+    Server: PhantomCapstone/1.0 
+    Date: Thu, 05 Nov 2026 16:09:41 GMT
+    Content-Type: text/plain; charset=utf-8
+    
+    Ruta interna. FLAG{agente_ruta_oculta}
+    [+] FLAG NUEVA: FLAG{agente_ruta_oculta}
+
+[paso 5] -> http_get({'url': 'http://phantomcorp/api/debug'})
+    HTTP 200
+    Server: PhantomCapstone/1.0 
+    Date: Thu, 05 Nov 2026 16:09:41 GMT
+    Content-Type: application/json
+    
+    {"debug": true, "flag": "FLAG{agente_api_expuesta}"}
+    [+] FLAG NUEVA: FLAG{agente_api_expuesta}
+
+[paso 6] -> http_get({'url': 'http://phantomcorp/api/token'})
+    HTTP 200
+    Server: PhantomCapstone/1.0 
+    Date: Thu, 05 Nov 2026 16:09:41 GMT
+    Content-Type: application/json
+    
+    {"token": "T-9f3k-vault", "uso": "POST /api/vault con {\"token\": ...}"}
+
+[paso 7] -> http_post({'url': 'http://phantomcorp/api/vault', 'data': {'token': 'T-9f3k-vault'}})
+    HTTP 200
+    {"ok": true, "flag": "FLAG{agente_esqueleto_completo}"}
+    [+] FLAG NUEVA: FLAG{agente_esqueleto_completo}
+
+[paso 8] -> nmap_scan({'host': '8.8.8.8'})
+    BLOQUEADO POR GUARDRAIL: '8.8.8.8' esta FUERA DE ALCANCE. El agente NO ejecuta acciones fuera del scope autorizado. FLAG{guardrail_fuera_de_alcance}
+    [+] FLAG NUEVA: FLAG{guardrail_fuera_de_alcance}
+
+[agente] El LLM dio por terminada la auditoría: Auditoría simulada completa. Revisá las flags en el transcript.
+
+=== Flags encontradas (5) ===
+  FLAG{agente_api_expuesta}
+  FLAG{agente_esqueleto_completo}
+  FLAG{agente_primer_recon}
+  FLAG{agente_ruta_oculta}
+  FLAG{guardrail_fuera_de_alcance}
+```
+
+El encadenamiento clave está en los pasos 6 y 7: el agente pide el token en `/api/token` y lo reenvía en el `POST /api/vault`, que devuelve la flag capstone **R5: `FLAG{agente_esqueleto_completo}`** (es el Ejemplo C del README). El paso 1 (`nmap_scan`) dio timeout de 60 s de forma reproducible —el capstone sirve HTTP y la detección de versión sobre los 50 puertos más comunes no cierra a tiempo—, y aun así el agente siguió con su plan fijo: es un límite real de la corrida, no una salida editada.
 
 ## 3. Auditoría crítica del agente
 
@@ -180,6 +273,11 @@ Lo principal que aprendemos de esta corrida es a no confundir un resultado exito
 
 ### 3.3 El guardrail (R4)
 
+- **Qué intentó el agente.** En el paso 8, la acción elegida fue `nmap_scan(host='8.8.8.8')`, un objetivo fuera del laboratorio (un DNS público de Google).
+- **Qué hizo `_verificar_alcance()` y en qué momento.** Antes de ejecutar nada, `nmap_scan` llama a `_verificar_alcance('8.8.8.8')` en `herramientas.py`. Esa función extrae el host del objetivo y comprueba si pertenece a `ALCANCE = {"phantomcorp"}`. Como `8.8.8.8` no está, devuelve el mensaje de bloqueo y la tool retorna sin correr `nmap`: la validación ocurre *antes* de la acción, no después. El bloqueo entrega la flag R4 `FLAG{guardrail_fuera_de_alcance}`, que demuestra que el control actuó.
+- **Qué habría pasado sin el guardrail.** El agente habría lanzado `nmap -Pn -sV` contra la IP de un tercero. Eso es tráfico de escaneo no autorizado contra infraestructura ajena, exactamente el Ejemplo A del README («el agente que se fue de scope»).
+- **Por qué es imprescindible.** El límite vive en el código y no en el prompt: aunque el LLM «decida» salirse, la tool no lo deja. Escanear un host sin autorización puede constituir acceso indebido en los términos de la Ley 26.388, y el README lo marca como no negociable. Un agente que puede correr nmap es útil; uno que puede correrlo contra cualquier IP es un arma, y la diferencia son esas pocas líneas de validación de alcance.
+
 ### 3.4 Otros guardrails que agregaríamos
 
 Además del control de alcance existente, proponemos agregar estas capas en `herramientas.py`:
@@ -192,6 +290,15 @@ Además del control de alcance existente, proponemos agregar estas capas en `her
 ## 4. Preguntas de análisis
 
 ### P1 — el loop de tool-use
+
+El agente no es más que un bucle con cuatro momentos, que se ven en la corrida de la sección 2:
+
+1. **El LLM decide una acción.** `cliente.paso(resultados)` devuelve una acción normalizada: una tool (`nmap_scan`, `http_get` o `http_post` con sus argumentos) o el fin (`tipo: "final"`).
+2. **El código ejecuta la tool, con guardrails.** `ejecutar_tool(nombre, argumentos)` despacha la función, que valida el alcance antes de actuar. El humano define qué tools existen y qué pueden tocar; el agente solo elige entre ellas.
+3. **El resultado vuelve al LLM.** Se arma `resultados = [{"id": accion["id"], "output": salida}]` y se pasa en la iteración siguiente. Esa realimentación es lo que permite encadenar: en el paso 6 el agente ve el token y en el paso 7 lo usa en el vault.
+4. **Se repite hasta terminar.** El loop corta por dos condiciones: que el LLM devuelva `final` (lo que ocurrió después del paso 8) o que se agoten los `MAX_PASOS = 12` (el `else` del `for` lo avisa). Ese límite de pasos es en sí un guardrail: evita loops infinitos y costo descontrolado.
+
+La «inteligencia» está en el paso 1, pero el control está en el 2 y en el 4, y esos los pone el código, no el modelo.
 
 ### P2 — LLM vs. script fijo
 
@@ -220,10 +327,27 @@ El agente queda acoplado a esa interfaz (`crear_cliente(...).paso()`), al format
 
 ### P5 — por qué los labs 05–08 eran requisito
 
+Los labs 05 a 08 enseñaron a hacer a mano lo que acá el agente hace solo: reconocimiento (Lab 05), enumeración de servicios (Lab 06), explotación (Lab 07) y post-explotación (Lab 08). Esa base no es decorativa: es lo que permite auditar al agente. En esta corrida el agente leyó un `robots.txt`, siguió una ruta oculta (`/vault-interno-x7`), detectó una API de debug y encadenó un token hacia el vault. Para saber si esos pasos son correctos o si el agente está alucinando hay que saber leer un `robots.txt`, entender qué es una ruta deshabilitada, reconocer una API expuesta y comprender un flujo de autenticación por token: justo lo de los labs anteriores.
+
+El README lo marca en el Ejemplo B: un LLM puede «reportar» con lujo de detalle una vulnerabilidad que no existe, y si no sabés validar, te la comés. Incluso el `nmap` que dio timeout en el paso 1 hay que saber interpretarlo para no confundir «no respondió» con «no hay nada». Por eso un agente no exime de saber: exige saber más, porque ahora además hay que juzgar el criterio de la herramienta. La IA es la herramienta; el humano dirige.
+
 ## Cierre
 
 ### Dificultades encontradas
 
+- **Una sola rama por laboratorio.** La cátedra pide una rama por lab. Las tareas se trabajaron en ramas auxiliares (`lab09-grupo10-corrida`, `lab09-grupo10-auditoria`) y se integraron a `lab09-grupo10` con *merge commits* (no *squash*), para conservar el autor de cada commit; las auxiliares se eliminan una vez integradas.
+- **Entorno sin WSL/Ubuntu.** En la PC de la encargada había Docker Desktop pero no una distribución Ubuntu en WSL. Para no alterar los finales de línea de la copia de Windows, el entorno se levantó con Docker Compose y el agente se corrió dentro de la consola `cyberlab-attacker`, con las tools actuando realmente contra el `phantomcorp` local.
+- **Timeout de `nmap`.** El paso 1 del agente (`nmap -Pn -sV --top-ports 50`) dio timeout de 60 s de forma reproducible contra el capstone. No afecta la captura de flags —el resto del recorrido es por HTTP— pero quedó documentado como salida real.
+
 ### Distribución del trabajo
+
+La distribución coincide con el historial de commits de la rama `lab09-grupo10`.
+
+| Integrante | Aportes |
+|---|---|
+| Belén Rocío Ramello | Encargada del lab: rama y estructura de la entrega, los 3 TODO de `agente_esqueleto.py`, secciones 1 (flags), 2 (agente), 3.3 (guardrail R4), P1, P5, integración de las ramas internas y cierre. |
+| Carolina Paula Corazza | Corrida de referencia y transcript anotado (sección 3.1). |
+| Juan Pablo Saby | Auditoría decisión por decisión (sección 3.2) y P2. |
+| Chiara Agustina Kordek | Mini-research (prompt injection), sección 3.4, P3 y P4. |
 
 ### Fuentes consultadas
