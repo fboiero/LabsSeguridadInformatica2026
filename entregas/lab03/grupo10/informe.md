@@ -88,7 +88,39 @@ Referencias abiertas y contrastadas para esta sección. Su numeración es local 
 
 ### 2.1 Decisiones de implementación
 
+| Decisión | Qué hicimos | Por qué |
+|---|---|---|
+| Generación del salt | `secrets.token_bytes(16)`: 128 bits aleatorios nuevos en cada llamada sin salt explícito. | `secrets` es el generador criptográficamente seguro de Python; el módulo `random` está pensado para simulación, no para seguridad [B4]. NIST exige un salt de al menos 32 bits [B3]. |
+| Salt explícito | Si la función recibe un `salt`, usa ese valor en lugar de generar uno. | Permite reproducir un registro en pruebas (con salt fijo se obtiene el mismo registro, verificado en 4.2). En uso normal siempre se genera un salt nuevo. |
+| Derivación | `hashlib.pbkdf2_hmac("sha256", ..., iters)`, con 200.000 iteraciones por defecto. | PBKDF2 es una función de derivación con factor de costo configurable [B1]; un hash simple como SHA-256 es rápido por diseño, lo que favorece al atacante [B2]. |
+| Formato del registro | `pbkdf2_sha256$iters$salt_hex$dk_hex`. | El registro conserva todo lo necesario para verificar (algoritmo, costo y salt), y permite aumentar las iteraciones en el futuro sin invalidar los registros existentes. |
+| Codificación | `password.encode("utf-8")`. | PBKDF2 opera sobre bytes; UTF-8 representa de forma determinista contraseñas con tildes o eñes. |
+| Comparación | `hmac.compare_digest(calculado, esperado)` sobre los bytes de la clave derivada. | Evita el cortocircuito por contenido de `==` [B5] (ver 2.2). |
+| Registro mal formado | Un algoritmo distinto de `pbkdf2_sha256` o cualquier `ValueError` (campos de más o de menos, hexadecimal inválido, iteraciones no numéricas) devuelve `False`. | La verificación no debe aceptar un registro inválido ni interrumpir el inicio de sesión por un dato corrupto. |
+
 ### 2.2 Preguntas de análisis
+
+**¿Por qué salt por usuario?**
+
+Sin salt, la derivación es determinista: la misma contraseña produce siempre el mismo valor. Dos usuarios con la contraseña `Phantom-2026!` tendrían registros idénticos, de modo que, ante una filtración, el atacante sabría que comparten contraseña y bastaría con descifrar uno para obtener ambos. Además, podría emplear tablas precalculadas que asocian contraseñas frecuentes con sus hashes y resolver una gran cantidad de registros con una simple búsqueda [B2].
+
+El salt es un valor aleatorio, distinto para cada registro, que se combina con la contraseña antes de la derivación. Según el RFC 8018, su función es producir un conjunto amplio de claves posibles para una misma contraseña, lo que impide al atacante precomputarlas [B1]. La bitácora (4.1) lo evidencia: dos ejecuciones de `hash` con la misma contraseña generan salts y claves derivadas diferentes.
+
+Cabe señalar que el salt no es secreto, ya que se almacena en el propio registro, y que no encarece cada intento: obliga a atacar cada registro por separado, pero probar un candidato contra un registro dado sigue teniendo el mismo costo. Ese costo lo controla el número de iteraciones.
+
+**¿Por qué muchas iteraciones?**
+
+Las funciones de hash de propósito general, como SHA-256, están diseñadas para ser rápidas. En el almacenamiento de contraseñas esa velocidad beneficia al atacante: ante una filtración, puede probar candidatos fuera de línea tan rápido como lo permita su hardware, incluidas GPU que evalúan muchos candidatos en paralelo [B2]. El factor de trabajo, es decir, el número de iteraciones, vuelve cada cálculo deliberadamente costoso [B1; B2].
+
+La medición de la sección 4.2 cuantifica el efecto en el equipo de prueba (AMD Ryzen 7 5700U, ejecución secuencial): con una iteración se alcanzan unos 83.873 intentos por segundo, y recorrer las 14.344.392 entradas de `rockyou.txt` contra un registro llevaría unos 2,85 minutos; con 200.000 iteraciones la tasa cae a 3,59 intentos por segundo y el mismo recorrido se extiende a unos 46 días, un costo aproximadamente 23.356 veces mayor. Para el servidor, en cambio, el impacto se limita a unos 0,28 segundos por inicio de sesión. Esa asimetría es el fundamento de las iteraciones: el costo se paga una vez por cada autenticación legítima, mientras que el atacante debe pagarlo por cada candidato y por cada registro.
+
+La medida tiene límites. Los tiempos corresponden a una CPU sin paralelismo, por lo que un atacante con GPU obtendría tasas muy superiores y los 46 días no constituyen una garantía (ver 4.2). Tampoco protege una contraseña débil: si figura entre los primeros candidatos de la lista, se encontrará mucho antes de recorrerla completa. Por último, 200.000 es el valor predeterminado del laboratorio; la guía de OWASP recomienda actualmente 600.000 iteraciones para PBKDF2-HMAC-SHA-256 y prioriza Argon2id en diseños nuevos [B2], y NIST indica que el factor de costo debe ser tan alto como resulte práctico sin degradar el rendimiento del verificador [B3].
+
+**¿Por qué comparar en tiempo constante?**
+
+La comparación con `==` finaliza en el primer byte distinto, de modo que su duración depende de la longitud del prefijo coincidente. Si un atacante puede medir con precisión los tiempos de respuesta, esa diferencia constituye un canal lateral que permite inferir un valor secreto por partes. `hmac.compare_digest` evita ese cortocircuito: devuelve el mismo resultado que `a == b`, pero sin que el tiempo dependa del contenido [B5].
+
+En `verify_password` lo que se compara es la clave derivada, no la contraseña. El atacante controla la contraseña que envía, pero no puede elegir directamente los bytes de la clave derivada resultante, por lo que explotar esta fuga sería mucho más difícil que en la verificación directa de un MAC. Aun así, comparar secretos en tiempo constante es la práctica correcta, ya que elimina el canal sin costo apreciable y no depende de suponer qué controla el atacante.
 
 ## 3. Parte B.2 — TOTP
 
