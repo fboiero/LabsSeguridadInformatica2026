@@ -24,81 +24,79 @@
 
 ## A.1 — Cronología
 
-| Fecha      | Hecho                                                                                                                                                                                                  | Fuente            |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| 2017-03-08 | US-CERT identifica públicamente una vulnerabilidad de Apache Struts (CVE-2017-5638) que permite ejecutar comandos en los sistemas afectados.                                                            | [1]; [2, p. 11]   |
-| 2017-03    | Equifax recibe el aviso de US-CERT y lo circula, pero la lista de destinatarios está desactualizada y el parche no se instala en el portal de disputas en línea; un escaneo posterior no lo detecta. | [2, p. 15]        |
-| 2017-03-10 | Individuos no identificados escanean los sistemas de Equifax, encuentran el portal de disputas con la versión vulnerable y confirman que pueden ejecutar comandos; no se extraen datos.              | [2, pp. 11–12]    |
-| 2017-05-13 | Comienza el acceso de los atacantes y la extracción de datos personales; con credenciales sin cifrar pasan de 3 a 48 bases de datos adicionales y ejecutan unas 9.000 consultas.                     | [2, p. 12]        |
-| 2017-07-29 | Tras renovar un certificado digital vencido que impedía inspeccionar el tráfico cifrado, el personal de seguridad detecta la intrusión, unos 76 días después de iniciada.                             | [2, pp. 12–14]; [3] |
-| 2017-07-30 | Ante actividad sospechosa que continúa, Equifax desconecta el portal de disputas en línea.                                                                                                            | [2, p. 14]        |
-| 2017-09-07 | Equifax anuncia públicamente el incidente: unos 143 millones de consumidores de EE. UU. potencialmente afectados, más unas 209.000 tarjetas y 182.000 documentos de disputa.                          | [3]               |
-| 2017-10-02 | Equifax corrige la cifra de afectados de 143 a 145,5 millones.                                                                                                                                        | [2, p. 19]        |
-| 2019-07-22 | CFPB, FTC y los estados anuncian un acuerdo con Equifax de hasta USD 700 millones por la brecha, que expuso datos de unos 147 millones de consumidores.                                               | [4]               |
+| Fecha | Hecho | Fuente |
+|---|---|---|
+| 08/03/2017 | US-CERT difunde públicamente la vulnerabilidad CVE-2017-5638 de Apache Struts, que permite la ejecución remota de comandos. | [1]; [2, p. 11] |
+| 03/2017 | Equifax distribuye el aviso internamente, pero la lista de destinatarios está desactualizada: el portal de disputas en línea no se parchea y un escaneo posterior no detecta la vulnerabilidad. | [2, p. 15] |
+| 10/03/2017 | Terceros no identificados escanean los sistemas de Equifax, localizan el portal vulnerable y verifican que pueden ejecutar comandos, sin extraer datos. | [2, pp. 11–12] |
+| 13/05/2017 | Se inicia el acceso de los atacantes y la extracción de datos personales; mediante credenciales almacenadas sin cifrar acceden a 48 bases de datos adicionales y ejecutan alrededor de 9.000 consultas. | [2, p. 12] |
+| 29/07/2017 | Tras la renovación de un certificado digital vencido que impedía inspeccionar el tráfico cifrado, el equipo de seguridad detecta la intrusión, unos 76 días después de su inicio. | [2, pp. 12–14]; [3] |
+| 30/07/2017 | Equifax desconecta el portal de disputas en línea ante la persistencia de actividad sospechosa. | [2, p. 14] |
+| 07/09/2017 | Equifax comunica públicamente el incidente: aproximadamente 143 millones de consumidores estadounidenses potencialmente afectados, además de 209.000 tarjetas de crédito y 182.000 documentos de disputa. | [3] |
+| 02/10/2017 | La cifra de afectados se corrige a 145,5 millones. | [2, p. 19] |
+| 22/07/2019 | CFPB, FTC y los estados anuncian un acuerdo con Equifax de hasta USD 700 millones; la brecha alcanzó a unos 147 millones de consumidores. | [4] |
 
 ## A.2 — Activo afectado
 
-**Activo principal:** Los datos personales de consumidores de EE. UU. almacenados en bases de datos de Equifax accesibles desde su portal de disputas en línea: nombres, números de Seguro Social, fechas de nacimiento, direcciones y, en algunos casos, números de licencia de conducir, de unos 143 millones de personas según el anuncio inicial [3], cifra que luego se corrigió a 145,5 millones [2, p. 19].
+**Activo principal:** información personal identificable de consumidores estadounidenses —nombre, número de Seguro Social, fecha de nacimiento, domicilio y, en algunos casos, número de licencia de conducir— almacenada en las bases de datos de Equifax accesibles desde el portal de disputas en línea [2, p. 12; 3]. El anuncio inicial estimó 143 millones de afectados, cifra luego corregida a 145,5 millones [2, p. 19; 3].
 
-**Por qué es el principal:** Es el activo con mayor volumen afectado y el más difícil de reemplazar: un número de Seguro Social o una fecha de nacimiento no se pueden "cambiar" como una contraseña o una tarjeta, por lo que su exposición permite fraude y robo de identidad durante años. Por eso se prioriza por encima de los demás activos, aunque estos también eran sensibles.
+**Por qué es el principal:** concentra el mayor volumen de registros comprometidos y, a diferencia de una contraseña o una tarjeta, sus datos no pueden reemplazarse. La exposición del número de Seguro Social y de la fecha de nacimiento habilita el robo de identidad de manera prolongada, por lo que su compromiso tiene el impacto más duradero sobre los titulares.
 
-**Otros activos afectados (en orden de prioridad):**
+**Otros activos afectados:**
 
-1. **Credenciales de acceso sin cifrar** (usuarios y contraseñas) guardadas en un repositorio de datos: no son datos de consumidores, pero son el activo que permitió a los atacantes pasar de las 3 bases del portal a 48 bases adicionales [2, p. 12]. Se priorizan segundas porque multiplicaron el alcance de la brecha.
-2. **Números de tarjeta de crédito** de unos 209.000 consumidores [3].
-3. **Documentos de disputa** con datos personales de unos 182.000 consumidores, como facturas de servicios presentadas como prueba [2, p. 19; 3].
+1. **Credenciales de acceso almacenadas sin cifrar.** Si bien no son datos de consumidores, constituyeron el activo que permitió extender el acceso desde las 3 bases asociadas al portal hacia 48 bases adicionales [2, p. 12]. Se ubican en segundo lugar por haber determinado la escala de la brecha.
+2. **Números de tarjeta de crédito** de aproximadamente 209.000 consumidores [3].
+3. **Documentos de disputa** con datos personales de aproximadamente 182.000 consumidores, como facturas presentadas como prueba [2, p. 19; 3].
 
-Las categorías 2 y 3 son subconjuntos de personas que pueden solaparse con el activo principal, por lo que sus cifras no deben sumarse.
+Los activos 2 y 3 corresponden a subconjuntos de personas que pueden coincidir con las del activo principal, por lo que sus cifras no son acumulables.
 
 ## A.3 — Matriz CIA
 
-| Propiedad        | ¿Se violó? | Evidencia concreta                                                                                                                                                                                                                                                       |
-| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Confidencialidad | Sí         | Los atacantes ejecutaron unas 9.000 consultas y extrajeron en pequeños lotes datos personales de al menos 145,5 millones de personas [2, pp. 12, 19], incluidos números de Seguro Social y fechas de nacimiento [3].                                                      |
-| Integridad       | No         | Las fuentes describen consultas y extracción de datos, no su modificación. Equifax informó que no encontró evidencia de actividad no autorizada en sus bases centrales de informes de crédito de consumidores y comerciales [3]. Ninguna fuente identifica un dato alterado. |
-| Disponibilidad   | Parcial    | El 30/07/2017 Equifax desconectó el portal de disputas en línea como respuesta al incidente [2, p. 14]. La interrupción fue de ese servicio puntual y la decidió el defensor; no hay evidencia de indisponibilidad del resto de los servicios.                            |
+| Propiedad | ¿Se violó? | Evidencia concreta |
+|---|---|---|
+| Confidencialidad | Sí | Los atacantes ejecutaron alrededor de 9.000 consultas y extrajeron información personal de al menos 145,5 millones de personas [2, pp. 12, 19], incluidos números de Seguro Social y fechas de nacimiento [3]. |
+| Integridad | No | Las fuentes documentan consultas y extracción de datos, pero no su modificación. Equifax declaró no haber hallado evidencia de actividad no autorizada en sus bases centrales de informes de crédito de consumidores y comerciales [3]. |
+| Disponibilidad | Parcial | El 30/07/2017 Equifax desconectó el portal de disputas en línea como medida de contención [2, p. 14]. La interrupción se limitó a ese servicio y no se registra indisponibilidad del resto de los sistemas. |
 
-**Justificación ampliada de la propiedad más discutible:** La disponibilidad es la más difícil de determinar. Por un lado, el atacante no buscó ni provocó una caída: su objetivo era extraer datos sin ser detectado, y durante 76 días el sistema funcionó con normalidad [2, p. 12]. Por otro lado, el incidente sí dejó a los consumidores sin el portal de disputas, porque Equifax tuvo que desconectarlo para contener el ataque [2, p. 14]. Se marca como "Parcial" porque hubo una pérdida real de disponibilidad causada por el incidente, pero acotada a un servicio y producto de la contención, no del ataque. En cambio, la integridad se marca como "No" y no como "Parcial": como indica la consigna, si no se puede mostrar qué dato fue alterado, la respuesta es "No", y las fuentes solo documentan lectura y extracción, además de que Equifax afirmó no haber encontrado actividad no autorizada en sus bases centrales de crédito [3].
+**Justificación ampliada de la propiedad más discutible:** la disponibilidad presenta la mayor dificultad de clasificación. El objetivo de los atacantes fue la extracción encubierta de datos, no la interrupción del servicio, y los sistemas operaron con normalidad durante los 76 días de la intrusión [2, p. 12]. Sin embargo, el incidente produjo una pérdida efectiva de disponibilidad, ya que la contención exigió desconectar el portal de disputas [2, p. 14]. Se clasifica como parcial porque la afectación fue real pero acotada a un servicio y derivada de la respuesta defensiva, no de la acción del atacante. La integridad, en cambio, se clasifica como no violada: ninguna fuente identifica un dato alterado y la información disponible describe únicamente operaciones de lectura y extracción [2, p. 12; 3].
 
 ## A.4 — Encadenamiento amenaza → vulnerabilidad → impacto
 
-| Elemento                             | En este caso                                                                                                                                                                                                                       |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Amenaza (quién/qué y motivación)     | Atacantes externos no identificados [2, p. 11]. Las fuentes consultadas no atribuyen el ataque a un grupo concreto ni establecen su motivación, por lo que no se afirma ninguna.                                                   |
-| Vulnerabilidad (debilidad explotada) | CVE-2017-5638 en Apache Struts 2 (versiones 2.3.5 a 2.3.31 y 2.5 a 2.5.10): ejecución remota de código al procesar subidas de archivos con el parser Jakarta Multipart [1], sin parchear en el portal de disputas en línea [2, p. 15]. |
-| Activo                               | Datos personales de consumidores (Seguro Social, fecha de nacimiento, dirección) en bases de datos de Equifax alcanzables desde el portal [2, p. 12; 3].                                                                            |
-| Impacto                              | Exposición de datos de al menos 145,5 millones de personas, con riesgo prolongado de fraude y robo de identidad [2, p. 19], y un acuerdo regulatorio de hasta USD 700 millones [4].                                                 |
+| Elemento | En este caso |
+|---|---|
+| Amenaza (quién/qué y motivación) | Atacantes externos no identificados [2, p. 11]. Las fuentes consultadas no establecen su identidad ni su motivación. |
+| Vulnerabilidad (debilidad explotada) | CVE-2017-5638: ejecución remota de código en el procesamiento de archivos del parser Jakarta Multipart de Apache Struts 2, versiones 2.3.5 a 2.3.31 y 2.5 a 2.5.10 [1], no corregida en el portal de disputas en línea [2, p. 15]. |
+| Activo | Información personal identificable de consumidores alojada en las bases de datos alcanzables desde el portal [2, p. 12; 3]. |
+| Impacto | Exposición de datos de al menos 145,5 millones de personas, con riesgo sostenido de robo de identidad [2, p. 19], y un acuerdo regulatorio de hasta USD 700 millones [4]. |
 
-**Redacción:** Atacantes externos no identificados (amenaza) usaron software diseñado para aprovechar la falla (exploit) [2, p. 12] y explotaron CVE-2017-5638, la vulnerabilidad de ejecución remota de código de Apache Struts que seguía sin parchear en el portal de disputas en línea de Equifax (vulnerabilidad) [1; 2, p. 15]. Desde ese portal, y gracias a credenciales guardadas sin cifrar y a bases de datos no segmentadas, llegaron a 48 bases adicionales con datos personales de consumidores (activo) [2, pp. 12, 16]. Esto produjo la extracción de datos de al menos 145,5 millones de personas durante unos 76 días sin ser detectados, con riesgo duradero de robo de identidad para los titulares y consecuencias regulatorias y económicas para Equifax (impacto) [2, pp. 12, 19; 4]. Las fuentes no permiten atribuir el ataque a un actor concreto ni afirmar su motivación.
+**Redacción:** atacantes externos no identificados (amenaza) emplearon un software diseñado para explotar CVE-2017-5638 (exploit) [2, p. 12], una vulnerabilidad de ejecución remota de código en Apache Struts que permanecía sin corregir en el portal de disputas en línea de Equifax (vulnerabilidad) [1; 2, p. 15]. A partir de ese acceso, la ausencia de segmentación entre bases de datos y el almacenamiento de credenciales sin cifrar les permitieron alcanzar 48 bases adicionales con información personal de consumidores (activo) [2, pp. 12, 16]. El resultado fue la extracción inadvertida de datos de al menos 145,5 millones de personas durante aproximadamente 76 días, con riesgo prolongado de robo de identidad para los titulares y consecuencias regulatorias y económicas para la empresa (impacto) [2, pp. 12, 19; 4].
 
 ## A.5 — Dos controles mitigantes
 
 ### Control 1
 
-| Campo                                           | Desarrollo |
-| ----------------------------------------------- | ---------- |
-| Qué es                                          | Gestión de parches basada en un inventario actualizado de activos: cada aplicación expuesta tiene un responsable registrado, los avisos de vulnerabilidades críticas se asignan a ese responsable con un plazo, y después se verifica la corrección con un escaneo que confirme la versión instalada. |
-| Propiedad de la tríada que protege              | Confidencialidad (impide el acceso inicial que llevó a la extracción). |
-| Por qué habría funcionado en este caso concreto | La investigación identificó como primera causa la "identificación": el aviso de US-CERT de marzo de 2017 se envió a una lista de destinatarios desactualizada, no llegó a quien debía parchear el portal, y el escaneo posterior no detectó la vulnerabilidad [2, p. 15]. La extracción empezó el 13/05/2017 [2, p. 12], así que hubo unos dos meses para aplicar la versión corregida (Struts 2.3.32 o 2.5.10.1) [1]. Con un inventario que asignara el portal a un responsable y una verificación posterior al parche, ese vector se habría cerrado antes del ataque. Límite: no protege frente a vulnerabilidades que todavía no tienen parche. |
+| Campo | Desarrollo |
+|---|---|
+| Qué es | Gestión de parches sustentada en un inventario actualizado de activos, en el que cada sistema expuesto tiene un responsable asignado, cada vulnerabilidad crítica tiene un plazo de corrección y la aplicación del parche se verifica mediante un escaneo posterior. |
+| Propiedad de la tríada que protege | Confidencialidad, al impedir el acceso inicial que dio lugar a la extracción. |
+| Por qué habría funcionado en este caso concreto | La investigación posterior identificó como primer factor causal la falta de identificación del sistema vulnerable: el aviso de US-CERT se distribuyó a una lista desactualizada, no llegó a los responsables del portal y el escaneo realizado no detectó la vulnerabilidad [2, p. 15]. Entre la difusión del aviso y el inicio de la extracción, el 13/05/2017 [2, p. 12], transcurrieron cerca de dos meses en los que existían versiones corregidas de Struts (2.3.32 y 2.5.10.1) [1]. Un inventario con responsables asignados y una verificación posterior habrían permitido cerrar el vector de entrada antes del ataque. Su alcance se limita a vulnerabilidades para las que existe un parche disponible. |
 
 ### Control 2
 
-| Campo                                           | Desarrollo |
-| ----------------------------------------------- | ---------- |
-| Qué es                                          | Segmentación de bases de datos junto con gestión segura de credenciales: el portal solo puede conectarse a las bases que necesita, y las credenciales de servicio se guardan cifradas en un gestor de secretos, con el mínimo privilegio, en lugar de en texto plano dentro de un repositorio de datos. |
-| Propiedad de la tríada que protege              | Confidencialidad (reduce el alcance de un compromiso). |
-| Por qué habría funcionado en este caso concreto | Según la GAO, los atacantes encontraron usuarios y contraseñas sin cifrar y, como las bases no estaban aisladas entre sí, pasaron de las 3 bases del portal a 48 bases no relacionadas [2, pp. 12, 16]. Segmentación y gobierno de datos son dos de los cuatro factores que la propia investigación de Equifax identificó [2, pp. 15–16]. Con este control, comprometer el portal no habría dado acceso al resto de las bases. Límite: no evita el acceso inicial ni la exposición de los datos de las 3 bases propias del portal. |
+| Campo | Desarrollo |
+|---|---|
+| Qué es | Segmentación de las bases de datos y gestión segura de credenciales: el portal solo puede comunicarse con las bases que requiere, y las credenciales de servicio se almacenan cifradas en un gestor de secretos, bajo el principio de mínimo privilegio. |
+| Propiedad de la tríada que protege | Confidencialidad, al reducir el alcance de un eventual compromiso. |
+| Por qué habría funcionado en este caso concreto | Los atacantes obtuvieron credenciales almacenadas sin cifrar y, dado que las bases no estaban aisladas entre sí, extendieron su acceso desde las 3 bases del portal hacia 48 bases no relacionadas [2, pp. 12, 16]. La segmentación y el gobierno de datos figuran entre los cuatro factores causales identificados por la propia investigación de Equifax [2, pp. 15–16]. Con este control, el compromiso del portal habría quedado contenido en sus propias bases. No impide, sin embargo, el acceso inicial ni la exposición de la información de esas 3 bases. |
 
 ## A.6 — Fuentes consultadas (Parte A)
 
-Todas las fuentes fueron abiertas y verificadas el 05/11/2026; cada afirmación de A.1–A.5 indica su número de referencia y, en el caso del informe de la GAO, la página impresa del documento.
+Fuentes consultadas el 05/11/2026. En el caso del informe de la GAO, las citas indican la página impresa del documento.
 
-1. [PRIMARIA] Apache Software Foundation. (2017). _S2-045: Possible Remote Code Execution when performing file upload based on Jakarta Multipart parser_ [Boletín de seguridad de Apache Struts 2]. https://cwiki.apache.org/confluence/display/WW/S2-045
+1. [PRIMARIA] Apache Software Foundation. (2017). _S2-045: Possible Remote Code Execution when performing file upload based on Jakarta Multipart parser_ [Boletín de seguridad]. https://cwiki.apache.org/confluence/display/WW/S2-045
 2. [PRIMARIA] U.S. Government Accountability Office. (2018, agosto). _Data protection: Actions taken by Equifax and federal agencies in response to the 2017 breach_ (GAO-18-559). https://www.gao.gov/products/gao-18-559
-3. [PRIMARIA] Equifax Inc. (2017, 7 de septiembre). _Equifax announces cybersecurity incident involving consumer information_ [Comunicado de prensa, Exhibit 99.1 del Form 8-K presentado ante la SEC]. https://www.sec.gov/Archives/edgar/data/0000033185/000003318517000026/exhibit99120170907.htm
+3. [PRIMARIA] Equifax Inc. (2017, 7 de septiembre). _Equifax announces cybersecurity incident involving consumer information_ [Comunicado de prensa, Exhibit 99.1 del Form 8-K]. U.S. Securities and Exchange Commission. https://www.sec.gov/Archives/edgar/data/0000033185/000003318517000026/exhibit99120170907.htm
 4. [PRIMARIA] Consumer Financial Protection Bureau. (2019, 22 de julio). _CFPB, FTC and States Announce Settlement with Equifax Over 2017 Data Breach_. https://www.consumerfinance.gov/about-us/newsroom/cfpb-ftc-states-announce-settlement-with-equifax-over-2017-data-breach/
-
-**Fuentes de la versión anterior que se retiraron:** el enlace al boletín S2-045 en `struts.apache.org/security/s2-045` devolvía "no encontrado" (se reemplazó por la página oficial del boletín en la wiki de Apache); la alerta "TA17-074A" de CISA/US-CERT del 15/03/2017 no pudo localizarse (la fecha del aviso de US-CERT, 08/03/2017, se respalda con la GAO [2]); el informe de la Cámara citado como del 06/03/2018 no coincidía con ningún documento localizable (el informe oficial del Comité es de diciembre de 2018 y no se usó porque sus afirmaciones ya están cubiertas por la GAO); y el comunicado de la FTC no abría en la URL citada (el acuerdo de 2019 se respalda con el comunicado conjunto del CFPB [4]).
 
 ---
 
