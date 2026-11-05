@@ -100,6 +100,55 @@ Referencias abiertas y contrastadas para esta sección. Su numeración es local 
 
 ### 4.1 Bitácora de comandos
 
+Comandos ejecutados desde `entregas/lab03/grupo10/` en Git Bash (Windows 11, Python 3.10.5), con `PYTHONUTF8=1` para que la salida de `verificar.py` conserve los símbolos. Se pegan las salidas reales; en la última se muestran solo las líneas finales del resumen. Los códigos de salida se obtuvieron con `echo "Código de salida: $?"`.
+
+```text
+$ python src/verificar.py
+
+== Lab 03 · Autenticación ==
+  ✓ hash_password / verify_password
+  ✓ salt por usuario (hashes distintos)
+  ✓ totp coincide con el vector del RFC 6238
+
+3 OK · 0 a revisar · 0 sin implementar
+
+Código de salida: 0
+
+$ python src/auth.py hash --password 'Phantom-2026!'
+pbkdf2_sha256$200000$56edf3432a8c5b61696ff602a0d08772$0e50bd99566ff1e88ab731a3462c513250eab3206dc7ec64ca8ff713f374ad82
+Código de salida: 0
+
+$ python src/auth.py hash --password 'Phantom-2026!'
+pbkdf2_sha256$200000$f1ed255cb4ce30be7cd1e9c0ecca03a0$a1cbd16729154a8558f5775fee7a7678dc7d992d890817a5ef8b7457e52d5067
+Código de salida: 0
+
+$ python src/auth.py verify --password 'Phantom-2026!' --registro 'pbkdf2_sha256$200000$56edf3432a8c5b61696ff602a0d08772$0e50bd99566ff1e88ab731a3462c513250eab3206dc7ec64ca8ff713f374ad82'
+OK
+Código de salida: 0
+
+$ python src/auth.py verify --password 'otra' --registro 'pbkdf2_sha256$200000$56edf3432a8c5b61696ff602a0d08772$0e50bd99566ff1e88ab731a3462c513250eab3206dc7ec64ca8ff713f374ad82'
+FALLO
+Código de salida: 1
+
+$ python src/auth.py totp --secret 12345678901234567890 --t 59
+287082
+Código de salida: 0
+
+$ python -c "import sys; sys.path.insert(0,'src'); import auth; print(auth.totp(b'12345678901234567890', 59, digitos=8))"
+94287082
+Código de salida: 0
+
+$ python src/pruebas_auth.py
+...
+----------------------------------------------------------------------
+Ran 15 tests in 1.404s
+
+OK
+Código de salida: 0
+```
+
+Las dos ejecuciones de `hash` con la misma contraseña producen registros distintos porque cada una genera un salt nuevo. La verificación acepta la contraseña correcta (código 0) y rechaza la incorrecta (código 1). El TOTP coincide con el vector oficial del RFC 6238 tanto en seis dígitos (`287082`) como en ocho (`94287082`).
+
 ### 4.2 Pruebas y medición
 
 #### Pruebas automatizadas
