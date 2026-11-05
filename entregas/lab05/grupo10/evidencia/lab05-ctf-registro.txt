@@ -1,0 +1,66 @@
+Registro local de flags extraidas exclusivamente de capturas previas del grupo.
+No se consulto el codigo del target ni se ejecuto reconocimiento nuevo.
+Verificador oficial: copia temporal LF del contenido versionado del curso.
+Fecha: 2026-11-05T16:20:52-03:00
+
+EVIDENCIA: lab05-banner-31337.txt
+COMMAND: ./ctf submit 05 R1 'FLAG{high_port_secret_service}'
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R1 resuelto: Puerto oculto en rango alto (barrido completo)
+
+Codigo de salida: 0
+
+EVIDENCIA: lab05-banner-ftp.txt
+COMMAND: ./ctf submit 05 R2 'FLAG{banner_grab_proftpd_135}'
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: Banner grabbing del servicio FTP
+
+Codigo de salida: 0
+
+EVIDENCIA: lab05-http-root.txt
+COMMAND: ./ctf submit 05 R3 'FLAG{http_headers_leak_info}'
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: Fuga de informacion en headers HTTP
+
+Codigo de salida: 0
+
+EVIDENCIA: lab05-hidden-panel.txt
+COMMAND: ./ctf submit 05 R4 'FLAG{recon_hidden_path}'
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R4 resuelto: Enumeracion de rutas via robots.txt
+
+Codigo de salida: 0
+
+EVIDENCIA: lab05-http-8080-status.txt
+COMMAND: ./ctf submit 05 R5 'FLAG{dev_service_exposed}'
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R5 resuelto: Servicio dev expuesto en produccion
+
+Codigo de salida: 0
+
+COMMAND: ./ctf status 05
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 05                      │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Puerto oculto en rango alto (barrido completo)
+   ✓  R2     Banner grabbing del servicio FTP
+   ✓  R3     Fuga de informacion en headers HTTP
+   ✓  R4     Enumeracion de rutas via robots.txt
+   ✓  R5     Servicio dev expuesto en produccion
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 05 COMPLETO! Ponete las pilas con la próxima unidad.
+Codigo de salida: 0
