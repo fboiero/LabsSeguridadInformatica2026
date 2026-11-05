@@ -3,6 +3,7 @@
 **Grupo:** 10 · **Integrantes:** Belén Rocío Ramello — @belramello · Carolina Paula Corazza — @carocor1 · Chiara Agustina Kordek — @chiarakordek · Juan Pablo Saby — @JuanSaby
 
 ## 0. Declaración de uso de IA
+Se utilizaron asistentes de IA. Se utilizo Claude para entender los conceptos de PBKDF2 y TOTP, implementar con asistencia los tres TODO de auth.py, ayudas en redacciones, y buscar fuentes. Lo generado se verificó con verificar.py , con las pruebas de pruebas_auth.py , con salidas reales de la terminal y abriendo cada fuente citada
 
 ## 1. Parte A — Análisis de la brecha: credential stuffing
 
