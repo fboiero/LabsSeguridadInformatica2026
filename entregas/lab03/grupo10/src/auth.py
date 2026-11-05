@@ -14,8 +14,10 @@ def hash_password(password: str, salt: bytes = None, iters: int = 200_000) -> st
     """Devuelve una cadena 'pbkdf2_sha256$iters$salt_hex$dk_hex'.
     Pista: secrets.token_bytes para el salt; hashlib.pbkdf2_hmac('sha256', ...).
     ¿Por qué salt por usuario? ¿Por qué 200.000 iteraciones y no una?"""
-    # TODO
-    raise NotImplementedError("Completá hash_password()")
+    if salt is None:
+        salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iters)
+    return f"pbkdf2_sha256${iters}${salt.hex()}${dk.hex()}"
 
 def verify_password(password: str, almacenado: str) -> bool:
     """Verifica una contraseña contra el registro de hash_password().
