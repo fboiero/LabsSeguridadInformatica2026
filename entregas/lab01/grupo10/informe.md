@@ -83,13 +83,14 @@
 
 ## A.6 — Fuentes consultadas (Parte A)
 
-Las referencias primarias consultadas y asociadas a las afirmaciones de A.1–A.5 se listan abajo.
+Todas las fuentes fueron abiertas y verificadas el 05/11/2026; cada afirmación de A.1–A.5 indica su número de referencia y, en el caso del informe de la GAO, la página impresa del documento.
 
-1. [PRIMARIA] Apache Software Foundation. (2017, March 7). _S2-045: Possible Remote Code Execution when using the Jakarta Multipart parser_. https://struts.apache.org/security/s2-045
-2. [PRIMARIA] CISA/US-CERT. (2017, March 15). _TA17-074A: Apache Struts Vulnerability_. https://www.cisa.gov/news-events/alerts/2017/03/15/apache-struts-vulnerability
-3. [PRIMARIA] U.S. House of Representatives, Committee on Oversight and Government Reform. (2018, March 6). _The Equifax Data Breach: Preventable Failure and Lessons Learned_. https://oversight.house.gov/sites/democrats.oversight.house.gov/files/documents/20180306-Equifax-Report.pdf
-4. [PRIMARIA] Equifax Inc. (2017, September 7). _Equifax Announces Cybersecurity Incident Involving Consumer Information_. https://investor.equifax.com/news-and-events/news/2017/Equifax-Announces-Cybersecurity-Incident-Involving-Consumer-Information/default.aspx
-5. [PRIMARIA] Federal Trade Commission. (2019, July 22). _FTC Sues Equifax for Data Breach that Exposed 147 Million People_. https://www.ftc.gov/news-events/news/press-releases/2019/07/ftc-sues-equifax-data-breach-exposed-147-million-people
+1. [PRIMARIA] Apache Software Foundation. (2017). _S2-045: Possible Remote Code Execution when performing file upload based on Jakarta Multipart parser_ [Boletín de seguridad de Apache Struts 2]. https://cwiki.apache.org/confluence/display/WW/S2-045
+2. [PRIMARIA] U.S. Government Accountability Office. (2018, agosto). _Data protection: Actions taken by Equifax and federal agencies in response to the 2017 breach_ (GAO-18-559). https://www.gao.gov/products/gao-18-559
+3. [PRIMARIA] Equifax Inc. (2017, 7 de septiembre). _Equifax announces cybersecurity incident involving consumer information_ [Comunicado de prensa, Exhibit 99.1 del Form 8-K presentado ante la SEC]. https://www.sec.gov/Archives/edgar/data/0000033185/000003318517000026/exhibit99120170907.htm
+4. [PRIMARIA] Consumer Financial Protection Bureau. (2019, 22 de julio). _CFPB, FTC and States Announce Settlement with Equifax Over 2017 Data Breach_. https://www.consumerfinance.gov/about-us/newsroom/cfpb-ftc-states-announce-settlement-with-equifax-over-2017-data-breach/
+
+**Fuentes de la versión anterior que se retiraron:** el enlace al boletín S2-045 en `struts.apache.org/security/s2-045` devolvía "no encontrado" (se reemplazó por la página oficial del boletín en la wiki de Apache); la alerta "TA17-074A" de CISA/US-CERT del 15/03/2017 no pudo localizarse (la fecha del aviso de US-CERT, 08/03/2017, se respalda con la GAO [2]); el informe de la Cámara citado como del 06/03/2018 no coincidía con ningún documento localizable (el informe oficial del Comité es de diciembre de 2018 y no se usó porque sus afirmaciones ya están cubiertas por la GAO); y el comunicado de la FTC no abría en la URL citada (el acuerdo de 2019 se respalda con el comunicado conjunto del CFPB [4]).
 
 ---
 
