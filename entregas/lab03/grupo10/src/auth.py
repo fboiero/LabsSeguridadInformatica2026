@@ -22,8 +22,16 @@ def hash_password(password: str, salt: bytes = None, iters: int = 200_000) -> st
 def verify_password(password: str, almacenado: str) -> bool:
     """Verifica una contraseña contra el registro de hash_password().
     DEBE comparar en tiempo constante (hmac.compare_digest)."""
-    # TODO
-    raise NotImplementedError("Completá verify_password()")
+    try:
+        algo, iters, salt_hex, dk_hex = almacenado.split("$")
+        if algo != "pbkdf2_sha256":
+            return False
+        salt = bytes.fromhex(salt_hex)
+        esperado = bytes.fromhex(dk_hex)
+        calculado = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, int(iters))
+    except ValueError:
+        return False
+    return hmac.compare_digest(calculado, esperado)
 
 # --- B.2: segundo factor (TOTP / RFC 6238) ---
 def hotp(secret: bytes, contador: int, digitos: int = 6, algo: str = "sha1") -> str:
