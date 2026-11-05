@@ -1,0 +1,8 @@
+$ nmap --script http-enum -p80 phantomcorp
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-05 15:54 UTC
+Nmap scan report for phantomcorp (172.18.0.2)
+PORT   STATE SERVICE
+80/tcp open  http
+| http-enum: 
+|   /backup/: Possible backup
+Nmap done: 1 IP address (1 host up) scanned in 7.67 seconds

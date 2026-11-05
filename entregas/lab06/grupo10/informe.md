@@ -56,17 +56,27 @@ La imagen es una captura directa de la ventana de Git Bash/Mintty al volver a ej
 
 Antes de ejecutar R4 no existía `.progreso/06.done` en esta copia local: el estado pasó de `0/5` a `1/5`, con R4 marcado. El registro anterior de R2 corresponde a otra ejecución y se conserva como evidencia de ese trabajo; no se fabricó un estado consolidado. `ctf status` devuelve `1` porque el laboratorio completo aún no está resuelto; por eso Mintty muestra `/bin/bash: Exit 1`. Ese aviso no invalida R4: su aceptación está acreditada por `ctf submit`.
 
+### Validación de R1 y R5 — Enumeración de directorios y Fingerprinting
+
+Las flags de R1 y R5 se recuperaron de respuestas HTTP y se validaron con el motor oficial. En esta copia local el progreso partía de `0/5` (`.progreso/06.done` no existía aún; los registros de R2 y R4 corresponden a otras copias y se conservan como evidencia de ese trabajo, sin consolidar un estado ficticio). Tras enviar ambas flags, `./ctf status 06` pasó a `2/5` con R1 y R5 marcados:
+
+- **R1:** `FLAG{dir_enumeration_backup}`, recuperada del listado de `/backup/`. Enviada con `./ctf submit 06 R1 'FLAG{dir_enumeration_backup}'`; el motor respondió `[ OK ] Reto R1 resuelto`.
+- **R5:** `FLAG{tech_fingerprint_phantomcms}`, recuperada del archivo default `/phantomcms/VERSION`. Enviada con `./ctf submit 06 R5 'FLAG{tech_fingerprint_phantomcms}'`; el motor respondió `[ OK ] Reto R5 resuelto`.
+
+Evidencia: [estado anterior](evidencia/salidas/r1r5_01_status_antes.txt), [envío de R1](evidencia/salidas/r1_04_ctf_submit.txt), [envío de R5](evidencia/salidas/r5_03_ctf_submit.txt) y [estado posterior](evidencia/salidas/r1r5_02_status_despues.txt), sin editar.
+
+
 ---
 
 ## 2. Inventario de enumeración
 
 | Hallazgo | Ruta/Método | Técnica | Evidencia | Riesgo | ¿Qué habilita para el Lab 07? |
 |---|---|---|---|---|---|
-| *(R1 - Pendiente)* | | | | | |
+| **R1 — Directorio de respaldos con listado accesible** | `GET /backup/` | Enumeración de directorios con `dirb` (wordlist común) y verificación con `curl` | [hallazgos de `dirb`](evidencia/salidas/r1_01_dirb_hallazgos.txt); [listado de `/backup/`](evidencia/salidas/r1_02_backup_listing.txt); [rutas conocidas con `http-enum`](evidencia/salidas/r1_03_http_enum.txt) | **Medio (demostrado):** el servidor devuelve el índice del directorio y nombra respaldos sensibles (`respaldo-db-2024.sql.gz`, `config.old`). En esta instancia los archivos individuales devolvieron 404, por lo que no se descargó contenido; el impacto demostrado es el listado de directorios habilitado y la divulgación de la existencia y los nombres de esos respaldos. `/admin` existe pero responde 403 | Los nombres `respaldo-db-2024.sql.gz` (volcado de base) y `config.old` señalan objetivos concretos para intentar recuperar en el Lab 07, por ejemplo mediante el path traversal de `GET /descargar?archivo=` |
 | **Repositorio Git expuesto (Configuración y URL interna)** | `GET /.git/config` | Petición HTTP directa a rutas predecibles de control de versiones | Código `200 OK`, `Content-Type: text/plain`. Revela `bare = false` y `url = https://git.internal.phantomcorp/intranet.git` junto a comentarios de desarrollo | **Medio** (Demostrado). Divulgación de arquitectura interna y ubicación del repositorio central de código. No escala a Crítico en este servidor porque `.git/objects/` e historial no son accesibles (404) | Permite identificar el nombre del repositorio interno (`intranet.git`) y el dominio de desarrollo (`git.internal.phantomcorp`) para ataques dirigidos de falsificación de peticiones (SSRF) o pivot lateral |
 | *(R3 - Pendiente)* | | | | | |
 | **R4 — API interna que expone usuarios y roles sin autenticación** | `GET /api/users` | Enumeración dirigida de rutas de API con `curl` y análisis del JSON | [HTTP 200 y listado de usuarios](evidencia/salidas/r4_02_api_users_http.txt); [petición sin credenciales](evidencia/salidas/r4_02_api_users_peticion.txt) | **Medio, valoración cualitativa:** exposición demostrada de tres usuarios, sus identificadores y roles. Permite reconocer cuentas y priorizar objetivos; no demuestra acceso a ellas ni recuperación de contraseñas | Nombres para orientar futuras pruebas de autenticación e IDs `1`, `2` y `3` para investigar autorización por objeto, si el endpoint del Lab 07 utiliza esos mismos identificadores. No demuestra IDOR por sí solo |
-| *(R5 - Pendiente)* | | | | | |
+| **R5 — CMS y versión expuestos (fingerprinting)** | `GET /` (cabeceras y `<meta generator>`) y `GET /phantomcms/VERSION` | Fingerprinting con `whatweb -a 3` y confirmación con `curl` | [salida de `whatweb`](evidencia/salidas/r5_01_whatweb.txt); [archivo default del CMS](evidencia/salidas/r5_02_version_default.txt) | **Medio (demostrado):** el stack se publica en claro (`Server: PhantomServer/3.7`, `X-Powered-By: PhantomCMS/3.7`, `<meta generator>` PhantomCMS 3.7) y el archivo default `/phantomcms/VERSION` confirma producto, versión y build (`PhantomCMS 3.7 (build 2024-11)`). No se identificó un CVE aplicable a este producto ficticio; el riesgo es la exposición de versión | Conocer producto, versión y build exactos permite buscar vulnerabilidades específicas de esa versión antes de la explotación; la convención del archivo default (`/phantomcms/VERSION`) es en sí un vector de enumeración reutilizable |
 
 ### Evidencia de soporte del inventario (R2)
 
@@ -176,6 +186,38 @@ En R4 no se consultó `/perfil`, no se modificaron identificadores para acceder 
 - [OWASP WSTG v4.2 — Testing for Account Enumeration and Guessable User Account](https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/03-Identity_Management_Testing/04-Testing_for_Account_Enumeration_and_Guessable_User_Account): fundamento del riesgo de revelar usuarios. Sus pruebas sobre autenticación no se ejecutaron aquí; se observó una divulgación directa mediante API.
 - [MITRE — CWE-200](https://cwe.mitre.org/data/definitions/200.html): referencia conceptual sobre exposición de información y confidencialidad, no una clasificación de causa raíz ni una estimación automática de severidad.
 - Documentación oficial de Docker, consultada mediante Context7: [directorio de proyecto de Compose](https://docs.docker.com/reference/cli/docker/compose/) y [redes internas](https://docs.docker.com/reference/compose-file/networks/#internal).
+
+### Evidencia de soporte del inventario (R1)
+
+**Fecha de ejecución:** 2026-11-05.
+
+#### 1. Enumeración de directorios
+
+Se ejecutó `dirb` con la wordlist común contra el objetivo autorizado `phantomcorp`. Reportó dos rutas: `/admin` con código `403` (existe pero está protegida) y `/backup` con código `200` (accesible). Un barrido adicional con `gobuster` sobre `big.txt` y el script `http-enum` de Nmap no agregaron rutas nuevas; `http-enum` también señaló `/backup/` como posible respaldo. Se conservan los [hallazgos de `dirb`](evidencia/salidas/r1_01_dirb_hallazgos.txt) y la [salida de `http-enum`](evidencia/salidas/r1_03_http_enum.txt).
+
+#### 2. Recurso sensible expuesto
+
+La solicitud `GET /backup/` devolvió `200 OK` con un índice de directorio que lista `respaldo-db-2024.sql.gz`, `config.old` y `notas-infra.txt`, y la propia página admite que «este directorio no deberia estar accesible». La flag `FLAG{dir_enumeration_backup}` aparece en ese listado ([captura](evidencia/salidas/r1_02_backup_listing.txt)). Al pedir los archivos individuales (`/backup/config.old`, `/backup/notas-infra.txt`) el servidor respondió `404`: en esta instancia el índice es una página estática y no se descargó el contenido de los respaldos. El hallazgo demostrado es, por lo tanto, el listado de directorio habilitado y la divulgación de la existencia y los nombres de respaldos sensibles, no la exfiltración de esos archivos.
+
+#### 3. Riesgo e información para el Lab 07
+
+El listado revela que existen un volcado de base de datos (`respaldo-db-2024.sql.gz`) y una configuración antigua (`config.old`). Aunque aquí no se pudieron descargar, son objetivos concretos para la fase de explotación: el endpoint `GET /descargar?archivo=` del Lab 07 (path traversal) es un camino para intentar alcanzar precisamente ese tipo de archivos fuera del directorio público. Como mitigación, conviene deshabilitar el listado de directorios y retirar los respaldos del árbol servido por el servidor web.
+
+### Evidencia de soporte del inventario (R5)
+
+**Fecha de ejecución:** 2026-11-05.
+
+#### 1. Fingerprinting del stack
+
+`whatweb -a 3 http://phantomcorp` identificó el servidor y el CMS a partir de las respuestas HTTP: `HTTPServer [PhantomServer/3.7]`, `X-Powered-By [PhantomCMS/3.7]` y `MetaGenerator [PhantomCMS 3.7]`, además del título «Intranet PhantomCorp» ([salida de `whatweb`](evidencia/salidas/r5_01_whatweb.txt)). Las mismas cabeceras y la etiqueta `<meta name="generator" content="PhantomCMS 3.7">` ya se observaban en la respuesta de la raíz capturada en R2.
+
+#### 2. Archivo default del CMS
+
+Con el producto identificado, se buscó su archivo default. La ruta `GET /phantomcms/VERSION` devolvió `200 OK` con `PhantomCMS 3.7 (build 2024-11)` y el texto «Archivo default del CMS. Si llegaste aca por fingerprinting, bien.», junto con la flag `FLAG{tech_fingerprint_phantomcms}` ([captura](evidencia/salidas/r5_02_version_default.txt)). El archivo se localizó por enumeración de rutas, no leyendo el código del objetivo.
+
+#### 3. Riesgo asociado a la exposición tecnológica
+
+Publicar producto, versión y build exactos (en cabeceras, en `<meta generator>` y en un archivo default) le ahorra trabajo de reconocimiento a un atacante: puede buscar directamente vulnerabilidades conocidas de esa versión concreta. No se identificó un CVE aplicable a PhantomCMS, por tratarse de un producto ficticio del laboratorio, de modo que no se asigna severidad por un CVE inexistente; el riesgo demostrado es la divulgación de versión. Como mitigación, conviene suprimir o normalizar las cabeceras `Server` y `X-Powered-By`, quitar la etiqueta `generator` y retirar el archivo default del CMS del servidor público.
 
 ---
 

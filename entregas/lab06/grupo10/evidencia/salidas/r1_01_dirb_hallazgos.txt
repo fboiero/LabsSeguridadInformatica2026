@@ -1,0 +1,3 @@
+$ dirb http://phantomcorp/ -X .bak,.old,.txt,.html   (hallazgos)
++ http://phantomcorp/admin (CODE:403|SIZE:65)
++ http://phantomcorp/backup (CODE:200|SIZE:249)
