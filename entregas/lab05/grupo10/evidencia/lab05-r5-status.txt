@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: Werkzeug/2.0.1 Python/3.9.2
+Date: Sat, 10 Oct 2026 00:39:25 GMT
+Content-Type: application/json
+
+{"service":"phantom-dev-api","version":"0.9.3-DEV","debug":true,"flag":"FLAG{dev_service_exposed}"}

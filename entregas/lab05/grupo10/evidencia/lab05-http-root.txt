@@ -1,0 +1,17 @@
+COMMAND: curl -i http://phantomcorp/
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   306    0   306    0     0  73135      0 --:--:-- --:--:-- --:--:--   99k
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1 
+Date: Sat, 10 Oct 2026 00:25:14 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS 2.4.1
+X-Backend-Flag: FLAG{http_headers_leak_info}
+
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>PhantomCorp S.A. - Soluciones Logisticas</title></head><body>
+<h1>PhantomCorp S.A.</h1>
+<p>Lideres en logistica desde 1998. Portal corporativo.</p>
+<!-- TODO(infra): sacar el panel interno de produccion antes del go-live -->
+</body></html>

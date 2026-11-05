@@ -1,0 +1,4 @@
+COMMAND: ncat -w2 phantomcorp 21
+220 ProFTPD 1.3.5 Server (PhantomCorp FTP) [::ffff:0.0.0.0]
+214 FLAG{banner_grab_proftpd_135}
+Ncat: Connection reset by peer.

@@ -1,0 +1,14 @@
+COMMAND: curl -sS -i http://phantomcorp/panel-interno-9x2f
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1 
+Date: Sat, 10 Oct 2026 00:25:20 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS 2.4.1
+X-Backend-Flag: FLAG{http_headers_leak_info}
+
+<!doctype html><html><body>
+<h1>Panel interno PhantomCorp</h1>
+<p>Acceso restringido. Si llegaste aca por robots.txt, felicitaciones: acabas
+de hacer enumeracion de rutas. Esa es exactamente la tecnica.</p>
+<pre>FLAG{recon_hidden_path}</pre>
+</body></html>

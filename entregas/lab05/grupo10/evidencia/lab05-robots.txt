@@ -1,0 +1,12 @@
+COMMAND: curl -sS -i http://phantomcorp/robots.txt
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1 
+Date: Sat, 10 Oct 2026 00:25:14 GMT
+Content-Type: text/plain; charset=utf-8
+X-Powered-By: PhantomCMS 2.4.1
+X-Backend-Flag: FLAG{http_headers_leak_info}
+
+User-agent: *
+Disallow: /admin
+Disallow: /panel-interno-9x2f
+# Recordatorio infra: /panel-interno-9x2f sigue accesible desde afuera. Migrar a VPN.

@@ -1,0 +1,13 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-10 00:23 UTC
+Nmap scan report for phantomcorp (192.168.16.2)
+Host is up (0.000044s latency).
+rDNS record for 192.168.16.2: cyberlab-phantomcorp.cyberlab_labnet
+Not shown: 996 closed tcp ports (reset)
+PORT      STATE SERVICE
+21/tcp    open  ftp
+80/tcp    open  http
+8080/tcp  open  http-proxy
+31337/tcp open  Elite
+MAC Address: AE:79:B9:D1:AE:31 (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.68 seconds

@@ -1,0 +1,8 @@
+COMMAND: curl -sS -I http://phantomcorp:8080/
+HTTP/1.0 501 Unsupported method ('HEAD')
+Server: Werkzeug/2.0.1 Python/3.9.2
+Date: Sat, 10 Oct 2026 00:25:14 GMT
+Connection: close
+Content-Type: text/html;charset=utf-8
+Content-Length: 357
+
