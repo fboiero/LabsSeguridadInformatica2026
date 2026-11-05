@@ -7,7 +7,7 @@
 | **Grupo**                   | 10                                                                |
 | **Caso asignado (Parte A)** | Equifax (2017)                                                    |
 | **Tema del mini-research**  | 2 — La cadena de suministro de software como superficie de ataque |
-| **Fecha de entrega**        | Completar por el grupo                                            |
+| **Fecha de entrega**        | 05/11/2026                                                        |
 
 ### Integrantes
 
@@ -24,17 +24,17 @@
 
 ## A.1 — Cronología
 
-| Fecha | Hecho | Fuente |
-|---|---|---|
-| 08/03/2017 | US-CERT difunde públicamente la vulnerabilidad CVE-2017-5638 de Apache Struts, que permite la ejecución remota de comandos. | [1]; [2, p. 11] |
-| 03/2017 | Equifax distribuye el aviso internamente, pero la lista de destinatarios está desactualizada: el portal de disputas en línea no se parchea y un escaneo posterior no detecta la vulnerabilidad. | [2, p. 15] |
-| 10/03/2017 | Terceros no identificados escanean los sistemas de Equifax, localizan el portal vulnerable y verifican que pueden ejecutar comandos, sin extraer datos. | [2, pp. 11–12] |
-| 13/05/2017 | Se inicia el acceso de los atacantes y la extracción de datos personales; mediante credenciales almacenadas sin cifrar acceden a 48 bases de datos adicionales y ejecutan alrededor de 9.000 consultas. | [2, p. 12] |
-| 29/07/2017 | Tras la renovación de un certificado digital vencido que impedía inspeccionar el tráfico cifrado, el equipo de seguridad detecta la intrusión, unos 76 días después de su inicio. | [2, pp. 12–14]; [3] |
-| 30/07/2017 | Equifax desconecta el portal de disputas en línea ante la persistencia de actividad sospechosa. | [2, p. 14] |
-| 07/09/2017 | Equifax comunica públicamente el incidente: aproximadamente 143 millones de consumidores estadounidenses potencialmente afectados, además de 209.000 tarjetas de crédito y 182.000 documentos de disputa. | [3] |
-| 02/10/2017 | La cifra de afectados se corrige a 145,5 millones. | [2, p. 19] |
-| 22/07/2019 | CFPB, FTC y los estados anuncian un acuerdo con Equifax de hasta USD 700 millones; la brecha alcanzó a unos 147 millones de consumidores. | [4] |
+| Fecha      | Hecho                                                                                                                                                                                                     | Fuente              |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 08/03/2017 | US-CERT difunde públicamente la vulnerabilidad CVE-2017-5638 de Apache Struts, que permite la ejecución remota de comandos.                                                                               | [1]; [2, p. 11]     |
+| 03/2017    | Equifax distribuye el aviso internamente, pero la lista de destinatarios está desactualizada: el portal de disputas en línea no se parchea y un escaneo posterior no detecta la vulnerabilidad.           | [2, p. 15]          |
+| 10/03/2017 | Terceros no identificados escanean los sistemas de Equifax, localizan el portal vulnerable y verifican que pueden ejecutar comandos, sin extraer datos.                                                   | [2, pp. 11–12]      |
+| 13/05/2017 | Se inicia el acceso de los atacantes y la extracción de datos personales; mediante credenciales almacenadas sin cifrar acceden a 48 bases de datos adicionales y ejecutan alrededor de 9.000 consultas.   | [2, p. 12]          |
+| 29/07/2017 | Tras la renovación de un certificado digital vencido que impedía inspeccionar el tráfico cifrado, el equipo de seguridad detecta la intrusión, unos 76 días después de su inicio.                         | [2, pp. 12–14]; [3] |
+| 30/07/2017 | Equifax desconecta el portal de disputas en línea ante la persistencia de actividad sospechosa.                                                                                                           | [2, p. 14]          |
+| 07/09/2017 | Equifax comunica públicamente el incidente: aproximadamente 143 millones de consumidores estadounidenses potencialmente afectados, además de 209.000 tarjetas de crédito y 182.000 documentos de disputa. | [3]                 |
+| 02/10/2017 | La cifra de afectados se corrige a 145,5 millones.                                                                                                                                                        | [2, p. 19]          |
+| 22/07/2019 | CFPB, FTC y los estados anuncian un acuerdo con Equifax de hasta USD 700 millones; la brecha alcanzó a unos 147 millones de consumidores.                                                                 | [4]                 |
 
 ## A.2 — Activo afectado
 
@@ -52,22 +52,22 @@ Los activos 2 y 3 corresponden a subconjuntos de personas que pueden coincidir c
 
 ## A.3 — Matriz CIA
 
-| Propiedad | ¿Se violó? | Evidencia concreta |
-|---|---|---|
-| Confidencialidad | Sí | Los atacantes ejecutaron alrededor de 9.000 consultas y extrajeron información personal de al menos 145,5 millones de personas [2, pp. 12, 19], incluidos números de Seguro Social y fechas de nacimiento [3]. |
-| Integridad | No | Las fuentes documentan consultas y extracción de datos, pero no su modificación. Equifax declaró no haber hallado evidencia de actividad no autorizada en sus bases centrales de informes de crédito de consumidores y comerciales [3]. |
-| Disponibilidad | Parcial | El 30/07/2017 Equifax desconectó el portal de disputas en línea como medida de contención [2, p. 14]. La interrupción se limitó a ese servicio y no se registra indisponibilidad del resto de los sistemas. |
+| Propiedad        | ¿Se violó? | Evidencia concreta                                                                                                                                                                                                                      |
+| ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Confidencialidad | Sí         | Los atacantes ejecutaron alrededor de 9.000 consultas y extrajeron información personal de al menos 145,5 millones de personas [2, pp. 12, 19], incluidos números de Seguro Social y fechas de nacimiento [3].                          |
+| Integridad       | No         | Las fuentes documentan consultas y extracción de datos, pero no su modificación. Equifax declaró no haber hallado evidencia de actividad no autorizada en sus bases centrales de informes de crédito de consumidores y comerciales [3]. |
+| Disponibilidad   | Parcial    | El 30/07/2017 Equifax desconectó el portal de disputas en línea como medida de contención [2, p. 14]. La interrupción se limitó a ese servicio y no se registra indisponibilidad del resto de los sistemas.                             |
 
 **Justificación ampliada de la propiedad más discutible:** la disponibilidad presenta la mayor dificultad de clasificación. El objetivo de los atacantes fue la extracción encubierta de datos, no la interrupción del servicio, y los sistemas operaron con normalidad durante los 76 días de la intrusión [2, p. 12]. Sin embargo, el incidente produjo una pérdida efectiva de disponibilidad, ya que la contención exigió desconectar el portal de disputas [2, p. 14]. Se clasifica como parcial porque la afectación fue real pero acotada a un servicio y derivada de la respuesta defensiva, no de la acción del atacante. La integridad, en cambio, se clasifica como no violada: ninguna fuente identifica un dato alterado y la información disponible describe únicamente operaciones de lectura y extracción [2, p. 12; 3].
 
 ## A.4 — Encadenamiento amenaza → vulnerabilidad → impacto
 
-| Elemento | En este caso |
-|---|---|
-| Amenaza (quién/qué y motivación) | Atacantes externos no identificados [2, p. 11]. Las fuentes consultadas no establecen su identidad ni su motivación. |
+| Elemento                             | En este caso                                                                                                                                                                                                                       |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Amenaza (quién/qué y motivación)     | Atacantes externos no identificados [2, p. 11]. Las fuentes consultadas no establecen su identidad ni su motivación.                                                                                                               |
 | Vulnerabilidad (debilidad explotada) | CVE-2017-5638: ejecución remota de código en el procesamiento de archivos del parser Jakarta Multipart de Apache Struts 2, versiones 2.3.5 a 2.3.31 y 2.5 a 2.5.10 [1], no corregida en el portal de disputas en línea [2, p. 15]. |
-| Activo | Información personal identificable de consumidores alojada en las bases de datos alcanzables desde el portal [2, p. 12; 3]. |
-| Impacto | Exposición de datos de al menos 145,5 millones de personas, con riesgo sostenido de robo de identidad [2, p. 19], y un acuerdo regulatorio de hasta USD 700 millones [4]. |
+| Activo                               | Información personal identificable de consumidores alojada en las bases de datos alcanzables desde el portal [2, p. 12; 3].                                                                                                        |
+| Impacto                              | Exposición de datos de al menos 145,5 millones de personas, con riesgo sostenido de robo de identidad [2, p. 19], y un acuerdo regulatorio de hasta USD 700 millones [4].                                                          |
 
 **Redacción:** atacantes externos no identificados (amenaza) emplearon un software diseñado para explotar CVE-2017-5638 (exploit) [2, p. 12], una vulnerabilidad de ejecución remota de código en Apache Struts que permanecía sin corregir en el portal de disputas en línea de Equifax (vulnerabilidad) [1; 2, p. 15]. A partir de ese acceso, la ausencia de segmentación entre bases de datos y el almacenamiento de credenciales sin cifrar les permitieron alcanzar 48 bases adicionales con información personal de consumidores (activo) [2, pp. 12, 16]. El resultado fue la extracción inadvertida de datos de al menos 145,5 millones de personas durante aproximadamente 76 días, con riesgo prolongado de robo de identidad para los titulares y consecuencias regulatorias y económicas para la empresa (impacto) [2, pp. 12, 19; 4].
 
@@ -75,18 +75,18 @@ Los activos 2 y 3 corresponden a subconjuntos de personas que pueden coincidir c
 
 ### Control 1
 
-| Campo | Desarrollo |
-|---|---|
-| Qué es | Gestión de parches sustentada en un inventario actualizado de activos, en el que cada sistema expuesto tiene un responsable asignado, cada vulnerabilidad crítica tiene un plazo de corrección y la aplicación del parche se verifica mediante un escaneo posterior. |
-| Propiedad de la tríada que protege | Confidencialidad, al impedir el acceso inicial que dio lugar a la extracción. |
+| Campo                                           | Desarrollo                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Qué es                                          | Gestión de parches sustentada en un inventario actualizado de activos, en el que cada sistema expuesto tiene un responsable asignado, cada vulnerabilidad crítica tiene un plazo de corrección y la aplicación del parche se verifica mediante un escaneo posterior.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Propiedad de la tríada que protege              | Confidencialidad, al impedir el acceso inicial que dio lugar a la extracción.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Por qué habría funcionado en este caso concreto | La investigación posterior identificó como primer factor causal la falta de identificación del sistema vulnerable: el aviso de US-CERT se distribuyó a una lista desactualizada, no llegó a los responsables del portal y el escaneo realizado no detectó la vulnerabilidad [2, p. 15]. Entre la difusión del aviso y el inicio de la extracción, el 13/05/2017 [2, p. 12], transcurrieron cerca de dos meses en los que existían versiones corregidas de Struts (2.3.32 y 2.5.10.1) [1]. Un inventario con responsables asignados y una verificación posterior habrían permitido cerrar el vector de entrada antes del ataque. Su alcance se limita a vulnerabilidades para las que existe un parche disponible. |
 
 ### Control 2
 
-| Campo | Desarrollo |
-|---|---|
-| Qué es | Segmentación de las bases de datos y gestión segura de credenciales: el portal solo puede comunicarse con las bases que requiere, y las credenciales de servicio se almacenan cifradas en un gestor de secretos, bajo el principio de mínimo privilegio. |
-| Propiedad de la tríada que protege | Confidencialidad, al reducir el alcance de un eventual compromiso. |
+| Campo                                           | Desarrollo                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Qué es                                          | Segmentación de las bases de datos y gestión segura de credenciales: el portal solo puede comunicarse con las bases que requiere, y las credenciales de servicio se almacenan cifradas en un gestor de secretos, bajo el principio de mínimo privilegio.                                                                                                                                                                                                                                                                                                           |
+| Propiedad de la tríada que protege              | Confidencialidad, al reducir el alcance de un eventual compromiso.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Por qué habría funcionado en este caso concreto | Los atacantes obtuvieron credenciales almacenadas sin cifrar y, dado que las bases no estaban aisladas entre sí, extendieron su acceso desde las 3 bases del portal hacia 48 bases no relacionadas [2, pp. 12, 16]. La segmentación y el gobierno de datos figuran entre los cuatro factores causales identificados por la propia investigación de Equifax [2, pp. 15–16]. Con este control, el compromiso del portal habría quedado contenido en sus propias bases. No impide, sin embargo, el acceso inicial ni la exposición de la información de esas 3 bases. |
 
 ## A.6 — Fuentes consultadas (Parte A)
@@ -104,7 +104,7 @@ Fuentes consultadas el 05/11/2026. En el caso del informe de la GAO, las citas i
 
 ## B.1 — Evidencia de ejecución
 
-> Evidencia copiada de las ejecuciones de Carolina en PowerShell, desde `entregas/lab01/grupo10/`.
+> Salidas de la revisión final asistida con OpenCode del 05/11/2026, ejecutada con Python 3.12.10 en PowerShell sobre una copia temporal de `entregas/lab01/grupo10/`. Primero se ejecutó `python data/generar_datos.py`, que generó los cuatro archivos de muestra. Se habilitó UTF-8 mediante `$env:PYTHONUTF8 = '1'`. Las pruebas no alteraron las muestras del directorio de trabajo. Las líneas «Código de salida» se imprimieron con `Write-Output` consultando `$LASTEXITCODE` después de cada ejecución de Python.
 
 ### Generación del manifiesto
 
@@ -113,6 +113,8 @@ $ python src/integridad.py generar --dir data/muestra --salida manifest.sha256
 Manifiesto generado: manifest.sha256
 Directorio base:     data\muestra
 Archivos indexados:  4
+$ Write-Output "Código de salida: $LASTEXITCODE"
+Código de salida: 0
 ```
 
 ### Verificación sobre un directorio íntegro
@@ -128,17 +130,21 @@ Manifiesto:  manifest.sha256
   NUEVO          0
 
 INTEGRIDAD VERIFICADA — sin diferencias contra el manifiesto.
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 0
 ```
 
 ### Detección de modificación de un byte
 
 ```text
+$ Copy-Item data/muestra data/prueba-modificado -Recurse
 $ python src/integridad.py generar --dir data/prueba-modificado --salida manifiesto-modificado.sha256
 Manifiesto generado: manifiesto-modificado.sha256
 Directorio base:     data\prueba-modificado
 Archivos indexados:  4
-$ Add-Content data/prueba-modificado/transferencia.txt "X" -NoNewline
+$ Write-Output "Código de salida: $LASTEXITCODE"
+Código de salida: 0
+$ Add-Content data/prueba-modificado/transferencia.txt 'X' -NoNewline
 $ python src/integridad.py verificar --dir data/prueba-modificado --manifiesto manifiesto-modificado.sha256
 Directorio:  data\prueba-modificado
 Manifiesto:  manifiesto-modificado.sha256
@@ -152,18 +158,22 @@ Hallazgos:
   [MODIFICADO] transferencia.txt
 
 INTEGRIDAD COMPROMETIDA — 1 hallazgo(s).
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 1
-
-La prueba se realizó sobre la copia `data/prueba-modificado`; `data/muestra` quedó intacta.
 ```
+
+La prueba se realizó sobre la copia `data/prueba-modificado`; se comprobó que el tamaño de `transferencia.txt` aumentó exactamente un byte y `data/muestra` quedó intacta.
 
 ### Detección de archivo faltante
 
 ```text
+$ Copy-Item data/muestra data/prueba-faltante -Recurse
 $ python src/integridad.py generar --dir data/prueba-faltante --salida manifiesto-faltante.sha256
 Manifiesto generado: manifiesto-faltante.sha256
 Directorio base:     data\prueba-faltante
 Archivos indexados:  4
+$ Write-Output "Código de salida: $LASTEXITCODE"
+Código de salida: 0
 $ Remove-Item data/prueba-faltante/politica_seguridad.md
 $ python src/integridad.py verificar --dir data/prueba-faltante --manifiesto manifiesto-faltante.sha256
 Directorio:  data\prueba-faltante
@@ -178,19 +188,23 @@ Hallazgos:
   [FALTANTE] politica_seguridad.md
 
 INTEGRIDAD COMPROMETIDA — 1 hallazgo(s).
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 1
+```
 
 La prueba se realizó sobre la copia `data/prueba-faltante`; `data/muestra` quedó intacta.
-```
 
 ### Detección de archivo nuevo
 
 ```text
+$ Copy-Item data/muestra data/prueba-nuevo -Recurse
 $ python src/integridad.py generar --dir data/prueba-nuevo --salida manifiesto-prueba.sha256
 Manifiesto generado: manifiesto-prueba.sha256
 Directorio base:     data\prueba-nuevo
 Archivos indexados:  4
-$ Set-Content data/prueba-nuevo/nuevo_archivo.txt "archivo agregado para la prueba"
+$ Write-Output "Código de salida: $LASTEXITCODE"
+Código de salida: 0
+$ Set-Content data/prueba-nuevo/nuevo_archivo.txt 'archivo agregado para la prueba'
 $ python src/integridad.py verificar --dir data/prueba-nuevo --manifiesto manifiesto-prueba.sha256
 Directorio:  data\prueba-nuevo
 Manifiesto:  manifiesto-prueba.sha256
@@ -204,15 +218,16 @@ Hallazgos:
   [NUEVO] nuevo_archivo.txt
 
 INTEGRIDAD COMPROMETIDA — 1 hallazgo(s).
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 1
+```
 
 La prueba se realizó sobre la copia `data/prueba-nuevo`; `data/muestra` quedó intacta.
-```
 
 ### Efecto avalancha
 
 ```text
-$ python src/integridad.py avalancha --a "transferencia: `$1000" --b "transferencia: `$1001"
+$ python src/integridad.py avalancha --a 'transferencia: $1000' --b 'transferencia: $1001'
 mensaje A: "transferencia: $1000"
   SHA-256: 341511c4c817d55f30c81e212d0e82b0b16dd5a58d49fe5e45c9d5c998ab794a
 mensaje B: "transferencia: $1001"
@@ -220,6 +235,7 @@ mensaje B: "transferencia: $1001"
 
 Distancia de Hamming: 139 de 256 bits (54.30 %)
 Efecto avalancha: para entradas distintas se espera un valor cercano al 50 %.
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 0
 ```
 
@@ -228,22 +244,26 @@ Código de salida: 0
 ### HMAC
 
 ```text
-$ python src/integridad.py mac --clave secreto --mensaje "transferir 1000"
+$ python src/integridad.py mac --clave secreto --mensaje 'transferir 1000'
 mensaje:      "transferir 1000"
 HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
-$ python src/integridad.py mac --clave secreto --mensaje "transferir 1000" --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
+$ Write-Output "Código de salida: $LASTEXITCODE"
+Código de salida: 0
+$ python src/integridad.py mac --clave secreto --mensaje 'transferir 1000' --verificar 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 mensaje:      "transferir 1000"
 HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 tag recibido: 96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 
 TAG VÁLIDO — el mensaje es auténtico e íntegro.
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 0
-$ python src/integridad.py mac --clave secreto --mensaje "transferir 1000" --verificar 0000000000000000000000000000000000000000000000000000000000000000
+$ python src/integridad.py mac --clave secreto --mensaje 'transferir 1000' --verificar 0000000000000000000000000000000000000000000000000000000000000000
 mensaje:      "transferir 1000"
 HMAC-SHA256:  96bc66546d55627136aeaaefbcead75520a57e19539834d03e74d705b70ff9fe
 tag recibido: 0000000000000000000000000000000000000000000000000000000000000000
 
 TAG INVÁLIDO — el mensaje fue alterado o la clave no es la correcta.
+$ Write-Output "Código de salida: $LASTEXITCODE"
 Código de salida: 1
 ```
 
@@ -251,13 +271,13 @@ Código de salida: 1
 
 El recorrido incluye recursivamente los archivos regulares; los directorios no se guardan como entradas porque no se hashean. Probé una carpeta con un archivo de cero bytes: se incluyó en el manifiesto con el digest SHA-256 conocido para una entrada vacía y se verificó como `OK`. También probé un directorio sin archivos: generó `{}` y la verificación dejó las cuatro categorías en cero, con código de salida 0. Los enlaces simbólicos no tienen manejo especial implementado ni probado.
 
-| Decisión                | Qué hicimos                                                                                                          | Por qué                                                                            |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Excluir el manifiesto   | Se excluye comparando su ruta resuelta con las rutas recorridas.                                                     | Evita autorreferencia cuando la salida está dentro del directorio.                 |
-| Recorrido y rutas       | Se recorren archivos regulares recursivamente y se representan claves con `/`.                                       | Permite subdirectorios y portabilidad del manifiesto.                              |
+| Decisión                | Qué hicimos                                                                                                                                                  | Por qué                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Excluir el manifiesto   | Se excluye comparando su ruta resuelta con las rutas recorridas.                                                                                             | Evita autorreferencia cuando la salida está dentro del directorio.                                      |
+| Recorrido y rutas       | Se recorren archivos regulares recursivamente y se representan claves con `/`.                                                                               | Permite subdirectorios y portabilidad del manifiesto.                                                   |
 | Archivos vacíos         | Probé `archivo-vacio.txt` (cero bytes): se indexó y se verificó como `OK`; su digest fue `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`. | Los archivos regulares se hashean aunque su contenido esté vacío; el digest identifica esos cero bytes. |
-| Directorio base vacío   | Probé un directorio sin archivos: `generar` produjo `{}` y `verificar` informó cero archivos en las cuatro categorías, con código de salida 0. | Solo se registran archivos regulares; no se hashean los directorios. |
-| Escenarios destructivos | Las pruebas de modificación, faltante y archivo nuevo se realizaron sobre copias temporales del conjunto de muestra. | Evita alterar los datos de muestra originales y la contaminación entre escenarios. |
+| Directorio base vacío   | Probé un directorio sin archivos: `generar` produjo `{}` y `verificar` informó cero archivos en las cuatro categorías, con código de salida 0.               | Solo se registran archivos regulares; no se hashean los directorios.                                    |
+| Escenarios destructivos | Las pruebas de modificación, faltante y archivo nuevo se realizaron sobre copias temporales del conjunto de muestra.                                         | Evita alterar los datos de muestra originales y la contaminación entre escenarios.                      |
 
 ## B.3 — Preguntas de análisis
 
@@ -315,27 +335,29 @@ Durante la implementación hubo que distinguir la ruta base de los archivos de m
 
 En una revisión reproducible adicional ejecutada con Python 3.11.1 sobre un directorio temporal, se comprobó que `integridad.py` compila; genera rutas relativas POSIX ordenadas de forma recursiva y excluye el manifiesto; clasifica `OK`, `MODIFICADO`, `FALTANTE` y `NUEVO`; y devuelve códigos 0 sin diferencias y 1 con hallazgos. También se verificaron distancia de Hamming 0/4 bits y error ante longitudes distintas, además de HMAC ausente/válido/inválido. No se modificaron datos del repositorio durante estas pruebas.
 
-La revisión encontró que en esta rama faltan `research.md`, `data/generar_datos.py` y `src/verificar.py`, que figuran en la estructura requerida. Por eso no se pudieron ejecutar esos componentes; sus responsables deben completarlos o confirmar si ya están en otra versión de trabajo.
+En la revisión final del 05/11/2026 se confirmó la presencia de `research.md` y se incorporaron `data/generar_datos.py` y `src/verificar.py` como copias sin modificaciones del material de la cátedra. Se revisaron las referencias y las afirmaciones del mini-research, diferenciando SUNSPOT de SUNBURST y los alcances de Build Track y Source Track de SLSA. Las muestras y los manifiestos se mantienen fuera del control de versiones.
+
+La comprobación final con Python 3.12.10 aprobó las cuatro pruebas del autoevaluador oficial y 18 pruebas adicionales. En una copia temporal limpia se regeneraron los cuatro archivos de muestra dos veces con resultados idénticos byte a byte, se generó el manifiesto y se verificó la muestra con código 0. Los escenarios de un byte agregado, archivo faltante y archivo nuevo devolvieron código 1. Las copias del generador y del autoevaluador coinciden byte a byte con sus originales de la cátedra.
 
 ## Distribución del trabajo
 
 Distribución de aportes del grupo, basada en el trabajo realizado:
 
-| Integrante             | Aportes realizados                                                               |
-| ---------------------- | -------------------------------------------------------------------------------- |
+| Integrante             | Aportes realizados                                                                                                                                                                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Belén Rocío Ramello    | Parte A: verificación de todas las fuentes y corrección de A.1–A.6 sobre la versión inicial redactada por Carolina (reemplazo de fuentes no localizables, cifras de afectados corregidas, integridad reclasificada como «No», controles justificados con el informe de la GAO). |
-| Carolina Paula Corazza | Implementación inicial de Parte B y pruebas locales.                             |
-| Chiara Agustina Kordek | Revisión reproducible de `src/integridad.py`. |
-| Juan Pablo Saby        | Mini-research |
+| Carolina Paula Corazza | Implementación inicial de Parte B y pruebas locales.                                                                                                                                                                                                                            |
+| Chiara Agustina Kordek | Revisión reproducible de `src/integridad.py`.                                                                                                                                                                                                                                   |
+| Juan Pablo Saby        | Mini-research                                                                                                                                                                                                                                                                   |
 
 ## Declaración de uso de asistentes de IA
 
 **¿El grupo usó asistentes de IA en este trabajo?** Sí. Las herramientas utilizadas fueron OpenCode, que brindó apoyo para la implementación y revisión, y Claude Code, que se usó para verificar y corregir la Parte A.
 
-| Herramienta                | Para qué se usó                                                                                     | Qué partes del entregable afectó                                                         | Cómo se verificó                                                                                  |
-| -------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| OpenCode / asistente de IA | Apoyo para implementar Parte B y preparar un plan de contribuciones entre los integrantes del grupo | Código de `src/integridad.py` y propuestas de revisión para `informe.md` y `research.md` | Autoevaluador del curso y pruebas adicionales locales llevadas a cabo por los propios integrantes |
-| Claude Code (Anthropic) | Verificación de las fuentes de la Parte A (apertura de cada enlace y búsqueda de las fuentes primarias correctas) y redacción asistida de las correcciones de A.1–A.6 | Secciones A.1–A.6 de `informe.md` | Cada afirmación se contrastó con el texto de la fuente original: informe GAO-18-559 (con número de página), comunicado de Equifax en la SEC, boletín S2-045 de Apache y comunicado del CFPB |
+| Herramienta                | Para qué se usó                                                                                                                                                       | Qué partes del entregable afectó                                                                                                  | Cómo se verificó                                                                                                                                                                            |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OpenCode / asistente de IA | Apoyo para implementar Parte B y preparar un plan de contribuciones entre los integrantes del grupo                                                                   | Código de `src/integridad.py` y propuestas de revisión para `informe.md` y `research.md`                                          | Autoevaluador del curso y pruebas adicionales locales llevadas a cabo por los propios integrantes                                                                                           |
+| Claude Code (Anthropic)    | Verificación de las fuentes de la Parte A (apertura de cada enlace y búsqueda de las fuentes primarias correctas) y redacción asistida de las correcciones de A.1–A.6 | Secciones A.1–A.6 de `informe.md`                                                                                                 | Cada afirmación se contrastó con el texto de la fuente original: informe GAO-18-559 (con número de página), comunicado de Equifax en la SEC, boletín S2-045 de Apache y comunicado del CFPB |
 
 **Declaración:** El grupo declara el uso de asistencia de IA indicado arriba. Cada integrante es responsable de comprender y respaldar sus propios aportes.
 
