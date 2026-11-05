@@ -33,33 +33,34 @@ se puede migrar a ISO 27001 con todo este trabajo ya encaminado.
 
 ### A.2 — Mapeo de debilidades a funciones/controles
 
-Se repaso el escenario y separamos los problemas que le vimos. Este fue el
-mapeo que quedó:
+Se repasó el escenario y se identificaron cinco debilidades. La falta de MFA y la falta de política de contraseñas se agrupan en una sola, la autenticación débil, porque ambas corresponden a la misma categoría del marco (PR.AC, gestión de identidades, autenticación y control de acceso) y se resuelven en conjunto. Los identificadores corresponden a las subcategorías del NIST CSF 1.1 [1].
 
 | # | Debilidad del escenario | Función/control del marco |
 |---|---|---|
-| 1 | No hay MFA | Protect — control de acceso (PR.AC) |
-| 2 | No hay política de contraseñas | Protect — gestión de identidades y credenciales (PR.AC-1) |
-| 3 | No hay plan de respuesta a incidentes | Respond — gestión de incidentes (RS.RP) |
-| 4 | Backups en un solo disco de la oficina | Recover — backup y recuperación (RC.RP) |
-| 5 | Servidor web público con datos de tarjetas | Protect — seguridad de datos (PR.DS) |
-| 6 | Acceso remoto de empleados sin controles | Protect — control de acceso remoto (PR.AC) |
+| 1 | Autenticación débil: no hay MFA ni política de contraseñas | Protect — PR.AC-1 (gestión de identidades y credenciales) y PR.AC-7 (autenticación acorde al riesgo, por ejemplo multifactor) |
+| 2 | No hay plan de respuesta a incidentes | Protect — PR.IP-9 (planes de respuesta y recuperación vigentes y gestionados); Respond — RS.RP-1 (ejecución del plan de respuesta) |
+| 3 | Backups en un solo disco de la oficina | Protect — PR.IP-4 (copias de seguridad realizadas, mantenidas y probadas); Recover — RC.RP-1 (ejecución del plan de recuperación) |
+| 4 | Acceso remoto de empleados sin controles | Protect — PR.AC-3 (gestión del acceso remoto) |
+| 5 | Servidor web público con datos de tarjetas | Protect — PR.DS-1 (protección de los datos almacenados) |
 
-La mayoría cayó en Protect, que es lo esperable: el problema de fondo de
-PhantomCorp es que no protege nada de lo que tiene.
+La mayoría cayó en Protect, que es lo esperable: el problema de fondo de PhantomCorp es que no protege nada de lo que tiene.
 
 ### A.3 — Respuesta al riesgo
 
-Acá se trato de no caer en "mitigar todo", porque no siempre es lo correcto ni
-lo más barato. Quedamos así:
+Acá se trató de no caer en "mitigar todo", porque no siempre es lo correcto ni lo más barato. Quedamos así:
 
 | # | Debilidad | Respuesta | Justificación |
-| 1 | No hay MFA | **Mitigar** | El MFA es barato y pega fuerte: corta la gran mayoría de los accesos con credenciales robadas. Para el costo que tiene, el riesgo que te evita no justifica dejarlo sin hacer. |
-| 2 | Sin política de contraseñas | **Mitigar** | Va en el mismo frente que el anterior: exigir contraseñas largas y rotación periódica es solo escribir una política y difundirla. Costo casi nulo y reduce contraseñas débiles comprometidas. |
-| 3 | Sin plan de respuesta a incidentes | **Mitigar** | Sin plan, un incidente chico se te escala mal: nadie sabe a quién avisar ni cómo contener. Un procedimiento documentado y probado con un simulacro es poco costo frente a las horas de caída que te ahorra. |
-| 4 | Backup en un solo disco | **Mitigar** | Un único disco en la oficina desaparece con un incendio, un robo o una falla. Con la regla 3-2-1 (una copia fuera del sitio) y probando que la restauración funciona, el riesgo de perder todo baja un montón. |
+|---|---|---|---|
+| 1 | Autenticación débil (sin MFA ni política de contraseñas) | **Mitigar** | El MFA es barato y corta los accesos con credenciales robadas, porque la contraseña sola deja de alcanzar. Se complementa con una política alineada con NIST: contraseñas de al menos 15 caracteres cuando son el único factor (8 si se usan con MFA), comparación contra una lista de contraseñas comunes o comprometidas y cambio obligatorio solo ante evidencia de compromiso, no de forma periódica [2]. El costo es bajo frente al riesgo que evita. |
+| 2 | Sin plan de respuesta a incidentes | **Mitigar** | Sin plan, un incidente chico se te escala mal: nadie sabe a quién avisar ni cómo contener. Un procedimiento documentado y probado con un simulacro es poco costo frente a las horas de caída que te ahorra. |
+| 3 | Backup en un solo disco | **Mitigar** | Un único disco en la oficina desaparece con un incendio, un robo o una falla. Con la regla 3-2-1 (una copia fuera del sitio) y probando que la restauración funciona, el riesgo de perder todo baja un montón. |
+| 4 | Acceso remoto sin controles | **Aceptar** | Son 2 o 3 empleados remotos, con equipo corporativo y una VPN básica: el impacto de una comprometida es bajo. Lo dejamos como riesgo aceptado y documentado, revisado cada año. Si el teletrabajo crece, pasa a mitigar. |
 | 5 | Web pública con datos de tarjetas | **Transferir** | Si se fuga un lote de tarjetas, la responsabilidad legal y el resarcimiento son billetes que una pyme no absorbe sola. Por eso lo transferimos con un seguro de ciberriesgo que cubra multas e indemnizaciones. |
-| 6 | Acceso remoto sin controles | **Aceptar** | Son 2 o 3 empleados remotos, con equipo corporativo y una VPN básica: el impacto de una comprometida es bajo. Lo dejamos como riesgo aceptado y documentado, revisado cada año. Si el teletrabajo crece, pasa a mitigar. |
+
+#### Fuentes de la Parte A
+
+- **[1] [PRIMARIA]** National Institute of Standards and Technology. (2018, 16 de abril). *Framework for Improving Critical Infrastructure Cybersecurity, Version 1.1*. https://doi.org/10.6028/NIST.CSWP.04162018 — Funciones y subcategorías PR.AC-1, PR.AC-3, PR.AC-7, PR.DS-1, PR.IP-4, PR.IP-9, RS.RP-1 y RC.RP-1.
+- **[2] [PRIMARIA]** National Institute of Standards and Technology. (2025). *Digital Identity Guidelines: Authentication and Authenticator Management* (NIST SP 800-63B-4, §3.1.1.2). https://pages.nist.gov/800-63-4/sp800-63b.html — Longitud mínima de contraseñas, comparación contra listas de contraseñas comprometidas y prohibición de exigir cambios periódicos.
 
 ## 2. Parte B — Riesgo cuantitativo
 
