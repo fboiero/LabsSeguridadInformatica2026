@@ -126,7 +126,40 @@ En `verify_password` lo que se compara es la clave derivada, no la contraseña. 
 
 ### 3.1 Decisiones de implementación
 
+| Decisión | Qué hicimos | Por qué |
+|---|---|---|
+| Tiempo por defecto | Si `t` es `None`, se usa `int(time.time())`. | El RFC 6238 mide el tiempo en segundos Unix con origen `T0 = 0` por defecto [B6]. |
+| Contador | `t // paso`, con `paso = 30`. | El RFC define `T = (tiempo Unix − T0) / X` con división entera y `X = 30` segundos por defecto [B6]. Todos los instantes de una misma ventana de 30 segundos producen el mismo código. |
+| Reutilización | `totp` delega en la función `hotp()` provista. | El RFC 6238 define `TOTP = HOTP(K, T)` y exige construir TOTP sobre HOTP [B6]; reutilizar la función evita duplicar el truncamiento dinámico. |
+| Dígitos | Se propaga el parámetro `digitos` (6 por defecto). | Permite verificar también el vector de ocho dígitos del RFC. |
+| Verificación | Para `t = 59`: `287082` con seis dígitos y `94287082` con ocho (4.1); los cinco vectores restantes, en 4.2. | Coinciden con el apéndice B del RFC 6238 [B6]. |
+
 ### 3.2 Preguntas de análisis
+
+**Si un atacante robó la contraseña, ¿por qué el TOTP lo frena?**
+
+La autenticación de dos factores combina algo que el usuario sabe (la contraseña) con algo que tiene (el dispositivo que genera los códigos). El TOTP se calcula a partir de un secreto compartido entre el servidor y el dispositivo del usuario y del instante actual [B6]. Quien solo posee la contraseña no conoce ese secreto y, por lo tanto, no puede calcular el código vigente: la contraseña robada deja de ser suficiente para iniciar sesión.
+
+Esto neutraliza el ataque analizado en la sección 1. En el credential stuffing, el atacante dispone de contraseñas válidas filtradas en otros servicios y las prueba de forma automatizada; si la cuenta exige además un TOTP, cada credencial correcta se detiene en el segundo factor. Por otra parte, cada código solo es válido durante su ventana de 30 segundos [B6], por lo que un código antiguo interceptado no sirve para un intento posterior.
+
+**¿Qué NO protege el TOTP?**
+
+- **Phishing en tiempo real.** NIST establece que la autenticación por OTP no es resistente al phishing [B3]. Un sitio falso puede solicitar la contraseña y el código, y reenviarlos al servicio legítimo dentro de la misma ventana de 30 segundos. Los autenticadores FIDO2/WebAuthn (passkeys) sí resisten este ataque, como se desarrolla en el mini-research.
+- **Robo del secreto o del dispositivo.** Quien obtiene el secreto, por ejemplo a partir del código QR de alta, de una copia de seguridad o de malware en el teléfono, puede generar códigos válidos indefinidamente.
+- **Compromiso del servidor.** A diferencia de la contraseña, el secreto TOTP no puede almacenarse con un hash, porque el verificador lo necesita para calcular el código esperado. Por eso NIST exige protegerlo de forma estricta contra accesos no autorizados [B3]; si la base de secretos se filtra, el segundo factor queda anulado para todas las cuentas.
+- **La propia base de contraseñas.** El TOTP no reemplaza al almacenamiento seguro: si se filtran los registros, la protección de las contraseñas sigue dependiendo de PBKDF2 (sección 2).
+- **Ingeniería social y recuperación de cuenta.** Si el procedimiento de recuperación permite desactivar el segundo factor con verificaciones débiles, el atacante puede eludirlo sin vulnerar el TOTP.
+
+#### Fuentes de las secciones 2 y 3
+
+Referencias abiertas y contrastadas para estas secciones. Su numeración es local hasta que se integren en la lista general de «Fuentes consultadas».
+
+- **[B1] [PRIMARIA]** Moriarty, K. (Ed.), Kaliski, B., & Rusch, A. (2017, enero). *PKCS #5: Password-Based Cryptography Specification Version 2.1* (RFC 8018, §§4.1–4.2). RFC Editor. https://www.rfc-editor.org/rfc/rfc8018 — Función del salt (impedir la precomputación) y del número de iteraciones (aumentar el costo de derivar claves).
+- **[B2] [PRIMARIA]** OWASP Foundation. (s. f.). *Password Storage Cheat Sheet*. OWASP Cheat Sheet Series. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html — Salt único contra tablas precalculadas, factor de trabajo, lentitud deseable frente a hashes rápidos, 600.000 iteraciones para PBKDF2-HMAC-SHA-256 y preferencia por Argon2id.
+- **[B3] [PRIMARIA]** National Institute of Standards and Technology. (2025). *Digital Identity Guidelines: Authentication and Authenticator Management* (NIST SP 800-63B-4, §§3.1.1.2, 3.1.4 y 3.2.5). https://pages.nist.gov/800-63-4/sp800-63b.html — Salt de al menos 32 bits, factor de costo tan alto como sea práctico, OTP no resistente al phishing y protección de las claves simétricas del verificador.
+- **[B4] [PRIMARIA]** Python Software Foundation. (s. f.). *secrets — Generate secure random numbers for managing secrets*. Python 3 Documentation. https://docs.python.org/3/library/secrets.html — Uso de `secrets` en lugar de `random` y comportamiento de `token_bytes`.
+- **[B5] [PRIMARIA]** Python Software Foundation. (s. f.). *hmac — Keyed-Hashing for Message Authentication*. Python 3 Documentation. https://docs.python.org/3/library/hmac.html — `compare_digest` evita el cortocircuito por contenido para impedir el análisis de tiempos.
+- **[B6] [PRIMARIA]** M'Raihi, D., Machani, S., Pei, M., & Rydell, J. (2011, mayo). *TOTP: Time-Based One-Time Password Algorithm* (RFC 6238, §§3–4 y apéndice B). RFC Editor. https://www.rfc-editor.org/rfc/rfc6238 — Definición `TOTP = HOTP(K, T)`, paso de 30 segundos, `T0 = 0`, secreto compartido y vectores de prueba.
 
 ## 4. Bitácora de comandos
 
