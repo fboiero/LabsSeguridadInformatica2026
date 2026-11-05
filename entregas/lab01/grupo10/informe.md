@@ -24,15 +24,17 @@
 
 ## A.1 — Cronología
 
-| Fecha      | Hecho                                                                                                                | Fuente                                        |
-| ---------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| 2017-03-07 | Apache publicó una actualización de seguridad para CVE-2017-5638 en Apache Struts.                                   | [1] Apache Software Foundation, aviso S2-045. |
-| 2017-03-15 | US-CERT emitió una alerta sobre la vulnerabilidad de Apache Struts y recomendó actualizar las versiones afectadas.   | [2] CISA/US-CERT, TA17-074A.                  |
-| 2017-05-13 | El informe del Congreso sitúa en esta fecha el comienzo de la actividad de intrusión vinculada con la brecha.        | [3] U.S. House of Representatives (2018).     |
-| 2017-07-29 | Equifax detectó actividad sospechosa e inició una investigación.                                                     | [3] U.S. House of Representatives (2018).     |
-| 2017-07-30 | Equifax desconectó la aplicación web afectada durante la respuesta al incidente.                                     | [3] U.S. House of Representatives (2018).     |
-| 2017-08-02 | Equifax notificó a autoridades mientras continuaba investigando el incidente.                                        | [3] U.S. House of Representatives (2018).     |
-| 2017-09-07 | Equifax anunció públicamente una brecha que afectó información personal de aproximadamente 147 millones de personas. | [4] Equifax (2017); [5] FTC (2019).           |
+| Fecha      | Hecho                                                                                                                                                                                                  | Fuente            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| 2017-03-08 | US-CERT identifica públicamente una vulnerabilidad de Apache Struts (CVE-2017-5638) que permite ejecutar comandos en los sistemas afectados.                                                            | [1]; [2, p. 11]   |
+| 2017-03    | Equifax recibe el aviso de US-CERT y lo circula, pero la lista de destinatarios está desactualizada y el parche no se instala en el portal de disputas en línea; un escaneo posterior no lo detecta. | [2, p. 15]        |
+| 2017-03-10 | Individuos no identificados escanean los sistemas de Equifax, encuentran el portal de disputas con la versión vulnerable y confirman que pueden ejecutar comandos; no se extraen datos.              | [2, pp. 11–12]    |
+| 2017-05-13 | Comienza el acceso de los atacantes y la extracción de datos personales; con credenciales sin cifrar pasan de 3 a 48 bases de datos adicionales y ejecutan unas 9.000 consultas.                     | [2, p. 12]        |
+| 2017-07-29 | Tras renovar un certificado digital vencido que impedía inspeccionar el tráfico cifrado, el personal de seguridad detecta la intrusión, unos 76 días después de iniciada.                             | [2, pp. 12–14]; [3] |
+| 2017-07-30 | Ante actividad sospechosa que continúa, Equifax desconecta el portal de disputas en línea.                                                                                                            | [2, p. 14]        |
+| 2017-09-07 | Equifax anuncia públicamente el incidente: unos 143 millones de consumidores de EE. UU. potencialmente afectados, más unas 209.000 tarjetas y 182.000 documentos de disputa.                          | [3]               |
+| 2017-10-02 | Equifax corrige la cifra de afectados de 143 a 145,5 millones.                                                                                                                                        | [2, p. 19]        |
+| 2019-07-22 | CFPB, FTC y los estados anuncian un acuerdo con Equifax de hasta USD 700 millones por la brecha, que expuso datos de unos 147 millones de consumidores.                                               | [4]               |
 
 ## A.2 — Activo afectado
 
