@@ -32,19 +32,33 @@ def main() -> int:
         accion = cliente.paso(resultados)
 
         # TODO 1: si la acción es de tipo "final", imprimí el texto y salí del loop.
-        # ...
+        # El LLM avisa que terminó: no hay más tools para correr, así que cortamos.
+        if accion["tipo"] == "final":
+            print(f"\n[agente] El LLM dio por terminada la auditoría: {accion['texto']}")
+            break
 
         # TODO 2: si es una tool, ejecutala con ejecutar_tool(nombre, argumentos)
         #         y guardá la salida. Pista: accion["nombre"], accion["argumentos"].
-        salida = ""  # <-- reemplazá esto
+        # Imprimo paso, tool y salida para que la corrida sirva de transcript.
+        nombre, argumentos = accion["nombre"], accion["argumentos"]
+        print(f"\n[paso {n}] -> {nombre}({argumentos})")
+        salida = ejecutar_tool(nombre, argumentos)
+        print("\n".join("    " + linea for linea in salida.splitlines()[:12]))
 
         # (esto ya está: detectar flags en la salida)
         for f in re.findall(r"FLAG\{[^}]*\}", salida):
+            if f not in flags:
+                print(f"    [+] FLAG NUEVA: {f}")
             flags.add(f)
 
         # TODO 3: devolvele el resultado al LLM para el próximo paso. El formato es
         #         una lista con un dict {"id": accion["id"], "output": salida}.
-        resultados = None  # <-- reemplazá esto
+        # Esta realimentación es lo que hace que el LLM elija el paso siguiente
+        # mirando lo que devolvió la tool anterior (p. ej. el token -> el vault).
+        resultados = [{"id": accion["id"], "output": salida}]
+    else:
+        # Recomendado: si el for termina sin break, se agotaron los pasos (guardrail).
+        print(f"\n[agente] Alcancé el límite de {MAX_PASOS} pasos (guardrail de pasos).")
 
     print(f"\n=== Flags encontradas ({len(flags)}) ===")
     for f in sorted(flags):
