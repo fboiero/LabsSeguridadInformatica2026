@@ -4,7 +4,7 @@
 
 **Grupo:** 10 · **Integrantes:** Ramello, Belén Rocío — @belramello · Corazza, Carolina Paula — @carocor1 · Kordek, Chiara Agustina — @chiarakordek · Saby, Juan Pablo — @JuanSaby
 
-**Declaración de uso de IA:** (obligatoria)
+**Declaración de uso de IA:** se utilizó ChatGPT mediante OpenCode para ejecutar el generador y comandos de Git con herramientas de terminal, guardar sus salidas reales y asistir en la redacción de R1/P1.
 
 ---
 
@@ -20,9 +20,57 @@ commits "legítimos" también: el contexto es parte del informe):
 ## 2. Hallazgos
 
 ### R1 — Secreto en commit viejo
-- Comando(s) exacto(s):
-- Salida relevante (pegá el diff):
-- Qué secreto se expuso y qué habilita:
+
+- **Entorno y comandos exactos:** Git Bash para Windows. Se ejecutó el generador de la cátedra en una carpeta temporal nueva, convirtiendo únicamente los finales CRLF del script a LF, sin reconstruir los archivos ni los commits manualmente. Se desactivó `core.autocrlf` solo para esa ejecución. No se modificó el caso preexistente. Desde la raíz del repositorio:
+  ```bash
+  bash entregas/labextra2/grupo10/evidencia/reproducir-r1.sh
+  ```
+  Dentro del repo generado, el procedimiento ejecuta:
+  ```bash
+  git --no-pager log --oneline > "$EVIDENCIA/salidas/historia-r1.txt"
+  git --no-pager log -p > "$EVIDENCIA/salidas/historia-diffs-r1.txt"
+  git --no-pager log -p -- config.py > "$EVIDENCIA/salidas/r1.txt"
+  git --no-pager log --format='%h | %H | %an <%ae> | %aI | %s' -- config.py > "$EVIDENCIA/salidas/timeline-r1.txt"
+  ```
+  `git log` muestra los commits y sus metadatos; `--oneline` resume cada commit en una línea y `-p` añade sus cambios. En la historia aparecen los mensajes de hotfix y limpieza; al revisar los diffs se ve que el archivo afectado es `config.py` y se recupera el token. Luego `-- config.py` limita la consulta a ese archivo para guardar el hallazgo. Las salidas anteriores al filtro están en `historia-r1.txt` e `historia-diffs-r1.txt`; el listado de comandos está en `evidencia/comandos-carolina.txt`. `$EVIDENCIA` es la ruta de evidencia definida por el procedimiento adjunto.
+- **Salida relevante:** extracto de `evidencia/salidas/r1.txt`; el archivo adjunto contiene la salida completa, redirigida directamente por Bash:
+  ```diff
+  commit eafb81c3ec5790ce4741629458e11ab5c1a690b8
+  Author: dev-jperez <jperez@phantomcorp.example>
+  Date:   Tue Aug 11 10:05:00 2026 -0300
+
+      fix: sacar credenciales del codigo (ups)
+
+  diff --git a/config.py b/config.py
+  index 04e01ad..3d61e50 100644
+  --- a/config.py
+  +++ b/config.py
+  @@ -1,4 +1,3 @@
+  -# Config de emergencia — arreglar el deploy roto YA (después lo pasamos a env)
+  -PHANTOM_API_TOKEN = "FLAG{git_log_no_olvida}"
+  +# Config — sin secretos, por fin
+   REGION = "us-east-1"
+  -DEBUG = True
+  +DEBUG = False
+
+  commit 9333f2b4a09f7a320cb66d621c3bd53b4f694941
+  Author: dev-jperez <jperez@phantomcorp.example>
+  Date:   Mon Aug 10 18:47:00 2026 -0300
+
+      hotfix: deploy roto en produccion (config temporal)
+
+  diff --git a/config.py b/config.py
+  new file mode 100644
+  index 0000000..04e01ad
+  --- /dev/null
+  +++ b/config.py
+  @@ -0,0 +1,4 @@
+  +# Config de emergencia — arreglar el deploy roto YA (después lo pasamos a env)
+  +PHANTOM_API_TOKEN = "FLAG{git_log_no_olvida}"
+  +REGION = "us-east-1"
+  +DEBUG = True
+  ```
+- **Qué secreto se expuso y qué habilita:** `PHANTOM_API_TOKEN = "FLAG{git_log_no_olvida}"`, un token ficticio asociado a la API de PhantomCorp. Una credencial real vigente permitiría actuar con los permisos asignados al token; el caso no especifica esos permisos ni demuestra acceso a una API real. El commit de limpieza elimina la línea del archivo actual, pero el diff conserva su valor.
 
 ### R2 — Commit "perdido"
 - **Comando(s) exacto(s):**
