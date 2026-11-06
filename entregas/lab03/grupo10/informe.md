@@ -260,14 +260,14 @@ Secreto ASCII público de prueba: `12345678901234567890`; HMAC-SHA-1, paso de 30
 
 | t (segundos) | Dígitos | Esperado | Obtenido en `auth.totp` |
 |---:|---:|:---:|:---|
-| 59 | 6 | `287082` | `NotImplementedError` |
-| 1111111109 | 6 | `081804` | `NotImplementedError` |
-| 1111111111 | 6 | `050471` | `NotImplementedError` |
-| 1234567890 | 6 | `005924` | `NotImplementedError` |
-| 2000000000 | 6 | `279037` | `NotImplementedError` |
-| 59 | 8 | `94287082` | `NotImplementedError` |
+| 59 | 6 | `287082` | `287082` |
+| 1111111109 | 6 | `081804` | `081804` |
+| 1111111111 | 6 | `050471` | `050471` |
+| 1234567890 | 6 | `005924` | `005924` |
+| 2000000000 | 6 | `279037` | `279037` |
+| 59 | 8 | `94287082` | `94287082` |
 
-**Pendiente de integración:** cuando esté disponible la implementación de Belén, volver a ejecutar las pruebas y actualizar la salida y la columna «obtenido». Estas pruebas funcionales no demuestran por sí solas una comparación en tiempo constante ni la calidad estadística del generador de salt; esas propiedades necesitan además revisión de la implementación.
+Los seis valores se obtuvieron con llamadas reales a `auth.totp(secreto, t, digitos=n)` sobre la implementación integrada, y coinciden exactamente con los del vector oficial del RFC 6238. Estas pruebas funcionales no demuestran por sí solas una comparación en tiempo constante ni la calidad estadística del generador de salt; esas propiedades necesitan además revisión de la implementación.
 
 #### Medición del costo de PBKDF2
 
