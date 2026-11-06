@@ -1,0 +1,22 @@
+
+  ┌───────────────────────────────────────────────────────┐
+  │  CONSOLA DEL ATACANTE · CyberLab UTN FRVM              │
+  │                                                        │
+  │  Tools listas:  nmap  ncat  curl  whois  dig  python3  │
+  │  Guardá evidencia en /loot (se comparte con tu repo).  │
+  │  El target del lab activo se llama:  phantomcorp       │
+  │                                                        │
+  │  Probá para arrancar:   nmap -Pn phantomcorp           │
+  └───────────────────────────────────────────────────────┘
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                    PROGRESO · LAB extra                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     El server fetchea por vos: panel interno en localhost
+   ✓  R2     Descubrir la intranet en la red interna
+   ✓  R3     Exfiltrar datos sensibles a traves del SSRF
+
+  ██████████████████████████████  3/3 (100%)
+
+[ OK ] ¡Lab extra COMPLETO! Ponete las pilas con la próxima unidad.
