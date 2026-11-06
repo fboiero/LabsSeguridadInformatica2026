@@ -1,0 +1,8 @@
+[
+  {"nombre": "Filtración de datos de clientes por acceso remoto sin MFA (credenciales robadas)", "sle": 120000, "aro": 0.5},
+  {"nombre": "Explotación del servidor web público (p. ej. SQLi) con acceso a la base de clientes", "sle": 90000, "aro": 0.4},
+  {"nombre": "Ransomware que cifra servidores y backups", "sle": 80000, "aro": 0.3},
+  {"nombre": "Compromiso de cuentas por contraseñas débiles / reutilizadas (fuerza bruta)", "sle": 30000, "aro": 0.7},
+  {"nombre": "Incidente mal contenido por falta de plan de respuesta (sobrecosto de recuperación)", "sle": 40000, "aro": 0.5},
+  {"nombre": "Pérdida física de oficina (incendio/inundación/robo) con el disco de backup adentro", "sle": 150000, "aro": 0.02}
+]
