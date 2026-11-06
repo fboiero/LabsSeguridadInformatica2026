@@ -108,7 +108,11 @@ La frase “la intranet no es alcanzable desde afuera” dejó de ser cierta por
 
 ### P2 — Errores como oráculo de puertos
 
-_Pendiente de redacción y revisión por Belén._
+En R1 se compararon dos respuestas de `/preview` sobre `127.0.0.1`: al pedir `http://127.0.0.1:1/` el servidor devolvió `Connection refused`, y al pedir `http://127.0.0.1:9000/` devolvió el contenido HTML del panel interno. La diferencia entre ambas respuestas indica el resultado de la conexión que intentó el propio servidor, visto desde su red: en el puerto 1 no había ningún servicio aceptando la conexión, y en el puerto 9000 sí había uno que respondió.
+
+Esto convierte a `/preview` en un oráculo de puertos: aunque la función solo devuelve el resultado de una petición HTTP, ese resultado ya distingue entre "nadie escucha ahí" (error de conexión) y "algo escucha y responde" (contenido HTTP), sin que el atacante necesite ver directamente la red interna. Repitiendo la consulta con distintos puertos se podría inferir, puerto por puerto, cuáles están abiertos en `127.0.0.1` desde la perspectiva del servidor, igual que con un escaneo de puertos tradicional, pero usando la aplicación vulnerable como intermediaria.
+
+En esta práctica solo se compararon esos dos puertos puntuales, no se hizo un barrido exhaustivo del rango. El oráculo tampoco revela más que eso: distingue puerto cerrado de puerto con un servicio que responde, pero no identifica por sí solo qué servicio es ni expone su contenido salvo que, como en este caso, la aplicación detrás del puerto devuelva una respuesta HTTP legible.
 
 ### P3 — Hallazgo profesional
 
