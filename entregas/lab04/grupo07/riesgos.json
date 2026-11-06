@@ -1,0 +1,7 @@
+[
+  {"nombre": "R1 - Intrusion por acceso remoto sin MFA (credenciales robadas) y robo de la base de clientes", "sle": 250000, "aro": 0.3},
+  {"nombre": "R2 - Ransomware que cifra servidores y el unico backup (disco en la oficina)", "sle": 180000, "aro": 0.2},
+  {"nombre": "R3 - Explotacion de una vulnerabilidad del servidor web publico (filtracion parcial)", "sle": 150000, "aro": 0.1},
+  {"nombre": "R4 - Siniestro fisico en la oficina (incendio/inundacion/robo) que destruye servidor y backup", "sle": 400000, "aro": 0.01},
+  {"nombre": "R5 - Falla de hardware del disco de backup (sin redundancia)", "sle": 2000, "aro": 0.0136}
+]
