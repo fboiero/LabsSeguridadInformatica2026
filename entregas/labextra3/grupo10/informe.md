@@ -7,13 +7,7 @@
 
 De acuerdo con lo normado en `CONTRIBUTING.md` y `docs/PROTOCOLO-EVIDENCIA.md`:
 
-- **¿El grupo utilizó asistentes de IA en este trabajo?** Sí.
-
-| Herramienta | Para qué se usó | Qué partes del entregable afectó | Cómo se verificó que lo devuelto era correcto |
-|---|---|---|---|
-| Antigravity (Google DeepMind / Gemini) | redacción técnica de explicaciones analíticas, síntesis de argumentos gerenciales y revisión conceptual frente a guías OWASP. | Redacción y fundamentación técnica en las secciones de análisis P4 y P5 de `informe.md`. | Validación manual por parte de los integrantes y analsis transversal final por el agente integrado en Antigravity contrastando cada afirmación técnica contra el código de `server.py`, las corridas reales del verificador (`verificar-defensa.py`, `verificar-regresion.py`) y las salidas crudas en `evidencia/salidas/`. |
-
-*El grupo declara que comprende el contenido íntegro de lo entregado y que cualquiera de sus integrantes puede explicar y defender oralmente en vivo cada parte del código, de los parches y del análisis presentado, independientemente de la asistencia recibida.*
+El grupo utilizó Claude como apoyo en la redacción técnica y la revisión de las respuestas del informe, contrastando cada afirmación con el código de server.py, las salidas del verificador y la evidencia guardada en evidencia/. Cada integrante verificó manualmente que lo redactado coincidiera con su propia prueba o lectura de código antes de incorporarlo al informe final.
 
 ---
 
