@@ -1,0 +1,13 @@
+COMMAND: ./ctf status 11 (Git Bash; salida verificada)
+
+PROGRESO - LAB 11
+                       PROGRESO  LAB 11
+     R1     Vector de entrada (SQLi -> RCE) en los logs
+     R2     El webshell dropeado en el disco
+     R3     Escalada de privilegios (SUID) en memoria
+     R4     Conexion C2 y exfiltracion de datos
+     R5     Cadena de custodia: evidencia alterada
+    5/5 (100%)
+[ OK ] Lab 11 COMPLETO! Ponete las pilas con la prxima unidad.
+
+Estado reportado por ctf: 5/5 (100%).
