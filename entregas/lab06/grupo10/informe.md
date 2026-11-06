@@ -74,7 +74,7 @@ Evidencia: [estado anterior](evidencia/salidas/r1r5_01_status_antes.txt), [enví
 |---|---|---|---|---|---|
 | **R1 — Directorio de respaldos con listado accesible** | `GET /backup/` | Enumeración de directorios con `dirb` (wordlist común) y verificación con `curl` | [hallazgos de `dirb`](evidencia/salidas/r1_01_dirb_hallazgos.txt); [listado de `/backup/`](evidencia/salidas/r1_02_backup_listing.txt); [rutas conocidas con `http-enum`](evidencia/salidas/r1_03_http_enum.txt) | **Medio (demostrado):** el servidor devuelve el índice del directorio y nombra respaldos sensibles (`respaldo-db-2024.sql.gz`, `config.old`). En esta instancia los archivos individuales devolvieron 404, por lo que no se descargó contenido; el impacto demostrado es el listado de directorios habilitado y la divulgación de la existencia y los nombres de esos respaldos. `/admin` existe pero responde 403 | Los nombres `respaldo-db-2024.sql.gz` (volcado de base) y `config.old` señalan objetivos concretos para intentar recuperar en el Lab 07, por ejemplo mediante el path traversal de `GET /descargar?archivo=` |
 | **Repositorio Git expuesto (Configuración y URL interna)** | `GET /.git/config` | Petición HTTP directa a rutas predecibles de control de versiones | Código `200 OK`, `Content-Type: text/plain`. Revela `bare = false` y `url = https://git.internal.phantomcorp/intranet.git` junto a comentarios de desarrollo | **Medio** (Demostrado). Divulgación de arquitectura interna y ubicación del repositorio central de código. No escala a Crítico en este servidor porque `.git/objects/` e historial no son accesibles (404) | Permite identificar el nombre del repositorio interno (`intranet.git`) y el dominio de desarrollo (`git.internal.phantomcorp`) para ataques dirigidos de falsificación de peticiones (SSRF) o pivot lateral |
-| *(R3 - Pendiente)* | | | | | |
+| **Métodos anunciados pero no implementados (R3)** | `OPTIONS /`, `PUT /chiara-r3-test.txt`, `DELETE /chiara-r3-test.txt` | `curl -i` desde la consola atacante | `OPTIONS` devolvió `200 OK` y anunció `GET, POST, PUT, DELETE, OPTIONS`; `PUT` y `DELETE` devolvieron `501`; el `GET` posterior dio `404` | La lista `Allow` es inconsistente y puede inducir a error. En este target no se comprobó carga ni borrado; en un servidor que sí aceptara escrituras, el riesgo sería mayor | No habilitó una explotación directa. Orienta la enumeración, pero el command injection del Lab 07 es independiente |
 | **R4 — API interna que expone usuarios y roles sin autenticación** | `GET /api/users` | Enumeración dirigida de rutas de API con `curl` y análisis del JSON | [HTTP 200 y listado de usuarios](evidencia/salidas/r4_02_api_users_http.txt); [petición sin credenciales](evidencia/salidas/r4_02_api_users_peticion.txt) | **Medio, valoración cualitativa:** exposición demostrada de tres usuarios, sus identificadores y roles. Permite reconocer cuentas y priorizar objetivos; no demuestra acceso a ellas ni recuperación de contraseñas | Nombres para orientar futuras pruebas de autenticación e IDs `1`, `2` y `3` para investigar autorización por objeto, si el endpoint del Lab 07 utiliza esos mismos identificadores. No demuestra IDOR por sí solo |
 | **R5 — CMS y versión expuestos (fingerprinting)** | `GET /` (cabeceras y `<meta generator>`) y `GET /phantomcms/VERSION` | Fingerprinting con `whatweb -a 3` y confirmación con `curl` | [salida de `whatweb`](evidencia/salidas/r5_01_whatweb.txt); [archivo default del CMS](evidencia/salidas/r5_02_version_default.txt) | **Medio (demostrado):** el stack se publica en claro (`Server: PhantomServer/3.7`, `X-Powered-By: PhantomCMS/3.7`, `<meta generator>` PhantomCMS 3.7) y el archivo default `/phantomcms/VERSION` confirma producto, versión y build (`PhantomCMS 3.7 (build 2024-11)`). No se identificó un CVE aplicable a este producto ficticio; el riesgo es la exposición de versión | Conocer producto, versión y build exactos permite buscar vulnerabilidades específicas de esa versión antes de la explotación; la convención del archivo default (`/phantomcms/VERSION`) es en sí un vector de enumeración reutilizable |
 
@@ -219,6 +219,32 @@ Con el producto identificado, se buscó su archivo default. La ruta `GET /phanto
 
 Publicar producto, versión y build exactos (en cabeceras, en `<meta generator>` y en un archivo default) le ahorra trabajo de reconocimiento a un atacante: puede buscar directamente vulnerabilidades conocidas de esa versión concreta. No se identificó un CVE aplicable a PhantomCMS, por tratarse de un producto ficticio del laboratorio, de modo que no se asigna severidad por un CVE inexistente; el riesgo demostrado es la divulgación de versión. Como mitigación, conviene suprimir o normalizar las cabeceras `Server` y `X-Powered-By`, quitar la etiqueta `generator` y retirar el archivo default del CMS del servidor público.
 
+### Evidencia de soporte del inventario (R3)
+
+**Fecha de ejecución:** 2026-11-02.
+
+Solicitudes realizadas desde la consola atacante contra el target local `phantomcorp`:
+
+```http
+OPTIONS / HTTP/1.1
+Host: phantomcorp
+
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7
+Allow: GET, POST, PUT, DELETE, OPTIONS
+X-Dangerous-Methods: FLAG{http_methods_put_enabled}
+```
+
+La respuesta anuncia métodos de escritura, pero las comprobaciones directas no los aceptaron:
+
+```http
+PUT /chiara-r3-test.txt HTTP/1.1 -> 501 Unsupported method ('PUT')
+DELETE /chiara-r3-test.txt HTTP/1.1 -> 501 Unsupported method ('DELETE')
+GET /chiara-r3-test.txt HTTP/1.1 -> 404 Not Found
+```
+
+La flag R3 fue aceptada por el verificador oficial del curso en una copia temporal del entorno atacante. Bash/WSL del host devolvió `E_ACCESSDENIED`, por lo que el archivo local `.progreso/06.done` no se actualizó. El registro previo de la sección 1 se conserva como evidencia histórica de R2 y no representa un estado consolidado después de validar R3.
+
 ---
 
 ## 3. Preguntas de análisis
@@ -239,7 +265,12 @@ Un archivo convencional expuesto (como una página HTML o un PDF) solo revela in
 En el caso puntual analizado en PhantomCorp, se constató empíricamente que el servidor expone únicamente `/.git/config` (devolviendo 404 para `HEAD`, `logs/` y `objects/`). Por lo tanto, aunque no fue posible reconstruir el árbol de objetos localmente, la exposición reveló información sensible de infraestructura interna (URL del repositorio interno).
 
 ### P3 — El método `PUT`.
-*(A completar por el integrante asignado)*
+
+`OPTIONS` sirve para consultar qué métodos anuncia un servidor mediante la cabecera `Allow`. Si un servidor acepta `PUT`, el cliente podría crear o reemplazar recursos; si acepta `DELETE`, podría eliminarlos. La cabecera por sí sola no demuestra que las operaciones funcionen.
+
+En PhantomCorp, `OPTIONS /` devolvió `Allow: GET, POST, PUT, DELETE, OPTIONS`, pero las solicitudes reales `PUT` y `DELETE` respondieron `501 Unsupported method`. Un `GET` posterior a la ruta de prueba devolvió `404`, así que no se creó el archivo. El hallazgo comprobado es una lista `Allow` inconsistente y la exposición de la flag; **no** se demostró carga ni borrado de archivos en este target.
+
+En otro servidor donde `PUT` sí permita escribir en una ruta servida o ejecutable, un atacante podría subir contenido y, según la configuración, llegar a ejecución de código. En este laboratorio no se obtuvo ese acceso: la inyección de comandos del Lab 07 es independiente. Como defensa, se deben deshabilitar métodos que no se usan, configurar `Allow` para reflejar el comportamiento real y exigir autorización y validación de ruta para cualquier escritura.
 
 ### P4 — Enumeración de usuarios.
 *(A completar por el integrante asignado)*
@@ -278,6 +309,12 @@ curl -i -s http://phantomcorp/
 
 # Inspección de configuración de Git
 curl -i -s http://phantomcorp/.git/config
+
+# Comprobación de métodos HTTP del Lab 06 R3
+curl -i -X OPTIONS http://phantomcorp/
+curl -i -X PUT http://phantomcorp/chiara-r3-test.txt --data-binary 'prueba de laboratorio'
+curl -i -X DELETE http://phantomcorp/chiara-r3-test.txt
+curl -i http://phantomcorp/chiara-r3-test.txt
 
 # Sondeo de referencias y metadatos adicionales
 curl -i -s http://phantomcorp/.git/HEAD
