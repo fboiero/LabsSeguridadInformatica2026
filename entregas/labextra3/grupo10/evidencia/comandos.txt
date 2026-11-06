@@ -1,0 +1,24 @@
+Lab Extra 3 — comandos ejecutados desde la raíz del repositorio
+
+# Codificación necesaria para imprimir las marcas del verificador en PowerShell.
+$env:PYTHONIOENCODING = 'utf-8'
+
+# Verificación inicial. La copia de referencia local solo adapta DB/DESCARGAS
+# a rutas escribibles dentro de .progreso; los cinco fallos originales quedan iguales.
+python .\labs\labextra3-hardening\verificar-defensa.py --dir .\.progreso\labextra3-base\labs\labextra3-hardening\objetivo
+
+# Verificación final. La fixture local permite probar traversal en Windows contra
+# un archivo controlado fuera de descargas, sin leer archivos reales del sistema.
+$env:PHANTOM_HARDENING_STATE = '.\.progreso\labextra3-base\labs\labextra3-hardening\objetivo\patched-state'
+python .\labs\labextra3-hardening\verificar-defensa.py --dir .\entregas\labextra3\grupo10\objetivo
+
+# Regresión: portada, login, descarga legítima y denegación de traversal.
+python .\entregas\labextra3\grupo10\evidencia\verificar-regresion.py
+
+# Entrega local de flags al motor del curso (Git Bash en Windows).
+& 'C:\Program Files\Git\bin\bash.exe' -lc "./ctf submit extra3 D1 'FLAG{def_banner_neutralizado}'"
+& 'C:\Program Files\Git\bin\bash.exe' -lc "./ctf submit extra3 D2 'FLAG{def_debug_apagado}'"
+& 'C:\Program Files\Git\bin\bash.exe' -lc "./ctf submit extra3 D3 'FLAG{def_rutas_blindadas}'"
+& 'C:\Program Files\Git\bin\bash.exe' -lc "./ctf submit extra3 D4 'FLAG{def_sqli_parametrizado}'"
+& 'C:\Program Files\Git\bin\bash.exe' -lc "./ctf submit extra3 D5 'FLAG{def_traversal_bloqueado}'"
+& 'C:\Program Files\Git\bin\bash.exe' -lc "./ctf status extra3"

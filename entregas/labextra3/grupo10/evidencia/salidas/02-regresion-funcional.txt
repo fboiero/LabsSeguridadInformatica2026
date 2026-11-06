@@ -1,0 +1,6 @@
+OK | GET / | HTTP 200
+OK | login legítimo | HTTP 200
+OK | login inválido | HTTP 401
+OK | descarga manual.txt | HTTP 200
+OK | traversal a fixture fuera de descargas | HTTP 404
+5/5 comprobaciones funcionales correctas.
