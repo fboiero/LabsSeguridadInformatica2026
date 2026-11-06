@@ -100,6 +100,19 @@ quienes forkearon/clonaron, revocación de accesos, lecciones aprendidas.
 
 ## 5. Preguntas P1–P5
 
+### P1 — Línea de tiempo del token de la API (Carolina)
+
+La salida propia de Git (`evidencia/salidas/timeline-r1.txt`) permite reconstruir:
+
+| Evento | Hash completo | Autor | Fecha (-03:00) | Mensaje |
+|---|---|---|---|---|
+| Introducción del token | `9333f2b4a09f7a320cb66d621c3bd53b4f694941` | dev-jperez <jperez@phantomcorp.example> | 10/08/2026 18:47 | hotfix: deploy roto en produccion (config temporal) |
+| Eliminación de la línea en main | `eafb81c3ec5790ce4741629458e11ab5c1a690b8` | dev-jperez <jperez@phantomcorp.example> | 11/08/2026 10:05 | fix: sacar credenciales del codigo (ups) |
+
+Entre ambos commits transcurrieron **15 horas y 18 minutos**: es el tiempo con el token presente en la versión corriente de `main`, no el final de su exposición histórica. No hay evidencia de rotación ni de la fecha de publicación del repo; no se puede deducir la duración exacta de una exposición pública solo de estas fechas.
+
+**No alcanza con el commit de limpieza.** `git log -p -- config.py` recupera el valor desde la historia incluso después de eliminarlo del archivo actual. Cada commit referencia una instantánea de los archivos y sus commits padres: el de limpieza crea una versión nueva, no modifica el commit de hotfix ni su contenido. El commit viejo sigue alcanzable, y las copias clonadas o forkeadas pueden conservarlo. Ante una credencial real se debe revocar/rotar primero: borrar la línea o reescribir la historia no invalida una copia del token.
+
 ### P2 — Por qué `reset --hard` no borra el commit
 
 En el modelo de objetos de git, un commit es un objeto inmutable guardado en `.git/objects`, identificado por el hash de su contenido. Una rama (`main`, `feature/...`) no es más que un archivo de texto con ese hash adentro: una etiqueta que *apunta* a un commit, no el commit en sí. `git reset --hard HEAD~1` mueve esa etiqueta (y el puntero `HEAD`) un commit hacia atrás y pisa el working directory para que coincida; lo único que cambia es a qué objeto apunta la rama. El objeto commit que quedó "atrás" no se toca ni se elimina: sigue completo en el object store, simplemente ninguna rama lo referencia.
