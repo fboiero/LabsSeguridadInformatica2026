@@ -1,0 +1,4 @@
+﻿       Ôÿà  Ôÿà  Ôÿà   FLAG CAPTURADA   Ôÿà  Ôÿà  Ôÿà
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: SQLi - extraccion de datos con UNION

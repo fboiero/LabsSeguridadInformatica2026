@@ -1,0 +1,9 @@
+﻿HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Sun, 01 Nov 2026 22:01:29 GMT
+Content-Type: text/plain; charset=utf-8
+
+Resultados:
+  CREATE TABLE productos(nombre TEXT, precio TEXT) - $
+  CREATE TABLE secrets(clave TEXT, valor TEXT) - $
+  CREATE TABLE users(id INTEGER, user TEXT, pass TEXT, rol TEXT, nota_privada TEXT) - $
