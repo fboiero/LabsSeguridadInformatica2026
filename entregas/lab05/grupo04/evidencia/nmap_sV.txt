@@ -1,0 +1,58 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-08 21:50 UTC
+Stats: 0:00:16 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
+Service scan Timing: About 75.00% done; ETC: 21:50 (0:00:05 remaining)
+Stats: 0:01:26 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
+Service scan Timing: About 100.00% done; ETC: 21:51 (0:00:00 remaining)
+Nmap scan report for phantomcorp (172.18.0.2)
+Host is up (0.0000060s latency).
+rDNS record for 172.18.0.2: cyberlab-phantomcorp.cyberlab_labnet
+Not shown: 65531 closed tcp ports (reset)
+PORT      STATE SERVICE VERSION
+21/tcp    open  ftp     ProFTPD 1.3.5
+80/tcp    open  http    PhantomServer/2.4.1 
+8080/tcp  open  http    Werkzeug httpd 2.0.1 (Python 3.9.2)
+31337/tcp open  Elite?
+2 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port80-TCP:V=7.95%I=7%D=10/8%Time=6AC8102D%P=x86_64-pc-linux-gnu%r(GetR
+SF:equest,1FE,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20PhantomServer/2\.4\.1\
+SF:x20\r\nDate:\x20Thu,\x2008\x20Oct\x202026\x2021:50:37\x20GMT\r\nContent
+SF:-Type:\x20text/html;\x20charset=utf-8\r\nX-Powered-By:\x20PhantomCMS\x2
+SF:02\.4\.1\r\nX-Backend-Flag:\x20FLAG{http_headers_leak_info}\r\n\r\n<!do
+SF:ctype\x20html><html\x20lang=\"es\"><head><meta\x20charset=\"utf-8\">\n<
+SF:title>PhantomCorp\x20S\.A\.\x20-\x20Soluciones\x20Logisticas</title></h
+SF:ead><body>\n<h1>PhantomCorp\x20S\.A\.</h1>\n<p>Lideres\x20en\x20logisti
+SF:ca\x20desde\x201998\.\x20Portal\x20corporativo\.</p>\n<!--\x20TODO\(inf
+SF:ra\):\x20sacar\x20el\x20panel\x20interno\x20de\x20produccion\x20antes\x
+SF:20del\x20go-live\x20-->\n</body></html>")%r(HTTPOptions,229,"HTTP/1\.0\
+SF:x20501\x20Unsupported\x20method\x20\('OPTIONS'\)\r\nServer:\x20PhantomS
+SF:erver/2\.4\.1\x20\r\nDate:\x20Thu,\x2008\x20Oct\x202026\x2021:50:37\x20
+SF:GMT\r\nConnection:\x20close\r\nContent-Type:\x20text/html;charset=utf-8
+SF:\r\nContent-Length:\x20360\r\n\r\n<!DOCTYPE\x20HTML>\n<html\x20lang=\"e
+SF:n\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<meta\x20
+SF:charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error\x20res
+SF:ponse</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x20\x20\x
+SF:20\x20\x20\x20<p>Error\x20code:\x20501</p>\n\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20<p>Message:\x20Unsupported\x20method\x20\('OPTIONS'\)\.</p>\n\x20\
+SF:x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20explanation:\x20501\x20-
+SF:\x20Server\x20does\x20not\x20support\x20this\x20operation\.</p>\n\x20\x
+SF:20\x20\x20</body>\n</html>\n")%r(RTSPRequest,16C,"<!DOCTYPE\x20HTML>\n<
+SF:html\x20lang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\
+SF:x20\x20<meta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<ti
+SF:tle>Error\x20response</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x2
+SF:0<body>\n\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x
+SF:20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code:\x20400</p>\n\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20<p>Message:\x20Bad\x20request\x20version\x20\('RTS
+SF:P/1\.0'\)\.</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20ex
+SF:planation:\x20400\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported
+SF:\x20method\.</p>\n\x20\x20\x20\x20</body>\n</html>\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port31337-TCP:V=7.95%I=7%D=10/8%Time=6AC81027%P=x86_64-pc-linux-gnu%r(N
+SF:ULL,64,"PhantomCorp\x20maintenance\x20shell\x20v0\.1\x20--\x20acceso\x2
+SF:0no\x20autorizado\x20prohibido\nFLAG{high_port_secret_service}\n");
+MAC Address: 3E:9C:73:10:9F:6A (Unknown)
+Service Info: OS: Unix
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 88.01 seconds
