@@ -1,11 +1,21 @@
 # Informe — Laboratorio 02 · Criptografía
 
-**Grupo:** 10 · **Integrantes:** *(CORAZZA, CAROLINA - KORDEK, CHIARA - RAMELLO, BELÉN - SABY, JUAN PABLO)* · **Fecha:** 30/10/2026
+**Grupo:** 10 · **Fecha de entrega:** 06/11/2026
+
+**Integrantes:**
+| Nombre y apellido      | Legajo | Usuario de GitHub |
+| ---------------------- | ------ | ----------------- |
+| Belén Rocío Ramello    | 15226  | @belramello       |
+| Carolina Paula Corazza | 15239  | @carocor1         |
+| Chiara Agustina Kordek | 14719  | @chiarakordek     |
+| Juan Pablo Saby        | 15026  | @JuanSaby         |
 
 ## 0. Declaración de uso de IA
-Se utilizó IA generativa (Claude) como herramienta de apoyo en este laboratorio: para planificar y repartir las tareas, supervisar redacción de borradores del código de `src/cripto.py` y de los textos del informe y del mini-research. El código se ejecutó y verificó contra el reto provisto por la cátedra.
+Se utilizó IA generativa (Claude) como herramienta de apoyo en este laboratorio: para planificar y repartir las tareas, supervisar redacción de borradores del código de src/cripto.py y de los textos del informe y del mini-research. El código se ejecutó y verificó contra el reto provisto por la cátedra.
 
-## 1. Parte A — Análisis de la falla <!-- INICIO SECCION 1 -->
+Auditoría final, brinando un informe completo a los integrantes de la salida y los puntos modificados comparandolo con los requerimiento exigidos por la catedra.
+
+## 1. Parte A — Análisis de la falla
 **Caso:** WEP (Wired Equivalent Privacy, redes WiFi). Corresponde porque 10 mod 5 = 0.
 
 ### A.1 — Qué prometía
@@ -38,9 +48,7 @@ El diseño debe evitar repetir un nonce/IV bajo la misma clave, derivar claves d
 4. Frankel, S., Eydt, B., Owens, L., & Scarfone, K. (2007). *Establishing Wireless Robust Security Networks: A Guide to IEEE 802.11i* (NIST SP 800-97). National Institute of Standards and Technology. https://doi.org/10.6028/NIST.SP.800-97
 5. National Security Agency. (2018). *WPA3 Will Enhance Wi-Fi Security*. Cybersecurity Report. https://www.nsa.gov/portals/75/documents/what-we-do/cybersecurity/professional-resources/ctr-cybersecurity-technical-report-wpa3.pdf
 
-<!-- FIN SECCION 1 -->
 ## 2. Parte B.1 — Romper el XOR
-<!-- INICIO SECCION 2 -->
 **Clave hallada:** `0x37` (55 en decimal).
 
 **Mensaje en claro recuperado:**
@@ -50,9 +58,7 @@ El diseño debe evitar repetir un nonce/IV bajo la misma clave, derivar claves d
 
 **Por qué falla el cifrado clásico.** Una clave de 1 byte tiene un espacio de claves trivial (2^8 = 256) que se recorre por fuerza bruta en milisegundos. Además, XOR conserva la estructura estadística del texto plano (los espacios y las vocales siguen siendo reconocibles), así que se puede decidir automáticamente cuál clave es la buena. Un cifrado necesita un espacio de claves enorme y no filtrar estructura del mensaje, y su seguridad no puede depender de que el atacante desconozca el algoritmo (principio de Kerckhoffs).
 
-<!-- FIN SECCION 2 -->
 ## 3. Parte B.2 — Autenticación
-<!-- INICIO SECCION 3 -->
 ### B.2.1 — Ataque de length-extension
 
 SHA-256 sigue la construcción Merkle–Damgård [2]: el mensaje se rellena (*padding*) y se procesa en bloques de 512 bits, es decir, 64 bytes. El relleno agrega un bit en 1, luego ceros y, al final, la longitud del mensaje original como un entero de 64 bits [1]. Cada bloque actualiza un estado interno, y el resumen final es simplemente ese estado después de procesar el último bloque [1]. En otras palabras, el hash publicado *es* el estado interno de la función en ese punto.
@@ -102,21 +108,25 @@ En la práctica, el ruido de la red dificulta el ataque, pero no lo vuelve impos
 5. Kocher, P. C. (1996). *Timing Attacks on Implementations of Diffie-Hellman, RSA, DSS, and Other Systems*. Advances in Cryptology — CRYPTO '96, LNCS 1109, 104–113. https://paulkocher.com/doc/TimingAttacks.pdf
 6. Crosby, S. A., Wallach, D. S., & Riedi, R. H. (2009). *Opportunities and Limits of Remote Timing Attacks*. ACM Transactions on Information and System Security, 12(3), artículo 17. https://doi.org/10.1145/1455526.1455530
 
-<!-- FIN SECCION 3 -->
 ## 4. Bitácora
-<!-- INICIO SECCION 4 -->
+
 ```bash
-python entregas/lab02/grupo10/data/generar_datos.py
+# 1. Generación de datos de prueba
+python3 entregas/lab02/grupo10/data/generar_datos.py
 # salida: Creado data/muestra/reto_xor.hex — rompelo con: python3 src/cripto.py romper --hex $(cat data/muestra/reto_xor.hex)
 
-python entregas/lab02/grupo10/src/cripto.py romper --hex (Get-Content entregas/lab02/grupo10/data/muestra/reto_xor.hex -Raw).Trim()
+# 2. Resolución del reto XOR (compatible con Bash / POSIX)
+python3 entregas/lab02/grupo10/src/cripto.py romper --hex $(cat entregas/lab02/grupo10/data/muestra/reto_xor.hex)
+# Nota: En entorno Windows PowerShell se ejecutó con:
+# python entregas/lab02/grupo10/src/cripto.py romper --hex (Get-Content entregas/lab02/grupo10/data/muestra/reto_xor.hex -Raw).Trim()
 # salida: clave=0x37
 # salida: Memo interno PhantomCorp: la clave del wifi de invitados es Phantom-Guest-2026. No compartir fuera de la empresa.
 
-python entregas/lab02/grupo10/src/cripto.py mac --clave k --msg hola --modo ingenuo
+# 3. Cálculo de MAC ingenuo
+python3 entregas/lab02/grupo10/src/cripto.py mac --clave k --msg hola --modo ingenuo
 # salida: bda2866001749f4665752d576d83d329f9f6c901b39b99976e2dd7fcbe271683
 
-python entregas/lab02/grupo10/src/cripto.py mac --clave k --msg hola --modo hmac
+# 4. Cálculo de MAC con HMAC
+python3 entregas/lab02/grupo10/src/cripto.py mac --clave k --msg hola --modo hmac
 # salida: e3b409496f147c6a4ddb76add1750d9d63a8bbf752e745b81a0e23d5e0ede322
 ```
-<!-- FIN SECCION 4 -->
