@@ -1,0 +1,9 @@
+{
+  "captura_utc": "2026-11-06T19:35:49.219473+00:00",
+  "alcance": "phantomcorp en cyberlab_labnet",
+  "soc_benignos": 120,
+  "soc_intrusiones_preexistentes": 1,
+  "soc_inicial_final_iguales": true,
+  "flags_validadas": 5,
+  "captura": "Salida textual real, no screenshot grafico"
+}

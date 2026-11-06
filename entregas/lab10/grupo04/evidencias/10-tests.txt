@@ -1,0 +1,7 @@
+test_controles_negativos (__main__.FirmaTests.test_controles_negativos) ... ok
+test_variantes_detectadas (__main__.FirmaTests.test_variantes_detectadas) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+OK

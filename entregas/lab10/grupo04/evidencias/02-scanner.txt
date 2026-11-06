@@ -1,0 +1,10 @@
+$ docker exec cyberlab-attacker curl -sS -i -A sqlmap http://phantomcorp/
+
+HTTP/1.0 403 Forbidden
+Server: PhantomSOC/1.0 
+Date: Fri, 06 Nov 2026 19:33:26 GMT
+Content-Type: text/plain; charset=utf-8
+
+🚨 ALERTA IDS · firma 'scanner-ua' disparada.
+Tu request fue DETECTADA y logueada. FLAG{detection_triggered}
+Para ver todas las reglas: GET /soc/reglas
