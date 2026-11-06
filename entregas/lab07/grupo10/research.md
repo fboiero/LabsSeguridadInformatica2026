@@ -1,5 +1,12 @@
 # Mini-research — Laboratorio 07: Explotación y Seguridad Web
 
+**Grupo:** 10
+**Integrantes:**
+- Belén Rocío Ramello — 15226 — @belramello
+- Carolina Paula Corazza — 15239 — @carocor1
+- Chiara Agustina Kordek — 14719 — @chiarakordek
+- Juan Pablo Saby — 15026 — @JuanSaby
+
 **Tema elegido:** **A.** Consultas parametrizadas / prepared statements: cómo separan datos de código y por qué eliminan la SQLi de raíz (con ejemplo en un lenguaje).
 
 ---

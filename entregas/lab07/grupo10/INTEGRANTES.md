@@ -2,8 +2,8 @@
 
 | Nombre y apellido | Legajo | Usuario de GitHub |
 |---|---|---|
-| Saby, Juan Pablo | 15026 | juansaby |
-| Integrante 2 | Legajo 2 | @usuario2 |
-| Integrante 3 | Legajo 3 | @usuario3 |
-| Integrante 4 | Legajo 4 | @usuario4 |
+| Belén Rocío Ramello | 15226 | @belramello |
+| Carolina Paula Corazza | 15239 | @carocor1 |
+| Chiara Agustina Kordek | 14719 | @chiarakordek |
+| Juan Pablo Saby | 15026 | @JuanSaby |
 
