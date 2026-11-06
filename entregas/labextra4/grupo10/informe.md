@@ -31,7 +31,7 @@ Este laboratorio analiza la resistencia de cuatro hashes ficticios de PhantomCor
 4. Intentar abrir los archivos `.enc` correspondientes a credenciales recuperadas y guardar la salida cruda.
 5. Registrar el estado de las flags y analizar los resultados junto con las preguntas P1–P5.
 
-**Estado de ejecución:** pendiente de incorporar las salidas verificables del responsable de implementación y las mediciones del benchmark proporcionadas por Chiara.
+**Estado de ejecución:** se incorporó la medición sintética P1 de Chiara en esta versión. Las salidas de cracking, loot y flags siguen pendientes de evidencia verificable del laboratorio.
 
 ## 3. Tabla de resultados
 
@@ -48,17 +48,17 @@ La consigna indica que `root` no debe caer en este caso. El cracker del grupo in
 
 ## 4. Medición de velocidad — P1
 
-**Procedencia:** [Completar: mediciones propias o benchmark entregado por Chiara; identificar equipo, versión de Python, comando, cantidad de intentos y método de cálculo].
+**Procedencia:** benchmark sintético de Chiara, ejecutado en Windows 11 con Python 3.12.14 y `src/cracker.py` del grupo (`hash_de`, sin modificar). Se usó `time.perf_counter()`, un salt sintético común y 20 candidatos únicos por conjunto. MD5/SHA-256 repitieron cada muestra 1.000 veces para obtener 20.000 evaluaciones; PBKDF2 usó exactamente 20 evaluaciones por conjunto y 200.000 iteraciones. Salida completa: `evidencia/salidas/benchmark_p1.txt`.
 
 | Algoritmo | Intentos/segundo medidos | Tamaño de muestra | Diccionario completo tardaría… | Evidencia/fuente |
 |---|---:|---:|---|---|
-| MD5 | Pendiente | Pendiente | Pendiente | Pendiente |
-| SHA-256 | Pendiente | Pendiente | Pendiente | Pendiente |
-| PBKDF2-HMAC-SHA-256 (200.000 iteraciones) | Pendiente | Pendiente | Pendiente | Pendiente |
+| MD5 | 480.951,900 (diccionario puro) | 20 únicos; 20.000 evaluaciones | ≈0,000102 s para las 49 entradas del diccionario (estimación, no medición directa) | `evidencia/salidas/benchmark_p1.txt` |
+| SHA-256 | 403.887,824 (diccionario puro) | 20 únicos; 20.000 evaluaciones | ≈0,000121 s para las 49 entradas del diccionario (estimación, no medición directa) | `evidencia/salidas/benchmark_p1.txt` |
+| PBKDF2-HMAC-SHA-256 (200.000 iteraciones) | 8,931 (diccionario puro) | 20 candidatos | No extrapolado: muestra controlada, no exhaustiva | `evidencia/salidas/benchmark_p1.txt` |
 
 **Método de estimación:** registrar el tiempo real para un número conocido de intentos; calcular `intentos/segundo = intentos medidos / segundos transcurridos`. Para estimar el diccionario completo, usar `cantidad de candidatos / intentos por segundo`. Indicar límites y condiciones de la medición; no extrapolar una medición de CPU como si fuera una GPU. Si se interrumpe PBKDF2, informar solo los intentos completados y marcar la muestra como parcial; no afirmar que se evaluó el diccionario entero.
 
-**Interpretación:** [Completar después de recibir los datos. Comparar diferencias en órdenes de magnitud y explicar que el trabajo deliberadamente costoso de PBKDF2 reduce los intentos por segundo. Cualquier velocidad de GPU debe citar una fuente o benchmark identificable y no presentarse como medición local.]
+**Interpretación:** en esta ejecución, MD5 y SHA-256 procesaron alrededor de 4,0–4,8 × 10^5 evaluaciones por segundo en esta máquina; PBKDF2 quedó en 8,931 por segundo con 200.000 iteraciones. La diferencia observada es de aproximadamente 4,7 órdenes de magnitud. Es una medición de CPU local, no una velocidad de GPU. La muestra PBKDF2 contiene exactamente 20 candidatos y no se extrapola al diccionario completo ni a una contraseña real. La tasa de la lista con reglas fue 7,127 evaluaciones/s; la única corrida y las listas diferentes no permiten atribuir esa diferencia a la regla.
 
 ## 5. El loot
 
@@ -81,7 +81,7 @@ Insertar aquí la captura legible o transcripción íntegra obtenida del comando
 
 ### P1. Velocidad de ataque
 
-La medición debe comparar intentos por segundo de MD5, SHA-256 y PBKDF2 usando el cracker y una muestra conocida, con tiempos registrados. La velocidad permite estimar el tiempo de búsqueda, pero la extrapolación debe indicar algoritmo, hardware y supuestos. Una GPU puede acelerar mucho los hashes rápidos; no se debe atribuir una cifra a este experimento sin fuente o medición. **Resultado numérico y comparación:** pendientes del benchmark y de la evidencia.
+El benchmark sintético ejecutó `hash_de()` de `src/cracker.py`. Para la lista de diccionario puro midió 480.951,900 evaluaciones/s en MD5, 403.887,824 en SHA-256 y 8,931 en PBKDF2-HMAC-SHA-256 con 200.000 iteraciones. En esta máquina, la razón entre las tasas rápidas y PBKDF2 fue de aproximadamente 4,5–5,4 × 10^4 para esta muestra. No se atribuyen aquí velocidades a una GPU. La muestra PBKDF2 fue exactamente de 20 candidatos y no se extrapola a una búsqueda exhaustiva. Las condiciones y límites figuran en la sección 4 y en `benchmark-p1-resultados-chiara.md`.
 
 ### P2. ¿Para qué sirve el salt?
 
@@ -114,7 +114,7 @@ Se adjuntan `evidencia/comandos.txt` con la secuencia fiel de comandos y `eviden
 - [ ] Completar grupo, integrantes y fecha.
 - [ ] Incorporar declaración de uso de IA real del grupo.
 - [ ] Incorporar resultados de cracking sin alterar la salida original.
-- [ ] Incorporar mediciones de Chiara con procedencia, condiciones y unidad.
+- [x] Incorporar mediciones de Chiara con procedencia, condiciones y unidad.
 - [ ] Incorporar salidas reales del descifrado del loot.
 - [ ] Añadir captura/salida completa de `./ctf status extra4`.
 - [ ] Completar los cálculos de P1 y P4 con datos y supuestos explícitos.

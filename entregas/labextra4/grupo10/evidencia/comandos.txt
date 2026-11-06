@@ -6,7 +6,7 @@
 [PENDIENTE] Comando real para ejecutar el cracker con reglas.
 [PENDIENTE] Comandos reales para descifrar cada loot recuperado.
 [PENDIENTE] Comando real y directorio desde el que se ejecutó ./ctf status extra4.
-[PENDIENTE] Comando/procedimiento real usado para medir intentos por segundo.
+[2026-11-06, PowerShell, desde entregas/labextra4/grupo10] & 'C:\Program Files\WindowsApps\OpenAI.CodexPrimaryRuntime.v26-1026-487-0_26.1026.487.0_x64__3k8sg7r9htsxt\dependencies\python\python.exe' tests/benchmark_p1.py | Tee-Object -FilePath evidencia/salidas/benchmark_p1.txt
 
 # Plantilla orientativa, NO es un registro de ejecución. Reemplazar/eliminarla
 # cuando se anoten los comandos realmente ejecutados por el Grupo 10.

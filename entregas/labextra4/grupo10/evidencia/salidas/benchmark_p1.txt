@@ -1,0 +1,11 @@
+Benchmark sintético Lab Extra 4 — no exhaustivo
+Python: 3.12.14 | SO: Windows-11-10.0.26200-SP0 | CPU: AMD64 Family 23 Model 104 Stepping 1, AuthenticAMD
+Salt común: a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4 | Candidatos únicos por conjunto: 20 | PBKDF2 iteraciones: 200000
+MD5/SHA-256 repiten la muestra 1000 veces para estabilizar el cronómetro; PBKDF2 procesa cada candidato una vez.
+md5          | diccionario puro       | únicos=20 | evaluaciones= 20000 | segundos=0.041584 | evaluaciones/s=480951.900
+md5          | con regla de año       | únicos=20 | evaluaciones= 20000 | segundos=0.046281 | evaluaciones/s=432146.515
+sha256       | diccionario puro       | únicos=20 | evaluaciones= 20000 | segundos=0.049519 | evaluaciones/s=403887.824
+sha256       | con regla de año       | únicos=20 | evaluaciones= 20000 | segundos=0.046817 | evaluaciones/s=427196.162
+pbkdf2       | diccionario puro       | únicos=20 | evaluaciones=    20 | segundos=2.239444 | evaluaciones/s=8.931
+pbkdf2       | con regla de año       | únicos=20 | evaluaciones=    20 | segundos=2.806122 | evaluaciones/s=7.127
+PBKDF2 procesa exactamente 20 candidatos por conjunto; esa muestra no se extrapola a una búsqueda exhaustiva.
