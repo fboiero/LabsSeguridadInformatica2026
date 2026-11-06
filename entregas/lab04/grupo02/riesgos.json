@@ -1,0 +1,22 @@
+[
+  {
+    "nombre": "Acceso no autorizado por falta de MFA en empleados remotos",
+    "sle": 40000,
+    "aro": 0.5
+  },
+  {
+    "nombre": "Filtración de datos de tarjetas/DNI por Servidor Web público",
+    "sle": 100000,
+    "aro": 0.3
+  },
+  {
+    "nombre": "Pérdida de backups físicos por daño o robo en la oficina",
+    "sle": 15000,
+    "aro": 0.2
+  },
+  {
+    "nombre": "Falta de política de contraseñas (fuerza bruta / credential stuffing)",
+    "sle": 25000,
+    "aro": 0.6
+  }
+]
