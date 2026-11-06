@@ -2,7 +2,7 @@
 
 **Grupo:** 10  
 **Integrantes:** Carolina Paula Corazza — @carocor1; Belén Rocío Ramello — @belramello; Chiara Agustina Kordek — @chiarakordek; Juan Pablo Saby — @JuanSaby.  
-**Redacción y desarrollo de esta sección:** Juan Pablo Saby — @JuanSaby.  
+**Redacción y desarrollo de esta sección:** Juan Pablo Saby — @JuanSaby.
 **Fecha:** Noviembre 2026.  
 **Entorno de referencia:** Laboratorio SSRF de cátedra (recursos internos simulados en contenedores Docker locales).
 
@@ -10,7 +10,7 @@
 
 ## Declaración de uso de IA
 
-Para la elaboración de este documento de investigación se utilizó asistencia de modelos de lenguaje (Antigravity / Gemini) como herramienta de apoyo para refinar la redacción de las explicaciones arquitectónicas. Todos los comandos ya análisis transversal con documentación oficial de proveedores y estandares IETF son de elaboracion propia.
+Para la elaboración de este documento se utilizó asistencia de modelos de lenguaje (Antigravity / Gemini) como apoyo para refinar la redacción de explicaciones arquitectónicas. El autor revisó las afirmaciones técnicas contra la documentación oficial de AWS citada en las referencias y el RFC 3927. No se ejecutaron consultas contra servicios de metadata cloud; el análisis es documental y está separado de las pruebas en los contenedores del laboratorio.
 
 ---
 
@@ -18,69 +18,67 @@ Para la elaboración de este documento de investigación se utilizó asistencia 
 
 ### 1.1. ¿Qué información expone y a quién?
 
-El *Instance Metadata Service* (IMDS) es un servicio de infraestructura provisto por las plataformas de computación en la nube pública (como Amazon Web Services, Google Cloud Platform y Microsoft Azure) que permite a las instancias virtuales acceder a información sobre su propia configuración, aprovisionamiento y entorno operativo en tiempo de ejecución.
+El *Instance Metadata Service* (IMDS) es un servicio de infraestructura que permite a una instancia de nube acceder a información sobre su configuración y entorno de ejecución. AWS, GCP y Azure ofrecen servicios de metadata, aunque sus endpoints y mecanismos de protección varían.
 
-Arquitectónicamente, el servicio se expone en una dirección IPv4 especial de enlace local (*link-local*): **`169.254.169.254`** (definida en el estándar RFC 3927), complementada en AWS con su dirección IPv6 correspondiente (`fd00:ec2::254`) y en GCP con el nombre de resolución interna `metadata.google.internal`. Por diseño de la pila de protocolos TCP/IP, las direcciones de enlace local no son enrutables fuera del segmento de red local: los routers de internet descartan de forma predeterminada cualquier paquete dirigido a `169.254.0.0/16`. En consecuencia, el servicio está concebido para ser consumido **única y exclusivamente por los procesos que se ejecutan dentro del sistema operativo de la propia instancia virtual**, comunicándose de manera directa con el hipervisor a través de la interfaz de red virtualizada.
+En AWS EC2, el servicio está disponible en la dirección IPv4 de enlace local `169.254.169.254` y, bajo condiciones de instancia y red compatibles, en `fd00:ec2::254`. GCP también documenta `metadata.google.internal`. Estas direcciones y nombres identifican servicios locales al entorno de la instancia; no se debe generalizar que todos los proveedores usan la misma implementación. RFC 3927 define el bloque IPv4 link-local, pero no describe por sí mismo el servicio IMDS.
 
 Entre las principales categorías de información expuestas por el IMDS se destacan:
 
 1. **Datos de configuración e inventario de la instancia:** Identificadores únicos (`instance-id`, `ami-id`), tipo de instancia, región geográfica, zona de disponibilidad, nombre de host, interfaces de red, direcciones IP públicas y privadas, tablas de enrutamiento y grupos de seguridad asignados.
-2. **Datos de usuario (*User-Data*):** Scripts de inicialización o directivas de configuración (ej. scripts de *cloud-init*) suministrados durante el lanzamiento de la instancia. En despliegues deficientes, el endpoint `user-data` suele almacenar por mala práctica variables de entorno con credenciales maestras, cadenas de conexión a bases de datos, tokens de API o certificados TLS embebidos.
-3. **Credenciales de seguridad temporales para roles IAM:** En arquitecturas de nube modernas, se desaconseja almacenar claves de acceso estáticas en el disco de los servidores. En su lugar, se asocia un rol de Identity and Access Management (IAM) a la instancia (mediante un *Instance Profile* en AWS). El hipervisor consulta periódicamente a AWS Security Token Service (STS) y deposita credenciales temporales rotativas en el endpoint de metadatos:
+2. **Datos de usuario (*User-Data*):** Datos o scripts de configuración suministrados durante el lanzamiento. No son credenciales por definición; incluir secretos allí es una práctica insegura que debe evitarse.
+3. **Credenciales de seguridad temporales para roles IAM:** Se puede asociar un rol de Identity and Access Management (IAM) a la instancia (mediante un *Instance Profile* en AWS). Si el rol está presente, el endpoint de metadata expone credenciales temporales:
    ```text
    http://169.254.169.254/latest/meta-data/iam/security-credentials/<nombre-del-rol>
    ```
-   Cualquier proceso local puede consultar este endpoint mediante una solicitud HTTP y recibir un objeto JSON que contiene un `AccessKeyId`, un `SecretAccessKey`, un `Token` criptográfico de sesión y la fecha de expiración correspondiente.
+Los procesos con acceso al endpoint pueden recibir un objeto JSON con `AccessKeyId`, `SecretAccessKey`, `Token` de sesión y fecha de expiración. La disponibilidad de credenciales depende de que haya un rol asociado y de la configuración del servicio.
 
-*Matiz de diseño entre proveedores:* Mientras que AWS en su versión inicial (IMDSv1) no exigía cabeceras HTTP específicas para responder, Google Cloud Platform (GCP) y Microsoft Azure implementaron desde sus orígenes requisitos defensivos en la capa de aplicación: GCP exige obligatoriamente la cabecera HTTP `Metadata-Flavor: Google`, y Azure requiere `Metadata: true`, lo cual bloquea de forma predeterminada intentos de consulta a través de clientes web primitivos que no permiten inyectar encabezados arbitrarios.
+*Matiz de diseño entre proveedores:* AWS IMDSv1 no exige el token de sesión de IMDSv2. GCP documenta la cabecera `Metadata-Flavor: Google` y Azure la cabecera `Metadata: true`. Estos requisitos pueden dificultar SSRF simples sin control de cabeceras, pero el efecto depende de las capacidades de la aplicación vulnerable y de la configuración concreta.
 
 ---
 
 ### 1.2. ¿Por qué un SSRF lo convierte en robo de credenciales?
 
-En una arquitectura tradicional bajo IMDSv1, el servicio de metadatos confía ciegamente en la **posición topológica de red** del emisor: asume que cualquier solicitud que arribe a `169.254.169.254` proviene legítimamente del código autorizado de la instancia. No implementa autenticación previa mediante contraseña, certificados de cliente o tokens estáticos.
+En AWS IMDSv1, una solicitud de metadata no requiere el token de sesión que exige IMDSv2. La restricción principal es de acceso desde el entorno de la instancia, no una autenticación de usuario convencional para cada consulta.
 
-Cuando una aplicación web desplegada en dicha instancia presenta una vulnerabilidad de *Server-Side Request Forgery* (SSRF, CWE-918) —similar a la observada en el parámetro `/preview?url=` de este laboratorio—, se produce una ruptura total del modelo de confianza:
+Cuando una aplicación web desplegada en dicha instancia presenta una vulnerabilidad de *Server-Side Request Forgery* (SSRF, CWE-918) —similar a la observada en el parámetro `/preview?url=` de este laboratorio—, puede romperse el límite de confianza de red, sujeto a los controles de la instancia y de la aplicación:
 
-1. **Abuso del origen confiable:** El atacante externo, ubicado en internet, no puede enrutar tráfico directamente hacia la dirección no enrutable `169.254.169.254`. Sin embargo, al suministrar dicha URL en la entrada de la aplicación vulnerable, **fuerza al servidor web a realizar la petición en su nombre**.
-2. **Extracción en dos etapas:**
-   - En una primera solicitud, el atacante instruye al servidor a consultar `http://169.254.169.254/latest/meta-data/iam/security-credentials/`. El servidor ejecuta la petición HTTP interna y devuelve la lista de nombres de roles asociados al perfil de la instancia (por ejemplo: `AppProductionRole`).
-   - En una segunda solicitud, el atacante solicita `http://169.254.169.254/latest/meta-data/iam/security-credentials/AppProductionRole`. El servidor web fetchea la URL y refleja el cuerpo de la respuesta, entregando al atacante el JSON con las credenciales temporales generadas por STS.
-3. **Trascendencia del host y compromiso de la cuenta:** A diferencia de una vulnerabilidad que solo expone datos locales del disco, estas credenciales de STS son **tokens criptográficos válidos contra las APIs públicas globales de AWS**. El atacante no necesita mantener persistencia en el servidor ni obtener una shell: simplemente exporta `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_SESSION_TOKEN` en su propia consola externa y ejecuta llamadas con la herramienta oficial `aws cli` o cualquier SDK de AWS contra los servicios en la nube de la víctima.
+1. **Abuso del origen confiable:** Un atacante externo puede no tener acceso directo al endpoint local `169.254.169.254`. Si la aplicación vulnerable puede alcanzarlo, aceptar la URL y exponer su respuesta, el atacante podría inducir una solicitud desde el servidor.
+2. **Extracción según capacidades del SSRF:** Si la aplicación permite solicitar esas rutas y devolver respuestas, un atacante podría intentar consultar el endpoint de credenciales del rol asociado. Un SSRF restringido a `GET` y sin cabeceras personalizadas no suele poder completar por sí mismo el flujo de IMDSv2; no se debe asumir que siempre se pueden obtener credenciales. El éxito depende de la versión/configuración de IMDS, del control sobre método/cabeceras/redirecciones y del contenido reflejado por la aplicación.
+3. **Alcance condicionado por permisos:** Si se obtienen credenciales temporales, estas pueden autenticarse contra APIs de AWS según sus permisos y vencimiento. Su uso desde otro entorno puede depender de condiciones adicionales de la política IAM y del contexto de la solicitud. El impacto no equivale automáticamente al compromiso de toda la cuenta.
 
-*Dependencia del impacto según permisos y controles:* El daño real derivado del robo de credenciales no es uniforme: está estrictamente condicionado por las políticas de permisos asociadas al rol IAM comprometido. Si la organización aplicó con rigor el principio de menor privilegio (otorgando al rol permisos de solo lectura sobre una ruta específica de un bucket S3), el impacto queda confinado a esos datos. Por el contrario, si el rol fue configurado con políticas excesivas o comodines (como `AdministratorAccess` o `s3:*` sobre todos los recursos), el atacante obtiene control absoluto sobre el almacenamiento perimetral, bases de datos gestionadas (RDS), instancias adicionales y la infraestructura global de la cuenta.
+*Dependencia del impacto según permisos y controles:* El daño depende de las políticas asociadas al rol, su vencimiento y las restricciones adicionales aplicables. Un rol de menor privilegio limita el alcance; permisos amplios pueden habilitar acciones sensibles sobre recursos cloud. El acceso a una credencial no implica automáticamente control de toda la cuenta.
 
 ---
 
 ### 1.3. ¿Qué es IMDSv2 (AWS) y qué ataque bloquea?
 
-En respuesta a la proliferación de incidentes críticos de explotación de SSRF contra instancias cloud en la industria, AWS lanzó en noviembre de 2019 el **Instance Metadata Service Version 2 (IMDSv2)**. IMDSv2 introduce un modelo de **defensa en profundidad orientado a sesiones** (*session-oriented requests*), diseñado específicamente para neutralizar la explotación de SSRF y el abuso de intermediarios de red desconfigurados.
+AWS presentó IMDSv2 en 2019. IMDSv2 introduce solicitudes orientadas a sesión (*session-oriented requests*) y añade una defensa que dificulta algunos vectores SSRF y solicitudes reenviadas por intermediarios de red.
 
 #### Mecanismo operativo de IMDSv2
 
 IMDSv2 reemplaza la consulta directa en un solo paso por un flujo obligatorio de dos fases:
 
-1. **Paso 1 — Negociación del token de sesión:** La aplicación debe iniciar la sesión emitiendo una petición HTTP con el método **`PUT`** dirigida al endpoint `/latest/api/token`, incorporando obligatoriamente una cabecera personalizada que define la vida útil del token en segundos (entre 1 y 21600 segundos / 6 horas):
+1. **Paso 1 — Negociación del token de sesión:** La aplicación inicia una sesión con una petición HTTP **`PUT`** al endpoint `/latest/api/token`, con una cabecera que define la vida útil del token en segundos (entre 1 y 21600 segundos / 6 horas):
    ```http
    PUT /latest/api/token HTTP/1.1
    Host: 169.254.169.254
    X-aws-ec2-metadata-token-ttl-seconds: 21600
    ```
-   El hipervisor valida la solicitud y devuelve en el cuerpo de la respuesta un token secreto de sesión firmado criptográficamente.
-2. **Paso 2 — Acceso autenticado a los metadatos:** Para realizar cualquier consulta posterior a los metadatos (utilizando métodos `GET` o `HEAD`), la aplicación debe adjuntar el token obtenido en la cabecera HTTP **`X-aws-ec2-metadata-token`**:
+    El servicio valida la solicitud y devuelve un token de sesión en el cuerpo de la respuesta.
+2. **Paso 2 — Acceso autenticado a los metadatos:** Para realizar consultas posteriores, la aplicación adjunta el token obtenido en la cabecera HTTP **`X-aws-ec2-metadata-token`**:
    ```http
    GET /latest/meta-data/iam/security-credentials/AppProductionRole HTTP/1.1
    Host: 169.254.169.254
    X-aws-ec2-metadata-token: <TOKEN_OBTENIDO_EN_PASO_1>
    ```
 
-#### Ataques y vectores que bloquea de forma efectiva
+#### Ataques y vectores que dificulta
 
-1. **SSRF basados en peticiones GET simples:** La inmensa mayoría de las vulnerabilidades SSRF en aplicaciones web (como previews de enlaces, importadores de imágenes o webhooks básicos) solo permiten al atacante controlar la URL solicitada mediante una petición HTTP de tipo `GET`. No ofrecen capacidades para alternar el verbo HTTP a `PUT` ni para inyectar cabeceras HTTP arbitrarias (`X-aws-ec2-metadata-token-ttl-seconds`). Sin la capacidad de emitir ese `PUT` inicial con su cabecera requerida, el atacante no puede obtener el token de sesión y el servicio rechaza cualquier intento de lectura directa devolviendo un error HTTP 401 Unauthorized.
-2. **Abuso de proxies inversos abiertos y WAFs mal configurados:** IMDSv2 inspecciona las cabeceras de transporte y **rechaza automáticamente cualquier petición que contenga la cabecera `X-Forwarded-For`**. Esto impide que atacantes externos utilicen balanceadores de carga, proxies reversos o firewalls de aplicaciones web que reenvían tráfico HTTP como intermediarios involuntarios para consultar el metadata service.
-3. **Contención en entornos contenerizados (Límite de saltos de IP / TTL=1):** En las instancias configuradas con IMDSv2, el número máximo de saltos de red (*IP Hop Limit*) para las respuestas de metadatos se establece de forma predeterminada en **1**. En arquitecturas de contenedores (como Docker o Kubernetes en EC2), el tráfico que sale desde un contenedor hacia la red del host anfitrión atraviesa una interfaz virtual (*bridge*) que decrementa el TTL del paquete IP en 1. Al llegar el TTL a 0, el kernel descarta el paquete, impidiendo que un contenedor comprometido con SSRF pueda consultar el metadata service del host subyacente a menos que se incremente intencionalmente dicho límite.
+1. **SSRF limitados a GET y sin cabeceras:** IMDSv2 requiere primero una petición `PUT` a `/latest/api/token` con la cabecera `X-aws-ec2-metadata-token-ttl-seconds`, y luego el token en `X-aws-ec2-metadata-token`. Una función SSRF que solo permite `GET` y no deja controlar cabeceras no puede completar directamente ese flujo. Esto reduce ese vector, pero no es una solución universal frente a SSRF con control de método/cabeceras, cadenas de proxy, vulnerabilidades adicionales o configuraciones alternativas.
+2. **Algunas solicitudes reenviadas:** En IMDSv2, AWS rechaza la petición `PUT` de obtención de token si incluye `X-Forwarded-For`, mitigando ciertos patrones de reenvío por proxies. Esta propiedad no sustituye la configuración segura del IMDS ni los controles de salida de la aplicación.
+3. **Límite de saltos configurado:** AWS documenta que el *HTTP PUT response hop limit* es 1 por defecto. Un valor bajo puede dificultar que contenedores alcancen el servicio a través de ciertos saltos de red; debe verificarse y ajustarse según la topología real, y no reemplaza la exigencia de tokens.
 
-*Estado actual de adopción:* Desde mediados de 2024, AWS establece IMDSv2 como la configuración predeterminada para todas las nuevas instancias lanzadas en la plataforma. Para alcanzar la protección completa, las organizaciones deben forzar el parámetro `HttpTokens=required` y deshabilitar explícitamente IMDSv1, eliminando la compatibilidad retroactiva vulnerable.
+*Configuración:* AWS documenta que, de forma predeterminada, una instancia puede aceptar IMDSv1, IMDSv2 o ambos. Para exigir IMDSv2 se configura `HttpTokens=required` en las opciones de metadata de la instancia o mediante políticas organizacionales; hay que verificar el valor efectivo.
 
 ---
 
@@ -97,7 +95,7 @@ El análisis del reto **R1** en el laboratorio extra presenta una correlación t
 | **Información expuesta** | Panel administrativo y clave de despliegue local (`FLAG_PANEL`) | Datos de configuración y credenciales temporales IAM (STS) |
 | **Mecanismo de autenticación base** | Ausente en la capa HTTP interna | Ausente en IMDSv1 (mitigado mediante tokens en IMDSv2) |
 
-Tanto el panel en `localhost` como el endpoint `169.254.169.254` basaron su seguridad exclusivamente en la **suposición de aislamiento de red**. El vector SSRF demostró en ambos casos que cualquier servicio interno que carezca de autenticación propia en la capa de aplicación y confíe únicamente en la procedencia del socket queda desprotegido en cuanto un proceso local puede ser inducido a emitir peticiones arbitrarias.
+El panel del laboratorio y algunos endpoints de metadata comparten el riesgo de que la ubicación de red del servidor influya en el acceso. Sin embargo, la analogía no implica que todos los servicios internos carezcan de autenticación, ni que un SSRF pueda superar cualquier control: los tokens, cabeceras requeridas, permisos y reglas de red son relevantes.
 
 *Aclaración de alcance del laboratorio:* Es fundamental resaltar que en este trabajo práctico se interactuó de manera exclusiva con contenedores Docker locales provistos por la cátedra (`phantomcorp` y `phantomcorp-intra`). Los servicios auditados corresponden a implementaciones simuladas en Python con fines de aprendizaje; **en ningún momento se interactuó con endpoints de metadatos de un proveedor de nube real ni se comprometió infraestructura productiva.**
 
@@ -109,9 +107,9 @@ Tanto el panel en `localhost` como el endpoint `169.254.169.254` basaron su segu
 
 ### 2.1. Similitudes conceptuales
 
-1. **Falla de validación en la frontera de entrada:** Ambas vulnerabilidades se originan en el mismo error de diseño fundamental: la **confianza ciega en entradas suministradas por el usuario**. La aplicación toma un valor externo arbitrario y lo inserta sin desinfección ni listas blancas en una operación de alto privilegio.
+1. **Falla de validación en la frontera de entrada:** Ambas pueden originarse cuando la aplicación usa una entrada no confiable para seleccionar o construir una operación privilegiada sin validación ni controles adecuados.
 2. **Delegación involuntaria de privilegios y personificación:** En ambos escenarios, la aplicación actúa como un mandatario no intencional del atacante. El atacante no ataca directamente el recurso final (el sistema operativo en RCE o el servicio interno en SSRF), sino que convence al servidor de que realice la acción prestando su propia identidad, su posición de red privilegiada y sus permisos de ejecución.
-3. **Evasión de barreras perimetrales tradicionales:** Ni la inyección de comandos ni el SSRF son detenidos por firewalls de red perimetrales estándar que protegen la entrada (`ingress`), dado que el tráfico malicioso inicial arriba a través de puertos legítimos y abiertos al público (puerto HTTP 80/443). Una vez que la petición ingresa, la acción posterior se ejecuta desde adentro hacia adentro.
+3. **Uso de una interfaz expuesta:** Ambos ataques pueden iniciarse mediante una petición a una aplicación accesible, pero los firewalls de red no bastan por sí solos para evitarlos; hacen falta validación de entradas, controles de privilegios y segmentación adecuados.
 
 ### 2.2. Diferencias operativas y primitivas técnicas
 
@@ -119,25 +117,25 @@ Tanto el panel en `localhost` como el endpoint `169.254.169.254` basaron su segu
 |---|---|---|
 | **Primitiva fundamental** | **Ejecución en el sistema operativo** (plano de cómputo local). | **Emisión de tráfico de red** (plano de transporte / socket HTTP). |
 | **Mecanismo subyacente** | Paso de parámetros no saneados a un intérprete de comandos (`/bin/sh`, `cmd.exe`, `subprocess(shell=True)`). | Paso de una URL no validada a un cliente o biblioteca HTTP (`urllib`, `requests`, `cURL`). |
-| **Control del atacante** | Control del flujo de instrucciones de la CPU y llamadas al sistema (*syscalls*). | Control del destino de red (IP/puerto) y protocolo de la petición. |
-| **Alcance inmediato** | Modificación del sistema de archivos, ejecución de procesos, lectura de variables locales, spawn de shells interactivas. | Interacción con sockets de red: lectura de respuestas HTTP internas, escaneo de puertos, pivot a intranets. |
-| **Dependencia del entorno** | Autosuficiente: el compromiso del host ocurre de forma directa e inmediata. | Condicionada: el impacto depende de los servicios accesibles en la red interna alcanzada. |
+| **Control del atacante** | Puede influir en los argumentos o instrucciones que procesa el intérprete, según la vulnerabilidad. | Puede influir en el destino y, según la implementación, método y cabeceras de la petición de red. |
+| **Alcance inmediato** | Puede causar ejecución de procesos o acciones sobre el sistema operativo con los permisos del proceso vulnerable. | Puede generar conexiones y leer respuestas de servicios alcanzables; no implica por sí solo ejecución de comandos. |
+| **Dependencia del entorno** | El impacto depende de los permisos del proceso, las mitigaciones y el aislamiento del host. | El impacto depende además de los destinos alcanzables y de las respuestas que la aplicación revele. |
 
 ### 2.3. ¿Cuál es más peligrosa y por qué?
 
 Desde un análisis de riesgo técnico riguroso, la respuesta requiere evaluar el **contexto arquitectónico**:
 
 #### La perspectiva tradicional (Host-Centric): Inyección de comandos como máxima amenaza
-En servidores dedicados o máquinas virtuales tradicionales ("monolitos" en infraestructura física o VPS clásicos), la **inyección de comandos (RCE) es intrínsecamente más peligrosa y letal de manera inmediata**. Un RCE otorga control directo del plano de cómputo: el atacante compromete la integridad, confidencialidad y disponibilidad del sistema operativo bajo los privilegios del servicio web (`www-data`). Desde allí puede desplegar *web shells*, alterar código fuente, leer archivos del sistema (`/etc/shadow`, claves privadas SSH), establecer persistencia mediante tareas programadas (*cron jobs*) e instalar herramientas de red avanzadas para escanear y pivotar lateralmente con sockets completos (no limitados al protocolo HTTP). Frente a esto, un SSRF en un servidor aislado sin servicios locales ni redes internas adyacentes tiene una utilidad muy limitada para el atacante.
+En un servidor con pocos servicios internos y egreso restringido, una inyección de comandos puede ser más grave de forma inmediata porque permite ejecutar acciones en el sistema con los permisos del proceso vulnerable. El alcance no es absoluto: depende de los privilegios, el aislamiento y las mitigaciones. Un SSRF aislado, sin destinos internos sensibles, puede tener un impacto más limitado.
 
-#### La perspectiva moderna (Cloud-Native y Microservicios): La letalidad sistémica del SSRF
-En arquitecturas modernas basadas en microservicios contenerizados y nubes públicas, **el SSRF puede resultar significativamente más devastador a nivel sistémico que un RCE local**:
+#### La perspectiva moderna (Cloud-Native y Microservicios): el alcance depende de la arquitectura
+En arquitecturas de microservicios y nubes públicas, el SSRF puede ampliar el riesgo al alcanzar destinos internos, si la red y la aplicación lo permiten:
 
-1. **La contención del contenedor ante RCE:** Una aplicación moderna empaquetada en un contenedor Docker con sistema de archivos de solo lectura (*read-only root filesystem*), sin binarios de shell instalados (imágenes *distroless* o mínimas), usuario no root y límites de recursos estrictos, reduce drásticamente el radio de explosión de una inyección de comandos. El atacante queda confinado a un entorno efímero y degradado donde ejecutar comandos es inviable o no permite escalar privilegios fácilmente.
-2. **La amplificación del SSRF hacia el plano de control:** En ese mismo contenedor severamente restringido, un SSRF permite emitir peticiones que abandonan el contenedor a través de la red. Si el entorno corre sobre una infraestructura cloud con IMDSv1 activo, el SSRF permite consultar `169.254.169.254` y exfiltrar las credenciales temporales de IAM de la instancia anfitriona. De forma análoga, en un clúster de Kubernetes, un SSRF puede apuntar a la API del Kubelet (`https://10.254.0.1:10250`), al servidor de etcd o a motores de secretos internos (HashiCorp Vault). Con estas credenciales, el atacante trasciende completamente el contenedor y la máquina virtual, tomando control del plano de gestión en la nube (buckets de almacenamiento globales, bases de datos gestionadas y despliegues de infraestructura).
+1. **Efecto de la contención:** Un contenedor con privilegios mínimos, sistema de archivos de solo lectura y capacidades reducidas puede limitar el impacto de una inyección de comandos, aunque no elimina la vulnerabilidad.
+2. **Posible alcance de SSRF:** Un SSRF puede alcanzar servicios internos o metadata si la red, las opciones de metadata y la aplicación lo permiten. La explotación y el impacto dependen de controles como IMDSv2, autenticación, permisos IAM y reglas de egreso; no se presume acceso automático a credenciales ni al plano de control.
 
 **Conclusión fundamentada:**  
-La **inyección de comandos** representa el compromiso más grave e inmediato a nivel de **sistema operativo local** (máxima severidad en el activo puntual). Por su parte, el **SSRF** se ha consolidado en la actualidad como una de las amenazas más críticas a nivel de **arquitectura distribuida y de nube**, ya que tiene la capacidad de sortear la segmentación física y lógica de redes y convertir la identidad del servidor en una llave de acceso para comprometer el plano de control y los datos masivos de toda la organización.
+La inyección de comandos suele tener un impacto más directo sobre el sistema operativo en el contexto afectado, mientras que un SSRF puede resultar más grave si la aplicación alcanza servicios internos sensibles. No hay una respuesta universal: la severidad depende de los permisos, la arquitectura, la segmentación y las mitigaciones efectivas.
 
 ---
 

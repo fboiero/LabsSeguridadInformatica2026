@@ -2,7 +2,8 @@
 
 **Grupo:** 10  
 **Integrantes:** Carolina Paula Corazza — @carocor1; Belén Rocío Ramello — @belramello; Chiara Agustina Kordek — @chiarakordek; Juan Pablo Saby — @JuanSaby.  
-**Fecha:** Pendiente de entrega.  
+**Fecha:** 06/11/2026.
+**Directorio de integrantes:** ver `INTEGRANTES.md`.
 **Entorno:** laboratorio SSRF local de la cátedra, ejecutado en contenedores Docker aislados.
 
 ## Declaración de uso de IA
@@ -89,7 +90,9 @@ La respuesta devuelve, mediante SSRF, un backup interno con dos registros que in
 
 ## 2. Evidencia de progreso
 
-La salida de `./ctf status extra` confirmó los tres retos completados:
+Salida obtenida al ejecutar `./ctf status extra` en la consola atacante; los tres retos figuran completos:
+
+![Salida de progreso del Lab Extra SSRF](evidencia-status-extra.png)
 
 ```text
 PROGRESO · LAB extra
