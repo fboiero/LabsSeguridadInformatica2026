@@ -25,7 +25,48 @@ La ejecución reproducible está en `verificar_custodia.py` y su salida completa
 
 ## 3. Línea de tiempo del ataque
 
-_Pendiente de revisión y redacción por Belén._
+Las referencias `archivo:línea` de esta sección son relativas a `labs/lab11-forensia/caso/`. Cada hora se acompaña de su tipo, porque los artefactos no miden lo mismo:
+
+- **Hora de petición HTTP** (`logs/access.log`): corresponde al 05/09/2026 y lleva `+0000`, es decir, UTC, con precisión de segundos.
+- **Hora atribuida a un archivo** (`disco/listado.txt`): precisión de minuto. El archivo no indica zona horaria; se la trata como UTC solo por una suposición razonable, apoyada en que coincide con el `access.log` (por ejemplo, `shell.php` figura a las 02:19 y su descarga se pidió a las 02:19:02), pero eso no está demostrado por el listado.
+- **Momento de captura de memoria** (`memoria/pslist.txt:1`): 05/09/2026, 02:30 UTC. Marca cuándo se tomó la fotografía de la RAM, no cuándo empezó ninguno de los procesos o conexiones que contiene.
+- **Historial de comandos** (`memoria/bash_history.txt`): no tiene hora por comando. Solo se conoce el orden interno del archivo, y las horas que se asocian a sus comandos son aproximadas y se marcan como tales.
+- **`logs/auth.log`**: su hash no coincide con el del manifiesto (sección 2), de modo que es evidencia de integridad cuestionada. Sus horas no tienen año ni zona. Se registran, pero ningún hecho de la línea de tiempo descansa únicamente en él.
+
+| Hora y tipo de marca | Evento reconstruido | Evidencia |
+|---|---|---|
+| 02:14:03 a 02:14:22 UTC (peticiones HTTP) | **Reconocimiento y enumeración.** La IP `185.220.101.42` consulta la raíz con `zgrab` y luego enumera rutas con `gobuster/3.6`: `/robots.txt` y `/portal-rrhh` responden 200, `/admin` y `/login` 404, `/backup` y `/uploads` 301. | `logs/access.log:6-12` |
+| 02:16:40 a 02:17:22 UTC (peticiones HTTP) | **Ataque al login del portal.** Dos `POST` a `/portal-rrhh/login` responden 401; el tercero responde 200 y su registro incluye `user=admin'--`. Es compatible con un bypass por inyección SQL, pero el log no muestra el funcionamiento interno de la aplicación. | `logs/access.log:14-16` |
+| 02:17:41 UTC (petición HTTP) | **Acceso a configuración.** `GET /backup/rrhh.conf` responde 200 (210 bytes). El contenido no forma parte del caso. | `logs/access.log:17` |
+| 02:18:10 UTC (petición HTTP) | **Prueba de ejecución de comandos.** `GET /api/reporte` con `token=phantom-api-7c1e` y `cmd=id`, con respuesta 200. | `logs/access.log:18` |
+| 02:18:33 UTC (petición HTTP); archivo listado a las 02:18 | **Escritura de un marcador en el servidor.** La petición lleva un `echo` codificado que escribe en `/tmp/.p`, y el listado de disco muestra ese archivo con 12 bytes, que es también el tamaño de la respuesta registrada. El timestamp del archivo tiene precisión de minuto y no fija el segundo de la ejecución. | `logs/access.log:19`; `disco/listado.txt:3` |
+| 02:19:02 UTC (petición HTTP); archivo listado a las 02:19; comando sin hora | **Descarga de la webshell.** La petición ejecuta `wget` desde `45.13.37.7` hacia `/var/www/uploads/shell.php`. Cuatro fuentes apuntan al mismo hecho: el comando recuperado del historial, el proceso `sh -c wget` de `www-data` en memoria, un socket hacia el puerto 80 de `45.13.37.7` en `TIME_WAIT` asociado a `wget`, y el archivo en el disco. El contenido, defangeado, es una webshell. | `logs/access.log:20`; `memoria/bash_history.txt:4`; `memoria/pslist.txt:6`; `memoria/netstat.txt:5`; `disco/listado.txt:4`; `disco/var/www/uploads/shell.php.evidencia.txt:5-9` |
+| 02:19:48 UTC (petición HTTP) | **Primer uso de la webshell.** `GET /uploads/shell.php?c=whoami` responde 200. Corrobora que el archivo plantado ejecuta comandos. | `logs/access.log:21`; `disco/var/www/uploads/shell.php.evidencia.txt:8` |
+| 02:19:55 (hora registrada en log cuestionado) | `auth.log` registra un inicio de sesión SSH aceptado para `www-data` desde `185.220.101.42`. **No se toma como hecho:** ningún otro artefacto lo respalda, el `access.log` solo cubre HTTP, y el PID `1201` de esa línea coincide con el del `sh -c wget` de `pslist.txt:6`, un proceso distinto de un `sshd`. | `logs/auth.log:2` (cuestionado) |
+| 02:20:31 (hora registrada en log cuestionado) | `auth.log` registra un `sudo` de `www-data` con `command not allowed`. Es un intento **denegado**; no debe describirse como una escalada lograda. | `logs/auth.log:3` (cuestionado) |
+| 02:21 (archivo, precisión de minuto); 02:21:04 en log cuestionado; comandos sin hora | **Escalada de privilegios.** `/usr/local/bin/system-check` figura como copia de bash con SUID root. El historial muestra la búsqueda de binarios SUID y la ejecución de `system-check -p -c 'id'`, y la memoria lo muestra corriendo como `root` con `euid=0`. La escalada se sostiene en disco y memoria; la línea del `auth.log` es solo corroborativa. | `disco/listado.txt:5`; `memoria/bash_history.txt:5-7`; `memoria/pslist.txt:8`; `memoria/lsof.txt:4`; `logs/auth.log:4` (cuestionado) |
+| 02:22 (archivo, precisión de minuto) | **Persistencia.** Aparece `/etc/cron.d/phantom-maint`, anotado como persistencia. La captura de la webshell indica que se relanza por cron cada cinco minutos. No hay evidencia de la hora de una ejecución concreta ni del contenido del cron. | `disco/listado.txt:6`; `disco/var/www/uploads/shell.php.evidencia.txt:9` |
+| 02:23:15 UTC (petición HTTP); archivo listado a las 02:23 (aprox.); comandos sin hora | **Acceso a datos y preparación para exfiltrar.** La webshell lee `/app/priv/clientes.db.txt` (respuesta 200 de 48.210 bytes). Por el historial, ese archivo se comprime en `/tmp/.exfil/clientes.tar.gz` y luego se ejecuta un `curl` que lo sube a `45.13.37.7`; en memoria, la shell `bash` (PID 1240) tiene ese archivo abierto en escritura. El listado ubica el tar a las 02:23 con 48.210 bytes, igual que la respuesta. Las horas son cercanas pero no idénticas, y no prueban cuándo se transmitió nada. | `logs/access.log:22`; `memoria/bash_history.txt:8-9`; `memoria/lsof.txt:5`; `disco/listado.txt:7` |
+| 02:30 UTC (momento de captura de memoria) | **Estado en la captura.** Hay una shell de `www-data`, `system-check` con `euid=0` y un `nc` hacia `45.13.37.7:4444`, con conexión `ESTABLISHED` y el mismo socket visible en `lsof`. Es consistente con una sesión de comando y control activa en ese instante, no con su hora de inicio. | `memoria/pslist.txt:1,7-9`; `memoria/netstat.txt:4`; `memoria/lsof.txt:3` |
+| 02:45:00 (hora registrada en log cuestionado) | `auth.log` registra el cierre de una conexión SSH desde `185.220.101.42`. Es posterior a la captura de memoria y al último registro del `access.log` y no está corroborado. | `logs/auth.log:9` (cuestionado) |
+
+### 3.1 Correlación entre las fuentes
+
+La actividad de la IP atacante registrada en el `access.log` abarca nueve minutos y doce segundos, entre su primera solicitud (02:14:03) y la lectura de la base de clientes (02:23:15); la memoria muestra además que el canal de comando y control seguía activo a las 02:30. En ese tramo, el log, el disco y la memoria no se limitan a repetirse unos a otros; cada uno aporta algo que los otros no tienen:
+
+- El **log** da el orden y la hora con precisión de segundos de las acciones que pasaron por HTTP, desde la enumeración hasta el uso de la webshell.
+- El **disco** confirma los efectos que quedaron en el sistema de archivos: el marcador `/tmp/.p`, la webshell, el binario SUID, el cron y el tar con datos, todos con hora de minuto posterior al inicio del ataque (02:14).
+- La **memoria** aporta lo que el log y el disco no muestran: los comandos que el atacante escribió en su shell (`bash_history.txt`), el proceso con privilegios de `root` y la conexión saliente a `45.13.37.7:4444`.
+
+Los hechos más sólidos son los que aparecen en dos o más fuentes: la descarga de la webshell (log, historial, procesos, socket y disco), la escalada (disco, historial y memoria) y la preparación del tar (log, historial, disco y `lsof`). Los que dependen de una sola fuente, o de `auth.log`, se marcaron como tales.
+
+### 3.2 Límites de la reconstrucción
+
+- Las horas de los comandos del historial son aproximadas: solo se conoce su orden relativo. Por eso no se afirma que la exfiltración ocurrió a las 02:23. Esa hora es la del archivo comprimido, y el intento de subida solo figura en `bash_history.txt:9`.
+- El único socket hacia el puerto 80 que muestra la memoria pertenece a `wget` (`netstat.txt:5`); ninguna captura muestra la conexión del `curl` de subida.
+- `listado.txt` solo enumera archivos modificados después de las 02:14 (cabecera, líneas 1-2). Un archivo que no aparezca en él no queda por eso descartado.
+- Entre las 02:21:04 y las 02:45:00, el `auth.log` contiene una nota que indica líneas eliminadas por el atacante (`auth.log:5-8`), de modo que ese intervalo está incompleto en ese archivo.
+- El `access.log` incluye tráfico normal de las IP `10.0.2.x` (líneas 3-5, 13 y 23). La última de esas líneas, a las 02:31:09, es posterior a la captura de memoria; no se interpreta como indicio de nada respecto del atacante.
 
 ## 4. Indicadores de compromiso (IOCs)
 
@@ -104,6 +145,18 @@ Estas recomendaciones técnicas se desprenden de los artefactos analizados y no 
 - **Reconstrucción desde una imagen limpia:** Como el atacante obtuvo privilegios de `root` y pudo haber modificado binarios o configuraciones sin dejar registro íntegro, no es recomendable limitarse a limpiar archivos a mano. Lo técnicamente adecuado es reinstalar el servidor desde una imagen base confiable y restaurar los datos desde un respaldo previo al ataque (anterior al 05/09/2026 02:14 UTC).
 
 ## 7. Preguntas de análisis
+
+### P1 — Orden de volatilidad
+
+La memoria se captura antes que el disco por el orden de volatilidad: lo que se pierde primero se preserva primero, según el enunciado del laboratorio. La RAM no sobrevive a un apagado o reinicio, mientras que el disco persiste, de modo que cualquier acción previa a la captura, incluso apagar el equipo, puede destruir información que nunca estuvo en el disco.
+
+En este caso, la memoria conserva al menos tres elementos que el disco ya no tiene o nunca tuvo:
+
+1. **El historial de comandos.** El encabezado de `memoria/bash_history.txt:1` indica que fue recuperado de memoria y que «el del disco fue borrado por el atacante»; además, el último comando registrado es `history -c` (línea 10). Gracias a la copia en RAM se pueden leer la descarga de la webshell, la búsqueda de binarios SUID, la creación del tar y el `curl` de subida (líneas 4 y 5-9).
+2. **Los procesos en ejecución.** `memoria/pslist.txt:7-9` muestra la shell del atacante, `system-check` con `euid=0` y `nc 45.13.37.7 4444`. El disco solo muestra el binario `system-check` en `listado.txt:5`; no muestra que estuviera ejecutándose ni quién lo hacía.
+3. **La conexión de red.** `memoria/netstat.txt:4` registra el socket `ESTABLISHED` desde `10.0.0.5:41022` hacia `45.13.37.7:4444`, asociado al PID 1490 (`nc`). Una conexión activa desaparece al reiniciar, y ninguno de los artefactos de disco del caso la describe.
+
+Lo que este paquete muestra es qué contenía la RAM en el momento de la captura (02:30 UTC, `pslist.txt:1`). No documenta en qué orden se adquirió cada evidencia, por lo que no se usa para demostrar la secuencia real de la adquisición; esa conclusión descansa en el principio general de volatilidad. Sin embargo, el caso ilustra bien su consecuencia práctica: si el equipo se hubiera apagado antes de la captura, el historial recuperado, la shell, el proceso con privilegios y el canal de comando y control no habrían quedado disponibles para el análisis.
 
 ### P2 — Integridad de la evidencia
 
