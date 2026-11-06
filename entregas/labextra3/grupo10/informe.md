@@ -59,7 +59,19 @@ Antes del cambio, `BaseHTTPRequestHandler` enviaba `Server: PhantomServer/2.4.1-
 
 ### P2 — ¿Por qué no alcanza con quitar `/backup` de `robots.txt`?
 
-**Pendiente para Belén:** explicar la diferencia entre no anunciar la ruta y controlar el acceso a su recurso, y vincularlo con el resultado observado en D3.
+`robots.txt` es una convención dirigida a rastreadores bien comportados: les pide qué rutas no indexar, pero no autentica ni autoriza nada, y un cliente que ignore el archivo —un navegador, un script o un atacante— puede pedir la ruta igual. Por eso, sacar `/backup` de `robots.txt` solo deja de anunciar que la ruta existe; si el servidor sigue respondiendo contenido en `/backup` para cualquiera que la pida directamente, el recurso sigue expuesto, solo que ahora hay que adivinarla o descubrirla por otro medio (fuerza bruta de rutas, un enlace filtrado, un escaneo) en lugar de leerla en un archivo público.
+
+La defensa real es la segunda: que el propio servidor decida, en el código que maneja la petición, si esa ruta puede responder y con qué contenido, sin depender de que el cliente coopere. Es la diferencia entre ocultar la puerta y cerrarla con llave.
+
+En este laboratorio, D3 implementó ambas capas porque no son excluyentes, pero quedó claro cuál es la que protege. En `objetivo/server.py`, `robots.txt` ya no lista `/backup` (devuelve `User-agent: *\nDisallow:\n`, sin rutas), y **además** `/backup` responde `404` directamente, sin pedir ninguna credencial:
+
+```python
+elif path == "/backup":
+    # D3: el recurso sensible no está disponible sin autorización.
+    self._txt(404, "404 - no existe")
+```
+
+La verificación lo distingue como dos comprobaciones separadas (tabla, sección 1): que `robots.txt` no mencione `/backup` y, por separado, que `GET /backup` devuelva `404`. Si solo se hubiera tocado `robots.txt` y la ruta siguiera devolviendo 200 con su contenido, el verificador habría aprobado la ocultación pero reprobado el acceso: la ruta seguiría ahí para cualquiera que la pidiera por otro medio. Lo que efectivamente cerró la exposición fue que el servidor dejara de servir el recurso, no que dejara de nombrarlo.
 
 ### P3 — Seguridad por oscuridad
 
