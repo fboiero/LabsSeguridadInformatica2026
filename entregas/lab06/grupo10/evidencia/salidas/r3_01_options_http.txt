@@ -1,0 +1,9 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7
+Date: Fri, 06 Nov 2026 15:28:27 GMT
+Content-Type: text/plain; charset=utf-8
+Allow: GET, POST, PUT, DELETE, OPTIONS
+X-Dangerous-Methods: FLAG{http_methods_put_enabled}
+
+Metodos disponibles en el servidor PhantomCorp.
+

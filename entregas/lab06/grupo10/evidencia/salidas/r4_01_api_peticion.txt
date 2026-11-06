@@ -1,0 +1,21 @@
+* Host phantomcorp:80 was resolved.
+* IPv6: (none)
+* IPv4: 192.168.96.2
+*   Trying 192.168.96.2:80...
+* Connected to phantomcorp (192.168.96.2) port 80
+* using HTTP/1.x
+> GET /api HTTP/1.1
+> Host: phantomcorp
+> User-Agent: curl/8.14.1
+> Accept: */*
+> 
+* Request completely sent off
+* HTTP 1.0, assume close after body
+< HTTP/1.0 404 Not Found
+< Server: PhantomServer/3.7 
+< Date: Tue, 03 Nov 2026 19:33:22 GMT
+< Content-Type: text/html; charset=utf-8
+< X-Powered-By: PhantomCMS/3.7
+< 
+{ [22 bytes data]
+* shutting down connection #0

@@ -1,0 +1,24 @@
+=== Peticion: PUT /chiara-r3-test.txt ===
+HTTP/1.0 501 Unsupported method ('PUT')
+Server: PhantomServer/3.7
+Date: Fri, 06 Nov 2026 15:28:27 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>501 Unsupported method ('PUT')</h1>
+
+=== Peticion: DELETE /chiara-r3-test.txt ===
+HTTP/1.0 501 Unsupported method ('DELETE')
+Server: PhantomServer/3.7
+Date: Fri, 06 Nov 2026 15:28:27 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>501 Unsupported method ('DELETE')</h1>
+
+=== Peticion: GET /chiara-r3-test.txt ===
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7
+Date: Fri, 06 Nov 2026 15:28:27 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>404 Not Found</h1>
+

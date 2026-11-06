@@ -1,0 +1,16 @@
+# Instancia aislada de Lab 06 para R4. Ejecutar desde la raíz del repositorio:
+# docker compose -p lab06-r4-carolina --project-directory . -f entregas/lab06/grupo10/evidencia/entorno-r4.compose.yml up -d --build
+# No reemplaza los contenedores cyberlab-* de otros laboratorios.
+services:
+  phantomcorp:
+    build: ./labs/lab06-enumeracion-de-servicios/entorno/phantomcorp
+    image: lab06-r4-carolina-phantomcorp
+    networks: [r4]
+  attacker:
+    image: cyberlab-attacker
+    pull_policy: never
+    command: sleep infinity
+    networks: [r4]
+networks:
+  r4:
+    internal: true

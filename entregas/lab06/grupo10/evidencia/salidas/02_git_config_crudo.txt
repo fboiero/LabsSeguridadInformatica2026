@@ -1,0 +1,14 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Sun, 01 Nov 2026 21:45:02 GMT
+Content-Type: text/plain; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+[core]
+	repositoryformatversion = 0
+	bare = false
+[remote "origin"]
+	url = https://git.internal.phantomcorp/intranet.git
+# Un .git expuesto filtra codigo, historia y a veces secretos.
+# FLAG{git_repo_exposed}
+
