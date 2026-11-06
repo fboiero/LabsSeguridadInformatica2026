@@ -1,0 +1,7 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Fri, 30 Oct 2026 00:22:32 GMT
+Content-Type: application/json
+X-Powered-By: PhantomCMS/3.7
+
+{"users": [{"id": 1, "user": "admin", "role": "superuser"}, {"id": 2, "user": "jperez", "role": "editor"}, {"id": 3, "user": "mgomez", "role": "viewer"}], "note": "endpoint interno de RRHH - no exponer", "flag": "FLAG{user_enumeration_api}"}

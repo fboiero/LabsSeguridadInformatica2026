@@ -1,0 +1,6 @@
+/VERSION -> 404
+/version.txt -> 404
+/README -> 404
+/CHANGELOG -> 404
+/phantomcms/VERSION -> 200
+/phantomcms/README -> 404
