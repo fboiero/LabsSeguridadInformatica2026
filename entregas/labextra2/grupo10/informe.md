@@ -25,9 +25,15 @@ commits "legítimos" también: el contexto es parte del informe):
 - Qué secreto se expuso y qué habilita:
 
 ### R2 — Commit "perdido"
-- Comando(s) exacto(s):
-- ¿Cómo llegaste del reflog/fsck al contenido del objeto?
-- Qué secreto se expuso:
+- **Comando(s) exacto(s):**
+  ```
+  git log --oneline --all
+  git reflog
+  git fsck --unreachable --no-reflogs
+  git show bc9d0db
+  ```
+- **¿Cómo llegaste del reflog/fsck al contenido del objeto?** `git log --oneline --all` solo mostró 5 commits, sin rastro de ningún `reset`. `git reflog` reveló el movimiento real de `HEAD`: en `HEAD@{5}` hay un commit `bc9d0db` ("wip: notas del cluster nuevo (no mergear todavia)"), y en `HEAD@{4}` un `reset: moving to HEAD~1` que lo dejó sin ninguna rama apuntándolo. Para confirmar que el objeto seguía existiendo sin depender del reflog, corrí `git fsck --unreachable --no-reflogs`, que listó `bc9d0db` como *unreachable commit* (junto con su árbol y su blob). Con el hash en mano, `git show bc9d0db` mostró el diff completo de ese commit.
+- **Qué secreto se expuso:** el commit agrega `notas_investigacion.txt` con el texto `staging_key: FLAG{git_reflog_rescata}`, descrito como la llave de acceso a un cluster de staging que el equipo de infra había pasado "para probar". El propio archivo aclara que la intención era rotarla y borrar las notas una vez migrado todo; el `reset --hard` reemplazó esa intención, pero el objeto siguió existiendo en el repositorio.
 
 ### R3 — Rama abandonada
 - Comando(s) exacto(s):
