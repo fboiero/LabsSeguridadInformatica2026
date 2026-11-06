@@ -1,0 +1,30 @@
+# Comandos ejecutados — Lab Extra 2 (forense git) — grupo 02
+# En orden. Repo investigado: caso/repo-delata (generado por caso/generar-caso.sh)
+
+# Preparacion
+bash labs/labextra2-git-forense/caso/generar-caso.sh
+cd labs/labextra2-git-forense/caso/repo-delata
+
+# Reconocimiento de la historia
+git log --oneline --all
+git branch -a
+git log --all --date=iso --pretty='%h | %ad | %an <%ae> | %s'
+
+# R1 — secreto en commit viejo (git log -p muestra el diff, no solo el mensaje)
+git log -p -- config.py            # revela PHANTOM_API_TOKEN = FLAG{git_log_no_olvida} en el commit 9333f2b
+
+# R2 — commit "perdido" por un reset --hard (queda colgado)
+git reflog                         # HEAD@{5} = commit bc9d0db "wip: notas del cluster" antes del reset
+git fsck --lost-found              # dangling commit bc9d0db
+git show bc9d0db                   # revela staging_key: FLAG{git_reflog_rescata}
+
+# R3 — secreto en una rama abandonada
+git branch -a                      # existe feature/pasarela-pagos
+git ls-tree -r --name-only feature/pasarela-pagos
+git show feature/pasarela-pagos:.env.pasarela   # revela PAGOS_SECRET=FLAG{git_rama_abandonada}
+
+# Entrega de flags
+./ctf submit extra2 R1 'FLAG{git_log_no_olvida}'
+./ctf submit extra2 R2 'FLAG{git_reflog_rescata}'
+./ctf submit extra2 R3 'FLAG{git_rama_abandonada}'
+./ctf status extra2
