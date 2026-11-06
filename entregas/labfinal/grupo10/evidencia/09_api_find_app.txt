@@ -1,0 +1,8 @@
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Fri, 06 Nov 2026 20:52:43 GMT
+Content-Type: text/plain
+
+$ find /app -maxdepth 3 -type f
+/app/priv/clientes.db.txt
+/app/server.py
