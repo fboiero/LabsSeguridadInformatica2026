@@ -18,7 +18,7 @@ Todas las solicitudes HTTP fueron ejecutadas en vivo contra el entorno controlad
 
 ## 1. Flags capturadas
 
-Estado de flags comprobadas para el informe: R1, R2, R3 y R5. R1/R2 se acreditaron previamente y constan en `evidencia/salidas/ctf_status_final.txt`; R5 consta en `evidencia/salidas/r5_submit_status.txt`; R3 fue aceptada por el verificador oficial en una copia temporal aislada y consta en `evidencia/salidas/r3_04_verificador.txt`. La vista 4/5 combina esas evidencias: no es una captura literal de una sola ejecución de `./ctf status 07` en el estado local actual, cuyo archivo de progreso compartido no se modificó:
+Estado de flags comprobadas para el informe: R1, R2, R3, R4 y R5. R1/R2 se acreditaron previamente y constan en `evidencia/salidas/ctf_status_final.txt`; R5 consta en `evidencia/salidas/r5_submit_status.txt`; R3 fue aceptada por el verificador oficial en una copia temporal aislada y consta en `evidencia/salidas/r3_04_verificador.txt`; R4 se ejecutó y validó en esta misma copia local, con el entorno Docker levantado para este laboratorio (`evidencia/salidas/r4_04_status_antes.txt`, `r4_05_submit.txt` y `r4_06_status_despues.txt`). La vista 5/5 combina esas evidencias: no es una captura literal de una sola ejecución de `./ctf status 07`, porque R1, R2, R3 y R5 se validaron en sesiones distintas y sus archivos de progreso compartido no se modificaron en esta copia:
 
 ```text
   ╭────────────────────────────────────────────────────────────╮
@@ -28,34 +28,39 @@ Estado de flags comprobadas para el informe: R1, R2, R3 y R5. R1/R2 se acreditar
    ✓  R1     SQLi - bypass de autenticacion
    ✓  R2     SQLi - extraccion de datos con UNION
    ✓  R3     Inyeccion de comandos (RCE)
-   ·  R4     Path traversal / LFI
+   ✓  R4     Path traversal / LFI
    ✓  R5     IDOR - control de acceso roto
 
-  4/5 (80%)
+  5/5 (100%)
 ```
 
 - **Reto R1 (SQLi - bypass de autenticación):** `FLAG{sqli_auth_bypass}` (SHA-256: `9e8f2ecdbb0ad6fdbb0a7775e7a407fecd814d57a623a9aac20dd4767ac13537`)
 - **Reto R2 (SQLi - extracción con UNION):** `FLAG{sqli_union_dump}` (SHA-256: `9f75841558e355415fff4d7de6b1e6c59671c1cfcecc71dfb7fb3632cadfd190`)
 - **Reto R3 (inyección de comandos):** `FLAG{command_injection_rce}` (verificada con `ctf submit` en copia temporal; evidencia en `evidencia/salidas/r3_04_verificador.txt`)
+- **Reto R4 (path traversal / LFI):** `FLAG{path_traversal_lfi}` (validada con `./ctf submit 07 R4` en esta copia local; el progreso local de este reto pasó de `0/5` a `1/5`, evidencia en `evidencia/salidas/r4_05_submit.txt` y `r4_06_status_despues.txt`)
 - **Reto R5 (IDOR - control de acceso roto):** `FLAG{idor_broken_access}` (SHA-256: `1a9fc5b9cbef488925fa1c4e1a4da376190a360c5978e0b40b92c1f11ed089b1`)
 
 ---
 
 ## 2. Tabla de explotación
 
-**Alcance de la Parte 5:** R1, R2, R3 y R5 fueron comprobados contra el contenedor local de PhantomCorp. R4 sigue pendiente de comprobación práctica; su efecto se describe a partir del código fuente y no se presenta como una explotación realizada.
+**Alcance de la Parte 5:** R1, R2, R3, R4 y R5 fueron comprobados contra el contenedor local de PhantomCorp.
 
 | Vuln | Payload usado | Consulta/comando/ruta resultante | Impacto | Defensa concreta |
 |---|---|---|---|---|
 | **SQLi auth (R1)** | Documentado: `user=admin' --`, `pass=dummy`, en `POST /login`. | `SELECT user, rol FROM users WHERE user='admin' --' AND pass='dummy'` | El comentario elimina la comprobación de contraseña y permite obtener la respuesta del panel administrativo. El servidor del laboratorio no crea una sesión: devuelve el resultado del login en la respuesta. | Buscar al usuario mediante una consulta parametrizada y verificar su contraseña contra un hash seguro. No concatenar los valores recibidos con el SQL. |
 | **SQLi UNION (R2)** | Documentado: `q=NOEXISTE' UNION SELECT clave, valor FROM secrets --`, en `GET /buscar`. | `SELECT nombre, precio FROM productos WHERE nombre LIKE '%NOEXISTE' UNION SELECT clave, valor FROM secrets --%'` | Permite incorporar las columnas `clave` y `valor` de `secrets` a los resultados públicos del buscador, exponiendo información interna. | Mantener fija la consulta `SELECT nombre, precio FROM productos WHERE nombre LIKE ?` y enlazar como dato el patrón de búsqueda completo. Evitar exponer errores SQL al cliente como medida complementaria, no como solución principal. |
 | **Command injection (R3)** | Ejecutado: `host=127.0.0.1; id` y `host=127.0.0.1; cat /app/flags/cmdi.txt`, en `GET /herramientas/ping`. | `ping -c1 127.0.0.1; id` y `ping -c1 127.0.0.1; cat /app/flags/cmdi.txt 2>&1` | La primera respuesta ejecutó `id` como `uid=0(root)` y la segunda devolvió `FLAG{command_injection_rce}`. El endpoint corre los comandos con privilegios de root en este contenedor. La línea de base devolvió HTTP 200, pero `ping` no está instalado. Flag validada con el verificador oficial en una copia temporal aislada. Evidencias: [`r3_01_baseline.txt`](evidencia/salidas/r3_01_baseline.txt), [`r3_02_injection_id.txt`](evidencia/salidas/r3_02_injection_id.txt), [`r3_03_flag.txt`](evidencia/salidas/r3_03_flag.txt) y [`r3_04_verificador.txt`](evidencia/salidas/r3_04_verificador.txt). | Evitar la shell y pasar el ejecutable y sus argumentos por separado. Validar el destino como una dirección IP permitida, impedir que se interprete como una opción y limitar tiempo de ejecución y privilegios. |
-| **Path traversal (R4)** | Propuesto, no ejecutado: `archivo=../flags/lfi.txt`, en `GET /descargar`. | `/app/public/../flags/lfi.txt`, que se resuelve como `/app/flags/lfi.txt`. | Permite salir del directorio público y leer archivos ajenos a las descargas, siempre que el proceso web tenga permisos de lectura. | Preferir una lista de archivos descargables identificados por claves internas. Si se admiten rutas, resolverlas de forma canónica y comprobar pertenencia real al directorio público, considerando enlaces simbólicos; no basta comprobar un prefijo textual. |
+| **Path traversal (R4)** | Ejecutado: primero `archivo=catalogo.txt` como línea de base, luego `archivo=../flags/lfi.txt` y `archivo=../../../../../../etc/passwd`, en `GET /descargar`. | `/app/public/catalogo.txt`; `/app/public/../flags/lfi.txt`, que se resuelve como `/app/flags/lfi.txt`; y la ruta larga se resuelve fuera de todo `/app`, hasta `/etc/passwd`. | La línea de base devolvió el catálogo público (HTTP 200). El primer payload devolvió HTTP 200 con `FLAG{path_traversal_lfi}`, fuera del directorio de descargas. El segundo payload devolvió HTTP 200 con el contenido real de `/etc/passwd` del contenedor: el alcance no se limita al árbol de la aplicación (`/app`), sino a cualquier archivo que el proceso web pueda leer en el sistema de archivos. Evidencias: [`r4_01_baseline_catalogo.txt`](evidencia/salidas/r4_01_baseline_catalogo.txt), [`r4_02_traversal_lfi.txt`](evidencia/salidas/r4_02_traversal_lfi.txt), [`r4_03_traversal_etc_passwd.txt`](evidencia/salidas/r4_03_traversal_etc_passwd.txt) y [`r4_05_submit.txt`](evidencia/salidas/r4_05_submit.txt). | Preferir una lista de archivos descargables identificados por claves internas, en vez de aceptar una ruta del cliente. Si se admiten rutas, resolverlas de forma canónica (`os.path.realpath`) y comprobar que el resultado esté dentro del directorio público antes de abrir el archivo, considerando enlaces simbólicos; no basta comprobar un prefijo textual ni bloquear solo la cadena `..`. |
 | **IDOR (R5)** | Ejecutado: `GET /perfil?id=3` como referencia y luego `GET /perfil?id=1`, sin credenciales. | Consulta fija: `SELECT id,user,rol,nota_privada FROM users WHERE id=?`; para la segunda solicitud el parámetro enlazado es `("1",)`. | La respuesta 200 devuelve `user=admin`, `rol=admin` y `nota_privada` con `FLAG{idor_broken_access}`. Se expone información privada de otro usuario; esto no otorga por sí solo una sesión ni el rol de administrador al solicitante. | Autenticar al solicitante y autorizar cada lectura en el servidor antes de devolver datos. Para un perfil propio, derivar el identificador de la sesión validada; para consultar perfiles ajenos, exigir un permiso explícito. Denegar por defecto y devolver solo los campos necesarios. |
 
 ### Comprobación práctica de R3
 
 Se envió primero el valor normal `127.0.0.1` como línea de base. El servidor respondió HTTP 200, aunque informó que `ping` no está instalado en la imagen. Al enviar `127.0.0.1; id`, la salida incluyó `uid=0(root) gid=0(root) groups=0(root)`, confirmando ejecución de comandos arbitrarios con los permisos del proceso web. Finalmente, `127.0.0.1; cat /app/flags/cmdi.txt` devolvió `FLAG{command_injection_rce}`. El verificador oficial aceptó R3 en una copia temporal del repositorio para no alterar el progreso compartido. Los comandos reproducibles se encuentran en `evidencia/comandos.txt`.
+
+### Comprobación práctica de R4
+
+Se levantó el entorno Docker del laboratorio (consola `cyberlab-attacker` y objetivo `cyberlab-phantomcorp`, red `cyberlab_labnet`) y se enviaron las solicitudes desde la consola atacante contra `/descargar`. Primero, `archivo=catalogo.txt` como línea de base: el servidor respondió HTTP 200 con el contenido público (`Catalogo publico PhantomCorp.`). Luego, `archivo=../flags/lfi.txt`: el endpoint concatena el parámetro directamente sobre `/app/public/` sin sanitizar `..`, por lo que la ruta resultante escapa del directorio público y resuelve a `/app/flags/lfi.txt`; la respuesta fue HTTP 200 con `FLAG{path_traversal_lfi}`. Para medir el alcance real del traversal, se probó además `archivo=../../../../../../etc/passwd`, que devolvió HTTP 200 con el contenido real de `/etc/passwd` del contenedor: la vulnerabilidad no se limita a los archivos que la aplicación "sabe" que existen (como `/app/flags/`), sino a cualquier ruta legible por el proceso del servidor en todo el sistema de archivos. La flag se validó con el motor oficial (`./ctf submit 07 R4`), que la aceptó y movió el progreso local de este reto de `0/5` a `1/5`; no se afectó el estado de los demás retos en esta copia. Los comandos reproducibles se encuentran en `evidencia/comandos.txt`.
 
 ---
 

