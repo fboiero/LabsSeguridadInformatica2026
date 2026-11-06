@@ -1,6 +1,6 @@
 Verificacion de cadena de custodia - Lab 11
 Manifiesto: labs\lab11-forensia\caso\evidencia.sha256
-Metodo: SHA-256 tras normalizar CRLF a LF en memoria; originales sin modificar.
+Metodo: SHA-256 de bytes; CRLF->LF solo en memoria si aparece. Originales sin modificar.
 
 ESTADO    ARCHIVO                                      HASH ESPERADO                                                       HASH CALCULADO
 OK        disco/etc/passwd.snippet                      f8371142870a03c9db04c5e5416ec9feee4135754a38b66c1c3158209a9a32b1  f8371142870a03c9db04c5e5416ec9feee4135754a38b66c1c3158209a9a32b1

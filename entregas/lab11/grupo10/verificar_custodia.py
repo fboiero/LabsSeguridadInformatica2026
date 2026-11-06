@@ -41,8 +41,11 @@ def main() -> int:
             continue
 
         # Normaliza CRLF -> LF solo en memoria. No escribe sobre el caso.
-        content = path.read_bytes().decode("utf-8")
-        normalized = content.replace("\r\n", "\n").encode("utf-8")
+        # Git puede materializar CRLF en Windows. La conversión es solo
+        # CRLF -> LF y ocurre en memoria; si no hay CRLF se hashean los bytes
+        # originales directamente.
+        content = path.read_bytes()
+        normalized = content.replace(b"\r\n", b"\n")
         actual = hashlib.sha256(normalized).hexdigest()
         status = "OK" if actual == expected.lower() else "MISMATCH"
         results.append((status, relative_path, expected.lower(), actual))
@@ -50,7 +53,7 @@ def main() -> int:
     lines = [
         "Verificacion de cadena de custodia - Lab 11",
         f"Manifiesto: {MANIFEST.relative_to(ROOT)}",
-        "Metodo: SHA-256 tras normalizar CRLF a LF en memoria; originales sin modificar.",
+        "Metodo: SHA-256 de bytes; CRLF->LF solo en memoria si aparece. Originales sin modificar.",
         "",
         "ESTADO    ARCHIVO                                      HASH ESPERADO                                                       HASH CALCULADO",
     ]

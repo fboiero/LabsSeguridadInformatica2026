@@ -43,6 +43,8 @@ def construir_timeline(path: str, ip: str | None = None) -> list[dict]:
 def clasificar_fase(ruta: str) -> str:
     """Asigna una etiqueta orientativa según la ruta observada."""
     ruta_lower = ruta.lower()
+    if "/portal-rrhh/login" in ruta_lower:
+        return "EXPLOIT"
     if "/api/reporte" in ruta_lower and "cmd=" in ruta_lower:
         if "wget" in ruta_lower or "shell.php" in ruta_lower:
             return "WEBSHELL"
@@ -54,7 +56,7 @@ def clasificar_fase(ruta: str) -> str:
     if ruta_lower == "/" or "robots.txt" in ruta_lower:
         return "RECON"
     if any(fragmento in ruta_lower for fragmento in ("/admin", "/login", "/backup", "/portal-rrhh", "/uploads")):
-        return "ENUM/AUTH"
+        return "ENUM"
     if "clientes" in ruta_lower or "upload" in ruta_lower:
         return "ACCESO/EXFIL"
     return "OTRO"

