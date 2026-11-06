@@ -1,0 +1,8 @@
+./ctf lab extra2
+cd labs/labextra2-git-forense/caso/repo-delata
+git branch -a
+git show feature/pasarela-pagos
+git show feature/pasarela-pagos > ../../../../entregas/labextra2/grupo10/evidencia/salidas/r3.txt
+cd ../../../..
+./ctf submit extra2 R3 'FLAG{git_rama_abandonada}'
+
