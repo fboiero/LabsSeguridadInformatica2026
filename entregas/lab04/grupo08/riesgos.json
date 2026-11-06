@@ -1,0 +1,7 @@
+[
+  {"nombre": "Robo de la base de clientes (nombres, DNI y tarjetas) desde el servidor web", "sle": 250000, "aro": 0.3},
+  {"nombre": "Ransomware que cifra servidores y el disco de backup conectado", "sle": 120000, "aro": 0.25},
+  {"nombre": "Compromiso de una cuenta de acceso remoto por credenciales robadas (sin MFA)", "sle": 40000, "aro": 0.5},
+  {"nombre": "Caida del servidor web publico por fallas o mantenimiento (pocas horas)", "sle": 1500, "aro": 4},
+  {"nombre": "Perdida del disco de backup de la oficina (robo, incendio o falla)", "sle": 60000, "aro": 0.05}
+]
