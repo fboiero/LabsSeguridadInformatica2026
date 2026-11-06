@@ -1,0 +1,8 @@
+$ docker exec cyberlab-attacker curl -sS -i -A Mozilla/5.0 http://phantomcorp/
+
+HTTP/1.0 200 OK
+Server: PhantomSOC/1.0 
+Date: Fri, 06 Nov 2026 19:33:27 GMT
+Content-Type: text/plain; charset=utf-8
+
+PhantomCorp — portal monitoreado. Del otro lado hay un SOC mirando.

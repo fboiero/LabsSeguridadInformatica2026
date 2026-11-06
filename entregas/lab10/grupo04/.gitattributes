@@ -1,0 +1,2 @@
+# Preservar las capturas byte a byte para mantener validos sus hashes SHA-256.
+evidencias/* -text
