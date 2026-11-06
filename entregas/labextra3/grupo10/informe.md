@@ -124,4 +124,4 @@ Para no confundir el impacto potencial teórico con el impacto efectivamente dem
 
 ## 5. Conclusión
 
-La consigna invierte la lógica de los laboratorios ofensivos: ya no alcanza con encontrar una entrada, sino que hay que cerrar cada fallo y comprobar que la aplicación conserve sus funciones legítimas. En esta entrega, las cinco defensas pasaron el verificador y las funciones principales no presentaron regresiones. El grupo completará las respuestas pendientes y revisará el informe antes de entregar.
+La parte más exigente fue endurecer la aplicación sin romper sus funciones legítimas: cada cambio debía bloquear un ataque concreto y conservar la portada, el login válido y la descarga permitida. Las pruebas muestran que no alcanza con ocultar una ruta o filtrar una cadena; hay que aplicar controles en el servidor, parametrizar la consulta SQL y confinar la ruta resuelta al directorio autorizado. Las cinco defensas pasaron el verificador y las comprobaciones funcionales no encontraron regresiones.

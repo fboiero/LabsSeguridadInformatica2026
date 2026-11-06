@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (C) 2026 Fernando Boiero — CyberLab UTN FRVM
 """
-objetivo/server.py — PhantomCorp "vulnerable", Lab Extra 3 (hardening).
+objetivo/server.py — copia endurecida de PhantomCorp para el Grupo 10.
 
-Esta app tiene CINCO problemas que ya conocés de los labs 05-07:
+La versión original tenía CINCO problemas que se abordan en esta copia:
 
   D1  El header Server canta producto y versión          (banner/info leak)
   D2  /api/status expone debug:true y datos internos     (servicio dev en prod)
@@ -12,13 +12,13 @@ Esta app tiene CINCO problemas que ya conocés de los labs 05-07:
   D4  /login es vulnerable a SQLi (bypass con ' OR 1=1 --)
   D5  /descargar?archivo= permite path traversal (../../etc)
 
-TU TRABAJO: copiá esta carpeta a tu entrega y PARCHÁLA ahí. No modifiques este
-original: es la referencia "rota". Cuando tu copia esté endurecida, corré:
+Esta copia fue parchada dentro de la entrega del Grupo 10. El original bajo
+labs/labextra3-hardening/objetivo permanece sin cambios como referencia. Para
+repetir la verificación contra esta copia, corré:
 
-  python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupoXX/objetivo
+  python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo10/objetivo
 
-El verificador ATACA tu copia. Por cada ataque que YA NO FUNCIONA, te muestra
-la flag defensiva para entregar con ./ctf submit extra3.
+El verificador intenta reproducir los ataques contra esta copia endurecida.
 """
 import html
 import os
@@ -122,5 +122,5 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == "__main__":
     init_db()
     puerto = int(os.environ.get("PORT", "8080"))
-    print(f"PhantomCorp (VULNERABLE) en 0.0.0.0:{puerto}")
+    print(f"PhantomCorp (HARDENED) en 0.0.0.0:{puerto}")
     ThreadingHTTPServer(("0.0.0.0", puerto), Handler).serve_forever()
