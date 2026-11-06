@@ -1,0 +1,27 @@
+[
+  {
+    "nombre": "Fuga de datos de tarjetas por servidor web público sin protección",
+    "sle": 500000,
+    "aro": 0.1
+  },
+  {
+    "nombre": "Acceso no autorizado por falta de MFA",
+    "sle": 80000,
+    "aro": 0.5
+  },
+  {
+    "nombre": "Interrupción del sitio web por ransomware o DDoS",
+    "sle": 20000,
+    "aro": 2.0
+  },
+  {
+    "nombre": "Pérdida total de datos por backup único en la oficina",
+    "sle": 150000,
+    "aro": 0.2
+  },
+  {
+    "nombre": "Credencial comprometida de un empleado con acceso remoto",
+    "sle": 30000,
+    "aro": 0.3
+  }
+]
