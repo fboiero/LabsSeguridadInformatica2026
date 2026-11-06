@@ -5,6 +5,9 @@
 **Fecha:** 06/11/2026.
 **Sistema afectado:** phantomcorp-web (10.0.0.5) · **Tipo:** intrusión + exfiltración
 
+**Integrantes:** ver `INTEGRANTES.md`.
+**Mini-research:** ver `research.md` (tema B: orden de volatilidad).
+
 ## 0. Declaración de uso de IA
 
 Se utilizó OpenCode como apoyo para explicar la verificación de hashes y preparar el script reproducible de cadena de custodia. La investigadora verificó los hashes contra `labs/lab11-forensia/caso/evidencia.sha256`, contrastó las referencias con los artefactos originales y revisó que el script normalice CRLF a LF solo en memoria, sin modificar la evidencia. Para la revisión final de cumplimiento se volvió a contrastar el informe con el enunciado, la rúbrica y los artefactos del caso, sin alterar esta declaración.
