@@ -1,0 +1,32 @@
+test_incluye_la_palabra_base_y_la_mayuscula_inicial (__main__.TestAplicarReglas) ... ok
+test_incluye_sufijos_de_anio_2024_a_2026 (__main__.TestAplicarReglas) ... ok
+test_incluye_sufijos_numericos_comunes (__main__.TestAplicarReglas) ... ok
+test_preserva_orden_de_insercion (__main__.TestAplicarReglas) ... ok
+test_sin_candidatos_duplicados (__main__.TestAplicarReglas) ... ok
+test_parseo_correcto_ignora_comentarios_y_lineas_vacias (__main__.TestCargarSombra) ... ok
+test_registro_con_campo_vacio_levanta_valueerror (__main__.TestCargarSombra) ... ok
+test_registro_con_menos_campos_levanta_valueerror (__main__.TestCargarSombra) ... ok
+test_busqueda_interrumpida_no_se_informa_como_completada_sin_resultados (__main__.TestCrackear) ... ok
+test_cae_con_reglas_pero_no_sin_reglas (__main__.TestCrackear) ... ok
+test_caso_correcto_sin_reglas (__main__.TestCrackear) ... ok
+test_caso_invalido_password_fuera_del_diccionario (__main__.TestCrackear) ... ok
+test_pbkdf2_sin_limite_arbitrario_de_candidatos (__main__.TestCrackear) ... 
+[!] BÚSQUEDA INTERRUMPIDA MANUALMENTE EN 'victima_sintetica' (md5):
+    - Intentos efectivamente completados: 2 de 10
+    - Candidatos pendientes sin evaluar: 8
+    - ESTADO: BÚSQUEDA PARCIAL E INCOMPLETA.
+[*] Evaluando cuenta 'root_sintetico' (pbkdf2, 200,000 iteraciones, 12 candidatos)...
+    [pbkdf2] Probando candidato 1/12...
+    [pbkdf2] Probando candidato 10/12...
+ok
+test_varios_usuarios_mezcla_de_hallados_y_no_hallados (__main__.TestCrackear) ... ok
+test_algoritmo_no_soportado_levanta_valueerror (__main__.TestHashDe) ... ok
+test_md5 (__main__.TestHashDe) ... ok
+test_normaliza_mayusculas_y_espacios_en_el_algoritmo (__main__.TestHashDe) ... ok
+test_pbkdf2 (__main__.TestHashDe) ... ok
+test_sha256 (__main__.TestHashDe) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 2.913s
+
+OK
