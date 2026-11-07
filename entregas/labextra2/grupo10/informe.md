@@ -201,6 +201,22 @@ Los dos controles se complementan: el hook detecta antes del commit y el servido
 
 ## 6. Evidencia de progreso
 
-- Captura de `./ctf status extra2` con los 3 ✓.
-- Confirmá que adjuntaste `evidencia/comandos.txt` y `evidencia/salidas/`
-  (ver README § Reporte y evidencia).
+Las tres flags fueron aceptadas por el motor oficial. R2 se validó durante el trabajo de Belén sobre el hallazgo; R1 y R3 se validaron al cerrar el informe, una vez integrado el trabajo de Carolina y de Juan. Salida real de `./ctf status extra2`, después de entregar las tres:
+
+```text
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra2                   │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Secreto "borrado" en un commit viejo (git log -p)
+   ✓  R2     Commit "perdido" por un reset (git reflog / fsck)
+   ✓  R3     Secreto en una rama abandonada
+
+  ██████████████████████████████  3/3 (100%)
+
+[ OK ] ¡Lab extra2 COMPLETO! Ponete las pilas con la próxima unidad.
+```
+
+El estado anterior (`1/3`, solo R2) y las entregas de R1 y R3 están en `evidencia/salidas/estado-antes.txt`, `ctf-submit-R1.txt`, `ctf-submit-R3.txt` y `estado-despues.txt`.
+
+Todos los comandos ejecutados por el grupo están consolidados, en orden y separados por integrante, en [`evidencia/comandos.txt`](evidencia/comandos.txt). Las salidas crudas de cada hallazgo están en `evidencia/salidas/`.
