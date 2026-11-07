@@ -249,7 +249,11 @@ En cambio, adivinar contraseñas contra `/login` requiere peticiones por intento
 
 ### P3. IDOR sin parámetro `id`
 
-**Pendiente de completar por Belén:** responder P3 conectando la suplantación del claim `sub` con IDOR del Lab 07 y explicar qué autorización a nivel de objeto falta en el endpoint `/perfil`.
+Un IDOR (*Insecure Direct Object Reference*) ocurre cuando un sistema usa un identificador que el cliente controla para decidir qué recurso devolver, sin verificar que ese cliente tenga derecho sobre ese recurso en particular. En el Lab 07, ese identificador era visible y manipulable a simple vista: `GET /perfil?id=1`, `?id=2`, etc. Bastaba con cambiar el número en la URL.
+
+Acá el mecanismo de fondo es idéntico, pero el identificador no está en la URL: está en el claim `sub` del JWT. El servidor no mantiene sesiones del lado propio; delega por completo en el token la pregunta "¿quién sos?". `_payload_o_401()` solo verifica que la firma sea válida y el token no haya expirado — eso confirma que el token fue firmado con el secreto correcto, pero no confirma que la persona que lo presenta sea realmente `maria`. Una vez pasado ese único control, `/perfil` hace `USUARIOS.get(payload["sub"])` y devuelve esos datos sin ningún otro chequeo. Con el secreto en mano (sección 2), cualquiera puede escribir el `sub` que quiera y el servidor se lo cree.
+
+Lo que falta, entonces, es la misma autorización a nivel de objeto que faltaba en el Lab 07: comprobar que el solicitante tiene derecho sobre *ese* recurso específico, no solo que presentó *algún* credencial válido en general. La diferencia entre los dos labs no es conceptual, es de **dónde vive el identificador manipulable**: un parámetro de query en un lab, un claim de un token stateless en el otro. Eso es justo la migración que menciona la consigna: cuando la identidad del usuario pasa a ser "lo que diga el token" en vez de "lo que dice una sesión del servidor", cualquier punto donde el cliente pueda influir ese claim —incluida la posibilidad de forjarlo con un secreto débil— reabre el mismo problema de control de acceso roto, aunque la URL ya no tenga ningún `?id=` que lo delate.
 
 ### P4. Prueba con `alg:none`
 
