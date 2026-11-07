@@ -1,17 +1,36 @@
-# Registro de comandos — Grupo 10. Completar con la secuencia real ejecutada por el grupo.
-# No registrar comandos que no se hayan ejecutado. Mantener el orden y conservar
-# las opciones exactas; las salidas crudas se guardan en evidencia/salidas/.
+# Registro cronológico de comandos ejecutados — Lab Extra 4 (Grupo 10)
+# Entorno: Python 3.12 (stdlib) sobre Windows / Git Bash
+# Fecha de ejecución: 2026-11-06 / 2026-11-07
 
-[PENDIENTE] Comando real para ejecutar el cracker sin reglas.
-[PENDIENTE] Comando real para ejecutar el cracker con reglas.
-[PENDIENTE] Comandos reales para descifrar cada loot recuperado.
-[PENDIENTE] Comando real y directorio desde el que se ejecutó ./ctf status extra4.
-[2026-11-06, PowerShell, desde entregas/labextra4/grupo10] & 'C:\Program Files\WindowsApps\OpenAI.CodexPrimaryRuntime.v26-1026-487-0_26.1026.487.0_x64__3k8sg7r9htsxt\dependencies\python\python.exe' tests/benchmark_p1.py | Tee-Object -FilePath evidencia/salidas/benchmark_p1.txt
+# 1. Verificación inicial de estado del CTF (0/3 completados)
+./ctf status extra4
 
-# Plantilla orientativa, NO es un registro de ejecución. Reemplazar/eliminarla
-# cuando se anoten los comandos realmente ejecutados por el Grupo 10.
-# Desde la raíz del repositorio, los comandos previstos podrían ser:
-# python3 entregas/labextra4/grupo10/src/cracker.py crackear labs/labextra4-cracking/caso/sombra.txt labs/labextra4-cracking/caso/diccionario.txt > entregas/labextra4/grupo10/evidencia/salidas/crack_sin_reglas.txt
-# python3 entregas/labextra4/grupo10/src/cracker.py crackear labs/labextra4-cracking/caso/sombra.txt labs/labextra4-cracking/caso/diccionario.txt --reglas > entregas/labextra4/grupo10/evidencia/salidas/crack_con_reglas.txt
-# ./ctf status extra4 > entregas/labextra4/grupo10/evidencia/salidas/ctf_status_extra4.txt
-# Registrar solo comandos ejecutados, con sus argumentos y redirecciones exactos.
+# 2. Reto 1: Cracking directo por diccionario (MD5 y SHA-256 literales)
+python entregas/labextra4/grupo10/src/cracker.py crackear labs/labextra4-cracking/caso/sombra.txt labs/labextra4-cracking/caso/diccionario.txt > entregas/labextra4/grupo10/evidencia/salidas/crack_sin_reglas.txt
+
+# 3. Retos 2 y 3: Cracking con reglas de mangling (capitalización, años 2024-2026, sufijos numéricos)
+python entregas/labextra4/grupo10/src/cracker.py crackear labs/labextra4-cracking/caso/sombra.txt labs/labextra4-cracking/caso/diccionario.txt --reglas > entregas/labextra4/grupo10/evidencia/salidas/crack_con_reglas.txt
+
+# 4. Descifrado de loot (XOR con clave sha256) usando contraseñas recuperadas
+# 4.1. Operador (R1 - Contraseña: riverplate)
+python entregas/labextra4/grupo10/src/cracker.py descifrar labs/labextra4-cracking/caso/loot/operador.enc --password riverplate > entregas/labextra4/grupo10/evidencia/salidas/loot_operador.txt
+
+# 4.2. Analista (R2 - Contraseña: matecocido)
+python entregas/labextra4/grupo10/src/cracker.py descifrar labs/labextra4-cracking/caso/loot/analista.enc --password matecocido > entregas/labextra4/grupo10/evidencia/salidas/loot_analista.txt
+
+# 4.3. Admin (R3 - Contraseña: phantom2026)
+python entregas/labextra4/grupo10/src/cracker.py descifrar labs/labextra4-cracking/caso/loot/admin.enc --password phantom2026 > entregas/labextra4/grupo10/evidencia/salidas/loot_admin.txt
+
+# 5. Envío y validación de banderas en el CTF
+./ctf submit extra4 R1 'FLAG{crack_diccionario_md5}'
+./ctf submit extra4 R2 'FLAG{crack_sha256_diccionario}'
+./ctf submit extra4 R3 'FLAG{crack_reglas_mangling}'
+
+# 6. Verificación final de estado del CTF (3/3 completados, 100%)
+./ctf status extra4 > entregas/labextra4/grupo10/evidencia/salidas/ctf_status_extra4.txt
+
+# 7. Ejecución de pruebas unitarias automatizadas (Belén Ramello)
+python entregas/labextra4/grupo10/tests/test_cracker.py > entregas/labextra4/grupo10/evidencia/salidas/test_cracker_belen.txt
+
+# 8. Medición empírica y benchmark sintético P1 (Chiara Kordek)
+python entregas/labextra4/grupo10/tests/benchmark_p1.py > entregas/labextra4/grupo10/evidencia/salidas/benchmark_p1.txt
