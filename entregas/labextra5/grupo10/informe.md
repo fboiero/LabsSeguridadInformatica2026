@@ -161,7 +161,73 @@ La vulnerabilidad demostrada en R2 ilustra un desacople crítico entre la valida
 
 ### R3 — Suplantación horizontal (sub=maria)
 
-**Pendiente de completar por Belén:** documentar el token forjado para R3, la respuesta observada en `/perfil` con los datos de María y explicar por qué el acceso inseguro es un IDOR aunque no haya un parámetro `?id=`. La evidencia técnica común está en `evidencia/salidas/base-validada/`; todavía no se atribuye una reproducción personal a Belén.
+Con el mismo secreto recuperado en la sección 2 (`mate123`), se forjó un token para `maria` **sin tocar el claim `role`**: a diferencia de R2, acá no se escala a administrador, sino que se cambia la identidad declarada. El objetivo es acceder a los datos personales de otro usuario legítimo usando el endpoint `/perfil`.
+
+#### 1. Generación del token forjado
+
+```bash
+python jwt_tool.py forjar mate123 --sub maria --role user
+```
+
+Token resultante (registrado en `evidencia/salidas/base-validada/07-token-maria.txt`):
+
+```text
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkzNzM5MzQ0LCJleHAiOjE3OTM3NDI5NDR9.aAxRXMXJ7JLoa0ejjK_4OyzsC-Gjf3BJiCQpOV-n0NY
+```
+
+Decodificado:
+
+```json
+{ "alg": "HS256", "typ": "JWT" }
+```
+
+```json
+{
+  "sub": "maria",
+  "role": "user",
+  "iat": 1793739344,
+  "exp": 1793742944
+}
+```
+
+#### 2. Acceso al perfil ajeno y respuesta observada
+
+Se envió `GET /perfil` con `Authorization: Bearer <token_forjado>`. El servidor validó la firma con el secreto recuperado, la encontró correcta y devolvió los datos del usuario indicado en `sub`, sin que nada en la solicitud identificara a quien la envió más allá de ese claim.
+
+Respuesta recibida (preservada en `evidencia/salidas/base-validada/08-perfil-maria.http.txt`):
+
+```http
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.12.10
+Date: Tue, 03 Nov 2026 20:55:44 GMT
+Content-Type: application/json; charset=utf-8
+
+{"usuario": "maria", "role": "user", "datos": "Legajo 1007 — Finanzas. Nota confidencial: FLAG{jwt_suplantacion_idor}"}
+```
+
+**Flag obtenida (R3):** `FLAG{jwt_suplantacion_idor}`.
+El registro oficial de envío y aceptación por el motor CTF se documenta en `evidencia/salidas/base-validada/ctf-submit-R3.txt` y en `ctf-status-extra5.txt`. Belén reprodujo además esta sección en una corrida propia (`evidencia/salidas/belen-01/`), que repite el mismo resultado —`08-perfil-maria.http.txt`: `HTTP 200` con `FLAG{jwt_suplantacion_idor}`— sobre un puerto, timestamp y entorno distintos a la corrida común.
+
+#### 3. Diff conceptual respecto del token original
+
+| Elemento | Token original (`diego`) | Token forjado (R3) | Impacto |
+|---|---|---|---|
+| **Header** | `{"alg": "HS256", "typ": "JWT"}` | `{"alg": "HS256", "typ": "JWT"}` | Idéntico. |
+| **Claim `sub`** | `"diego"` | `"maria"` | **Cambio central de R3**. No se altera ningún privilegio; se cambia de quién dice ser el portador del token. |
+| **Claim `role`** | `"user"` | `"user"` | Sin cambio, a propósito: R3 no depende de escalar rol, sino de la identidad. |
+| **Firma HMAC** | `P90v5C9BokTjjd...` | `aAxRXMXJ7JLoa0...` | Recalculada con `mate123` para el nuevo payload, igual que en R2. |
+
+#### 4. Por qué es un IDOR aunque no haya `?id=`
+
+En el `/perfil` del Lab 07 la vulnerabilidad IDOR se veía con claridad porque el identificador del recurso ajeno viajaba explícito en la URL (`?id=`); acá no hay ningún parámetro así. El endpoint de este laboratorio determina de quién son los datos a devolver leyendo directamente `payload["sub"]` del token ya verificado, y busca ese usuario en `USUARIOS` sin ningún chequeo adicional de que la identidad declarada corresponda a quien realmente controla la sesión.
+
+Eso es, en esencia, lo mismo que un IDOR: el servidor confía en un identificador controlado por el cliente para decidir qué registro devolver, sin comprobar la pertenencia del recurso al solicitante. La diferencia es solo **dónde** viaja ese identificador: en el Lab 07 era un parámetro de la URL; acá es un claim dentro de un token que, con el secreto comprometido, el propio atacante puede escribir. El control de acceso roto "migra" del parámetro al token porque, en un esquema stateless como este, el token *es* la sesión: no hay una base de datos de sesiones del lado del servidor contra la cual contrastar que `sub=maria` haya sido efectivamente emitido tras un login real de María.
+
+#### 5. Alcance de la demostración y limitaciones
+
+- **Lo demostrado:** con el secreto recuperado, cualquier identidad (`sub`) puede escribirse en un token válido y usarse contra `/perfil` para leer datos de otro usuario, sin que el endpoint distinga entre una sesión legítima y una forjada.
+- **Lo que no se demostró:** no se accedió a ningún otro usuario fuera de `diego` y `maria`, que son los dos contemplados en el caso del laboratorio; no se afirma que el mismo patrón aplique a cualquier cantidad de usuarios, aunque el código de `/perfil` no distingue entre dos usuarios o mil.
+- **Consecuencia en un sistema real:** si `/perfil` expusiera datos sensibles de muchos usuarios (como en este caso, "Legajo... Nota confidencial"), comprometer una sola clave de firma equivaldría a comprometer la confidencialidad de todos los perfiles del sistema, no solo del usuario que forjó el token.
 
 ## 4. Control de sanidad
 
