@@ -10,12 +10,31 @@
 
 ## 1. Línea de tiempo de la filtración
 
-Tabla cronológica de TODOS los eventos relevantes de la historia (incluí los
-commits "legítimos" también: el contexto es parte del informe):
+Tabla cronológica de todos los eventos relevantes de la historia de `caso/repo-delata`, incluidos los commits legítimos (son el contexto en el que ocurren los otros). Las fechas y horas son las de autoría/commit registradas por git (`git log --all --format='%H|%an|%ad|%s' --date=iso`); todas usan huso `-03:00`. El orden de la tabla sigue la relación padre-hijo real de cada commit (el grafo), no un simple orden numérico de fechas — ver la nota al final, porque un commit de esta historia tiene timestamp anterior al de su propio padre.
 
-| Fecha | Autor | Commit (hash corto) | Qué pasó | ¿Expone algo? |
+| Fecha y hora | Autor | Commit (hash corto) | Qué pasó | ¿Expone algo? |
 |---|---|---|---|---|
-| | | | | |
+| 10/08/2026 09:12 | dev-jperez | `de33a75` | Commit inicial: "deploy-tool con token por variable de entorno". Establece la base de `main`. | No. |
+| 10/08/2026 18:47 | dev-jperez | `9333f2b` | "hotfix: deploy roto en produccion (config temporal)". Agrega a `config.py`, hardcodeado, `PHANTOM_API_TOKEN = "FLAG{git_log_no_olvida}"`, con el comentario `# Config de emergencia — arreglar el deploy roto YA (después lo pasamos a env)`. | **Sí — R1.** Token en texto plano en `config.py`. |
+| 11/08/2026 10:05 | dev-jperez | `eafb81c` | "fix: sacar credenciales del codigo (ups)". Reemplaza `config.py` en la copia de trabajo de `main`: quita la línea del token y el comentario. No borra el commit `9333f2b`, que sigue siendo parte de la historia. | Indirectamente: "cierra" la exposición en el árbol de trabajo actual, pero no en el historial (ver R1 e investigación en la sección 2). |
+| 12/08/2026 14:22 | dev-jperez | `bc9d0db` (commit) seguido de `reset: moving to HEAD~1` sobre `main`, mismo timestamp | "wip: notas del cluster nuevo (no mergear todavia)". Agrega `notas_investigacion.txt` con `staging_key: FLAG{git_reflog_rescata}`. El propio reflog muestra que, en el mismo minuto, `main` se reseteó a `HEAD~1` (es decir, a `eafb81c`), dejando a `bc9d0db` sin ninguna rama que lo señale. | **Sí — R2.** El autor creyó haberlo "borrado" con el reset; el objeto sigue íntegro en el repositorio, solo que inalcanzable salvo por reflog/fsck. |
+| 20/08/2026 11:00 | dev-jperez | `fa714bd` | "docs: estado del proyecto". Último commit de `main`, posterior al reset. No toca archivos con secretos. | No. |
+
+**Rama separada — `feature/pasarela-pagos` (sigue existiendo, nunca se fusionó ni se borró):**
+
+| Fecha y hora | Autor | Commit (hash corto) | Qué pasó | ¿Expone algo? |
+|---|---|---|---|---|
+| 05/08/2026 16:30 | dev-jperez | `0abdf95` | "wip: pasarela de pagos (falta todo)". Hijo directo de `9333f2b` en la rama `feature/pasarela-pagos` (confirmado con `git log feature/pasarela-pagos --oneline` y `git log --all --graph`). Agrega `.env.pasarela` con `PAGOS_SECRET=FLAG{git_rama_abandonada}` y `PAGOS_ENDPOINT=https://pagos.phantomcorp.example`, con el comentario `# NO COMMITEAR ESTO (lo commitee igual, despues lo veo)`. | **Sí — R3.** Secreto de pasarela de pagos en una rama que `git branch -a` todavía lista hoy. |
+
+### Nota de precisión sobre las fechas
+
+El commit `0abdf95` (R3) tiene fecha de autoría **05/08/2026 16:30**, anterior a la de su propio padre `9333f2b` (**10/08/2026 18:47**). Esto es posible porque la fecha de un commit la define el reloj de quien lo crea, no el orden del grafo: git garantiza la relación padre-hijo (la cadena de hashes), no que las fechas sean crecientes. Por eso esta tabla ordena los eventos de `main` por su relación causal real, confirmada con `git log --all --graph`, y trata la fecha de `0abdf95` como un dato a reportar con cautela, no como prueba de que ese commit haya ocurrido antes que los demás. No se puede deducir del repositorio por qué el reloj de ese commit está desalineado; solo se documenta la discrepancia.
+
+### Cuánto tiempo estuvo expuesto cada secreto
+
+- **R1 (`PHANTOM_API_TOKEN`, `9333f2b`):** en el árbol de trabajo actual de `main`, estuvo expuesto **15 horas y 18 minutos** (de `9333f2b` a `eafb81c`, ver P1 en la sección 5). En el historial, sigue expuesto desde su creación hasta hoy: `eafb81c` no eliminó el commit `9333f2b`, que `git log -p` sigue devolviendo. No hay evidencia en el caso de que el token se haya rotado.
+- **R2 (`staging_key`, `bc9d0db`):** nunca estuvo señalado por una rama después del `reset` del mismo minuto (`12/08/2026 14:22`), pero el objeto existe en el repositorio de forma continua desde ese instante hasta hoy, recuperable por cualquiera con acceso al repo mediante `reflog` o `fsck --unreachable`. Por defecto, git conserva estos objetos "colgados" durante aproximadamente 90 días antes de que una recolección de basura (`git gc`) pueda liberarlos.
+- **R3 (`PAGOS_SECRET`, `0abdf95`):** expuesto de forma continua desde su creación hasta hoy, sin fecha de cierre, porque la rama `feature/pasarela-pagos` nunca se fusionó ni se eliminó (sigue en `git branch -a`). A diferencia de R1 y R2, acá no hay ni siquiera un intento fallido de "limpieza": es la exposición con la ventana más larga y menos acotada de las tres.
 
 ## 2. Hallazgos
 
