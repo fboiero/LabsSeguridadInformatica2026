@@ -1,11 +1,9 @@
 # Entregable — Lab Extra 2: El repo que delata
 
-> Copiá este archivo a `entregas/labextra2/grupoXX/informe.md` y completalo.
-
 **Grupo:** 10 · **Integrantes:** Ramello, Belén Rocío — @belramello · Corazza, Carolina Paula — @carocor1 · Kordek, Chiara Agustina — @chiarakordek · Saby, Juan Pablo — @JuanSaby
 
-**Declaración de uso de IA:** se utilizó ChatGPT mediante OpenCode para ejecutar el generador y comandos de Git con herramientas de terminal, guardar sus salidas reales y asistir en la redacción de R1/P1.
-Se utilizó Claude para ayudas en la redacción del informe. 
+**Declaración de uso de IA:** se utilizó ChatGPT (mediante OpenCode) para asistir en la ejecución del generador de caso, comandos de terminal y redacción preliminar de las secciones R1 y P1. Se utilizó Claude para asistir en la estructuración, redacción y revisión técnica de las secciones del informe.  
+*Método de verificación:* todo el contenido generado con asistencia de IA fue contrastado estrictamente contra las evidencias reales del caso. Las salidas de comandos y diffs se obtuvieron mediante ejecución efectiva en terminal y fueron redirigidas directamente a `evidencia/salidas/` sin edición manual. Las tres flags fueron validadas contra el verificador oficial `./ctf submit extra2` (registrando el progreso del 100% en `evidencia/salidas/estado-despues.txt`). Los hashes de commit, autores y timestamps se cotejaron con el grafo real de Git (`git log --all --graph`, `git reflog`, `git fsck`), y las justificaciones sobre el modelo de objetos y remediación fueron verificadas contra la documentación oficial de Git y GitHub Docs. 
 
 ---
 
@@ -53,7 +51,7 @@ El commit `0abdf95` (R3) tiene fecha de autoría **05/08/2026 16:30**, anterior 
   git --no-pager log --format='%h | %H | %an <%ae> | %aI | %s' -- config.py > "$EVIDENCIA/salidas/timeline-r1.txt"
   ```
   `git log` muestra los commits y sus metadatos; `--oneline` resume cada commit en una línea y `-p` añade sus cambios. En la historia aparecen los mensajes de hotfix y limpieza; al revisar los diffs se ve que el archivo afectado es `config.py` y se recupera el token. Luego `-- config.py` limita la consulta a ese archivo para guardar el hallazgo. Las salidas anteriores al filtro están en `historia-r1.txt` e `historia-diffs-r1.txt`; el listado de comandos está en `evidencia/comandos-carolina.txt`. `$EVIDENCIA` es la ruta de evidencia definida por el procedimiento adjunto.
-- **Salida relevante:** extracto de `evidencia/salidas/r1.txt`; el archivo adjunto contiene la salida completa, redirigida directamente por Bash:
+- **Salida relevante:** extracto de [`evidencia/salidas/r1.txt`](evidencia/salidas/r1.txt); el archivo adjunto contiene la salida completa, redirigida directamente por Bash:
   ```diff
   commit eafb81c3ec5790ce4741629458e11ab5c1a690b8
   Author: dev-jperez <jperez@phantomcorp.example>
@@ -94,13 +92,35 @@ El commit `0abdf95` (R3) tiene fecha de autoría **05/08/2026 16:30**, anterior 
 
 ### R2 — Commit "perdido"
 - **Comando(s) exacto(s):**
-  ```
+  ```bash
   git log --oneline --all
   git reflog
   git fsck --unreachable --no-reflogs
   git show bc9d0db
   ```
 - **¿Cómo llegaste del reflog/fsck al contenido del objeto?** `git log --oneline --all` solo mostró 5 commits, sin rastro de ningún `reset`. `git reflog` reveló el movimiento real de `HEAD`: en `HEAD@{5}` hay un commit `bc9d0db` ("wip: notas del cluster nuevo (no mergear todavia)"), y en `HEAD@{4}` un `reset: moving to HEAD~1` que lo dejó sin ninguna rama apuntándolo. Para confirmar que el objeto seguía existiendo sin depender del reflog, corrí `git fsck --unreachable --no-reflogs`, que listó `bc9d0db` como *unreachable commit* (junto con su árbol y su blob). Con el hash en mano, `git show bc9d0db` mostró el diff completo de ese commit.
+- **Salida relevante:** extracto de [`evidencia/salidas/r2.txt`](evidencia/salidas/r2.txt); la salida cruda redirigida del commit recuperado:
+  ```diff
+  commit bc9d0dbe6aca41d639a515395cc983e139979102
+  Author: dev-jperez <jperez@phantomcorp.example>
+  Date:   Wed Aug 12 14:22:00 2026 -0300
+
+      wip: notas del cluster nuevo (no mergear todavia)
+
+  diff --git a/notas_investigacion.txt b/notas_investigacion.txt
+  new file mode 100644
+  index 0000000..fc979fd
+  --- /dev/null
+  +++ b/notas_investigacion.txt
+  @@ -0,0 +1,7 @@
+  +NOTAS — pruebas de acceso al cluster nuevo (NO SUBIR)
+  +====================================================
+  +El equipo de infra me paso la llave del cluster de staging para probar:
+  +
+  +    staging_key: FLAG{git_reflog_rescata}
+  +
+  +Cuando este todo migrado esto se rota y estas notas se borran.
+  ```
 - **Qué secreto se expuso:** el commit agrega `notas_investigacion.txt` con el texto `staging_key: FLAG{git_reflog_rescata}`, descrito como la llave de acceso a un cluster de staging que el equipo de infra había pasado "para probar". El propio archivo aclara que la intención era rotarla y borrar las notas una vez migrado todo; el `reset --hard` reemplazó esa intención, pero el objeto siguió existiendo en el repositorio.
 
 ### R3 — Rama abandonada
@@ -108,6 +128,31 @@ El commit `0abdf95` (R3) tiene fecha de autoría **05/08/2026 16:30**, anterior 
   ```bash
   git branch -a
   git show feature/pasarela-pagos
+  ```
+- **Salida relevante:** extracto de [`evidencia/salidas/r3.txt`](evidencia/salidas/r3.txt); la salida cruda redirigida obtenida al inspeccionar el commit de la rama con `git show feature/pasarela-pagos`:
+  ```diff
+  commit 0abdf953b75b214af59d0cf31e55ccbf2c9873d8
+  Author: dev-jperez <jperez@phantomcorp.example>
+  Date:   Wed Aug 5 16:30:00 2026 -0300
+
+      wip: pasarela de pagos (falta todo)
+
+  diff --git a/.env.pasarela b/.env.pasarela
+  new file mode 100644
+  index 0000000..4431615
+  --- /dev/null
+  +++ b/.env.pasarela
+  @@ -0,0 +1,3 @@
+  +# NO COMMITEAR ESTO (lo commitee igual, despues lo veo)
+  +PAGOS_SECRET=FLAG{git_rama_abandonada}
+  +PAGOS_ENDPOINT=https://pagos.phantomcorp.example
+  diff --git a/pasarela.py b/pasarela.py
+  new file mode 100644
+  index 0000000..2da76b4
+  --- /dev/null
+  +++ b/pasarela.py
+  @@ -0,0 +1 @@
+  +"""Integracion con la pasarela de pagos (WIP, quedo a mitad de camino)."""
   ```
 - **Qué secreto se expuso:** en la rama `feature/pasarela-pagos`, el commit `0abdf95` ("wip: pasarela de pagos (falta todo)") añade `pasarela.py` y `.env.pasarela`. En este último archivo se expone la variable `PAGOS_SECRET=FLAG{git_rama_abandonada}` junto con el endpoint `PAGOS_ENDPOINT=https://pagos.phantomcorp.example`. El propio archivo incluye el comentario `"NO COMMITEAR ESTO (lo commitee igual, despues lo veo)"`, evidenciando que el secreto fue subido deliberadamente a una rama de trabajo secundaria y luego quedó olvidado al continuar el desarrollo en `main`, manteniéndose accesible para cualquiera que clone el repositorio.
 

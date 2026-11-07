@@ -1,5 +1,8 @@
 # Research — Lab Extra 2: El repo que delata
 
+**Declaración de uso de IA:** se utilizó asistencia de modelos de lenguaje (Claude y ChatGPT) para la estructuración de la comparación y redacción inicial.  
+*Método de verificación:* las características operativas de Gitleaks, los comandos de `git-filter-repo`, las limitaciones de GitHub Secret Scanning y las fuentes bibliográficas citadas fueron verificadas manualmente contra la documentación oficial de cada proyecto ([Gitleaks](https://github.com/gitleaks/gitleaks), [git-filter-repo](https://github.com/newren/git-filter-repo) y [GitHub Docs](https://docs.github.com/en/code-security)).
+
 ## Detección y limpieza de secretos en Git
 
 ### Por qué hacen falta dos tipos de herramienta
@@ -18,6 +21,8 @@ Gitleaks es un detector, no una garantía de que todo secreto vaya a encontrarse
 
 `git-filter-repo` sirve para reescribir el historial. Puede eliminar un archivo de todas las referencias o reemplazar texto sensible en los archivos históricos; GitHub documenta ambos usos y pide verificar el resultado después de reescribirlo [2]. Por ejemplo, después de rotar la credencial, se podría trabajar sobre un clon nuevo, usar `--replace-text` para reemplazar el valor filtrado, inspeccionar todas las ramas y etiquetas, y coordinar la actualización del remoto. La reescritura crea commits distintos, por lo que requiere una actualización coordinada y puede afectar ramas, etiquetas y pull requests [2].
 
+A diferencia de los escáneres preventivos, `git-filter-repo` **no es adecuado para ejecutarse como parte del pipeline habitual de CI/CD**. Al ser una herramienta destructiva que reescribe la historia de Git, recalcula y modifica los hashes SHA de todos los commits afectados y sus descendientes. Si se ejecutara automáticamente ante cada push o pull request, generaría historias divergentes e incompatibles, corrompiendo el trabajo en curso y desincronizando las copias locales de todos los desarrolladores. Su propósito no es la supervisión rutinaria, sino una **intervención extraordinaria y controlada ante incidentes**, ejecutada manualmente por administradores fuera de banda (*out-of-band*), sobre un clon espejo limpio (`--mirror`), tras coordinar con el equipo y habiendo revocado previamente las credenciales expuestas [2][3].
+
 La herramienta no es un escáner ni una forma de desactivar la clave. Tampoco puede retirar por sí sola el secreto de los clones y forks que otras personas ya tienen. Su documentación recomienda revocar o rotar primero: una vez invalidada, la credencial deja de servir aunque sobreviva en una copia; después se reescribe y limpia el historial, y se coordinan las copias restantes [3].
 
 ### Comparación y conclusión
@@ -25,7 +30,7 @@ La herramienta no es un escáner ni una forma de desactivar la clave. Tampoco pu
 | Herramienta | Función | Uso en el flujo | Límite principal |
 |---|---|---|---|
 | Gitleaks | Detecta coincidencias con reglas en cambios o historia | Hook pre-commit compatible con la versión fijada y `gitleaks git` en CI | Puede no reconocer secretos fuera de sus patrones; no los invalida ni limpia la historia |
-| `git-filter-repo` | Reescribe commits y referencias para retirar archivos o valores | Limpieza coordinada del historial después de contener el incidente | No revoca el valor expuesto ni elimina copias de clones, forks u otros servicios |
+| `git-filter-repo` | Reescribe commits y referencias para retirar archivos o valores | Intervención manual fuera de banda ante incidentes (no apto para CI rutinario) | No revoca el valor expuesto ni elimina copias de clones, forks u otros servicios |
 
 La respuesta operativa es usar prevención y detección antes de una filtración, y tratar cualquier secreto confirmado como comprometido: revocarlo o rotarlo, evaluar el uso que tuvo, limpiar el historial y coordinar a quienes conservan copias. La reescritura reduce la exposición futura en el remoto, pero no sustituye la rotación [2][3].
 
