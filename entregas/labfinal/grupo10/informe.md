@@ -148,7 +148,9 @@ curl -sS -i -X POST http://phantomcorp/portal/login \
 # Backup de config disponible en: /backup/rrhh.conf
 ```
 
-Evidencia completa en `evidencia/04_login_normal.txt` y `05_login_sqli.txt`.
+Evidencia previa: `evidencia/04_login_normal.txt` y `evidencia/05_login_sqli.txt`.
+
+**Verificación independiente (Carolina):** reproduje el intento normal y el bypass SQLi en una corrida propia. El intento normal respondió `HTTP 401 Unauthorized`; con `user=admin' --` y contraseña `x`, la respuesta fue `HTTP 200 OK`, mostró el Dashboard RRHH y confirmó `FLAG{final_sqli_foothold}`. Evidencia cruda en `evidencia/carolina-01-h02.txt`.
 
 - **Impacto:** permite acceder al portal interno de RR.HH. como administrador sin credenciales válidas. Además, el dashboard muestra la ubicación de un archivo de configuración que contiene credenciales y un token de API (H-03).
 
