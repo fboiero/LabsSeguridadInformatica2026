@@ -5,6 +5,7 @@
 **Grupo:** 10 · **Integrantes:** Ramello, Belén Rocío — @belramello · Corazza, Carolina Paula — @carocor1 · Kordek, Chiara Agustina — @chiarakordek · Saby, Juan Pablo — @JuanSaby
 
 **Declaración de uso de IA:** se utilizó ChatGPT mediante OpenCode para ejecutar el generador y comandos de Git con herramientas de terminal, guardar sus salidas reales y asistir en la redacción de R1/P1.
+Se utilizó Claude para ayudas en la redacción del informe. 
 
 ---
 
