@@ -178,7 +178,7 @@ curl -sS -i http://phantomcorp/backup/rrhh.conf
 
 Evidencia completa en `evidencia/06_backup_rrhh_conf.txt`.
 
-**Verificación independiente (Chiara, 06/11/2026):** repetí la consulta desde el contenedor atacante y confirmé una respuesta `HTTP 200 OK` sin autenticación, con las credenciales y el token visibles. Salida: `evidencia/chiara-01-h03.txt`.
+**Verificación independiente (Chiara, 06/11/2026):** repetí la consulta desde el contenedor atacante y confirmé una respuesta `HTTP 200 OK` sin autenticación, con las credenciales y el token visibles. Salida: `evidencia/17_verificacion_h03_backup.txt`.
 
 - **Impacto:** quedan expuestas las credenciales de la base de datos y un token de API válido. En este caso, el token permite acceder al endpoint vulnerable a ejecución de comandos (H-01).
 
@@ -211,7 +211,7 @@ curl -sS -i http://phantomcorp/portal-rrhh
 
 Evidencia completa en `evidencia/02_robots.txt` y `03_portal_rrhh.txt`.
 
-**Verificación independiente (Chiara, 06/11/2026):** confirmé que `robots.txt` anuncia `/portal-rrhh` y que la ruta responde `HTTP 200 OK` directamente, mostrando el portal y la flag R1. Salida: `evidencia/chiara-02-h04.txt`.
+**Verificación independiente (Chiara, 06/11/2026):** confirmé que `robots.txt` anuncia `/portal-rrhh` y que la ruta responde `HTTP 200 OK` directamente, mostrando el portal y la flag R1. Salida: `evidencia/18_verificacion_h04_robots_portal.txt`.
 
 - **Impacto:** permite identificar y acceder a un portal interno que debería estar restringido. Por sí solo no expone datos sensibles, pero constituye el punto de entrada de la cadena de vulnerabilidades encontrada.
 
