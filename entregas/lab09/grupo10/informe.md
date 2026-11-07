@@ -4,7 +4,8 @@
 **Proveedor usado:** mock
 
 ## 0. Declaración de uso de IA
-utilización de ChatGPT como herramienta de apoyo para analizar el funcionamiento del agente, revisar las decisiones tomadas durante la ejecución y comparar el enfoque de un LLM con el de un script fijo. También lo utilicé para organizar y mejorar la redacción de las secciones asignadas. El análisis y la versión final fueron revisados por el equipo, tomando como referencia el código y las evidencias reales del laboratorio.
+Utilización de ChatGPT como herramienta de apoyo para analizar el funcionamiento del agente, revisar las decisiones tomadas durante la ejecución y comparar el enfoque de un LLM con el de un script fijo. También lo utilicé para organizar y mejorar la redacción de las secciones asignadas. El análisis y la versión final fueron revisados por el equipo, tomando como referencia el código y las evidencias reales del laboratorio.
+Mis compañeros de trabajo utilizaron Claude para consultas. 
 
 ## 1. Flags capturadas
 
