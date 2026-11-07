@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.10.5
+Date: Sat, 07 Nov 2026 00:58:32 GMT
+Content-Type: application/json; charset=utf-8
+
+{"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0MDEzMTEyLCJleHAiOjE3OTQwMTY3MTIsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.N7gitXJuhclEghpTxVtKezb3jLaOxdQbGnkwJ8vRFKM"}
