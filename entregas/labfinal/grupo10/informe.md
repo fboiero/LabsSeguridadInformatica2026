@@ -115,6 +115,8 @@ curl -sS -i -G http://phantomcorp/api/reporte \
 
 Evidencia completa en `evidencia/07_api_sin_token.txt`, `08_api_token_id.txt`, `09_api_find_app.txt` y `10_api_crown_jewels.txt`.
 
+**Verificación independiente (Juan):** reproduje las cuatro consultas a `/api/reporte` desde el contenedor atacante en una corrida propia. Sin token, el endpoint respondió `HTTP 403 Forbidden`; con el token obtenido en H-03, las consultas devolvieron `HTTP 200 OK`, confirmando la ejecución como `root` (`uid=0(root)`), la localización de `/app/priv/clientes.db.txt` y la lectura de los 48.210 registros junto con `FLAG{final_crown_jewels}`. Evidencia cruda en `evidencia/juan-01-h01.txt`.
+
 - **Impacto:** permite ejecutar comandos del sistema operativo con privilegios de `root`. Durante las pruebas se comprobó la lectura de archivos del servidor, incluido el registro de clientes con 48.210 registros de nombre, DNI y tarjeta.
 
 - **Remediación:** eliminar la ejecución de comandos de shell a partir de datos recibidos del cliente. Si el endpoint necesita realizar operaciones administrativas, implementarlas mediante funciones específicas y una lista de operaciones permitidas. Además, el proceso debe ejecutarse con los menores privilegios posibles y nunca como `root`.
