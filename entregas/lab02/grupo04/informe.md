@@ -137,3 +137,14 @@ Por ejemplo:
 **`hmac.compare_digest`** evita este comportamiento al realizar una comparación que no presenta cortocircuitos dependientes del contenido de los valores comparados. De esta manera, se reduce la posibilidad de que el tiempo de ejecución revele cuántos bytes coinciden.
 
 Es importante aclarar que no garantiza un tiempo absolutamente constante en todas las circunstancias: las diferencias de longitud o tipo pueden seguir proporcionando información temporal. Por eso también es conveniente validar previamente el formato y la longitud de las MAC recibidas.
+
+## Declaración de uso de asistentes de IA
+
+**¿Se usaron asistentes de IA?** Sí.
+
+| Herramienta | Uso y alcance | Verificación |
+|---|---|---|
+| Claude (Anthropic) | redacción del informe (Parte A — caso Zoom E2E y Parte B ), y elaboración del mini-research sobre ataques de extensión de longitud. | Las fuentes citadas fueron verificadas por los integrantes del grupo: se comprobó que las URLs son accesibles y que las afirmaciones del informe corresponden al contenido referenciado. |
+
+**Verificación de fuentes:** las referencias del informe fueron consultadas y contrastadas con el contenido generado. La revisión técnica del código y la validación de los resultados (reto XOR, MACs) corresponden a los
+integrantes del grupo.
