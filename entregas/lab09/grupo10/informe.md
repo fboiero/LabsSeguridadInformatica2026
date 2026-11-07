@@ -351,3 +351,9 @@ La distribución coincide con el historial de commits de la rama `lab09-grupo10`
 | Chiara Agustina Kordek | Mini-research (prompt injection), sección 3.4, P3 y P4. |
 
 ### Fuentes consultadas
+
+Fuentes citadas en el cuerpo de este informe (P4 y 3.4), con su detalle completo en `research.md`, donde además se verificó cada una abriéndola.
+
+1. **[PRIMARIA]** OWASP GenAI Security Project. (2025). *LLM01:2025 Prompt Injection*. https://genai.owasp.org/llmrisk/llm01-prompt-injection/ — Clasificación de la prompt injection como riesgo LLM01:2025 y advertencia de que no hay una prevención infalible conocida; recomienda capas de defensa en vez de confiar solo en el ajuste del prompt.
+2. **[SECUNDARIA]** OpenAI. (2026, 11 de marzo). *Designing AI agents to resist prompt injection*. https://openai.com/index/designing-agents-to-resist-prompt-injection/ — Enfoque de limitar el impacto de una manipulación exitosa (acciones constreñidas, controles deterministas) en vez de depender únicamente de detectar la entrada maliciosa.
+3. **[PRIMARIA]** Boiero, F. (2026). *herramientas.py — Laboratorio 09: Agentes de pentest* [código fuente]. LabsSeguridadInformatica2026. https://github.com/fboiero/LabsSeguridadInformatica2026/blob/main/labs/lab09-agentes/src/herramientas.py — Implementación real de `_verificar_alcance()`, citada en las secciones 3.1 y 3.3 de este informe.
