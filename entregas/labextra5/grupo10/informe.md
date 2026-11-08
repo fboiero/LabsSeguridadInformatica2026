@@ -231,7 +231,7 @@ Eso es, en esencia, lo mismo que un IDOR: el servidor confía en un identificado
 
 ## 4. Control de sanidad
 
-**Pendiente de completar por Chiara:** mostrar que el token original de Diego recibe 403 en `/admin` y que un token forjado con un carácter alterado en la firma recibe 401. La evidencia técnica común está en `evidencia/salidas/base-validada/09-original-en-admin.http.txt` y `11-firma-alterada.http.txt`. Estos dos controles son obligatorios según la rúbrica.
+En una corrida local separada contra el `Handler` original de la cátedra, el token legítimo de Diego recibió **403 Forbidden** al solicitar `/admin`: el token es válido, pero su rol `user` no autoriza el acceso. Después se tomó el token de administrador generado para R2, se cambió exactamente un carácter de su firma y se envió de nuevo; el servidor respondió **401 Unauthorized** porque el HMAC dejó de coincidir. Las respuestas crudas están en `evidencia/salidas/verificacion-controles-01/09-original-en-admin.http.txt` y `11-firma-alterada.http.txt`; el token alterado y el orden de los comandos también se conservaron en esa carpeta.
 
 ## 5. Preguntas P1–P5
 
@@ -257,15 +257,26 @@ Lo que falta, entonces, es la misma autorización a nivel de objeto que faltaba 
 
 ### P4. Prueba con `alg:none`
 
-**Pendiente de completar por Chiara:** reportar el resultado observado al enviar un token `alg:none` con firma vacía y explicar por qué un validador correcto debe fijar una lista permitida de algoritmos en la aplicación, verificar la firma según esa política y rechazar los no admitidos, sin confiar en el `alg` provisto por el token.
+Se envió a `/admin` un token con header `{"alg":"none","typ":"JWT"}`, rol `admin` y firma vacía. El servidor respondió **401 Unauthorized** (`evidencia/salidas/verificacion-controles-01/13-none.http.txt`): rechaza la ausencia de una firma válida.
+
+Como control adicional, se conservó el mismo header `alg:none` y se calculó un HMAC-SHA256 válido para el token. Esa solicitud respondió **200 OK** (`15-none-con-hmac.http.txt`). Esto muestra que el servidor siempre comprueba HMAC, pero no verifica que el algoritmo declarado coincida con una política permitida. Un validador debe fijar los algoritmos aceptados en la aplicación, asociar cada clave al algoritmo esperado y rechazar un `alg` no permitido o inconsistente; no debe decidirlo confiando en el header del token, como recomienda RFC 8725 §3.1. La evidencia incluye ambos tokens y las respuestas crudas en `evidencia/salidas/verificacion-controles-01/`.
 
 ### P5. Defensas priorizadas
 
-**Pendiente de completar por Chiara:** ordenar por prioridad las defensas indicadas en P5 (secreto, algoritmo, rotación, claims mínimos, expiración y revocación) y asociar cada una con el reto o riesgo que mitiga. Distinguir qué impide el crack/forja, qué reduce exposición y qué limita abuso de tokens ya emitidos.
+1. **Fijar y validar el algoritmo.** El servidor debe aceptar solo el algoritmo previsto para ese servicio y rechazar `none` o cualquier otro valor no permitido. Esto evita la aceptación de tokens sin firma y confusiones entre algoritmos, como el control adicional de P4. La selección no debe depender del header no confiable (RFC 8725 §3.1).
+2. **Usar una clave aleatoria y fuerte.** Para HS256, generar al menos 32 bytes aleatorios criptográficamente y no una contraseña de diccionario. Esto dificulta el crack offline y evita las forjas de rol e identidad de R2 y R3. Una clave fuerte no cifra el payload ni corrige la exposición de R1 (RFC 7518 §3.2; RFC 8725 §3.5).
+3. **Proteger y rotar las claves.** Guardarlas en un gestor de secretos con acceso restringido y un procedimiento de rotación. Si una clave se filtra, retirar su confianza e invalidar los tokens firmados con ella reduce el tiempo de abuso; cambiarla sin dejar de aceptar la anterior no resuelve el compromiso.
+4. **Limitar los claims.** Quitar del payload `nota_interna` y cualquier dato sensible o innecesario. Un JWT firmado no es un JWT cifrado; los claims siguen siendo legibles como demuestra R1. Si un dato debe ser confidencial, no incluirlo en un JWS legible.
+5. **Exigir y validar vencimiento.** Usar expiraciones cortas y comprobar `exp` (y `nbf` cuando corresponda) limita el período de uso de tokens robados o reproducidos. No impide el crack offline ni oculta el payload.
+6. **Implementar revocación cuando se necesite corte inmediato.** Una lista de revocación o un estado de sesión consultado por el servidor permite invalidar un token antes de su expiración; un JWT autocontenido no se revoca automáticamente. Complementa, pero no reemplaza, la verificación criptográfica y los vencimientos.
+
+Con HS256, quien obtiene el secreto puede firmar tokens. Con RS256 o EdDSA, los servicios consumidores pueden verificar con una clave pública mientras solo el emisor conserva la clave privada de firma, lo que reduce la cantidad de componentes capaces de crear tokens. Ninguna de esas opciones cifra el payload ni reemplaza la validación de algoritmo, claims, vencimiento y autorización.
 
 ## 6. Evidencia de progreso
 
-Los tres retos fueron aceptados por el motor oficial en la corrida técnica común. El estado textual devuelto por el motor está conservado en `evidencia/salidas/base-validada/ctf-status-extra5.txt`. **Pendiente de completar por Chiara:** adjuntar una captura real y legible de `./ctf status extra5` que muestre los tres ✓, guardarla como `evidencia/status-extra5.png` y enlazarla aquí. No sustituir la captura pedida por el log de texto.
+Los tres retos fueron aceptados por el motor oficial; el registro de texto y la captura muestran **3/3 (100%)**. La captura real de la terminal está guardada como `evidencia/status-extra5.png`. Las verificaciones adicionales están en `evidencia/salidas/verificacion-controles-01/`, y su `comandos.txt` conserva la secuencia reproducible.
+
+![Captura del estado del Lab Extra 5](evidencia/status-extra5.png)
 
 ## Fuentes y trazabilidad
 

@@ -1,0 +1,9 @@
+{
+  "inicio_utc": "2026-11-07T19:58:58.368452+00:00",
+  "python": "3.11.1 (tags/v3.11.1:a7a450f, Dec  6 2022, 19:58:39) [MSC v.1934 64 bit (AMD64)]",
+  "sistema": "Windows-10-10.0.26200-SP0",
+  "objetivo": "labs\\labextra5-jwt\\objetivo\\server.py",
+  "sha256_objetivo": "927bfa8e0fa1f1a8248482fe7818f9edaa60a2051bd4b13cb661f16823d55744",
+  "base_url": "http://127.0.0.1:52828",
+  "procedencia": "Ejecuci\u00f3n automatizada asistida por OpenCode; no acredita revisi\u00f3n humana."
+}

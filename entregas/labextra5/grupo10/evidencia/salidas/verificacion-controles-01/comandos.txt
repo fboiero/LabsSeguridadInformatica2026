@@ -1,0 +1,20 @@
+# HTTP real contra el Handler original, sin modificarlo; puerto efímero en loopback.
+C:\Users\chiar\AppData\Local\Programs\Python\Python311\python.exe -X utf8 -m unittest discover -s entregas/labextra5/grupo10 -p test_*.py -v > evidencia/pruebas-unitarias.txt 2>&1
+python -X utf8 entregas\labextra5\grupo10\evidencia\reproducir.py --salida entregas\labextra5\grupo10\evidencia\salidas\verificacion-controles-01
+# HTTPConnection: GET http://127.0.0.1:52828/login?user=diego&pass=diego123
+C:\Users\chiar\AppData\Local\Programs\Python\Python311\python.exe -X utf8 C:\Users\chiar\SeguridadInformatica\entregas\labextra5\grupo10\jwt_tool.py decodificar eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0MDgxNTM4LCJleHAiOjE3OTQwODUxMzgsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.2wqkNcYxe9AzKDCCi2ulgOLBNfQmtInCArsz7WLyKF0 > 03-decodificado.txt 2> 03-decodificado.stderr.txt
+C:\Users\chiar\AppData\Local\Programs\Python\Python311\python.exe -X utf8 C:\Users\chiar\SeguridadInformatica\entregas\labextra5\grupo10\jwt_tool.py crackear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0MDgxNTM4LCJleHAiOjE3OTQwODUxMzgsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.2wqkNcYxe9AzKDCCi2ulgOLBNfQmtInCArsz7WLyKF0 C:\Users\chiar\SeguridadInformatica\labs\labextra5-jwt\caso\diccionario.txt > 04-crack.txt 2> 04-crack.stderr.txt
+C:\Users\chiar\AppData\Local\Programs\Python\Python311\python.exe -X utf8 C:\Users\chiar\SeguridadInformatica\entregas\labextra5\grupo10\jwt_tool.py forjar mate123 --sub diego --role admin > 05-token-admin.txt 2> 05-token-admin.stderr.txt
+# HTTPConnection: GET http://127.0.0.1:52828/admin
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NDA4MTUzOSwiZXhwIjoxNzk0MDg1MTM5fQ.rBz8N5Miw-zoo9ytxhmutNVHoa0qJs_nWT8xG3U8tIc
+C:\Users\chiar\AppData\Local\Programs\Python\Python311\python.exe -X utf8 C:\Users\chiar\SeguridadInformatica\entregas\labextra5\grupo10\jwt_tool.py forjar mate123 --sub maria --role user > 07-token-maria.txt 2> 07-token-maria.stderr.txt
+# HTTPConnection: GET http://127.0.0.1:52828/perfil
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0MDgxNTM5LCJleHAiOjE3OTQwODUxMzl9.8QCGlt7-iB-CX0oZgO0KexLtmgh5ejqjj6Gl0F4T3Ak
+# HTTPConnection: GET http://127.0.0.1:52828/admin
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0MDgxNTM4LCJleHAiOjE3OTQwODUxMzgsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.2wqkNcYxe9AzKDCCi2ulgOLBNfQmtInCArsz7WLyKF0
+# HTTPConnection: GET http://127.0.0.1:52828/admin
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NDA4MTUzOSwiZXhwIjoxNzk0MDg1MTM5fQ.ABz8N5Miw-zoo9ytxhmutNVHoa0qJs_nWT8xG3U8tIc
+# HTTPConnection: GET http://127.0.0.1:52828/admin
+# Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NDA4MTUzOSwiZXhwIjoxNzk0MDg1MTM5fQ.
+# HTTPConnection: GET http://127.0.0.1:52828/admin
+# Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NDA4MTUzOSwiZXhwIjoxNzk0MDg1MTM5fQ.pmBxIYDIqRlJySEQJiV8kMq9svSHpV6QSTdi75OJ_Tg
