@@ -1,14 +1,14 @@
 # Informe — Laboratorio Extra 5: JWT inseguro
 
-**Grupo:** 10 · **Fecha de la corrida técnica:** 03/11/2026.
+**Grupo:** 10 · **Fecha de las corridas técnicas:** 03/11/2026 y 07/11/2026.
 
 **Integrantes:** Carolina Paula Corazza (`@carocor1`), Juan Pablo Saby (`@JuanSaby`), Belén Rocío Ramello (`@belramello`) y Chiara Agustina Kordek (`@chiarakordek`).
 
-**Estado de preparación:** implementación y secciones de Carolina preparadas con asistencia de IA; falta completar las secciones asignadas a Juan, Belén y Chiara, la revisión humana grupal y adjuntar la captura solicitada del status. Este archivo todavía no es una entrega grupal cerrada.
+**Estado de preparación:** implementación, R1–R3, P1–P5, mini-research y captura de status incorporados. Se realizó la revisión humana final del grupo.
 
 **Declaración de uso de IA:** se utilizó OpenCode (GPT-6 Luna) para revisar requisitos, analisis final de la implementación de las cuatro funciones de `jwt_tool.py`, pruebas de verificación técnica y scripts de reproducción y asistir en la redacción de este informe. Las partes asistidas incluyen analisis de código y evidencia automatizada. La verificación técnica consistió en 10 pruebas unitarias y peticiones HTTP contra el `Handler` original de la cátedra; las salidas están adjuntas. Se contrastaron conceptos con RFC 7518, RFC 7519 y RFC 8725.
 
-**Alcance y entorno:** caso ficticio autorizado de la cátedra, **sin Docker** como indica la consigna; no se instalaron dependencias externas. Python 3.12.10, Windows 11. El reproductor importa el `Handler` original sin modificar y lo sirve en `127.0.0.1` en puerto libre, en lugar de exponerlo en `0.0.0.0:8080`. En la corrida usada fue `127.0.0.1:54232`. No se probaron sistemas de terceros. El hash del archivo original y los detalles del entorno están en `evidencia/salidas/base-validada/00-entorno.json`.
+**Alcance y entorno:** caso ficticio autorizado de la cátedra, **sin Docker**; no se instalaron dependencias externas. Las corridas de Carolina se realizaron en Windows 11 con Python 3.12.10 y Chiara en Windows 10 con Python 3.11.1. El reproductor importa el `Handler` original sin modificar y lo sirve en `127.0.0.1` en puerto libre, no en `0.0.0.0:8080`. Puertos y hashes del objetivo: `evidencia/salidas/base-validada/00-entorno.json` (54232, 03/11) y `evidencia/salidas/verificacion-controles-01/00-entorno.json` (52828, 07/11). No se probaron sistemas de terceros.
 
 ## 1. Anatomía del token real
 
@@ -136,14 +136,14 @@ El registro oficial de envío y aceptación por el motor CTF se documenta en `ev
 
 El contraste entre el token emitido por el endpoint `/login` (`02-token-original.txt`) y el token forjado para la escalada (`05-token-admin.txt`) evidencia las siguientes diferencias estructurales y semánticas:
 
-| Elemento | Token original (`diego` legítimo) | Token forjado (R2) | Impacto / Rol en la autorización |
-|---|---|---|---|
-| **Header** | `{"alg": "HS256", "typ": "JWT"}` | `{"alg": "HS256", "typ": "JWT"}` | Idéntico. Mantiene el algoritmo simétrico HMAC-SHA256. |
-| **Claim `sub`** | `"diego"` | `"diego"` | Sin cambio. Se conserva la identidad para aislar la escalada de rol de la suplantación de usuario. |
-| **Claim `role`** | `"user"` | `"admin"` | **Cambio crítico**. Altera el nivel de privilegios declarado para satisfacer la validación del endpoint `/admin`. |
-| **Claim `nota_interna`** | `"deploy-tag FLAG{...}"` | *(Omitido)* | Demuestra que el servidor no exige este claim adicional para autorizar; evalúa únicamente `role`. |
-| **Timestamps (`iat`/`exp`)** | `1793739344` / `1793742944` | `1793739344` / `1793742944` | En la corrida controlada se mantuvieron vigentes para evitar el rechazo por expiración en `verificar()`. |
-| **Firma HMAC** | `P90v5C9BokTjjd...` | `FyXSeI5vkb_ad0...` | **Recalculada íntegramente**. Dado que el payload cambió, la firma anterior es inválida; se calculó un nuevo MAC válido con `mate123`. |
+| Elemento                     | Token original (`diego` legítimo) | Token forjado (R2)               | Impacto / Rol en la autorización                                                                                                       |
+| ---------------------------- | --------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Header**                   | `{"alg": "HS256", "typ": "JWT"}`  | `{"alg": "HS256", "typ": "JWT"}` | Idéntico. Mantiene el algoritmo simétrico HMAC-SHA256.                                                                                 |
+| **Claim `sub`**              | `"diego"`                         | `"diego"`                        | Sin cambio. Se conserva la identidad para aislar la escalada de rol de la suplantación de usuario.                                     |
+| **Claim `role`**             | `"user"`                          | `"admin"`                        | **Cambio crítico**. Altera el nivel de privilegios declarado para satisfacer la validación del endpoint `/admin`.                      |
+| **Claim `nota_interna`**     | `"deploy-tag FLAG{...}"`          | _(Omitido)_                      | Demuestra que el servidor no exige este claim adicional para autorizar; evalúa únicamente `role`.                                      |
+| **Timestamps (`iat`/`exp`)** | `1793739344` / `1793742944`       | `1793739344` / `1793742944`      | En la corrida controlada se mantuvieron vigentes para evitar el rechazo por expiración en `verificar()`.                               |
+| **Firma HMAC**               | `P90v5C9BokTjjd...`               | `FyXSeI5vkb_ad0...`              | **Recalculada íntegramente**. Dado que el payload cambió, la firma anterior es inválida; se calculó un nuevo MAC válido con `mate123`. |
 
 #### 4. Problema de seguridad: validación de firma y confianza en claims
 
@@ -210,18 +210,18 @@ El registro oficial de envío y aceptación por el motor CTF se documenta en `ev
 
 #### 3. Diff conceptual respecto del token original
 
-| Elemento | Token original (`diego`) | Token forjado (R3) | Impacto |
-|---|---|---|---|
-| **Header** | `{"alg": "HS256", "typ": "JWT"}` | `{"alg": "HS256", "typ": "JWT"}` | Idéntico. |
-| **Claim `sub`** | `"diego"` | `"maria"` | **Cambio central de R3**. No se altera ningún privilegio; se cambia de quién dice ser el portador del token. |
-| **Claim `role`** | `"user"` | `"user"` | Sin cambio, a propósito: R3 no depende de escalar rol, sino de la identidad. |
-| **Firma HMAC** | `P90v5C9BokTjjd...` | `aAxRXMXJ7JLoa0...` | Recalculada con `mate123` para el nuevo payload, igual que en R2. |
+| Elemento         | Token original (`diego`)         | Token forjado (R3)               | Impacto                                                                                                      |
+| ---------------- | -------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Header**       | `{"alg": "HS256", "typ": "JWT"}` | `{"alg": "HS256", "typ": "JWT"}` | Idéntico.                                                                                                    |
+| **Claim `sub`**  | `"diego"`                        | `"maria"`                        | **Cambio central de R3**. No se altera ningún privilegio; se cambia de quién dice ser el portador del token. |
+| **Claim `role`** | `"user"`                         | `"user"`                         | Sin cambio, a propósito: R3 no depende de escalar rol, sino de la identidad.                                 |
+| **Firma HMAC**   | `P90v5C9BokTjjd...`              | `aAxRXMXJ7JLoa0...`              | Recalculada con `mate123` para el nuevo payload, igual que en R2.                                            |
 
 #### 4. Por qué es un IDOR aunque no haya `?id=`
 
 En el `/perfil` del Lab 07 la vulnerabilidad IDOR se veía con claridad porque el identificador del recurso ajeno viajaba explícito en la URL (`?id=`); acá no hay ningún parámetro así. El endpoint de este laboratorio determina de quién son los datos a devolver leyendo directamente `payload["sub"]` del token ya verificado, y busca ese usuario en `USUARIOS` sin ningún chequeo adicional de que la identidad declarada corresponda a quien realmente controla la sesión.
 
-Eso es, en esencia, lo mismo que un IDOR: el servidor confía en un identificador controlado por el cliente para decidir qué registro devolver, sin comprobar la pertenencia del recurso al solicitante. La diferencia es solo **dónde** viaja ese identificador: en el Lab 07 era un parámetro de la URL; acá es un claim dentro de un token que, con el secreto comprometido, el propio atacante puede escribir. El control de acceso roto "migra" del parámetro al token porque, en un esquema stateless como este, el token *es* la sesión: no hay una base de datos de sesiones del lado del servidor contra la cual contrastar que `sub=maria` haya sido efectivamente emitido tras un login real de María.
+La consigna lo conecta con un IDOR porque el identificador que selecciona los datos ajenos pasó de un parámetro de URL al claim `sub`. Con el secreto comprometido, el atacante puede escribir ese claim y producir una firma válida. **La diferencia técnica importa:** aquí se falsifica la identidad autenticada, no se demuestra un acceso cruzado con un token genuino de Diego. Usar un `sub` autenticado para devolver el perfil propio no es por sí solo un IDOR, ni un diseño stateless exige una base de sesiones para ser seguro. Cambiar `sub` sin recalcular el HMAC no alcanza; el fallo demostrado es aceptar una identidad forjada con una clave débil.
 
 #### 5. Alcance de la demostración y limitaciones
 
@@ -249,11 +249,11 @@ En cambio, adivinar contraseñas contra `/login` requiere peticiones por intento
 
 ### P3. IDOR sin parámetro `id`
 
-Un IDOR (*Insecure Direct Object Reference*) ocurre cuando un sistema usa un identificador que el cliente controla para decidir qué recurso devolver, sin verificar que ese cliente tenga derecho sobre ese recurso en particular. En el Lab 07, ese identificador era visible y manipulable a simple vista: `GET /perfil?id=1`, `?id=2`, etc. Bastaba con cambiar el número en la URL.
+Un IDOR (_Insecure Direct Object Reference_) ocurre cuando un sistema usa un identificador que el cliente controla para decidir qué recurso devolver, sin verificar que ese cliente tenga derecho sobre ese recurso en particular. En el Lab 07, ese identificador era visible y manipulable a simple vista: `GET /perfil?id=1`, `?id=2`, etc. Bastaba con cambiar el número en la URL.
 
 Acá el mecanismo de fondo es idéntico, pero el identificador no está en la URL: está en el claim `sub` del JWT. El servidor no mantiene sesiones del lado propio; delega por completo en el token la pregunta "¿quién sos?". `_payload_o_401()` solo verifica que la firma sea válida y el token no haya expirado — eso confirma que el token fue firmado con el secreto correcto, pero no confirma que la persona que lo presenta sea realmente `maria`. Una vez pasado ese único control, `/perfil` hace `USUARIOS.get(payload["sub"])` y devuelve esos datos sin ningún otro chequeo. Con el secreto en mano (sección 2), cualquiera puede escribir el `sub` que quiera y el servidor se lo cree.
 
-Lo que falta, entonces, es la misma autorización a nivel de objeto que faltaba en el Lab 07: comprobar que el solicitante tiene derecho sobre *ese* recurso específico, no solo que presentó *algún* credencial válido en general. La diferencia entre los dos labs no es conceptual, es de **dónde vive el identificador manipulable**: un parámetro de query en un lab, un claim de un token stateless en el otro. Eso es justo la migración que menciona la consigna: cuando la identidad del usuario pasa a ser "lo que diga el token" en vez de "lo que dice una sesión del servidor", cualquier punto donde el cliente pueda influir ese claim —incluida la posibilidad de forjarlo con un secreto débil— reabre el mismo problema de control de acceso roto, aunque la URL ya no tenga ningún `?id=` que lo delate.
+La analogía didáctica del Lab 07 es **dónde vive el identificador manipulable**: un parámetro de query en un lab, un claim en el otro. La autorización sobre recursos debe partir de una identidad validada y comprobar que tiene derecho sobre el objeto solicitado. En este portal, sin embargo, la debilidad previa está en la autenticación del token: conocer el secreto permite presentarse directamente como María. La ausencia de sesiones en el servidor no es causa suficiente del fallo; con claves fuertes y validaciones correctas, `sub` no queda a libre elección del atacante. No se necesita agregar un `?id=` para que la suplantación afecte los datos que devuelve `/perfil`.
 
 ### P4. Prueba con `alg:none`
 
@@ -263,12 +263,13 @@ Como control adicional, se conservó el mismo header `alg:none` y se calculó un
 
 ### P5. Defensas priorizadas
 
-1. **Fijar y validar el algoritmo.** El servidor debe aceptar solo el algoritmo previsto para ese servicio y rechazar `none` o cualquier otro valor no permitido. Esto evita la aceptación de tokens sin firma y confusiones entre algoritmos, como el control adicional de P4. La selección no debe depender del header no confiable (RFC 8725 §3.1).
-2. **Usar una clave aleatoria y fuerte.** Para HS256, generar al menos 32 bytes aleatorios criptográficamente y no una contraseña de diccionario. Esto dificulta el crack offline y evita las forjas de rol e identidad de R2 y R3. Una clave fuerte no cifra el payload ni corrige la exposición de R1 (RFC 7518 §3.2; RFC 8725 §3.5).
-3. **Proteger y rotar las claves.** Guardarlas en un gestor de secretos con acceso restringido y un procedimiento de rotación. Si una clave se filtra, retirar su confianza e invalidar los tokens firmados con ella reduce el tiempo de abuso; cambiarla sin dejar de aceptar la anterior no resuelve el compromiso.
-4. **Limitar los claims.** Quitar del payload `nota_interna` y cualquier dato sensible o innecesario. Un JWT firmado no es un JWT cifrado; los claims siguen siendo legibles como demuestra R1. Si un dato debe ser confidencial, no incluirlo en un JWS legible.
-5. **Exigir y validar vencimiento.** Usar expiraciones cortas y comprobar `exp` (y `nbf` cuando corresponda) limita el período de uso de tokens robados o reproducidos. No impide el crack offline ni oculta el payload.
-6. **Implementar revocación cuando se necesite corte inmediato.** Una lista de revocación o un estado de sesión consultado por el servidor permite invalidar un token antes de su expiración; un JWT autocontenido no se revoca automáticamente. Complementa, pero no reemplaza, la verificación criptográfica y los vencimientos.
+1. **Reemplazar la clave débil por una aleatoria y fuerte.** Para HS256, generar al menos 32 bytes aleatorios criptográficamente y no una contraseña de diccionario; retirar inmediatamente la clave comprometida. Esto hace inviable el crack de diccionario que habilitó las forjas de rol e identidad de R2 y R3. Una clave fuerte no cifra el payload ni corrige la exposición de R1 (RFC 7518 §3.2; RFC 8725 §3.5).
+2. **Fijar y validar el algoritmo.** El servidor debe aceptar solo el algoritmo previsto para ese servicio y rechazar `none` o cualquier otro valor no permitido. Esto evita aceptar tokens sin firma o con un algoritmo inconsistente, como el control adicional de P4. No reemplaza la clave fuerte: un token HS256 forjado con la clave comprometida seguiría siendo válido. La política no debe depender del header no confiable (RFC 8725 §3.1).
+3. **Separar firma y verificación cuando haya varios servicios.** Con RS256 o EdDSA, solo el emisor conserva la clave privada; los consumidores reciben únicamente la pública. A diferencia de HS256, comprometer un verificador o conocer su clave pública no permite firmar R2/R3 ni probar contraseñas como secreto HMAC. Esto no protege ante el robo de la clave privada ni cifra R1; para este portal único, HS256 con clave fuerte también es una opción válida.
+4. **Proteger y rotar las claves.** Guardarlas en un gestor de secretos con acceso restringido y un procedimiento de rotación. Si una clave se filtra, retirar su confianza e invalidar los tokens firmados con ella corta las forjas R2/R3 bajo esa clave; cambiarla sin dejar de aceptar la anterior no resuelve el compromiso.
+5. **Limitar los claims.** Quitar del payload `nota_interna` y cualquier dato sensible o innecesario. Un JWT firmado no es un JWT cifrado; los claims siguen siendo legibles como demuestra R1. Si un dato debe ser confidencial, no incluirlo en un JWS legible.
+6. **Exigir y validar vencimiento, emisor y audiencia.** Usar expiraciones cortas y comprobar `exp` (y `nbf` cuando corresponda) limita el uso de tokens robados o reproducidos. Exigir el `iss` y `aud` previstos cuando el despliegue los requiera evita aceptar tokens de otro emisor o destinados a otro servicio. No impide R2/R3 mientras el atacante pueda firmar sus propios tiempos y claims con la clave comprometida, ni oculta R1.
+7. **Implementar revocación cuando se necesite corte inmediato.** Una lista de revocación o un estado de sesión consultado por el servidor permite invalidar un token antes de su expiración; un JWT autocontenido no se revoca automáticamente. Corta el reuso de ese token, pero no las nuevas forjas R2/R3 si la clave sigue comprometida. Complementa, pero no reemplaza, la verificación criptográfica y los vencimientos.
 
 Con HS256, quien obtiene el secreto puede firmar tokens. Con RS256 o EdDSA, los servicios consumidores pueden verificar con una clave pública mientras solo el emisor conserva la clave privada de firma, lo que reduce la cantidad de componentes capaces de crear tokens. Ninguna de esas opciones cifra el payload ni reemplaza la validación de algoritmo, claims, vencimiento y autorización.
 
@@ -284,6 +285,6 @@ Los tres retos fueron aceptados por el motor oficial; el registro de texto y la 
 - [RFC 7518 §3.2](https://www.rfc-editor.org/rfc/rfc7518.html#section-3.2): HMAC, clave HS256 y comparación en tiempo constante.
 - [RFC 7519 §3 y §4.1](https://www.rfc-editor.org/rfc/rfc7519.html): estructura y claims.
 - [RFC 8725 §2.2, §3.1 y §3.5](https://www.rfc-editor.org/rfc/rfc8725.html): claves débiles y validación de algoritmos.
-- Fuentes consultadas mediante el asistente el 03/11/2026; falta que Belén consulte y revise las fuentes para su sección de research.
-- `evidencia/comandos.txt` enumera en orden la secuencia ejecutada y enlaza los logs detallados. Las respuestas HTTP preservan estado, cabeceras y cuerpos recibidos.
-- `evidencia/salidas/base-tecnica/` conserva la primera ejecución incompleta por codificación de stdout; no respalda resultados de cracking. La base completa es `base-validada/`.
+- Fuentes de la corrida común consultadas mediante el asistente el 03/11/2026. El mini-research de Belén incluye sus propias referencias; la revisión técnica del 08/11/2026 contrastó las precisiones sobre claims con RFC 7519, RFC 8725 y la guía de JWT de OWASP. La revisión humana grupal sigue pendiente.
+- `evidencia/comandos.txt` enumera la secuencia y enlaza los registros detallados. Las respuestas HTTP preservan estado, cabeceras y cuerpos recibidos; las corridas del 03/11 y 07/11 se identifican por separado en sus respectivos `00-entorno.json`.
+- La base histórica completa adjunta es `evidencia/salidas/base-validada/`; no se usa una corrida incompleta como respaldo del cracking.
