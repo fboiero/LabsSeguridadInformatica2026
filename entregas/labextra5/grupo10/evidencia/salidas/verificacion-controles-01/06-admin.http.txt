@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.1
+Date: Sat, 07 Nov 2026 19:58:59 GMT
+Content-Type: application/json; charset=utf-8
+
+{"panel": "admin", "auditoria": "FLAG{jwt_forjado_admin}"}

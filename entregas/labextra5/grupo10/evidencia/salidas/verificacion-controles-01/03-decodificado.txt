@@ -1,0 +1,12 @@
+HEADER:  {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+PAYLOAD: {
+  "sub": "diego",
+  "role": "user",
+  "iat": 1794081538,
+  "exp": 1794085138,
+  "nota_interna": "deploy-tag FLAG{jwt_solo_base64}"
+}
+FIRMA:   db0aa435c6317bd0332830828b6ba580…

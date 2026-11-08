@@ -1,0 +1,13 @@
+{
+  "R1": "FLAG{jwt_solo_base64}",
+  "R2": "FLAG{jwt_forjado_admin}",
+  "R3": "FLAG{jwt_suplantacion_idor}",
+  "resultados_http": {
+    "R2": 200,
+    "R3": 200,
+    "original_admin": 403,
+    "firma_alterada": 401,
+    "none_vacio": 401,
+    "none_con_hmac": 200
+  }
+}

@@ -1,0 +1,1 @@
+"C:\Program Files\Git\bin\bash.exe" -lc "./ctf submit extra5 R1 jwt_solo_base64"
