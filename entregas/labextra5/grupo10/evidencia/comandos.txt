@@ -10,5 +10,7 @@ Los detalles, argumentos con tokens, peticiones HTTP y salidas crudas están en 
 
 Nota: las salidas corresponden a ejecución automatizada asistida por IA. No se afirma que cada integrante haya realizado individualmente esos comandos. El progreso .progreso/extra5.done es local y se excluye del repositorio.
 
-4. `python -X utf8 entregas/labextra5/grupo10/evidencia/reproducir.py --salida entregas/labextra5/grupo10/evidencia/salidas/verificacion-controles-01`
+4. `python -X utf8 -B entregas/labextra5/grupo10/evidencia/reproducir.py --salida entregas/labextra5/grupo10/evidencia/salidas/verificacion-controles-01`
    Corrida local separada contra el `Handler` original en loopback. Repitió el control del token de Diego (403), la firma alterada (401), `alg:none` vacío (401) y `alg:none` con HMAC válido (200). Las respuestas crudas, los tokens usados y el resumen están en `evidencia/salidas/verificacion-controles-01/`; no se enviaron nuevos submits al motor CTF.
+
+Corrida adicional de Belén: `evidencia/salidas/belen-01/comandos.txt` conserva su secuencia, tokens y puerto propios. No se reemplazó la corrida común.
