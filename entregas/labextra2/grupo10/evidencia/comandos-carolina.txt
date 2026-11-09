@@ -1,0 +1,23 @@
+# R1/P1 — ejecución automatizada mediante el asistente; Git Bash en Windows.
+# Registro de la reproducción válida. Los intentos manuales previos de
+# reconstrucción en PowerShell no se utilizan como evidencia del caso.
+# La rama de trabajo es labextra2-grupo10-r1.
+
+# Desde PowerShell, en la raíz del repo:
+& 'C:\Program Files\Git\bin\bash.exe' --noprofile --norc entregas/labextra2/grupo10/evidencia/reproducir-r1.sh
+
+# El procedimiento adjunto crea una carpeta temporal única con mktemp;
+# convierte solo CRLF a LF en una copia del generador, sin editar su lógica:
+sed 's/\r$//' "$ROOT/labs/labextra2-git-forense/caso/generar-caso.sh" > "$CASO/generar-caso.sh"
+bash "$CASO/generar-caso.sh"
+cd "$CASO/repo-delata"
+
+# Sus comandos de investigación y captura son:
+git --no-pager log --oneline > "$EVIDENCIA/salidas/historia-r1.txt"
+git --no-pager log -p > "$EVIDENCIA/salidas/historia-diffs-r1.txt"
+git --no-pager log -p -- config.py > "$EVIDENCIA/salidas/r1.txt"
+git --no-pager log --format='%h | %H | %an <%ae> | %aI | %s' -- config.py > "$EVIDENCIA/salidas/timeline-r1.txt"
+
+# ROOT, CASO y EVIDENCIA, así como los ajustes temporales de Git, se definen
+# en reproducir-r1.sh. Este archivo no es un history interactivo ni atribuye
+# a Carolina la ejecución manual de los comandos.

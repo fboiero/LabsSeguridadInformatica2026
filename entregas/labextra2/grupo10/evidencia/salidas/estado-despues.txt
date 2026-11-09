@@ -1,0 +1,12 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra2                   │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Secreto "borrado" en un commit viejo (git log -p)
+   ✓  R2     Commit "perdido" por un reset (git reflog / fsck)
+   ✓  R3     Secreto en una rama abandonada
+
+  ██████████████████████████████  3/3 (100%)
+
+[ OK ] ¡Lab extra2 COMPLETO! Ponete las pilas con la próxima unidad.

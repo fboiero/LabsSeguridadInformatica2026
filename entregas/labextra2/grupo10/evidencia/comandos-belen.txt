@@ -1,0 +1,8 @@
+cd labs/labextra2-git-forense/caso/repo-delata
+git log --oneline --all
+git reflog
+git fsck --unreachable --no-reflogs
+git show bc9d0db
+git show bc9d0db > ../../../../entregas/labextra2/grupo10/evidencia/salidas/r2.txt
+cd ../../../..
+./ctf submit extra2 R2 'FLAG{git_reflog_rescata}'
