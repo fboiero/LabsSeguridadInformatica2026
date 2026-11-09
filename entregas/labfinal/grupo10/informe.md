@@ -310,6 +310,10 @@ Las salidas originales de las solicitudes se encuentran en el directorio `eviden
 | `11_status_antes.txt` | Estado del laboratorio antes de entregar (0/4) |
 | `12_submit_r1.txt` a `15_submit_r4.txt` | Entregas de cada flag, aceptadas por el motor oficial |
 | `16_status_despues.txt` | Estado del laboratorio después de entregar (4/4) |
+| `juan-01-h01.txt` | Verificación independiente de H-01 (Juan) |
+| `carolina-01-h02.txt` | Verificación independiente de H-02 (Carolina) |
+| `17_verificacion_h03_backup.txt` | Verificación independiente de H-03 (Chiara) |
+| `18_verificacion_h04_robots_portal.txt` | Verificación independiente de H-04 (Chiara) |
 
 ### 6.3 Salida de `./ctf status final`
 
