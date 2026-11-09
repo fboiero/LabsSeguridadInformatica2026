@@ -1,0 +1,6 @@
+HTTP/1.0 401 Unauthorized
+Server: PhantomClientes/2.0 
+Date: Fri, 06 Nov 2026 20:51:52 GMT
+Content-Type: text/plain
+
+Credenciales invalidas
