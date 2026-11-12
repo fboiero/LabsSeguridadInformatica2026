@@ -1,0 +1,8 @@
+### P2: medición del crack offline (sin tocar el servidor)
+secreto=mate123  candidatos_hasta_hit~=11/31 palabras base  tiempo=0.17 ms
+
+El diccionario tiene 31 palabras base; "mate123" es la #11. Con reglas de
+mangling (capitalize + sufijos 123/2026/!) el espacio efectivo es ~5x, pero
+el secreto cae con la palabra cruda. El crack corre 100% en local: se recalcula
+HMAC-SHA256("header.payload", candidato) y se compara con la firma del token.
+Cero requests al servidor -> sin rate limit, sin logs, sin lockout.

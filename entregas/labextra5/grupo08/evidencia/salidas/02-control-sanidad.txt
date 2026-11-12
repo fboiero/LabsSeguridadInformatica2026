@@ -1,0 +1,8 @@
+### Sanidad (a): token REAL de diego (role=user) contra /admin -> 403
+HTTP 403 {"error": "solo administradores"}
+
+### Sanidad (b): token forjado admin con 1 char cambiado en la firma -> 401
+HTTP 401 {"error": "token invalido o expirado"}
+
+### P4: alg:none (firma vacía) contra /admin -> 401 (el server recalcula HMAC y no matchea)
+HTTP 401 {"error": "token invalido o expirado"}

