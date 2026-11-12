@@ -1,0 +1,48 @@
+## user=[admin'--] pass=[x]
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+
+## user=[x] pass=[' OR 1=1 --]
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+
+## user=[' OR '1'='1] pass=[' OR '1'='1]
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+
+## user=[' UNION SELECT 'inyectado' --] pass=[x]
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+
+## user=['] pass=[x]
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+
+## user=[O'Brien] pass=[x]
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+

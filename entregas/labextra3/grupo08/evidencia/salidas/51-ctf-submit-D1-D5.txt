@@ -1,0 +1,20 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D1 resuelto: Banner neutralizado (info leak de version)
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D2 resuelto: Endpoint de debug apagado en produccion
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D3 resuelto: Rutas sensibles blindadas (backup + robots)
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D4 resuelto: Login parametrizado (SQLi bloqueado)
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D5 resuelto: Path traversal bloqueado en /descargar
