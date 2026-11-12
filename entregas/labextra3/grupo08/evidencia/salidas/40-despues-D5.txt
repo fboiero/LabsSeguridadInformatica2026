@@ -1,0 +1,99 @@
+## server process runs as: root (uid 0)
+
+## archivo=../../../../etc/passwd
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=..%2f..%2f..%2f..%2fetc%2fpasswd
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=%252e%252e%252f%252e%252e%252fetc%252fpasswd
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=....//....//....//....//etc/passwd
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=/etc/passwd
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=../../../../etc/passwd%00.txt
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=../phantom_descargas_secreto/clave.txt
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=enlace.txt
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=../phantom_hardening.db
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:11 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=../../../../etc/shadow
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:12 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+
+## archivo=manual.txt
+HTTP/1.0 200 OK
+Server: webserver
+Date: Thu, 12 Nov 2026 13:58:12 GMT
+Content-Type: text/plain; charset=utf-8
+
+Manual de la intranet PhantomCorp.
+
+

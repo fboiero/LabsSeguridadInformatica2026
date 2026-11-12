@@ -1,0 +1,104 @@
+diff --git a/entregas/labextra3/grupo08/objetivo/server.py b/entregas/labextra3/grupo08/objetivo/server.py
+index 95d573f..2f7e34b 100644
+--- a/entregas/labextra3/grupo08/objetivo/server.py
++++ b/entregas/labextra3/grupo08/objetivo/server.py
+@@ -23,8 +23,10 @@ la flag defensiva para entregar con ./ctf submit extra3.
+ import base64
+ import binascii
+ import hmac
++import html
+ import os
+ import sqlite3
++from contextlib import closing
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+ from urllib.parse import urlparse, parse_qs
+ 
+@@ -84,6 +86,33 @@ class Handler(BaseHTTPRequestHandler):
+         ok_pass = hmac.compare_digest(pwd.encode(), BACKUP_PASS.encode())
+         return ok_user and ok_pass
+ 
++    @staticmethod
++    def _ruta_confinada(nombre):
++        """D5: devuelve la ruta real del archivo pedido solo si queda DENTRO de
++        DESCARGAS y es un archivo regular; en cualquier otro caso, None.
++
++        Se valida el DESTINO, no el texto del pedido:
++          1. realpath resuelve "..", "." y symlinks -> ruta canónica.
++             (parse_qs ya decodificó %2e%2e%2f una vez; no se decodifica de
++             nuevo, así que %252e queda como nombre literal inexistente).
++          2. commonpath exige que la raíz sea ancestro de la ruta. No se usa
++             startswith: "/tmp/phantom_descargas_secreto" empieza con
++             "/tmp/phantom_descargas" y pasaría. Esto también frena rutas
++             absolutas, porque os.path.join("/raiz", "/etc/passwd") descarta
++             la raíz y da "/etc/passwd".
++          3. isfile: solo archivos regulares (no directorios ni dispositivos).
++        """
++        raiz = os.path.realpath(DESCARGAS)
++        try:
++            ruta = os.path.realpath(os.path.join(raiz, nombre))
++        except ValueError:          # byte nulo (%00) en el nombre
++            return None
++        if os.path.commonpath([raiz, ruta]) != raiz:
++            return None
++        if not os.path.isfile(ruta):
++            return None
++        return ruta
++
+     def do_GET(self):
+         path, _, qs = self.path.partition("?")
+         params = parse_qs(qs)
+@@ -111,27 +140,40 @@ class Handler(BaseHTTPRequestHandler):
+         # tiene rama propia: cae en el 404 genérico, indistinguible de cualquier
+         # ruta que nunca existió.
+         elif path == "/login":
+-            # D4: SQLi clásico — consulta por interpolación de strings
++            # D4 (parche grupo08): consulta PARAMETRIZADA. Los "?" son
++            # placeholders: sqlite3 prepara la sentencia y después le pasa
++            # user/pass como VALORES (binding), nunca como texto SQL. Una
++            # comilla en la entrada es un carácter más del dato: no puede
++            # cerrar el literal ni agregar OR / UNION / --. Por eso no se
++            # filtran comillas (ver P4 del informe).
+             user = params.get("user", [""])[0]
+             pwd = params.get("pass", [""])[0]
+-            db = sqlite3.connect(DB)
+-            cur = db.execute(
+-                "SELECT user FROM usuarios WHERE user = '" + user
+-                + "' AND password = '" + pwd + "'")     # ¡NUNCA así!
+-            if cur.fetchone():
+-                self._html(200, "<h1>Bienvenido, " + user + "</h1>")
++            # closing(): el "with" de sqlite3.Connection solo maneja la
++            # transacción, no cierra la conexión.
++            with closing(sqlite3.connect(DB)) as db:
++                fila = db.execute(
++                    "SELECT user FROM usuarios WHERE user = ? AND password = ?",
++                    (user, pwd)).fetchone()
++            if fila:
++                # Defensa en profundidad: se saluda con el valor que devolvió
++                # la base (no con el input crudo) y escapado para HTML.
++                self._html(200, "<h1>Bienvenido, " + html.escape(fila[0]) + "</h1>")
+             else:
+                 self._html(401, "<h1>Credenciales inválidas</h1>")
+-            db.close()
+         elif path == "/descargar":
+-            # D5: path traversal — concatena y lee sin validar
++            # D5 (parche grupo08): confinamiento por ruta canónica, no filtro de
++            # strings (ver _ruta_confinada). Todo rechazo responde igual que un
++            # archivo inexistente: no se le confirma al atacante qué existe.
+             nombre = params.get("archivo", [""])[0]
+-            ruta = DESCARGAS + "/" + nombre
+-            try:
+-                with open(ruta, "rb") as fh:
+-                    self._txt(200, fh.read(8192).decode("utf-8", "ignore"))
+-            except Exception:
++            ruta = self._ruta_confinada(nombre)
++            if ruta is None:
+                 self._txt(404, "no encontrado")
++            else:
++                try:
++                    with open(ruta, "rb") as fh:
++                        self._txt(200, fh.read(8192).decode("utf-8", "ignore"))
++                except OSError:
++                    self._txt(404, "no encontrado")
+         else:
+             self._txt(404, "404 - no existe")
+ 

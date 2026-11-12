@@ -1,0 +1,15 @@
+HTTP/1.0 200 OK
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/plain; charset=utf-8
+
+User-agent: *
+Disallow:
+
+----
+HTTP/1.0 404 Not Found
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/plain; charset=utf-8
+
+404 - no existe

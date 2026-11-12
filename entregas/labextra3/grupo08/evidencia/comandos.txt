@@ -1,0 +1,99 @@
+# Lab Extra 3 — Grupo 08 — comandos usados, en orden
+# Host: Windows 11 + Git Bash. La app y el verificador se corren dentro de la
+# imagen Linux del curso (cyberlab-attacker, Python 3.13.5) porque:
+#   - el ataque D5 lee /etc/passwd: en Windows nativo ese archivo no existe y el
+#     verificador daría un "bloqueado" falso;
+#   - el verificador espera solo 1.2 s a que levante el server. Corriendo desde
+#     el bind mount de Windows el arranque tardó más, todos los ataques dieron
+#     "Connection refused" y el verificador marcó 4/5 FALSO. Esa corrida se
+#     descartó. Por eso se copian los archivos al filesystem del contenedor
+#     (/w) antes de ejecutar (ver run.sh abajo).
+
+# ---------- PARTE 1 (D1, D2, D3) ----------
+
+# 0. Rama y copia del objetivo (el original en labs/ no se toca)
+git checkout -b labextra3-grupo08 main && git push -u origin labextra3-grupo08
+mkdir -p entregas/labextra3/grupo08/evidencia/salidas
+cp -r labs/labextra3-hardening/objetivo entregas/labextra3/grupo08/objetivo
+
+# run.sh (helper que se monta en /s dentro del contenedor)
+#   mkdir -p /w/labs /w/entregas/labextra3
+#   cp -r /lab/labs/labextra3-hardening /w/labs/
+#   cp -r /lab/entregas/labextra3/grupo08 /w/entregas/labextra3/
+#   cd /w; G=entregas/labextra3/grupo08; S=/lab/$G/evidencia/salidas
+docker run --rm -v "$PWD":/lab -v "$PWD/entregas/labextra3/grupo08/evidencia/scripts":/s cyberlab-attacker sh -c '. /s/run.sh; <comando>'
+
+# 1. Verificador contra el objetivo ROTO (idéntico a nuestra copia sin parchar)
+python3 labs/labextra3-hardening/verificar-defensa.py --dir labs/labextra3-hardening/objetivo > $S/00-verificador-inicial.txt
+
+# 2. Ataques manuales "antes" (server original en :8080)
+PORT=8080 python3 labs/labextra3-hardening/objetivo/server.py &
+curl -si http://127.0.0.1:8080/ ; curl -si http://127.0.0.1:8080/no-existe ; curl -sI http://127.0.0.1:8080/   > $S/01-D1-antes.txt
+curl -si http://127.0.0.1:8080/api/status                                                                    > $S/02-D2-antes.txt
+curl -si http://127.0.0.1:8080/robots.txt ; curl -si http://127.0.0.1:8080/backup                            > $S/03-D3-antes.txt
+
+# 3. Parche D1, D2, D3 en entregas/labextra3/grupo08/objetivo/server.py (editor)
+git diff --no-index labs/labextra3-hardening/objetivo/server.py entregas/labextra3/grupo08/objetivo/server.py > $S/10-diff-D1-D3.patch
+
+# 4. Ataques manuales "después" (copia parchada en :8081, sin credenciales de backup)
+PORT=8081 python3 $G/objetivo/server.py &
+curl -si $U/ ; curl -si $U/no-existe ; curl -sI $U/                  > $S/11-D1-despues.txt
+curl -si $U/api/status ; curl -si $U/ruta-que-nunca-existio           > $S/12-D2-despues.txt
+curl -si $U/robots.txt ; curl -si $U/backup                           > $S/13-D3-despues-sin-credenciales.txt
+
+# 5. /backup con credenciales de operador configuradas (:8082)
+PHANTOM_BACKUP_USER=ops PHANTOM_BACKUP_PASS=prueba-local-123 PORT=8082 python3 $G/objetivo/server.py &
+curl -si $U/backup                                   # sin Authorization  -> 401
+curl -si -u ops:adivinando $U/backup                 # pass incorrecta    -> 401
+curl -si -H "Authorization: Basic %%%" $U/backup     # header malformado  -> 401
+curl -si -u ops:prueba-local-123 $U/backup           # correctas          -> 200   (todo > $S/14-D3-despues-con-auth.txt)
+
+# 6. Regresión funcional (misma instancia :8082)
+curl -si $U/ ; curl -si "$U/login?user=admin&pass=sup3r-s3cr3t0" ; curl -si "$U/login?user=admin&pass=mala" ; curl -si "$U/descargar?archivo=manual.txt"   > $S/15-regresion-parte1.txt
+
+# 7. Verificador contra la copia parchada (parte 1 -> 3/5 esperado)
+python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo08/objetivo > $S/20-verificador-parte1.txt
+
+# 8. Flags y progreso (host)
+./ctf submit extra3 D1 'FLAG{def_banner_neutralizado}'
+./ctf submit extra3 D2 'FLAG{def_debug_apagado}'
+./ctf submit extra3 D3 'FLAG{def_rutas_blindadas}'          > $S/21-ctf-submit-D1-D3.txt
+./ctf status extra3                                         > $S/22-ctf-status-parte1.txt
+
+# ---------- PARTE 2 (D4, D5) ----------
+# Host: Windows 11 + Git Bash (otra máquina del grupo). Mismo contenedor y mismo run.sh.
+# Desde Git Bash el bind mount necesita la ruta de Windows y sin conversión de MSYS:
+#   MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd -W)":/lab -v "$(pwd -W)/entregas/labextra3/grupo08/evidencia/scripts":/s cyberlab-attacker sh /s/<script>
+# Con core.autocrlf=true el checkout dejaba run.sh/despues.sh en CRLF y sh fallaba
+# ("cd: can't cd to /w"): se agregó evidencia/scripts/.gitattributes (*.sh eol=lf).
+
+# 9. Batería de ataques D4/D5 contra el objetivo ORIGINAL (antes). ataques-parte2.sh
+#    levanta el server indicado y corre 5 variantes de SQLi + 1 input legítimo con comilla
+#    (O'Brien), y 11 variantes de traversal + 1 descarga legítima
+#    (incluye las de la oral: %2e%2e%2f, ....//, doble encoding, byte nulo, ruta
+#    absoluta, directorio hermano con el mismo prefijo, symlink, la base de datos y /etc/shadow).
+sh /s/ataques-parte2.sh labs/labextra3-hardening/objetivo/server.py 30-antes        # -> $S/30-antes-D4.txt, $S/30-antes-D5.txt
+
+# 10. Parche D4 (consulta parametrizada) y D5 (confinamiento por realpath + commonpath)
+#     en entregas/labextra3/grupo08/objetivo/server.py (editor)
+git diff 74b9f9a -- entregas/labextra3/grupo08/objetivo/server.py > $S/41-diff-D4-D5.patch
+git diff --no-index labs/labextra3-hardening/objetivo/server.py entregas/labextra3/grupo08/objetivo/server.py > $S/44-diff-completo-vs-original.patch
+
+# 11. La MISMA batería contra la copia parchada (después)
+sh /s/ataques-parte2.sh entregas/labextra3/grupo08/objetivo/server.py 40-despues    # -> $S/40-despues-D4.txt, $S/40-despues-D5.txt
+
+# 12. Regresión funcional final + demo de P4 + verificador final (despues-parte2.sh)
+sh /s/despues-parte2.sh
+#   curl -sSi $U/ ; login legítimo ; login incorrecto ; descarga legítima ; descarga inexistente ; ruta inexistente   > $S/42-regresion-final.txt
+#   python3 /s/p4_replace_demo.py                                                                                     > $S/43-P4-replace-vs-parametrizada.txt
+#   python3 labs/labextra3-hardening/verificar-defensa.py --dir $G/objetivo                                           > $S/50-verificador-final.txt
+
+# 13. Flags y progreso (host). El progreso de ./ctf se guarda por checkout en .progreso/
+#     (gitignored): la parte 1 se registró en la máquina de otro integrante, así que en
+#     esta se registran las 5 flags que entregó el verificador final (50-verificador-final.txt).
+./ctf submit extra3 D1 'FLAG{def_banner_neutralizado}'
+./ctf submit extra3 D2 'FLAG{def_debug_apagado}'
+./ctf submit extra3 D3 'FLAG{def_rutas_blindadas}'
+./ctf submit extra3 D4 'FLAG{def_sqli_parametrizado}'
+./ctf submit extra3 D5 'FLAG{def_traversal_bloqueado}'      # todo > $S/51-ctf-submit-D1-D5.txt
+./ctf status extra3                                         > $S/52-ctf-status-final.txt

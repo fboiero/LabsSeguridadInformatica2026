@@ -1,0 +1,28 @@
+## GET /
+HTTP/1.0 200 OK
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>PhantomCorp</h1><p>Portal de empleados.</p>
+## login legitimo
+HTTP/1.0 200 OK
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Bienvenido, admin</h1>
+## login incorrecto
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:43 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>Credenciales inválidas</h1>
+## descarga legitima
+HTTP/1.0 200 OK
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:43 GMT
+Content-Type: text/plain; charset=utf-8
+
+Manual de la intranet PhantomCorp.

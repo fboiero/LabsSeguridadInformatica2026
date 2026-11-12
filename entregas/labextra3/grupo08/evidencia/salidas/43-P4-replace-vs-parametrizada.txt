@@ -1,0 +1,43 @@
+== 1) String context: the replace blocks breakout here... (SQLite) ==
+  filtro      user="admin'--"
+    SQL   : SELECT user FROM usuarios WHERE user = 'admin--' AND password = 'x'
+    filas : []
+  filtro      pass="' OR 1=1 --"
+    SQL   : SELECT user FROM usuarios WHERE user = 'x' AND password = ' OR 1=1 --'
+    filas : []
+
+== 2) ...but it corrupts legitimate data (functional regression) ==
+  filtro      O'Brien / pa'ss (correct credentials)
+    SQL   : SELECT user FROM usuarios WHERE user = 'OBrien' AND password = 'pass'
+    filas : []
+  param.      O'Brien / pa'ss (correct credentials)
+    SQL   : SELECT user FROM usuarios WHERE user = ? AND password = ?   params=("O'Brien", "pa'ss")
+    filas : [("O'Brien",)]
+
+== 3) Numeric context: no quotes needed, the filter is irrelevant ==
+  filtro      id="0 OR 1=1"
+    SQL   : SELECT user FROM usuarios WHERE id = 0 OR 1=1
+    filas : [('admin',), ("O'Brien",)]
+  param.      id="0 OR 1=1"
+    SQL   : SELECT user FROM usuarios WHERE id = ?   params=('0 OR 1=1',)
+    filas : []
+
+== 4) Engine-dependent: backslash as escape (MySQL default mode) ==
+  filtro      user="\"  pass=" OR 1=1 -- "   (NOT executed: SQLite does not treat \ as an escape)
+    SQL   : SELECT user FROM usuarios WHERE user = '\' AND password = ' OR 1=1 -- '
+    In MySQL, \' is an escaped quote: the user literal becomes "' AND password = "
+    and "OR 1=1 -- " is left OUTSIDE the literal, as code -> bypass with no quote at all.
+
+== 5) Parametrized: the same attacks are just data ==
+  param.      user="admin'--" pass='x'
+    SQL   : SELECT user FROM usuarios WHERE user = ? AND password = ?   params=("admin'--", 'x')
+    filas : []
+  param.      user='x' pass="' OR 1=1 --"
+    SQL   : SELECT user FROM usuarios WHERE user = ? AND password = ?   params=('x', "' OR 1=1 --")
+    filas : []
+  param.      user='\\' pass=' OR 1=1 -- '
+    SQL   : SELECT user FROM usuarios WHERE user = ? AND password = ?   params=('\\', ' OR 1=1 -- ')
+    filas : []
+  param.      user='admin' pass='sup3r-s3cr3t0'
+    SQL   : SELECT user FROM usuarios WHERE user = ? AND password = ?   params=('admin', 'sup3r-s3cr3t0')
+    filas : [('admin',)]
