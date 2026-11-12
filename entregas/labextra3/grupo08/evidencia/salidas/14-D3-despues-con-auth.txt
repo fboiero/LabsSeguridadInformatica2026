@@ -1,0 +1,31 @@
+## sin Authorization
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/plain; charset=utf-8
+WWW-Authenticate: Basic realm="phantom-ops"
+
+401 - autenticacion requerida
+## password incorrecta
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/plain; charset=utf-8
+WWW-Authenticate: Basic realm="phantom-ops"
+
+401 - autenticacion requerida
+## header malformado
+HTTP/1.0 401 Unauthorized
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/plain; charset=utf-8
+WWW-Authenticate: Basic realm="phantom-ops"
+
+401 - autenticacion requerida
+## credenciales de operador correctas
+HTTP/1.0 200 OK
+Server: webserver
+Date: Thu, 12 Nov 2026 13:26:42 GMT
+Content-Type: text/plain; charset=utf-8
+
+dump_pre_migracion: usuarios=1 OK

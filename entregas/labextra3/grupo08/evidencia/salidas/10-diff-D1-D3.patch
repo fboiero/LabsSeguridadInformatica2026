@@ -1,0 +1,107 @@
+diff --git a/labs/labextra3-hardening/objetivo/server.py b/entregas/labextra3/grupo08/objetivo/server.py
+index 46b81c5..95d573f 100644
+--- a/labs/labextra3-hardening/objetivo/server.py
++++ b/entregas/labextra3/grupo08/objetivo/server.py
+@@ -21,12 +21,24 @@ El verificador ATACA tu copia. Por cada ataque que YA NO FUNCIONA, te muestra
+ la flag defensiva para entregar con ./ctf submit extra3.
+ """
+ import base64
++import binascii
++import hmac
+ import os
+ import sqlite3
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+ from urllib.parse import urlparse, parse_qs
+ 
+-VERSION = "PhantomServer/2.4.1-debug"   # D1: banner que canta todo
++# D1 (parche grupo08): banner genérico. No identifica producto, versión, build
++# ("-debug") ni el runtime de Python. Se aplica también a las páginas de error
++# que genera BaseHTTPRequestHandler (501, 400...), porque todas usan
++# version_string().
++VERSION = "webserver"
++
++# D3 (parche grupo08): /backup solo con credenciales de operador, inyectadas por
++# entorno (nunca en el código). Si no están configuradas, el endpoint queda
++# APAGADO (fail-closed): responde 404 como cualquier ruta inexistente.
++BACKUP_USER = os.environ.get("PHANTOM_BACKUP_USER", "")
++BACKUP_PASS = os.environ.get("PHANTOM_BACKUP_PASS", "")
+ 
+ DB = "/tmp/phantom_hardening.db"
+ DESCARGAS = "/tmp/phantom_descargas"    # raíz "pública" de /descargar
+@@ -49,6 +61,29 @@ class Handler(BaseHTTPRequestHandler):
+     server_version = VERSION            # D1
+     sys_version = ""
+ 
++    def version_string(self):
++        # D1: el default arma "server_version + ' ' + sys_version" (dejaba
++        # "PhantomServer/2.4.1-debug " con espacio colgando). Devolvemos un
++        # valor fijo para que ninguna respuesta, ni las de error, filtre nada.
++        return VERSION
++
++    def _backup_autorizado(self):
++        """D3: HTTP Basic contra credenciales de entorno, comparación en
++        tiempo constante. Sin credenciales configuradas -> nunca autoriza."""
++        if not (BACKUP_USER and BACKUP_PASS):
++            return False
++        auth = self.headers.get("Authorization", "")
++        if not auth.startswith("Basic "):
++            return False
++        try:
++            user, _, pwd = base64.b64decode(auth[6:], validate=True) \
++                .decode("utf-8").partition(":")
++        except (binascii.Error, UnicodeDecodeError):
++            return False
++        ok_user = hmac.compare_digest(user.encode(), BACKUP_USER.encode())
++        ok_pass = hmac.compare_digest(pwd.encode(), BACKUP_PASS.encode())
++        return ok_user and ok_pass
++
+     def do_GET(self):
+         path, _, qs = self.path.partition("?")
+         params = parse_qs(qs)
+@@ -56,15 +91,25 @@ class Handler(BaseHTTPRequestHandler):
+         if path == "/":
+             self._html(200, "<h1>PhantomCorp</h1><p>Portal de empleados.</p>")
+         elif path == "/robots.txt":
+-            # D3: el robots delata las rutas sensibles
+-            self._txt(200, "User-agent: *\nDisallow: /backup\nDisallow: /api/status\n")
++            # D3 (parche): robots.txt es PÚBLICO y lo lee primero el atacante.
++            # Solo sirve para guiar crawlers legítimos, nunca como control de
++            # acceso: no se listan rutas sensibles.
++            self._txt(200, "User-agent: *\nDisallow:\n")
+         elif path == "/backup":
+-            # D3: y la ruta sensible responde sin autenticación
+-            self._txt(200, "dump_pre_migracion: usuarios=1 OK — BORRAR ESTE ENDPOINT")
+-        elif path == "/api/status":
+-            # D2: endpoint de debug en producción
+-            self._json(200, '{"debug": true, "env": "produccion", '
+-                            '"db": "' + DB + '", "pid": ' + str(os.getpid()) + '}')
++            # D3 (parche): la protección real está en la ruta, no en el robots.
++            if not (BACKUP_USER and BACKUP_PASS):
++                # Fail-closed: sin credenciales de operador, no existe.
++                self._txt(404, "404 - no existe")
++            elif not self._backup_autorizado():
++                self._send(401, b"401 - autenticacion requerida",
++                           "text/plain; charset=utf-8",
++                           {"WWW-Authenticate": 'Basic realm="phantom-ops"'})
++            else:
++                self._txt(200, "dump_pre_migracion: usuarios=1 OK")
++        # D2 (parche): /api/status se ELIMINÓ. Era un endpoint de debug
++        # (debug:true, ruta de la DB, PID) y no tiene lugar en producción. No
++        # tiene rama propia: cae en el 404 genérico, indistinguible de cualquier
++        # ruta que nunca existió.
+         elif path == "/login":
+             # D4: SQLi clásico — consulta por interpolación de strings
+             user = params.get("user", [""])[0]
+@@ -100,9 +145,11 @@ class Handler(BaseHTTPRequestHandler):
+     def _json(self, code, body):
+         self._send(code, body.encode(), "application/json")
+ 
+-    def _send(self, code, body, ctype):
++    def _send(self, code, body, ctype, extra_headers=None):
+         self.send_response(code)
+         self.send_header("Content-Type", ctype)
++        for k, v in (extra_headers or {}).items():
++            self.send_header(k, v)
+         self.end_headers()
+         self.wfile.write(body)
+ 

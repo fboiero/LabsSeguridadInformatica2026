@@ -1,0 +1,16 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:26:18 GMT
+Content-Type: text/plain; charset=utf-8
+
+User-agent: *
+Disallow: /backup
+Disallow: /api/status
+
+----
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:26:19 GMT
+Content-Type: text/plain; charset=utf-8
+
+dump_pre_migracion: usuarios=1 OK — BORRAR ESTE ENDPOINT

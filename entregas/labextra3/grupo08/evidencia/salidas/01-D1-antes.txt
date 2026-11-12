@@ -1,0 +1,17 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:26:18 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>PhantomCorp</h1><p>Portal de empleados.</p>
+----
+HTTP/1.0 404 Not Found
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:26:18 GMT
+Content-Type: text/plain; charset=utf-8
+
+404 - no existe
+----
+HTTP/1.0 501 Unsupported method ('HEAD')
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 12 Nov 2026 13:26:18 GMT

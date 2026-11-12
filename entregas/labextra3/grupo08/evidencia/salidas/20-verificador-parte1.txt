@@ -1,0 +1,14 @@
+
+== Lab Extra 3 · verificación de defensas ==
+[2mObjetivo bajo prueba: entregas/labextra3/grupo08/objetivo/server.py[0m
+
+  [32m✓[0m D1 — ataque BLOQUEADO  [2m(header Server: 'webserver')[0m
+      flag: FLAG{def_banner_neutralizado}
+  [32m✓[0m D2 — ataque BLOQUEADO  [2m(GET /api/status -> 404 '404 - no existe')[0m
+      flag: FLAG{def_debug_apagado}
+  [32m✓[0m D3 — ataque BLOQUEADO  [2m(GET /backup -> 404; robots menciona /backup: False)[0m
+      flag: FLAG{def_rutas_blindadas}
+  [31m✗[0m D4 — todavía vulnerable  [2m(bypass admin'--: FUNCIONA (vulnerable); OR 1=1: FUNCIONA (vulnerable))[0m
+  [31m✗[0m D5 — todavía vulnerable  [2m(traversal /etc/passwd -> 200 (FILTRADO (vulnerable)))[0m
+
+[31m3/5 defensas correctas.[0m
