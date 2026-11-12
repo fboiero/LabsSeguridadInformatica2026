@@ -136,6 +136,11 @@ deberían cruzar el perímetro.
 [ OK ] ¡Lab extra COMPLETO!
 ```
 
+> Evidencia cruda en [`evidencia/`](evidencia/README.md): transcript real de los
+> `curl` vía `/preview` (`transcript-ssrf.txt`) y la salida de `./ctf status extra`
+> (`ctf-status-extra.txt`). Las 3 flags validan contra los hashes de
+> `labs/labextra-ssrf/retos.manifest`.
+
 ---
 
 ## 3. Parte 1 (teoría) — el servidor como cómplice involuntario

