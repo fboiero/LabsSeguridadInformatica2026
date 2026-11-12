@@ -21,4 +21,13 @@ cd ../../../..
 # salidas crudas -> evidencia/salidas/r1.txt y r2.txt (redirigidas con >)
 
 ## Parte 2 — Moyano, Joaquin (R3, exposicion, remediacion, research)
-# (completar)
+cd labs/labextra2-git-forense/caso/repo-delata
+git branch -a                                   # R3: listar ramas existentes
+git log --all --graph --decorate --oneline      # R3: estructura del arbol y bifurcaciones
+git log -p -1 feature/pasarela-pagos            # R3: diff del commit 0abdf95
+git ls-tree -r feature/pasarela-pagos           # R3: inspeccionar arbol de archivos de la rama
+git show feature/pasarela-pagos:.env.pasarela   # R3: lectura directa de la credencial
+cd ../../../..
+./ctf submit extra2 R3 'FLAG{git_rama_abandonada}'
+./ctf status extra2
+# salidas crudas -> evidencia/salidas/r3.txt y evidencia/ctf-status-final.txt

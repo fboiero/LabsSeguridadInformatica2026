@@ -1,0 +1,47 @@
+$ git branch -a
+  feature/pasarela-pagos
+* main
+
+$ git log --all --graph --decorate --oneline
+* fa714bd (HEAD -> main) docs: estado del proyecto
+* eafb81c fix: sacar credenciales del codigo (ups)
+| * 0abdf95 (feature/pasarela-pagos) wip: pasarela de pagos (falta todo)
+|/  
+* 9333f2b hotfix: deploy roto en produccion (config temporal)
+* de33a75 inicial: deploy-tool con token por variable de entorno
+
+$ git log -p -1 feature/pasarela-pagos
+commit 0abdf953b75b214af59d0cf31e55ccbf2c9873d8
+Author: dev-jperez <jperez@phantomcorp.example>
+Date:   Wed Aug 5 16:30:00 2026 -0300
+
+    wip: pasarela de pagos (falta todo)
+
+diff --git a/.env.pasarela b/.env.pasarela
+new file mode 100644
+index 0000000..4431615
+--- /dev/null
++++ b/.env.pasarela
+@@ -0,0 +1,3 @@
++# NO COMMITEAR ESTO (lo commitee igual, despues lo veo)
++PAGOS_SECRET=FLAG{git_rama_abandonada}
++PAGOS_ENDPOINT=https://pagos.phantomcorp.example
+diff --git a/pasarela.py b/pasarela.py
+new file mode 100644
+index 0000000..2da76b4
+--- /dev/null
++++ b/pasarela.py
+@@ -0,0 +1 @@
++"""Integracion con la pasarela de pagos (WIP, quedo a mitad de camino)."""
+
+$ git ls-tree -r feature/pasarela-pagos
+100644 blob 44316156f7d5b234b4bfc85c5de3912f6cd67c87	.env.pasarela
+100644 blob 9211cb89bddba74ae7b4effb9b9bac2227a6b1f1	README.md
+100644 blob 4400058b41096fefa2777ebd0407861cb376a8d3	app.py
+100644 blob 04e01adfdf88481745a42ccf11aa72d4745e047e	config.py
+100644 blob 2da76b41efd0e074a71ebc578179d8cb630226bc	pasarela.py
+
+$ git show feature/pasarela-pagos:.env.pasarela
+# NO COMMITEAR ESTO (lo commitee igual, despues lo veo)
+PAGOS_SECRET=FLAG{git_rama_abandonada}
+PAGOS_ENDPOINT=https://pagos.phantomcorp.example
