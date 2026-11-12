@@ -1,0 +1,8 @@
+Maquina de medicion: Python 3.13.15 (CPython, 1 hilo), Windows
+PBKDF2 iteraciones: 200000
+
+md5     :        1051364 intentos/s   (diccionario de 50 palabras: 0.0476 ms)
+sha256  :         921276 intentos/s   (diccionario de 50 palabras: 0.0543 ms)
+pbkdf2  :             13 intentos/s   (diccionario de 50 palabras: 3984.9453 ms)
+
+Nota: pbkdf2 se midio con 200 intentos (es ~1000x mas lento); el resto con 200.000.

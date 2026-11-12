@@ -1,0 +1,32 @@
+# Comandos — Lab Extra 4 (cracking). En orden, desde la raíz del repo.
+# (En esta máquina Windows se exportó PYTHONUTF8=1 para que la consola imprima ✓/✗;
+#  en el entorno Linux de la cátedra no hace falta.)
+
+cd labs/labextra4-cracking
+
+# --- R1 (operador/md5) y R2 (analista/sha256): diccionario puro ---
+python3 ../../entregas/labextra4/grupo08/src/cracker.py crackear caso/sombra.txt caso/diccionario.txt
+#   -> operador: riverplate   (8 intentos)
+#   -> analista: matecocido   (11 intentos)
+#   -> admin: NO cae sin reglas   |   root (pbkdf2): se omite
+
+# --- R3 (admin/sha256): hace falta mangling, phantom2026 no está literal ---
+python3 ../../entregas/labextra4/grupo08/src/cracker.py crackear caso/sombra.txt caso/diccionario.txt --reglas
+#   -> admin: phantom2026   (phantom + sufijo "2026")
+
+# --- abrir el loot de cada cuenta crackeada ---
+python3 ../../entregas/labextra4/grupo08/src/cracker.py descifrar caso/loot/operador.enc --password riverplate
+python3 ../../entregas/labextra4/grupo08/src/cracker.py descifrar caso/loot/analista.enc --password matecocido
+python3 ../../entregas/labextra4/grupo08/src/cracker.py descifrar caso/loot/admin.enc   --password phantom2026
+
+# --- medición de velocidad por algoritmo (P1) ---
+# benchmark con hash_de() del cracker: md5 y sha256 con 200.000 intentos, pbkdf2 con 200.
+# salida en salidas/benchmark-velocidad.txt
+
+# --- entrega de flags ---
+cd ../..
+./ctf submit extra4 R1 'FLAG{crack_diccionario_md5}'
+./ctf submit extra4 R2 'FLAG{crack_sha256_diccionario}'
+./ctf submit extra4 R3 'FLAG{crack_reglas_mangling}'
+./ctf status extra4
+#   -> 3/3 (100%)
