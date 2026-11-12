@@ -124,7 +124,7 @@ Para la totalidad de estos secretos, GitHub no emite ninguna notificación al em
 
 ## Fuentes consultadas
 
-1. **Git Project Documentation:** *git-filter-repo: Man Page and User Manual*, Michael Haggerty, 2024. [https://github.com/newren/git-filter-repo](https://github.com/newren/git-filter-repo)
+1. **Git Project Documentation:** *git-filter-repo: Man Page and User Manual*, Elijah Newren, 2024. [https://github.com/newren/git-filter-repo](https://github.com/newren/git-filter-repo)
 2. **Gitleaks Repository & Documentation:** Zachary Rice, *Audit git repos for secrets*, 2024. [https://github.com/gitleaks/gitleaks](https://github.com/gitleaks/gitleaks)
 3. **Truffle Security:** *TruffleHog v3: Active Credential Verification Architecture*, 2024. [https://trufflesecurity.com/trufflehog](https://trufflesecurity.com/trufflehog)
 4. **Meli, M. et al. (North Carolina State University):** *How Bad Can It Git? Characterizing Secret Leakage in Public GitHub Repositories*, Proceedings of the ISOC Network and Distributed System Security Symposium (NDSS), 2019.
