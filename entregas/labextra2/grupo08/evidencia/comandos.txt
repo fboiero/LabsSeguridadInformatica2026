@@ -1,0 +1,33 @@
+# Comandos usados — Lab Extra 2 (grupo08)
+# Listado fiel, en orden. Cada integrante agrega su tramo debajo del anterior.
+
+## Parte 1 — Leone, Lucas (setup, R1, R2)
+git checkout -b labextra2-grupo08
+./ctf lab extra2
+cd labs/labextra2-git-forense/caso/repo-delata
+git log --oneline --all
+git log --format='%h | %an <%ae> | %ad | %s' --date=iso main
+git log -p --reverse main                       # R1: diff de toda la historia
+git reflog --date=iso                           # R2: lo que hizo HEAD (incluye el reset)
+git fsck --lost-found                           # R2: commit colgado
+git fsck --unreachable --no-reflogs             # R2: commit + tree + blob sin referencia
+git cat-file -t bc9d0db
+git cat-file -p bc9d0db
+git show bc9d0db                                # R2: contenido del commit "borrado"
+cd ../../../..
+./ctf submit extra2 R1 'FLAG{git_log_no_olvida}'
+./ctf submit extra2 R2 'FLAG{git_reflog_rescata}'
+./ctf status extra2
+# salidas crudas -> evidencia/salidas/r1.txt y r2.txt (redirigidas con >)
+
+## Parte 2 — Moyano, Joaquin (R3, exposicion, remediacion, research)
+cd labs/labextra2-git-forense/caso/repo-delata
+git branch -a                                   # R3: listar ramas existentes
+git log --all --graph --decorate --oneline      # R3: estructura del arbol y bifurcaciones
+git log -p -1 feature/pasarela-pagos            # R3: diff del commit 0abdf95
+git ls-tree -r feature/pasarela-pagos           # R3: inspeccionar arbol de archivos de la rama
+git show feature/pasarela-pagos:.env.pasarela   # R3: lectura directa de la credencial
+cd ../../../..
+./ctf submit extra2 R3 'FLAG{git_rama_abandonada}'
+./ctf status extra2
+# salidas crudas -> evidencia/salidas/r3.txt y evidencia/ctf-status-final.txt
