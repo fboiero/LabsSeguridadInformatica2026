@@ -1,0 +1,15 @@
+### P4 - el servidor ignora el header alg y recalcula HMAC-SHA256
+### objetivo: http://127.0.0.1:8099/admin  (se espera 401 en los tres)
+
+[alg:none, firma vacia]
+  token : eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJv...
+  /admin: HTTP 401 {"error": "token invalido o expirado"}
+
+[alg:none, firma basura]
+  token : eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJv...
+  /admin: HTTP 401 {"error": "token invalido o expirado"}
+
+[HS256 firmado con secreto EQUIVOCADO ('secret')]
+  token : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJ...
+  /admin: HTTP 401 {"error": "token invalido o expirado"}
+

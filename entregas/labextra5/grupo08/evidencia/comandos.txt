@@ -32,3 +32,19 @@ curl -s -H 'Authorization: Bearer <token-alg-none>' localhost:8080/admin
 ./ctf submit extra5 R2 'FLAG{jwt_forjado_admin}'
 ./ctf submit extra5 R3 'FLAG{jwt_suplantacion_idor}'
 ./ctf status extra5
+
+# ======================= PARTE 2 (análisis P3-P5) =======================
+# Entorno: WSL Ubuntu (Python 3.12.3), app sin Docker (stdlib). Portal en :8099.
+# Los scripts corren bajo Linux; .gitattributes fuerza LF en *.sh.
+# Reproducción completa de la cadena + sanidad + alg:none + medición:
+bash entregas/labextra5/grupo08/evidencia/scripts/parte2-run.sh
+#   -> salidas/10-parte2-cadena.txt       (R1-R3 revalidados, HTTP 200 + flags)
+#   -> salidas/11-parte2-sanidad.txt       (a: real diego /admin 403; b: firma alterada 401)
+#   -> salidas/12-parte2-alg-none.txt      (alg:none vacía/basura + HS256 secreto malo -> 401 los 3)
+#   -> salidas/13-parte2-medicion-crack.txt (crack offline: 0.071 ms cripto / 8.8 ms con I/O)
+
+# P4 (demo dedicada de alg:none, requiere el portal levantado en $PORT):
+PORT=8099 python3 entregas/labextra5/grupo08/evidencia/scripts/parte2-alg-none.py
+
+# P2 (medición reproducible del crack, no toca el servidor):
+python3 entregas/labextra5/grupo08/evidencia/scripts/parte2-medir-crack.py <token> labs/labextra5-jwt/caso/diccionario.txt
