@@ -1,0 +1,11 @@
+### crackear CON --reglas (R3 admin/sha256 mangling) ###
+  ✓ operador (md5) cayó en 286 intentos: riverplate
+  ✓ analista (sha256) cayó en 421 intentos: matecocido
+  ✓ admin (sha256) cayó en 210 intentos: phantom2026
+  … root (pbkdf2): 200k iteraciones/intento — diccionario entero inviable, se omite (ver P4)
+  ✓ operador: riverplate
+  ✓ analista: matecocido
+  ✓ admin: phantom2026
+  ✗ root: no cayó (¿falta una regla? ¿es pbkdf2?)
+
+3/4 contraseñas recuperadas

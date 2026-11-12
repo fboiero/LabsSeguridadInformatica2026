@@ -1,0 +1,20 @@
+### descifrar loot operador (riverplate) ###
+Notas de operador — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_diccionario_md5}
+
+
+### descifrar loot analista (matecocido) ###
+Notas de analista — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_sha256_diccionario}
+
+
+### descifrar loot admin (phantom2026) ###
+Notas de admin — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_reglas_mangling}
+

@@ -1,0 +1,11 @@
+### crackear SIN reglas (R1 operador/md5, R2 analista/sha256) ###
+  ✓ operador (md5) cayó en 8 intentos: riverplate
+  ✓ analista (sha256) cayó en 11 intentos: matecocido
+  ✗ admin (sha256) no cayó tras 49 intentos
+  … root (pbkdf2): 200k iteraciones/intento — diccionario entero inviable, se omite (ver P4)
+  ✓ operador: riverplate
+  ✓ analista: matecocido
+  ✗ admin: no cayó (¿falta una regla? ¿es pbkdf2?)
+  ✗ root: no cayó (¿falta una regla? ¿es pbkdf2?)
+
+2/4 contraseñas recuperadas
