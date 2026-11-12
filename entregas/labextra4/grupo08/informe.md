@@ -2,21 +2,18 @@
 
 **Grupo:** 08 · **Integrantes:** Marco Cordoba — @MarcoCordoba · Thomas Koncurat — @Koncu1 · Lucas Leone — @LucasLeone · Geronimo Marquez — @Geromarquezz · Joaquin Moyano — @Joaco919
 
-**Declaración de uso de IA:** (obligatoria — **la completa el grupo al cerrar la entrega**)
+**Declaración de uso de IA:** (obligatoria)
 
-> Estado parcial: esta declaración cubre por ahora la **mitad práctica** (secciones
-> 1–4 y P1). La mitad de análisis (P2–P5 y conclusión) la redacta otro integrante y
-> debe sumar aquí su propia línea de declaración antes de entregar.
->
 > | Herramienta | Para qué se usó | Qué partes afectó | Cómo se verificó |
 > |---|---|---|---|
 > | Claude (Anthropic) vía Claude Code | Apoyo en la implementación de `cracker.py` y en correr/medir el crackeo. | `src/cracker.py`, secciones 1–4 y P1. | **Todas las salidas pegadas son ejecución real** del cracker contra `caso/sombra.txt` (ver `evidencia/`). Las 3 flags validan contra los hashes de `labs/labextra4-cracking/retos.manifest`. El código es stdlib puro y el grupo lo comprende y puede defenderlo. |
+> | Claude (Anthropic) vía Claude Code | Apoyo en la redacción del análisis (Mitad B). | Secciones P2–P5 y conclusión (6). | Números anclados a la evidencia real: salts de `caso/sombra.txt` (`s4l7-01..04`) y velocidad medida (pbkdf2 ≈ 13/s). Las cuentas de P4 usan el mismo factor GPU (~1.000×) declarado en P1. El grupo revisó y comprende el análisis. |
 
-> **⚠️ División del trabajo (grupo08).** Esta entrega está hecha a dos mitades:
+> **División del trabajo (grupo08).** Esta entrega se hizo a dos mitades, **ambas
+> completas**:
 > - **Mitad A — práctica (HECHA):** `cracker.py` funcional, crackeo R1–R3, apertura del
 >   loot, medición de velocidad (P1) y evidencia. Secciones **1, 2, 3, 4** y **P1**.
-> - **Mitad B — análisis (PENDIENTE, otro integrante):** **P2, P3, P4, P5** y la
->   **conclusión** (sección 6). Están marcadas con `TODO` más abajo.
+> - **Mitad B — análisis (HECHA):** **P2, P3, P4, P5** y la **conclusión** (sección 6).
 
 ---
 
@@ -106,50 +103,133 @@ contra hashes rápidos, cualquier diccionario cae de forma instantánea.
 
 ### P2 — Si el salt no impidió que operador y analista cayeran, ¿para qué sirve?
 
-<!-- TODO (otro integrante): el salt NO frena el diccionario (si la contraseña es débil,
-cae igual). Lo que SÍ bloquea: (1) las tablas precalculadas / rainbow tables —cada
-cuenta tiene salt distinto, así que no sirve una tabla hecha una sola vez—, y (2)
-atacar todas las cuentas a la vez: sin salt, dos usuarios con la misma contraseña
-tienen el mismo hash y un solo cómputo rompe a los dos; con salt por usuario hay que
-atacar cuenta por cuenta. Mencionar que en sombra.txt cada salt es distinto
-(73346c372d3031..34). -->
-**TODO — Mitad B.**
+El salt **no frena un ataque de diccionario**: si la contraseña está en la lista, cae
+igual —el atacante rehashea `salt + palabra` y compara—. Eso es justo lo que pasó con
+`operador` y `analista`. El salt ataca otra cosa: **el trabajo reutilizable**.
+
+1. **Mata las tablas precalculadas (rainbow tables).** Sin salt, un atacante usa una
+   tabla hash→contraseña calculada **una sola vez** y la reutiliza contra cualquier
+   volcado. Con salt por usuario esa tabla no sirve: habría que recalcularla por cada
+   salt distinto.
+2. **Impide romper todas las cuentas de un cómputo.** Sin salt, dos usuarios con la
+   misma contraseña tienen el **mismo hash**: un intento rompe a los dos. Con salt por
+   usuario cada intento prueba **una sola cuenta**; hay que atacar cuenta por cuenta.
+
+En `caso/sombra.txt` cada usuario tiene un salt **distinto**:
+`73346c372d3031 … 34`, que en ASCII son `s4l7-01`, `s4l7-02`, `s4l7-03`, `s4l7-04`.
+Por eso `operador` y `analista`, aun siendo contraseñas débiles, tuvieron que crackearse
+por separado. Conclusión: el salt sube el costo del atacante **a escala** (muchas
+cuentas / tablas precalculadas), no el de romper **una** contraseña débil puntual. Para
+eso último hace falta un **hash lento** (P4).
 
 ### P3 — La contraseña del admin cumplía la política típica y cayó igual. ¿Qué le falta a esa política? ¿Qué recomienda NIST SP 800-63B?
 
-<!-- TODO (otro integrante): la "complejidad" (mayús/minús/números/largo≥8) no mide lo
-que importa: `phantom2026` cumple todo y es trivial (lemma de diccionario + año). Lo
-que falta es resistencia a diccionario/patrones. NIST SP 800-63B: NO exigir reglas de
-composición ni rotación periódica; SÍ longitud mínima generosa, permitir passphrases
-largas, y chequear la contraseña contra listas de comprometidas/comunes (p. ej. HIBP).
-Usar un gestor de contraseñas. -->
-**TODO — Mitad B.**
+`phantom2026` cumple la política "fuerte" de manual: mayúscula/minúscula (bueno, al menos
+minúscula), número, largo ≥ 8. Y cayó en **210 intentos** con una regla trivial
+(`palabra + año`). El problema es que la política mide **composición**, no
+**resistencia**: una contraseña que es *lema de diccionario + sufijo obvio* pasa todas
+las reglas y sigue estando en el espacio que un cracker prueba primero. La "complejidad"
+da **falsa sensación de seguridad**: empuja a la gente a patrones predecibles
+(`Palabra1!`, `Empresa2026`) que el mangling cubre.
+
+Lo que **falta** es medir lo que importa: que la contraseña **no esté en listas de
+comunes/comprometidas** ni sea un patrón derivable.
+
+**NIST SP 800-63B** (guía actual) recomienda:
+- **No** exigir reglas de composición (obligar símbolos/mayúsculas/números).
+- **No** forzar rotación/caducidad periódica sin motivo (empeora: la gente incrementa un
+  contador).
+- **Sí** longitud mínima generosa (≥ 8, idealmente más) y **permitir passphrases largas**
+  (hasta 64+ caracteres, espacios incluidos).
+- **Verificar la contraseña nueva contra listas de comprometidas/comunes** (p. ej. Have I
+  Been Pwned / diccionarios conocidos) y rechazarla si aparece.
+- Permitir pegar y usar **gestores de contraseñas**; nada de "pistas" ni preguntas de
+  seguridad.
+
+Con esa política, `phantom2026` se rechaza en el momento del alta (aparece en cualquier
+lista de patrones) y `admin` nunca habría tenido una contraseña crackeable por diccionario.
 
 ### P4 — ¿Por qué root no cayó, en términos de trabajo por intento? Con 1.000 GPUs, ¿cuánto tarda el diccionario entero contra PBKDF2-200k?
 
-<!-- TODO (otro integrante): PBKDF2-200k hace 200.000 iteraciones de HMAC-SHA256 por
-CADA intento → el costo por intento sube ~10⁵ veces frente a un sha256 pelado. Esa es
-la defensa: no achica el espacio de contraseñas, encarece cada prueba. Hacer la cuenta
-con los números del lab: partir de la velocidad medida de pbkdf2 (~13/s en 1 CPU),
-estimar una GPU/equipo y multiplicar por 1.000, y mostrar cuánto tarda el diccionario
-(y comparar con md5). Conectar con el Lab 03 (por esto se usa hash lento + salt). -->
-**TODO — Mitad B.**
+**Trabajo por intento.** PBKDF2-200k ejecuta **200.000 iteraciones de HMAC-SHA256 por
+cada contraseña probada**. Un `sha256` pelado es **1** operación por intento; PBKDF2-200k
+son 200.000. El espacio de contraseñas es el mismo: lo que cambia es que **cada prueba
+cuesta ~10⁵ veces más**. Esa es toda la defensa de un hash lento: no achica el problema,
+**encarece cada disparo**. Lo medimos: md5 ≈ 1.05×10⁶/s vs pbkdf2 ≈ **13/s** en 1 hilo
+CPU (sección 2) → ~80.000× más lento, consistente con las 200k iteraciones.
+
+**Cuenta con 1.000 GPUs.** Usamos el mismo factor que en P1 (una GPU ≈ **1.000×** nuestra
+CPU para este tipo de hash):
+
+- Velocidad PBKDF2-200k: `13/s × 1.000 (GPU) × 1.000 (GPUs)` ≈ **1,3×10⁷ intentos/s**.
+
+| Objetivo | Contra PBKDF2-200k (1.000 GPUs ≈ 1,3×10⁷/s) | Contra md5 (1.000 GPUs ≈ 10¹²/s) |
+|---|---|---|
+| Diccionario del caso (50 palabras) | **instantáneo** (<1 µs) | instantáneo |
+| `rockyou` entera (~14×10⁶) | ~**1,1 s** | ~14 µs |
+| Fuerza bruta 8 chars alfanum (62⁸ ≈ 2,2×10¹⁴) | ~1,7×10⁷ s ≈ **194 días** | ~218 s ≈ **3,6 min** |
+
+**Por qué root no cayó.** El diccionario del caso son 50 palabras y **la de `root` no está
+en él** (igual que `admin`, pero `admin` sí tenía base en el diccionario + regla). Agotado
+el diccionario, el único camino es **salir a fuerza bruta**, y ahí PBKDF2-200k lo vuelve
+inviable: la misma fuerza bruta que contra md5 tarda **3,6 minutos**, contra PBKDF2-200k
+tarda **~194 días** —y con una passphrase un poco más larga salta a siglos—. Nota honesta:
+el *mini-diccionario* de 50 palabras cae al instante incluso contra PBKDF2 (es demasiado
+chico); PBKDF2 **no** salva una contraseña que está en la lista —eso lo arregla P3—, pero
+**sí** hace impagable todo lo que está **fuera** de la lista.
+
+**Conexión con el Lab 03.** Por esto el almacenamiento correcto es **hash lento
+(PBKDF2/Argon2/bcrypt) + salt por usuario**: el salt frena las tablas y el ataque en masa
+(P2), y el hash lento encarece cada intento hasta volver la fuerza bruta inviable (P4).
+`root` es la única cuenta que sobrevive al volcado, y es exactamente la que estaba guardada
+"a la Lab 03".
 
 ### P5 — Como defensor de PhantomCorp, acciones de respuesta en orden + política de almacenamiento futura
 
-<!-- TODO (otro integrante): la PRIMERA acción no es técnica: activar gestión de
-incidentes (declarar el incidente, alcance, preservar evidencia, comunicar según
-corresponda). Luego: forzar reset de todas las contraseñas (el volcado está
-comprometido), invalidar sesiones, revisar reutilización, y migrar el almacenamiento a
-un hash lento (Argon2id o bcrypt/scrypt, o PBKDF2 con iteraciones altas) + salt por
-usuario + pepper, rehasheando en el próximo login. Chequeo contra listas de
-comprometidas. -->
-**TODO — Mitad B.**
+**Acciones de respuesta (en orden).** La primera **no es técnica**:
+
+1. **Activar gestión de incidentes.** Declarar el incidente, delimitar **alcance** (qué
+   volcado se fugó, qué cuentas), **preservar evidencia** y comunicar según corresponda
+   (legal/compliance; notificación si aplica). El volcado `sombra.txt` ya está en manos
+   del atacante → **asumir todas las contraseñas comprometidas**.
+2. **Invalidar credenciales y sesiones.** Forzar **reset de contraseña de todas las
+   cuentas** y **cerrar las sesiones/tokens activos** (el reset no sirve si la sesión
+   vieja sigue viva).
+3. **Contener reutilización.** `operador`/`analista`/`admin` usaban contraseñas débiles;
+   revisar **reúso** de esas contraseñas en otros sistemas (SSO, VPN, correo) y rotarlas.
+   Priorizar `admin` por privilegio.
+4. **Endurecer y monitorear.** MFA donde falte, alertas de login anómalo, revisar accesos
+   recientes de las cuentas caídas.
+
+**Política de almacenamiento futura.**
+- **Algoritmo:** hash lento moderno — **Argon2id** (preferido) o bcrypt/scrypt; si hay que
+  quedarse en PBKDF2, con iteraciones altas (≥ las del lab). Nunca md5/sha256 pelado.
+- **Salt único por usuario** (ya lo hacían) + **pepper** (secreto global fuera de la BD,
+  en KMS/HSM) para que un volcado de BD solo no alcance.
+- **Migración de las cuentas existentes:** no se puede "re-hashear" lo viejo sin la
+  contraseña → **rehashear en el próximo login válido** (o directamente forzar reset, que
+  acá además toca por el incidente).
+- **En el alta/cambio:** verificar contra **listas de comprometidas/comunes** (HIBP) y
+  rechazar; política estilo NIST (P3), no reglas de composición.
+
+Así, aunque vuelva a fugarse la base, el atacante enfrenta lo que enfrentó con `root`:
+cada intento es caro y el diccionario/fuerza bruta deja de ser rentable.
 
 ## 6. Conclusión
 
-<!-- TODO (otro integrante): 5 líneas como defensor — política concreta para PhantomCorp:
-algoritmo (Argon2id/bcrypt con parámetros), salt por usuario, qué hacer con las cuentas
-existentes (reset + rehash), y el cambio de mentalidad de "complejidad" a "resistencia
-a diccionario + verificación contra listas comprometidas". -->
-**TODO — Mitad B.**
+Como defensores de PhantomCorp, la lección del volcado es clara: **tres de cuatro cuentas
+cayeron y solo sobrevivió la que estaba guardada con hash lento**. La política concreta:
+
+1. **Algoritmo:** migrar a **Argon2id** (o bcrypt/scrypt; en su defecto PBKDF2 con
+   iteraciones altas). md5/sha256 pelados quedan prohibidos para contraseñas.
+2. **Salt único por usuario + pepper** en KMS: frena tablas precalculadas y el ataque en
+   masa (P2); el hash lento encarece cada intento hasta volver la fuerza bruta inviable
+   (P4).
+3. **Cuentas existentes:** reset forzado por el incidente + **rehash en el próximo login**.
+4. **Cambio de mentalidad:** dejar de medir "**complejidad**" (mayús/número/símbolo, que
+   `phantom2026` cumplía) y pasar a **resistencia a diccionario**: longitud/passphrases y
+   **verificación contra listas de comprometidas** (NIST SP 800-63B).
+
+El salt no salva una contraseña débil y la "complejidad" tampoco; lo que salva es
+**contraseña fuera de toda lista + hash lento**. Eso es, literalmente, por qué `root` no
+cayó.
