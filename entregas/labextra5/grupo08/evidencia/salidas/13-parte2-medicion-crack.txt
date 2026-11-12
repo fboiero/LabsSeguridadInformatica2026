@@ -1,0 +1,7 @@
+### P2 - medicion del crack offline (cero requests al servidor)
+secreto encontrado : mate123
+palabras en el diccionario: 31
+palabra cruda #11 es el secreto (sin reglas de mangling)
+(1) operacion completa (abre+lee el diccionario cada vez): 8.770 ms
+(2) solo las verificaciones HMAC hasta el acierto (sin I/O): 0.0712 ms
+promedio de 1000 corridas. python: 3.12.3

