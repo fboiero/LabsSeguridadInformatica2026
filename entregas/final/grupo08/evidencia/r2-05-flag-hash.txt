@@ -1,0 +1,3 @@
+$ printf '%s' 'FLAG{final_sqli_foothold}' | sha256sum
+812d30f0d147908025ddffded3ebadc81769be1b6faf5b8dbf759ba8c7d16f5d
+# == R2 en retos.manifest (812d30f0...) -> flag correcta, no inventada
