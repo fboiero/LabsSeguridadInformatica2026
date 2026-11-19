@@ -65,7 +65,7 @@ recon/enum (R1)  ->  foothold (R2)  ->  loot (R3)  ->  impacto (R4)
 | Reconocimiento + Enumeración | **R1** | Mapeo de rutas, lectura de `robots.txt`, inspección del HTML del portal | `curl`, fuzzing manual de rutas |
 | Explotación | **R2** | SQLi en el login del portal (bypass de autenticación por comentario/tautología) | `curl`, `sqlite3` para razonar la query |
 | Post-explotación | **R3** | Loot de secretos: lectura del backup de config `/backup/rrhh.conf` (credenciales de BD + token de API) accesible sin autorización | `curl` |
-| Impacto | **R4** | *(inyección de comando vía `/api/reporte` → datos de clientes)* | — |
+| Impacto | **R4** | Inyección de comando (RCE) en `/api/reporte`, gateada por el token de R3, para leer el almacén de clientes | `curl`, `os.popen` del target |
 
 > Entorno de verificación: el target es el `server.py` del lab. Para R1 se levantó
 > una instancia fiel del servicio y se ejecutó el recon por HTTP, registrando cada
@@ -75,11 +75,39 @@ recon/enum (R1)  ->  foothold (R2)  ->  loot (R3)  ->  impacto (R4)
 ---
 
 ## 3. Narrativa del ataque
-*(La historia de cómo encadenaste los cuatro hitos, en prosa. Que un colega pueda
-seguir tu camino de principio a fin.)*
+
+El engagement empezó a ciegas, con un solo host autorizado (`phantomcorp`) y sin
+credenciales. En el **recon (R1)** la raíz solo mostraba un portal público, pero
+`robots.txt` traicionó a la organización: su `Disallow: /portal-rrhh` no esconde
+nada, lo publica. Al pedir `/portal-rrhh` apareció el **portal interno de RRHH** —
+sin segmentación ni control previo— con un formulario de login y, en un comentario
+del HTML dejado en producción, la primera flag. Ya teníamos el punto de entrada.
+
+Ese login fue la puerta del **foothold (R2)**. El servidor arma la consulta
+concatenando el input (`SELECT user, rol FROM users WHERE user='…' AND pass='…'`),
+así que no hizo falta adivinar la contraseña: con `user=admin'-- -` comentamos el
+chequeo de `pass`, y con la tautología `' OR '1'='1` confirmamos el patrón. El
+portal respondió como **admin** y nos entregó el dashboard de RRHH, la segunda flag
+y una pista: *"Backup de config disponible en `/backup/rrhh.conf`"*.
+
+Ese backup fue el **loot (R3)**. `GET /backup/rrhh.conf` devolvió, **sin pedir
+sesión**, las credenciales de la base (`DB_USER`/`DB_PASS`) y —lo que de verdad
+importaba— un **token de API**, `phantom-api-7c1e`, junto con la tercera flag. El
+secreto servido como archivo estático convirtió un acceso de aplicación en una
+llave reutilizable: ya ni hacía falta mantener el foothold.
+
+Con ese token llegó el **impacto (R4)**. El endpoint `/api/reporte` ejecuta en el
+servidor el parámetro `cmd` (`os.popen`), pero solo si el `token` es válido. Sin
+token respondía `403`; con el token looteado en R3, el `403` se volvió `200` y el
+servidor ejecutó nuestros comandos (`whoami`). A partir de ahí la ejecución remota
+de comandos permitió leer el almacén de clientes —`/app/priv/clientes.db.txt`, con
+**48.210 registros de nombre, DNI y tarjeta**— y con él la cuarta flag, las *crown
+jewels*. Cuatro eslabones encadenados: un dato de recon abrió un foothold, el
+foothold reveló un secreto, y el secreto habilitó el RCE que expuso los datos de
+los clientes.
 
 ```
-recon/enum  ->  foothold  ->  loot  ->  impacto
+recon/enum (R1)  ->  foothold SQLi (R2)  ->  loot del token (R3)  ->  RCE + crown jewels (R4)
 ```
 
 ---
@@ -284,13 +312,103 @@ recon/enum  ->  foothold  ->  loot  ->  impacto
   5. **Rotar credenciales comprometidas:** cambiar `DB_PASS` y aplicar mínimo privilegio a
      `rrhh_app` en la base de datos.
 
-### H-04 · ...
+### H-04 · Ejecución remota de comandos (RCE) en `/api/reporte` → exfiltración de los datos de clientes
+- **Severidad:** Crítica · **CVSS:** 9.9 — `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H`
+  *(Justificación: alcanzable por red (AV:N) y de explotación trivial —un parámetro
+  en la URL— (AC:L); requiere el token looteado, que funciona como un privilegio
+  bajo ya obtenido (PR:L), sin interacción de la víctima (UI:N). La ejecución de
+  comandos escapa del componente web y compromete todo el host/contenedor
+  (S:C — scope cambiado), con impacto total de confidencialidad, integridad y
+  disponibilidad (C:H/I:H/A:H): se pueden leer datos, modificarlos y detener el
+  servicio.)*
+- **Ubicación:** host `phantomcorp` → `GET /api/reporte?token=<API_TOKEN>&cmd=<comando>`.
+- **Descripción:** El endpoint `/api/reporte` pasa el parámetro `cmd` **directamente**
+  a `os.popen(cmd)` en el servidor, es decir ejecuta comandos arbitrarios del sistema
+  operativo (CWE-78, *OS Command Injection*). El único freno es el `token`, que no es
+  un control de autorización real sino un secreto que ya fue **looteado en R3** (H-03):
+  el mismo backup expuesto entrega la llave que arma este endpoint. Con el token, un
+  `403` se convierte en `200` y el servidor ejecuta lo que se le mande. Usando esa
+  ejecución se leyó el almacén privado de clientes (`/app/priv/clientes.db.txt`), que
+  contiene **48.210 registros con nombre, DNI y número de tarjeta** — las *crown jewels*
+  del negocio — y la flag de impacto del engagement.
+- **Evidencia (reproducible):**
+  ```bash
+  # 1) El endpoint está gateado por el token: sin él, 403
+  $ curl -i 'http://phantomcorp/api/reporte?cmd=id'
+  HTTP/1.0 403 Forbidden
+  token invalido; conseguilo del backup de RRHH
+
+  # 2) Con el token looteado en R3 (H-03), el 403 pasa a 200 y hay ejecución de comandos
+  $ curl -i 'http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=whoami'
+  HTTP/1.0 200 OK
+  $ whoami
+  <usuario del servicio>
+
+  # 3) Con el RCE se leen las crown jewels: el almacén de clientes
+  $ curl 'http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat%20/app/priv/clientes.db.txt'
+  clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+
+  # 4) Validación de la flag R4 contra el retos.manifest del lab (SHA-256)
+  $ printf '%s' 'FLAG{final_crown_jewels}' | sha256sum
+  511226fbc003a0eaeb9e023f4de80d6109023691ed2a88b96ad1a10f9028ffab
+  # == R4 en retos.manifest -> flag correcta, no inventada
+  ```
+  Entorno de verificación: igual que R1–R3, se corrió una **instancia fiel del
+  `server.py`** del lab y se ejecutó la cadena por HTTP. El PoC canónico contra el
+  target Docker (Linux) usa `cmd=cat /app/priv/clientes.db.txt`; la captura local
+  (Windows, mismo `server.py`) usó `type` sobre la ruta equivalente. Salidas completas
+  en `evidencia/r4-01-sin-token-403.txt`, `r4-02-rce-ejecucion-comando.txt`,
+  `r4-03-crown-jewels.txt` y `r4-04-flag-hash.txt`.
+- **Impacto de negocio:** Es el peor desenlace posible de la cadena. La exposición de
+  48.210 registros con DNI y tarjeta implica fraude financiero, robo de identidad y una
+  brecha de datos personales con consecuencias regulatorias (en Argentina, Ley 25.326 de
+  Protección de Datos Personales) y reputacionales. Además, el RCE no se limita a leer:
+  permite modificar o destruir datos y tomar el control del host, por lo que la
+  continuidad del servicio también queda comprometida.
+- **Remediación:**
+  1. **Eliminar la ejecución de comandos:** `os.popen(cmd)` no debe existir. Un endpoint
+     de "reporte" no necesita una shell; si requiere una operación, exponer una acción
+     concreta y parametrizada, nunca un comando libre. Si fuera imprescindible invocar un
+     binario, usar `subprocess.run([...], shell=False)` con la lista de argumentos fija y
+     **allowlist** estricta de valores — jamás concatenar entrada del usuario.
+  2. **Autorización real, no un token-llave:** la ejecución sensible debe exigir una
+     sesión autenticada y autorizada del lado del servidor, con control de permisos por
+     rol; un token en la URL (además logueable en proxies e historiales) no es control de
+     acceso.
+  3. **Defensa en profundidad:** correr el servicio con mínimo privilegio y en un entorno
+     aislado (contenedor sin acceso al almacén de clientes), de modo que un RCE no alcance
+     directamente los datos sensibles.
+  4. **Cortar la cadena antes:** este hallazgo solo es alcanzable porque R3 filtró el
+     token; las remediaciones de H-02 (SQLi) y H-03 (backup/secreto expuesto) habrían
+     impedido llegar hasta acá.
 
 ---
 
 ## 5. Conclusión
-*(Postura de seguridad general del sistema. ¿La cadena era evitable? ¿Cuál fue el
-eslabón que, arreglado, la habría cortado antes?)*
+
+La postura de seguridad del sistema es **crítica**: una sola caja de caja negra se
+recorrió de punta a punta, desde el reconocimiento hasta la exfiltración de 48.210
+registros de clientes, encadenando cuatro hallazgos que combinan exposición de
+información, inyección y ausencia de control de acceso. Ninguno exigió herramientas
+sofisticadas —todo se hizo con `curl`— y eso es lo preocupante: la cadena no se apoya
+en un *zero-day* sino en errores de diseño básicos acumulados.
+
+La cadena **era claramente evitable**, y lo revelador es que cada eslabón, arreglado,
+la habría cortado. El más temprano y barato: en **R1**, no divulgar el portal en
+`robots.txt` ni dejar comentarios sensibles —aunque eso solo retrasa a un atacante, no
+lo detiene. El eslabón **decisivo** es **R2**: si el login usara consultas
+parametrizadas, no habría foothold, y sin foothold no se descubre el backup ni se
+loota el token ni se alcanza el RCE. En paralelo, **R3** es el eslabón más
+indefendible: un backup con secretos servido por la web sin autenticación es un regalo
+al atacante, y arreglarlo (sacar los secretos del contenido servible) habría dejado el
+endpoint de R4 sin su llave. Finalmente **R4** nunca debió existir: `os.popen` sobre
+entrada del usuario es RCE por diseño.
+
+En síntesis: el problema de fondo no es una vulnerabilidad puntual sino la **confianza
+en controles que no son controles** —un `Disallow`, el "no linkear" un backup, un token
+en la URL— en lugar de controles reales: consultas parametrizadas, autorización del lado
+del servidor, gestión de secretos y mínimo privilegio. Corregir R2 o R3 habría cortado
+la cadena antes de los datos de clientes; corregir los cuatro es lo que corresponde.
 
 ---
 

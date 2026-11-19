@@ -1,0 +1,5 @@
+# R4-04 — Validación de la flag R4 contra el retos.manifest del lab (SHA-256).
+$ printf '%s' 'FLAG{final_crown_jewels}' | sha256sum
+511226fbc003a0eaeb9e023f4de80d6109023691ed2a88b96ad1a10f9028ffab *-
+# R4 en retos.manifest: 511226fbc003a0eaeb9e023f4de80d6109023691ed2a88b96ad1a10f9028ffab
+# -> coincide: flag real, no inventada.
