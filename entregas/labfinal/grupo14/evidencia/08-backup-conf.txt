@@ -1,0 +1,4 @@
+DB_USER=rrhh_app
+DB_PASS=Rh-2026
+API_TOKEN=phantom-api-7c1e
+# usar el token en /api/reporte?token=...&cmd=... FLAG{final_token_looted}
