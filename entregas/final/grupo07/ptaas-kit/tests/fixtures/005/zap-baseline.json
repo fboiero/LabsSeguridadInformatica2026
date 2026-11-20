@@ -1,0 +1,16 @@
+{
+  "site": [
+    {
+      "name": "http://dvwa.lab.test",
+      "alerts": [
+        {
+          "alertRef": "10021",
+          "alert": "X-Content-Type-Options Header Missing",
+          "riskcode": "1",
+          "cweid": "693",
+          "confidence": "Medium"
+        }
+      ]
+    }
+  ]
+}

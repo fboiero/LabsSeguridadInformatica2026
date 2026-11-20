@@ -1,11 +1,19 @@
 import pytest
 
-from harness.adapters.common import (ForbiddenArgument, InvalidTarget, load_profiles,
-                                     reject_forbidden, validate_target, validate_url)
-from harness.adapters.nmap_adapter import NmapServiceScan, build_argv as nmap_argv
-from harness.adapters.nuclei_adapter import NucleiSafeTemplates, build_argv as nuclei_argv
-from tests.conftest import act, make_token
+from harness.adapters.common import (
+    ForbiddenArgument,
+    InvalidTarget,
+    load_profiles,
+    reject_forbidden,
+    validate_target,
+    validate_url,
+)
+from harness.adapters.nmap_adapter import NmapServiceScan
+from harness.adapters.nmap_adapter import build_argv as nmap_argv
+from harness.adapters.nuclei_adapter import NucleiSafeTemplates
+from harness.adapters.nuclei_adapter import build_argv as nuclei_argv
 from harness.contracts import Phase
+from tests.conftest import act, make_token
 
 MALOS = ["; rm -rf /", "10.0.0.5 -A", "-iL /etc/hosts", "host name", "http://x", "$(id)", ""]
 
@@ -38,7 +46,10 @@ def test_perfil_nmap_con_argumento_prohibido_falla():
 
 def test_nuclei_usa_templates_curados_y_excluye_intrusivos():
     argv = nuclei_argv("http://dvwa.lab.test/")
-    assert "templates/allowlist" in argv
+    template_args = [argv[index + 1] for index, arg in enumerate(argv[:-1]) if arg == "-t"]
+    assert len(template_args) == 5
+    assert all(template.replace("\\", "/").startswith("templates/allowlist/")
+               for template in template_args)
     etags = argv[argv.index("-etags") + 1].split(",")
     assert {"intrusive", "dos", "fuzz", "bruteforce"} <= set(etags)
     assert "-ni" in argv                         # sin OAST hacia terceros

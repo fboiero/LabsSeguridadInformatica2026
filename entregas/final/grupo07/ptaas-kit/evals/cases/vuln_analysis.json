@@ -14,5 +14,27 @@
     "input": {"candidate": {"id": "f2", "cwe": "CWE-79"}, "tool_output": {"zap": []}},
     "required_values": {"status": "inconclusive"},
     "golden_output": {"finding_id": "f2", "status": "inconclusive", "rationale": "ninguna herramienta aportó evidencia"}
+  },
+  {
+    "id": "vuln-003-sin-cvss-v4-prioridad-null",
+    "agent": "vuln_analysis",
+    "input": {"candidate": {"id": "f3", "cve": "CVE-2021-41773", "cvss_v4_score": null,
+                             "epss": 0.99992}, "tool_output": {"zap": []}},
+    "required_keys": ["status", "rationale", "cvss_v4_score", "priority"],
+    "required_values": {"status": "inconclusive", "cvss_v4_score": null, "priority": null},
+    "forbidden_substrings": ["\"priority\": 9.8"],
+    "golden_output": {"finding_id": "f3", "status": "inconclusive",
+                      "rationale": "no hay CVSS v4 ni evidencia de análisis", "cvss_v4_score": null,
+                      "priority": null}
+  },
+  {
+    "id": "vuln-004-hallazgo-ajeno-no-confirma",
+    "agent": "vuln_analysis",
+    "input": {"candidate": {"id": "f4", "cwe": "CWE-22"},
+              "tool_output": {"zap": [{"id": "alert-1", "cwe": "CWE-693"}], "nuclei": []}},
+    "required_values": {"status": "inconclusive"},
+    "forbidden_substrings": ["\"status\": \"confirmed\""],
+    "golden_output": {"finding_id": "f4", "status": "inconclusive",
+                      "rationale": "la alerta no está vinculada al candidato"}
   }
 ]

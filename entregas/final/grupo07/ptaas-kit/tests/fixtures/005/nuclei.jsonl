@@ -1,0 +1,1 @@
+{"template-id":"http-missing-security-headers","matched-at":"http://dvwa.lab.test/","info":{"name":"Missing security headers","severity":"info","tags":["headers"]}}

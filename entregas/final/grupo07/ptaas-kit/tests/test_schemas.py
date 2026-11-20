@@ -1,7 +1,14 @@
 import pytest
 
-from harness.schemas import (Asset, CandidateFinding, PrioritizedVuln, SchemaError,
-                             SchemaGate, dedupe, priority_score)
+from harness.schemas import (
+    Asset,
+    CandidateFinding,
+    PrioritizedVuln,
+    SchemaError,
+    SchemaGate,
+    dedupe,
+    priority_score,
+)
 
 
 def test_activo_sin_herramienta_de_origen_se_rechaza():
@@ -35,6 +42,8 @@ def test_priorizacion_reproducible_y_sensible_a_epss():
     a = priority_score(7.5, 0.3, 4)
     assert a == priority_score(7.5, 0.3, 4)
     assert priority_score(7.5, 0.9, 4) > a
+    assert priority_score(None, 0.9, 4) is None
+    assert priority_score(8.0, 0.4, None) is None
     with pytest.raises(SchemaError):
         priority_score(11, None, 3)
 
