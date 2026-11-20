@@ -88,10 +88,38 @@ Las fases de ejecución estructuradas fueron:
 ---
 
 <!-- ========================================================================= -->
-<!-- SECCIÓN 3: NARRATIVA DEL ATAQUE (A redactar por Luis Alvaro Colque)        -->
+<!-- SECCIÓN 3: NARRATIVA DEL ATAQUE (Redactado por Luis Alvaro Colque)         -->
 <!-- ========================================================================= -->
 ## 3. Narrativa del ataque
-*(Sección asignada a Luis Alvaro Colque — Grupo 12)*
+- **Auditor responsable de la sección:** Luis Alvaro Colque Condo (`@ColqueAlvaro`)
+
+La intrusión completa se estructuró a través de una cadena de explotación progresiva (*Kill Chain*), donde cada vulnerabilidad identificada sirvió como vector para desbloquear la fase subsiguiente:
+
+```
+[1. Recon / Enum]           [2. Foothold SQLi]            [3. Looting Config]           [4. Impacto RCE]
+   robots.txt        ──▶   /portal-rrhh/login     ──▶     /backup/rrhh.conf     ──▶    /api/reporte?cmd=...
+(Portal no enlazado)       (Bypass admin auth)            (API_TOKEN filtrado)         (Crown Jewels exfiltrados)
+```
+
+### 3.1 Fase 1: Reconocimiento pasivo y localización del portal interno (Hito R1)
+El engagement inició con un relevamiento de superficie externa sobre `http://phantomcorp`. La página principal ofrecía un mensaje genérico de bienvenida sin enlaces hacia funcionalidades operativas. Siguiendo la metodología de recolección de inteligencia, se inspeccionó el archivo de directivas de indexación `/robots.txt`. En él se encontró la regla restrictiva:
+```text
+User-agent: *
+Disallow: /portal-rrhh
+```
+Al navegar al endpoint `/portal-rrhh`, se confirmó la presencia del portal interno de Recursos Humanos, una aplicación administrativa que no debía ser indexable ni visible para usuarios externos. Al analizar el código fuente HTML de la respuesta, se descubrió un comentario de desarrollo que contenía la primera bandera del compromiso: `FLAG{final_recon_portal}`.
+
+### 3.2 Fase 2: Elusión de controles de autenticación y acceso administrativo (Hito R2)
+El portal presentaba un formulario de acceso que enviaba las credenciales vía POST hacia `/portal-rrhh/login`. Mediante pruebas de inyección SQL en el campo `user`, se comprobó que el backend concatenaba las entradas sin parametrizar. Al inyectar el payload booleano `' OR 1=1--`, la consulta evaluó como verdadera incondicionalmente, permitiendo ingresar al sistema con privilegios del usuario `admin`. 
+El mensaje de confirmación del dashboard no solo otorgó la bandera `FLAG{final_sqli_foothold}`, sino que reveló un dato crítico para la siguiente etapa: la existencia de un archivo de respaldo en `/backup/rrhh.conf`.
+
+### 3.3 Fase 3: Post-Explotación, enumeración interna y extracción de secretos (Hito R3)
+Utilizando la ruta descubierta en la sesión administrativa, se consultó el recurso `http://phantomcorp/backup/rrhh.conf` mediante una petición GET directa. El servidor web sirvió el archivo en texto plano sin exigir autenticación de sesión previa.
+Al inspeccionar el contenido del respaldo, se encontraron credenciales de base de datos (`DB_USER=rrhh_app`, `DB_PASS=Rh-2026`) y, de forma crítica, un secreto maestro: `API_TOKEN=phantom-api-7c1e`, acompañado por un comentario de configuración que explicaba su uso en `/api/reporte?token=...&cmd=...`, junto con la bandera `FLAG{final_token_looted}`.
+
+### 3.4 Fase 4: Compromiso a nivel de sistema operativo y robo de datos de clientes (Hito R4)
+Con el token maestro en poder del equipo auditor, se interactuó con el endpoint interno `/api/reporte`. Se comprobó que el parámetro `cmd` canalizaba directamente comandos del sistema operativo hacia una llamada `os.popen()`.
+Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`), se obtuvo acceso irrestricto a los archivos privados del servidor, logrando exfiltrar la base con 48.210 registros personales y números de tarjeta de crédito de clientes activos, capturando la bandera de impacto `FLAG{final_crown_jewels}` y completando la cadena de auditoría de punta a punta.
 
 ---
 
@@ -170,10 +198,63 @@ Las fases de ejecución estructuradas fueron:
 ---
 
 <!-- ========================================================================= -->
-<!-- H-03 (ALTA): Exposición de Backups (A redactar por Luis Alvaro Colque)     -->
+<!-- H-03 (ALTA): Exposición de Backups (Redactado por Luis Alvaro Colque)       -->
 <!-- ========================================================================= -->
 ### H-03 · Exposición Pública de Archivos de Respaldo y Fuga de Token de API
-*(Hallazgo técnico asignado a Luis Alvaro Colque — Grupo 12)*
+- **Auditor responsable:** Luis Alvaro Colque Condo (`@ColqueAlvaro`)
+- **Severidad:** **Alta**  
+- **CVSS v3.1:** `7.5` (Alta) · **Vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`  
+  *Justificación del score:*
+  - **Attack Vector (AV:N):** El recurso es accesible de manera remota a través de peticiones HTTP estándar sin requerir acceso a la consola ni a la red local.
+  - **Attack Complexity (AC:L):** Complejidad baja; la descarga se efectúa mediante una petición HTTP GET directa sin necesidad de eludir cabeceras de seguridad ni sortear cifrado.
+  - **Privileges Required (PR:N):** No se requieren privilegios ni cookies de sesión; a pesar de ser revelado tras el login de RRHH, el archivo está ubicado en una ruta no autenticada accesible para cualquier usuario de la red.
+  - **User Interaction (UI:N):** No se requiere interacción de terceros.
+  - **Scope (S:U):** Sin cambio de alcance en esta fase.
+  - **Confidentiality (C:H):** Impacto crítico en la confidencialidad de los secretos del sistema; expone credenciales de base de datos y la clave de API administrativa que permite el posterior compromiso del sistema operativo.
+  - **Integrity (I:N) / Availability (A:N):** Sin impacto directo en integridad ni disponibilidad durante la descarga del archivo.
+- **CWE:** CWE-552: *Files or Directories Accessible to External Parties* y CWE-798: *Use of Hard-coded Credentials*.
+- **Ubicación:** Recurso web `GET /backup/rrhh.conf`.
+- **Descripción:**  
+  Un archivo de configuración con extensión sensible (`.conf`) correspondiente a los respaldos internos del portal de RRHH se encuentra alojado dentro del árbol de directorios público del servidor HTTP. El servidor no valida control de acceso de sesión ni restringe la visualización de archivos de soporte. El archivo expone en texto plano:
+  ```text
+  DB_USER=rrhh_app
+  DB_PASS=Rh-2026
+  API_TOKEN=phantom-api-7c1e
+  ```
+- **Evidencia reproducible:**  
+  Petición directa mediante `curl` hacia el archivo de respaldo:
+  ```bash
+  curl -i -s http://phantomcorp/backup/rrhh.conf
+  ```
+  *Respuesta obtenida del servidor (HTTP 200 OK):*
+  ```text
+  HTTP/1.0 200 OK
+  Server: PhantomClientes/2.0
+  Date: Thu, 19 Nov 2026 19:35:10 GMT
+  Content-Type: text/plain; charset=utf-8
+
+  DB_USER=rrhh_app
+  DB_PASS=Rh-2026
+  API_TOKEN=phantom-api-7c1e
+  # usar el token en /api/reporte?token=...&cmd=... FLAG{final_token_looted}
+  ```
+- **Impacto:**  
+  1. **Fuga crítica de secretos de autenticación:** La obtención del `API_TOKEN` habilita el movimiento lateral y vertical hacia la interfaz interna de reportes (`/api/reporte`), facilitando la ejecución de comandos arbitrarios (H-01).
+  2. **Exposición de credenciales de base de datos:** Fuga de usuario y clave (`rrhh_app:Rh-2026`), que amplía la superficie de ataque hacia los motores de persistencia.
+  3. **Incumplimiento normativo:** Violación de las directrices de OWASP ASVS v4.0 (V14: Configuration) y NIST SP 800-53 (SC-28: Protection of Information at Rest).
+- **Remediación:**  
+  1. **Reubicación de archivos de respaldo fuera del Document Root:**
+     Los archivos de configuración, scripts de aprovisionamiento y copias de seguridad deben almacenarse fuera del directorio público servido por el servidor web (por ejemplo, en rutas no mapeadas como `/opt/backups/` o sistemas de almacenamiento cifrados).
+  2. **Configuración de reglas de bloqueo en el servidor web:**
+     Configurar el servidor web (Nginx o Apache) para denegar el acceso a archivos de configuración o extensiones peligrosas:
+     ```nginx
+     location ~* \.(conf|bak|backup|old|sql|env|ini)$ {
+         deny all;
+         return 404;
+     }
+     ```
+  3. **Rotación inmediata del secreto:**
+     Revocar el token `phantom-api-7c1e`, reemplazándolo por credenciales temporales generadas dinámicamente o gestionadas mediante bóvedas de secretos (HashiCorp Vault, AWS Secrets Manager).
 
 ---
 
