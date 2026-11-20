@@ -1,4 +1,20 @@
 # Diseño — 007-reporting-defectdojo
+
+## Cierre 20/11: herramientas reales integradas
+La revisión documental asistida está en docs/revisiones-cierre.md. `--tools-mode
+docker` selecciona DockerToolRunner y conserva el modo fixture por defecto.
+El runner comprueba red internal 10.99.0.0/28, traduce paths Windows/Linux,
+registra argv/exit/stdout/stderr y elimina workers en finally. Monta el código
+read-only y solo habilita escritura en el directorio de reporte de ZAP.
+Subfinder en la red sin internet puede devolver cero hosts: no inventa resultados;
+HTTPX sondea la semilla autorizada y el grafo estabiliza.
+El límite total de subfinder contempla max-time además del timeout por fuente.
+Correlación usa snapshots locales. ZAP/Nuclei alimentan DetectionLoop realmente;
+sin vínculo explícito al candidato éste sigue inconcluso. CSP permanece semilla
+manual, distinguida en el reporte. SQLite y gates no cambian. Los errores Docker
+se propagan sin sustituirlos por fixtures. La CLI permite aprobar explícitamente
+para pruebas locales identificando al operador como prueba automatizada.
+Las notas históricas de abajo describen los cortes anteriores.
 Autor: Fernando Cagliero. Revisión cruzada: pendiente de Lautaro; no se marca 1.3.
 
 La interfaz de contracts.py permanece intacta. Todo adaptador se invoca por Harness.invoke.
