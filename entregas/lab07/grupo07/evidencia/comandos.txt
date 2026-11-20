@@ -1,0 +1,7 @@
+2026-11-19 (UTC−03:00) · Checkout local de Fernando Cagliero · Git Bash
+Desde la raíz del repositorio:
+
+{ bash ./ctf status 07; printf "[ctf status] código de salida: %s\n" "$?"; } > entregas/lab07/grupo07/evidencia/salidas/status-07-local.txt 2>&1
+
+Estado consultado: 0/5 registrados en este checkout.
+Pendientes de integrar: bitácoras y salidas originales de Lorenzo (R1–R2), Lautaro (R3–R4) y Guadalupe (R5), y captura consolidada de status.
