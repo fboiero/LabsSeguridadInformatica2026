@@ -1,0 +1,15 @@
+id: grupo07-admin-panel-presence
+info:
+  name: Admin panel path responds
+  author: Grupo 07
+  severity: info
+  description: Records the presence of a common admin path; does not attempt authentication.
+  tags: panel,exposure
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/admin/"
+    matchers:
+      - type: status
+        status:
+          - 200

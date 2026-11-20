@@ -1,0 +1,20 @@
+id: grupo07-phpinfo-exposure
+info:
+  name: Public PHP information page
+  author: Grupo 07
+  severity: low
+  description: Detects a phpinfo page that may expose environment details.
+  tags: exposure,misconfig,tech
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/phpinfo.php"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "phpinfo()"

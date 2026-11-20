@@ -1,0 +1,20 @@
+id: grupo07-apache-server-status
+info:
+  name: Apache server-status exposure
+  author: Grupo 07
+  severity: low
+  description: Detects a readable Apache status endpoint without submitting parameters.
+  tags: exposure,misconfig,tech
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/server-status"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "Server Version"

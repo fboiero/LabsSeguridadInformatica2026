@@ -1,0 +1,15 @@
+id: grupo07-robots-txt
+info:
+  name: Public robots.txt file
+  author: Grupo 07
+  severity: info
+  description: Detects whether a public robots.txt resource is available.
+  tags: exposure,headers
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/robots.txt"
+    matchers:
+      - type: status
+        status:
+          - 200

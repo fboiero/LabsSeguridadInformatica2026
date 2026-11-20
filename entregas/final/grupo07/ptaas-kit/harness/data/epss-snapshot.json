@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "as_of": "2026-11-19",
+  "source": "FIRST EPSS API",
+  "source_url": "https://api.first.org/data/v1/epss",
+  "records": [
+    {"cve": "CVE-2021-41773", "score": 0.99992, "percentile": 0.99986},
+    {"cve": "CVE-2021-44228", "score": 0.99999, "percentile": 1.0}
+  ]
+}
