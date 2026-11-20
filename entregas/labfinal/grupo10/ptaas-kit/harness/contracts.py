@@ -109,14 +109,27 @@ class AuditLog:
 
     entries: list[dict] = field(default_factory=list)
 
+    @staticmethod
+    def evidence_ref(content: str) -> str:
+        """Referencia estable a una evidencia: su hash, nunca el contenido."""
+        return "sha256:" + hashlib.sha256(content.encode()).hexdigest()
+
+    @staticmethod
+    def evidence_matches(ref: str, content: str) -> bool:
+        """Verifica que una evidencia coincida con la referencia registrada."""
+        return ref == AuditLog.evidence_ref(content)
+
     def record(self, agent: str, action: Action, target: str,
-               token: ScopeToken, result: Result) -> dict:
+               token: ScopeToken, result: Result, evidence: str | None = None) -> dict:
         prev = self.entries[-1]["hash"] if self.entries else "GENESIS"
         body = {
             "ts": time.time(), "engagement": token.engagement_id, "agent": agent,
             "action": action.name, "target": target, "phase": token.phase.value,
             "result": result.value, "prev": prev,
         }
+        if evidence is not None:
+            # Solo se persiste la referencia (hash); el contenido del cliente no entra en la bitácora.
+            body["evidence_ref"] = self.evidence_ref(evidence)
         body["hash"] = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
         self.entries.append(body)
         return body
