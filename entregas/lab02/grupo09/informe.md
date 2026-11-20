@@ -1,6 +1,6 @@
 # Informe — Laboratorio 02 · Criptografía
 
-**Grupo:** 09 · **Integrantes:** *Cocchi Santiago, Ferraro Franco, Mossello Francisco, Spat Tomas, Torres Santiago* · **Fecha:** 20/11/2026
+**Grupo:** 09 · **Integrantes:** *Cocchi Santiago, Ferraro Franco, Mossello Francisco, Spat Tomas, Torres Santiago* · **Fecha:** 04/09/2026
 
 ---
 
