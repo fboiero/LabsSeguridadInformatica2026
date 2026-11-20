@@ -1,0 +1,134 @@
+--- labs/labextra3-hardening/objetivo/server.py	2026-11-19 22:51:52.362177784 -0300
++++ entregas/labextra3/grupo14/objetivo/server.py	2026-11-19 23:08:45.287957116 -0300
+@@ -2,31 +2,19 @@
+ # SPDX-License-Identifier: AGPL-3.0-or-later
+ # Copyright (C) 2026 Fernando Boiero — CyberLab UTN FRVM
+ """
+-objetivo/server.py — PhantomCorp "vulnerable", Lab Extra 3 (hardening).
++objetivo/server.py — PhantomCorp ENDURECIDO, Lab Extra 3 (grupo 14).
+ 
+-Esta app tiene CINCO problemas que ya conocés de los labs 05-07:
+-
+-  D1  El header Server canta producto y versión          (banner/info leak)
+-  D2  /api/status expone debug:true y datos internos     (servicio dev en prod)
+-  D3  /robots.txt lista rutas sensibles y /backup responde 200
+-  D4  /login es vulnerable a SQLi (bypass con ' OR 1=1 --)
+-  D5  /descargar?archivo= permite path traversal (../../etc)
+-
+-TU TRABAJO: copiá esta carpeta a tu entrega y PARCHÁLA ahí. No modifiques este
+-original: es la referencia "rota". Cuando tu copia esté endurecida, corré:
+-
+-  python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupoXX/objetivo
+-
+-El verificador ATACA tu copia. Por cada ataque que YA NO FUNCIONA, te muestra
+-la flag defensiva para entregar con ./ctf submit extra3.
++Copia parchada del objetivo vulnerable. Las 5 defensas (ver comentarios D1-D5):
++  D1  header Server neutro (no filtra producto ni versión)
++  D2  /api/status apagado en producción (404)
++  D3  /backup protegido (404) y robots.txt sin rutas sensibles
++  D4  /login con consulta parametrizada (SQLi bloqueado)
++  D5  /descargar con validación de ruta (path traversal bloqueado)
+ """
+-import base64
+ import os
+ import sqlite3
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+-from urllib.parse import urlparse, parse_qs
+-
+-VERSION = "PhantomServer/2.4.1-debug"   # D1: banner que canta todo
++from urllib.parse import parse_qs
+ 
+ DB = "/tmp/phantom_hardening.db"
+ DESCARGAS = "/tmp/phantom_descargas"    # raíz "pública" de /descargar
+@@ -46,7 +34,8 @@
+ 
+ 
+ class Handler(BaseHTTPRequestHandler):
+-    server_version = VERSION            # D1
++    # D1: banner neutro. No revela producto ni versión del servidor.
++    server_version = "web"
+     sys_version = ""
+ 
+     def do_GET(self):
+@@ -56,32 +45,38 @@
+         if path == "/":
+             self._html(200, "<h1>PhantomCorp</h1><p>Portal de empleados.</p>")
+         elif path == "/robots.txt":
+-            # D3: el robots delata las rutas sensibles
+-            self._txt(200, "User-agent: *\nDisallow: /backup\nDisallow: /api/status\n")
++            # D3: robots sin pistas de rutas sensibles.
++            self._txt(200, "User-agent: *\nDisallow:\n")
+         elif path == "/backup":
+-            # D3: y la ruta sensible responde sin autenticación
+-            self._txt(200, "dump_pre_migracion: usuarios=1 OK — BORRAR ESTE ENDPOINT")
++            # D3: endpoint sensible apagado (no existe para el cliente).
++            self._txt(404, "404 - no existe")
+         elif path == "/api/status":
+-            # D2: endpoint de debug en producción
+-            self._json(200, '{"debug": true, "env": "produccion", '
+-                            '"db": "' + DB + '", "pid": ' + str(os.getpid()) + '}')
++            # D2: servicio de debug apagado en producción.
++            self._txt(404, "404 - no existe")
+         elif path == "/login":
+-            # D4: SQLi clásico — consulta por interpolación de strings
++            # D4: consulta PARAMETRIZADA — los valores nunca se interpolan.
+             user = params.get("user", [""])[0]
+             pwd = params.get("pass", [""])[0]
+             db = sqlite3.connect(DB)
+             cur = db.execute(
+-                "SELECT user FROM usuarios WHERE user = '" + user
+-                + "' AND password = '" + pwd + "'")     # ¡NUNCA así!
+-            if cur.fetchone():
+-                self._html(200, "<h1>Bienvenido, " + user + "</h1>")
++                "SELECT user FROM usuarios WHERE user = ? AND password = ?",
++                (user, pwd))
++            fila = cur.fetchone()
++            db.close()
++            if fila:
++                # Además, no reflejar el input crudo en la respuesta.
++                self._html(200, "<h1>Bienvenido, " + self._esc(fila[0]) + "</h1>")
+             else:
+                 self._html(401, "<h1>Credenciales inválidas</h1>")
+-            db.close()
+         elif path == "/descargar":
+-            # D5: path traversal — concatena y lee sin validar
++            # D5: solo nombre de archivo, dentro de DESCARGAS. Sin traversal.
+             nombre = params.get("archivo", [""])[0]
+-            ruta = DESCARGAS + "/" + nombre
++            base = os.path.basename(nombre)          # descarta cualquier ../
++            ruta = os.path.realpath(os.path.join(DESCARGAS, base))
++            raiz = os.path.realpath(DESCARGAS)
++            if not base or os.path.commonpath([raiz, ruta]) != raiz:
++                self._txt(403, "ruta no permitida")
++                return
+             try:
+                 with open(ruta, "rb") as fh:
+                     self._txt(200, fh.read(8192).decode("utf-8", "ignore"))
+@@ -90,16 +85,16 @@
+         else:
+             self._txt(404, "404 - no existe")
+ 
+-    # --- helpers de respuesta ---
++    @staticmethod
++    def _esc(s):
++        return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
++
+     def _html(self, code, body):
+         self._send(code, body.encode(), "text/html; charset=utf-8")
+ 
+     def _txt(self, code, body):
+         self._send(code, body.encode(), "text/plain; charset=utf-8")
+ 
+-    def _json(self, code, body):
+-        self._send(code, body.encode(), "application/json")
+-
+     def _send(self, code, body, ctype):
+         self.send_response(code)
+         self.send_header("Content-Type", ctype)
+@@ -113,5 +108,5 @@
+ if __name__ == "__main__":
+     init_db()
+     puerto = int(os.environ.get("PORT", "8080"))
+-    print(f"PhantomCorp (VULNERABLE) en 0.0.0.0:{puerto}")
++    print(f"PhantomCorp (ENDURECIDO) en 0.0.0.0:{puerto}")
+     ThreadingHTTPServer(("0.0.0.0", puerto), Handler).serve_forever()

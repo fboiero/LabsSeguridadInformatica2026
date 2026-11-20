@@ -1,0 +1,8 @@
+# GET /
+status=200
+# login legitimo admin/sup3r-s3cr3t0
+<h1>Bienvenido, admin</h1>
+# descargar manual.txt (legitimo)
+Manual de la intranet PhantomCorp.
+# descargar traversal (debe fallar 403)
+status=404
