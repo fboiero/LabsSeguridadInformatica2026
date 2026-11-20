@@ -1,0 +1,25 @@
+# Lab 10 — Bloque A (Blue/SOC) · evidencia (Guadalupe)
+# Target server.py del Lab 10 corrido local (phantomcorp -> 127.0.0.1:80), caja negra.
+# Fecha: 2026-11-20T23:41:21Z UTC
+
+## R1 — acceso a la vista del SOC
+$ curl -s http://phantomcorp/soc    # (encabezado de la consola)
+=== PhantomCorp SOC · vista de eventos ===
+Acceso a la consola del SOC concedido. FLAG{soc_log_access}
+Tip: filtrá por ALERT. Hay UNA intrusion real que no disparaste vos.
+
+## R5 — la intrusion en el ruido (filtrando por ALERT)
+$ curl -s http://phantomcorp/soc | grep ALERT
+Tip: filtrá por ALERT. Hay UNA intrusion real que no disparaste vos.
+185.220.101.42 - GET /admin/../../etc/passwd 200 ALERT[path-traversal] # intrusion no atribuida -> FLAG{intrusion_in_the_noise}
+
+## R3 — ruleset del IDS
+$ curl -s http://phantomcorp/soc/reglas
+=== Ruleset del IDS (firmas activas) ===
+Conocer las reglas es el primer paso para evadirlas. FLAG{signature_ruleset}
+  scanner-ua      User-Agent contiene sqlmap|nikto|nmap|dirb
+  path-traversal  la ruta contiene '../'
+  git-probe       la ruta contiene '/.git'
+  sqli-union      el query matchea /union\s+select/  (OJO: exige un ESPACIO)
+
+Una firma que exige un espacio se esquiva quitando el espacio. Pensá.
