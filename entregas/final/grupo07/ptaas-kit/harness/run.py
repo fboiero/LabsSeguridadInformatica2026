@@ -146,7 +146,8 @@ def execute(
         validation = validate_finding(harness, token, request, approvals, factory)
         print("Loop C:", validation["status"])
         (output / "validation-evidence.json").write_text(
-            json.dumps(validation,ensure_ascii=False,indent=2),encoding="utf-8")
+            json.dumps(validation, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         finding = Finding(
             request.id,
             "Ausencia de CSP (candidato fixture; validación " + validation_mode + ")",
