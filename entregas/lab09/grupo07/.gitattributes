@@ -1,0 +1,2 @@
+# Conservar bytes y saltos de línea de las capturas originales.
+evidencia/salidas/** -text
