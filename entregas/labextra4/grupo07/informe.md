@@ -58,8 +58,8 @@ Para almacenamiento futuro: usar un esquema aprobado para password verifiers, co
 
 ## 6. Conclusión
 
-PhantomCorp debe tratar el volcado como incidente: coordinar la respuesta, preservar evidencia, invalidar sesiones y forzar el cambio de credenciales afectadas.  
-Para nuevas claves, usar PBKDF2-HMAC-SHA-256 conforme al esquema aprobado aplicable, con salt aleatorio único por cuenta.  
-Ajustar y versionar el costo de derivación con mediciones del servidor; elevarlo cuando la capacidad lo permita.  
-Exigir mínimo 15 caracteres para contraseña de un solo factor, bloquear contraseñas comprometidas y abandonar reglas de composición periódica.  
+PhantomCorp debe tratar el volcado como incidente: coordinar la respuesta, preservar evidencia, invalidar sesiones y forzar el cambio de credenciales afectadas.<br>
+Para nuevas claves, usar PBKDF2-HMAC-SHA-256 conforme al esquema aprobado aplicable, con salt aleatorio único por cuenta.<br>
+Ajustar y versionar el costo de derivación con mediciones del servidor; elevarlo cuando la capacidad lo permita.<br>
+Exigir mínimo 15 caracteres para contraseña de un solo factor, bloquear contraseñas comprometidas y abandonar reglas de composición periódica.<br>
 Migrar hashes heredados gradualmente, forzar cambio si hay compromiso y nunca usar un hash rápido de integridad como almacenamiento de contraseñas.
