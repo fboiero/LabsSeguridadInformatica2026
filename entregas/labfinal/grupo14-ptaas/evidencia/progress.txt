@@ -22,6 +22,6 @@ validation               3 Scenarios  tests: tests/test_poc_catalog.py, tests/te
 vuln-analysis            6 Scenarios  tests: tests/test_schemas.py, tests/test_engagement_and_loops.py, tests/test_authorization.py
 TOTAL                   54 Scenarios
 
-== Tests recolectados: 86 ==
+== Tests recolectados: 88 ==
 
 Recordá: tests verdes (`python -m pytest -q`) y evals (`python evals/run_evals.py --mode golden`).

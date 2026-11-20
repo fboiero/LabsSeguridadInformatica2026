@@ -2,7 +2,7 @@
 
 [1] Autorización
   -> estado = RECON
-[2] Recon (loop A, tope = 5 )
+[2] Recon (loop A, tope de iteraciones = 5 )
   -> iter 1: 2 activos nuevos -> continue (2 activos nuevos)
   -> iter 2: 1 activos nuevos -> continue (1 activos nuevos)
   -> iter 3: 0 activos nuevos -> stop (grafo estabilizado)

@@ -83,7 +83,8 @@ def main() -> int:
     audit = AuditLog()
     ks = KillSwitch()
     h = Harness(guard, audit, adapters, ks)
-    g = GuardedHarness(h, max_iterations_per_target=max_recon)   # tope del change 008
+    # change 008: enforcement de topes a nivel harness (iteración de loop + por objetivo)
+    g = GuardedHarness(h, policy, max_invocations_per_target=10)
 
     eng = Engagement(roe_valid=True)
     print("== PTaaS — recorrido grupo 14 (laboratorio aislado, adaptadores inertes) ==\n")
@@ -96,9 +97,10 @@ def main() -> int:
     step(f"estado = {eng.state.value}")
 
     # 2. Loop A — relevamiento acotado (para por grafo estable antes del tope)
-    print("[2] Recon (loop A, tope =", max_recon, ")")
+    print("[2] Recon (loop A, tope de iteraciones =", max_recon, ")")
     t = token_for(Phase.RECON)
     for i, nuevos in enumerate([2, 1, 0], start=1):
+        g.begin_iteration("recon")              # el harness rechaza si se pasa del tope
         g.invoke("recon", Action("httpx.probe", Phase.RECON), TARGET, t)
         g.invoke("recon", Action("nmap.service_scan", Phase.RECON), TARGET, t)
         d = decide_recon(i, nuevos, max_recon)

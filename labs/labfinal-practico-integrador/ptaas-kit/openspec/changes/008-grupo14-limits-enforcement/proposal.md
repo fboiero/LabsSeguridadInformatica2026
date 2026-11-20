@@ -3,36 +3,39 @@
 ## Por qué
 El red-team del grupo encontró una brecha entre la spec y la implementación:
 
-- `policy.yaml` declara `limits.rate_limit_rps_per_target` y
-  `limits.max_loop_iterations`.
-- El delta de `asset-discovery` ya exige **"Loop de relevamiento acotado"** y
-  **"Respeto del rate limit"** (Scenario "tope alcanzado": al llegar a
-  `max_loop_iterations.recon` el harness DEBE rechazar otra iteración).
-- Pero `Harness.invoke` **no aplica ningún tope**: un agente o un loop con bug
-  puede invocar la misma acción contra el mismo objetivo sin límite.
-
-Es un requisito ya especificado y no implementado. Sin él, el invariante de
-contención no se cumple y un loop desbocado puede saturar un objetivo.
+- El delta de `asset-discovery` exige **"Loop de relevamiento acotado"** (Scenario
+  "tope alcanzado": al llegar a `max_loop_iterations.recon` **el harness** rechaza
+  otra iteración).
+- Pero las decisiones de parada viven en `harness/loops.py` (`decide_recon`, etc.)
+  y son **consultivas**: el LLM puede ignorarlas y `Harness.invoke` no impone
+  ningún tope. El requisito dice que *el harness* rechaza, no solo que el agente
+  decida; ese enforcement no existía.
+- Además, `policy.yaml` declara `rate_limit_rps_per_target`, que tampoco se aplica.
 
 ## Qué cambia
-- Nuevo módulo `harness/limits.py` con `GuardedHarness`: decorador determinista
-  que impone un tope de invocaciones por `(acción, objetivo)` **antes** de delegar
-  en `Harness.invoke`.
-- El bloqueo por tope se registra en la misma bitácora (`Result.BLOCKED`), igual
-  que cualquier otra decisión (invariante I3).
-- No cambia el contrato público de `Harness` (es aditivo, por composición).
+Nuevo módulo `harness/limits.py` con `GuardedHarness` (decorador determinista,
+aditivo, no cambia el contrato público del harness):
+
+1. **Tope de iteraciones de loop por fase** (`begin_iteration(loop)`), leído de
+   `policy['limits']['max_loop_iterations']`. Cumple literalmente el requisito.
+2. **Tope de invocaciones por `(acción, objetivo)`** como defensa en profundidad
+   (opcional, no proviene de la spec), con el bloqueo registrado en bitácora
+   (`Result.BLOCKED`, invariante I3).
 
 ## Criterios de aceptación
-1. Con el harness MVP, N invocaciones repetidas pasan sin tope (test que
-   documenta el hallazgo).
-2. Con `GuardedHarness(max_iterations_per_target=k)`, la invocación `k+1` sobre el
-   mismo objetivo se bloquea con `LimitExceeded` y queda en bitácora.
-3. El contador es por `(acción, objetivo)`: objetivos distintos no se interfieren.
+1. Al llegar a `max_loop_iterations[<loop>]`, `begin_iteration` rechaza con
+   `LoopIterationLimit`.
+2. Con `GuardedHarness(..., max_invocations_per_target=k)`, la invocación `k+1`
+   sobre el mismo objetivo se bloquea con `InvocationLimit` y queda en bitácora.
+3. El contador de invocaciones es por `(acción, objetivo)`.
+4. Se mantiene un test de caracterización que muestra que, sin `GuardedHarness`,
+   los loops no tienen enforcement (documenta el hallazgo).
 
 ## Alcance / límites
-- MVP: tope por conteo de iteraciones (determinista, sin reloj). El rate limit por
-  segundo (`rps`) queda propuesto para un change siguiente (requiere ventana
-  temporal); se deja anotado para no sobre-diseñar hoy.
+- El tope es por conteo (determinista, sin reloj). El rate limit por segundo
+  (`rps_per_target`) requiere ventana temporal y queda para un change siguiente.
+- `begin_iteration` existe para que el driver del loop lo invoque; en la demo se
+  usa en el loop de recon. Integrarlo en los loops B/C queda anotado en tasks.
 
 ## Evidencia
 - `harness/limits.py`

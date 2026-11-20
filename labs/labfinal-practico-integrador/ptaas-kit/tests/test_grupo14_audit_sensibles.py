@@ -39,8 +39,21 @@ def test_bitacora_del_harness_no_contiene_contenido_sensible():
     a = AuditLog()
     a.record("recon", Action("httpx.probe", Phase.RECON), "10.0.0.5", make_token(), Result.OK)
     blob = json.dumps(a.entries)
-    # La bitácora solo lleva metadatos + hash encadenado: ningún campo de contenido.
+    # Sin evidencia, la bitácora solo lleva metadatos + hash: ningún campo de contenido.
     assert "phantom-api-7c1e" not in blob and "48210" not in blob
     assert set(a.entries[-1]) == {
         "ts", "engagement", "agent", "action", "target", "phase", "result", "prev", "hash"
     }
+
+
+def test_record_con_evidencia_guarda_referencia_no_contenido():
+    """El camino real de la bitácora: al pasar evidencia, se almacena SOLO el
+    digest, nunca el contenido sensible."""
+    a = AuditLog()
+    salida = {"dump": SECRETO, "datos": DATOS_CLIENTE}
+    a.record("validation", Action("poc_catalog.run_parametrized", Phase.VALIDATE),
+             "10.0.0.5", make_token(), Result.OK, evidence=salida)
+    entry = a.entries[-1]
+    assert re.fullmatch(r"sha256:[0-9a-f]{64}", entry["evidence"]["evidence"])
+    blob = json.dumps(a.entries)
+    assert "phantom-api-7c1e" not in blob and "48210" not in blob

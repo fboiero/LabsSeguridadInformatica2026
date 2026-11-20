@@ -108,13 +108,18 @@ class AuditLog:
     entries: list[dict] = field(default_factory=list)
 
     def record(self, agent: str, action: Action, target: str,
-               token: ScopeToken, result: Result) -> dict:
+               token: ScopeToken, result: Result, evidence=None) -> dict:
         prev = self.entries[-1]["hash"] if self.entries else "GENESIS"
         body = {
             "ts": time.time(), "engagement": token.engagement_id, "agent": agent,
             "action": action.name, "target": target, "phase": token.phase.value,
             "result": result.value, "prev": prev,
         }
+        if evidence is not None:
+            # 'Sin datos sensibles en claro': se guarda SOLO la referencia (digest),
+            # nunca el contenido (credenciales ni datos del cliente).
+            raw = evidence if isinstance(evidence, (str, bytes)) else json.dumps(evidence, sort_keys=True)
+            body["evidence"] = evidence_ref(raw)
         body["hash"] = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
         self.entries.append(body)
         return body
@@ -162,5 +167,6 @@ class Harness:
             self.audit.record(agent, action, target, token, Result.BLOCKED)
             raise ScopeViolation(f"adaptador {adapter.name} no habilitado en {token.phase}")
         out = adapter.run(action, target, token)
-        self.audit.record(agent, action, target, token, Result.OK)
+        # La bitácora cita la salida por referencia (digest), nunca su contenido.
+        self.audit.record(agent, action, target, token, Result.OK, evidence=out)
         return out
