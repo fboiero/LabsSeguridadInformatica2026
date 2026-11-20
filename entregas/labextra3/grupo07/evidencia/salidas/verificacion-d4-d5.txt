@@ -1,0 +1,20 @@
+OK GET / -> 200
+OK login legítimo -> 200
+OK bypasses SQL clásicos -> 401
+OK descarga manual legítima -> 200
+OK traversales, encoding y límite estructural bloqueados
+
+=== Verificador del laboratorio (D4/D5 son este bloque) ===
+
+== Lab Extra 3 · verificación de defensas ==
+[2mObjetivo bajo prueba: C:\Users\FERCA\AppData\Local\Temp\labextra3-rvaw4r94\objetivo\server.py[0m
+
+  [31m✗[0m D1 — todavía vulnerable  [2m(header Server: 'PhantomServer/2.4.1-debug ')[0m
+  [31m✗[0m D2 — todavía vulnerable  [2m(GET /api/status -> 200 '{"debug": true, "env": "produccion", "db": "C:\\Users\\FERCA\\A')[0m
+  [31m✗[0m D3 — todavía vulnerable  [2m(GET /backup -> 200; robots menciona /backup: True)[0m
+  [32m✓[0m D4 — ataque BLOQUEADO  [2m(bypass admin'--: bloqueado; OR 1=1: bloqueado)[0m
+      flag: FLAG{def_sqli_parametrizado}
+  [32m✓[0m D5 — ataque BLOQUEADO  [2m(traversal /etc/passwd -> 404 (bloqueado))[0m
+      flag: FLAG{def_traversal_bloqueado}
+
+[31m2/5 defensas correctas.[0m

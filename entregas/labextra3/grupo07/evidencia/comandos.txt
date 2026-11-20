@@ -1,0 +1,15 @@
+Lab Extra 3 — Grupo 07 — Fernando Cagliero (@Ferca19)
+Fecha: 19/11/2026 (America/Buenos_Aires)
+
+El harness crea una copia temporal de objetivo/server.py, redirige los archivos
+temporales del servicio a un directorio temporal seguro, levanta el servidor y
+ejecuta regresiones funcionales y el verificador oficial contra esa copia.
+
+Desde la raíz del repositorio:
+  python entregas/labextra3/grupo07/evidencia/test_d4_d5_local.py
+
+Salida capturada en:
+  entregas/labextra3/grupo07/evidencia/salidas/verificacion-d4-d5.txt
+
+El verificador informa 2/5, con D4 y D5 aprobadas. D1–D3 y la captura de
+./ctf status extra3 quedan pendientes de integración grupal.
