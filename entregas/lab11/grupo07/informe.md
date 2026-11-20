@@ -25,6 +25,20 @@ La fuente es `labs/lab11-forensia/caso/` en `upstream/main@a1abb79449a68f3cae29d
 
 > Extracto de eventos relacionados con R3/R4 y el alcance, para integrar en la cronología completa de Lautaro. Los horarios de `access.log` están en UTC (`+0000`). Los tiempos de `disco/listado.txt` no indican zona horaria; se conservan como están y no se convierten. El historial de memoria carece de timestamps por comando.
 
+### Fase de entrada (02:14–02:18) — contexto previo
+
+Precede a la tabla de impacto siguiente (que arranca a las 02:18:33). Mismo atacante `185.220.101.42`, todo en `access.log` (UTC):
+
+| Hora | Evento | Evidencia (archivo:línea) |
+|---|---|---|
+| 02:14:03–02:14:22 UTC | Reconocimiento desde `185.220.101.42`: `zgrab` y luego `gobuster` enumeran `/`, `robots.txt`, `/admin` (404), `/login` (404), `/backup` (301), `/portal-rrhh` (200), `/uploads` (301). | `logs/access.log:4-10` |
+| 02:16:40, 02:16:58 UTC | Dos intentos fallidos de login en `POST /portal-rrhh/login` (401), con `curl`. | `logs/access.log:12-13` |
+| 02:17:22 UTC | **Acceso inicial por SQLi**: `POST /portal-rrhh/login` responde 200 con el payload `user=admin'--` (bypass de autenticación). | `logs/access.log:14` |
+| 02:17:41 UTC | Lee `/backup/rrhh.conf` (200): se filtra configuración, incluido el token de API `phantom-api-7c1e`. | `logs/access.log:15` |
+| 02:18:10 UTC | **RCE confirmado**: `GET /api/reporte?token=phantom-api-7c1e&cmd=id` (200) — el parámetro `cmd` ejecuta comandos del sistema. | `logs/access.log:16` |
+
+> La tabla siguiente (bloque de Lorenzo) continúa desde las 02:18:33 con el marcador en `/tmp/.p`, el drop del webshell, la escalada y la exfiltración.
+
 | Hora | Evento | Evidencia (archivo:línea) |
 |---|---|---|
 | 2026-09-05 02:18:33 UTC | El endpoint de reporte ejecuta el comando que escribe el marcador en `/tmp/.p`. | `logs/access.log:19`; `disco/listado.txt:3` |
@@ -36,7 +50,18 @@ La fuente es `labs/lab11-forensia/caso/` en `upstream/main@a1abb79449a68f3cae29d
 | Antes de la captura de memoria; orden exacto desconocido | El historial registra empaquetar `clientes.db.txt` y ejecutar `curl -F` al endpoint externo. No hay respuesta del servidor externo ni captura de tráfico que confirme recepción. | `memoria/bash_history.txt:8-9`; `memoria/lsof.txt:5` |
 | 2026-09-05 02:30 UTC | En la captura de memoria, PID 1490 (`nc`) mantiene conexión TCP establecida de `10.0.0.5:41022` a `45.13.37.7:4444`. | `memoria/pslist.txt:1-10`; `memoria/netstat.txt:4`; `memoria/lsof.txt:3` |
 
-Lautaro debe completar el contexto previo de entrada y correlacionar la secuencia completa. No se usan los timestamps de `auth.log` por su fallo de integridad.
+### Correlación entre fuentes
+
+El ataque es una sola historia reconstruida cruzando los cuatro orígenes (logs, disco, memoria, custodia); ningún artefacto alcanza por sí solo:
+
+- **Atacante único:** `185.220.101.42` aparece en `access.log` (recon → RCE → webshell → lectura de la DB) y en `auth.log` (SSH `Accepted password for www-data`, 02:19:55). El mismo origen conecta la actividad web con la de sistema.
+- **Drop del webshell (02:19:02): tres fuentes, un evento.** `access.log:20` (wget de `s.php` a `/var/www/uploads/shell.php`) ↔ `memoria/netstat.txt:5` (PID 1201 `wget` → `45.13.37.7:80`, TIME_WAIT) ↔ `disco/listado.txt:4` (`shell.php`, 431 B, 02:19) ↔ `shell.php.evidencia.txt` (dropeada por wget desde `45.13.37.7`).
+- **Escalada SUID:** `auth.log` (audit del kernel 02:21:04, `system-check uid=33 euid=0`) ↔ `disco/listado.txt:5` (`system-check`, copia SUID de bash, 02:21) ↔ `memoria/pslist.txt:8` (PID 1477 `system-check`, root) ↔ `memoria/bash_history.txt:5-6` (`system-check -p -c 'id'`).
+- **Exfiltración — el dato que cierra el círculo.** El webshell lee `clientes.db.txt` y la respuesta mide **48.210 bytes** (`access.log:22`, 02:23:15); el `tar` preparado en `/tmp/.exfil/clientes.tar.gz` mide **48.210 bytes** (`disco/listado.txt:7`, 02:23) y está abierto por el `bash` del atacante (`memoria/lsof.txt:5`). `bash_history:8-9` registra el `tar` y el `curl -F` al C2; `netstat:4` muestra el canal `nc` establecido a `45.13.37.7:4444`. El tamaño idéntico liga la lectura de la DB con el paquete exfiltrado.
+- **C2 único:** `45.13.37.7` es el mismo host para el drop del webshell (`:80`), la reverse shell/exfil (`:4444`) y el `curl -F` del historial.
+- **Anti-forense:** el atacante corrió `history -c` (`bash_history:10`; por eso el historial del disco estaba vacío y este se recuperó de memoria) y **alteró `auth.log`** (su hash no coincide con la custodia — es el único archivo que falla `shasum -a 256 -c`, ver §2). Por eso la cronología no se apoya en los timestamps de `auth.log` salvo para el orden relativo de los eventos de sistema. Queda un hueco en `auth.log` entre 02:21:04 y el cierre de sesión (02:45:00).
+
+**La historia en una línea:** recon (02:14) → SQLi y acceso al portal (02:17:22) → fuga de config con el token (02:17:41) → RCE por `cmd=` (02:18:10) → drop del webshell desde el C2 (02:19:02) → SSH como `www-data` (02:19:55) → escalada SUID a root (02:21) → persistencia (cron `phantom-maint` + backdoor `phantom-svc`, uid 0) → staging y exfiltración de `clientes.db.txt` al C2 (02:23) → borrado de rastros (`history -c`, edición de `auth.log`) → cierre de sesión (02:45).
 
 ## 4. Indicadores de compromiso
 
