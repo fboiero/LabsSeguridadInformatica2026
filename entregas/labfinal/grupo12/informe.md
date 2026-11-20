@@ -14,9 +14,9 @@
 ## 0. Declaración de uso de IA
 
 * **¿Usaron herramientas de IA generativa (ChatGPT, Claude, Gemini, Copilot, etc.)?** Sí.
-* **¿Cuáles y con qué propósito?** Se utilizó **Google Antigravity** como asistente de redacción y pair-programming para la estructuración Markdown del informe pericial y la formulación del resumen ejecutivo directivo.
-* **¿Qué partes del trabajo fueron generadas o modificadas por IA?** Plantillas iniciales de tablas Markdown y asistencia de estilo para comunicación ejecutiva; los hallazgos técnicos, análisis de riesgo y verificaciones de flags fueron auditados y realizados por el equipo.
-* **¿Cómo validaron que el código generado sea correcto y seguro?** Comprobación directa sobre el contenedor del lab, verificación de la flag de reconocimiento en el HTML y cálculo de vectores CVSS v3.1 conforme al estándar First.org.
+* **¿Cuáles y con qué propósito?** Se utilizó **Google Antigravity** como asistente de redacción y pair-programming para la estructuración Markdown del informe pericial, la formalización metodológica de auditoría (PTES / OWASP WSTG) y la redacción de hallazgos técnicos.
+* **¿Qué partes del trabajo fueron generadas o modificadas por IA?** Plantillas iniciales de tablas Markdown, redacción ejecutiva preliminar y estructuración formal del marco de trabajo metodológico; la ejecución de pruebas sobre el target, la explotación manual de la vulnerabilidad SQLi, la extracción de banderas y el cálculo de vectores CVSS v3.1 fueron realizados y verificados empíricamente por los auditores.
+* **¿Cómo validaron que el código generado sea correcto y seguro?** Comprobación directa sobre el contenedor del lab, verificación de la flag de reconocimiento en el HTML, comprobación del bypass de autenticación por SQLi en el endpoint de login de RRHH, verificación criptográfica de las banderas contra el manifest y cálculo de vectores CVSS v3.1 conforme al estándar First.org.
 
 ---
 
@@ -49,10 +49,41 @@ Restringir el acceso público a paneles administrativos y de soporte mediante li
 ---
 
 <!-- ========================================================================= -->
-<!-- SECCIÓN 2: ALCANCE Y METODOLOGÍA (A redactar por Matías Mariatti)         -->
+<!-- SECCIÓN 2: ALCANCE Y METODOLOGÍA (Redactado por Matías Mariatti)          -->
 <!-- ========================================================================= -->
 ## 2. Alcance y metodología
-*(Sección asignada a Matías Mariatti — Grupo 12)*
+- **Auditor responsable de la sección:** Matías Mariatti (`@matiasmariatticasc`)
+
+### 2.1 Delimitación del alcance (Scope)
+El alcance de la presente auditoría de seguridad ofensiva quedó estrictamente delimitado al entorno asignado para la evaluación de la plataforma corporativa **"Clientes"** de PhantomCorp S.A.:
+
+| Categoría | Objetivo / Activo | Dirección de Red / Protocolo | Descripción del componente |
+|---|---|---|---|
+| **Dentro de alcance (In-Scope)** | `phantomcorp` | `http://phantomcorp:80` (TCP/80) | Servidor web principal, portal público, portal interno de RRHH, endpoints de autenticación, directorios de respaldo y API interna de reportes. |
+| **Fuera de alcance (Out-of-Scope)** | Infraestructura de virtualización | Host Docker / Redes adyacentes | Nodos host subyacentes, contenedores de control del CTF y subredes que no formen parte del laboratorio. |
+| **Fuera de alcance (Out-of-Scope)** | Sistemas de terceros y redes públicas | Internet / Proveedores externos | Cualquier dirección IP o dominio ajeno al host asignado. |
+
+### 2.2 Reglas de Compromiso (Rules of Engagement - RoE)
+La evaluación se rigió bajo los siguientes principios éticos, técnicos y legales acordados:
+1. **Modalidad de evaluación:** Prueba de penetración de tipo **Caja Negra (*Black Box*)**, simulando la perspectiva de un adversario externo sin privilegios iniciales, sin provisión de credenciales de acceso y sin conocimiento previo del código fuente ni diagramas de arquitectura interna.
+2. **Criterio de no destructividad:** Se prohibió taxativamente la realización de ataques de Denegación de Servicio (DoS/DDoS), la eliminación o corrupción de registros en bases de datos, el formateo o desconfiguración de servicios (*defacement*) y la alteración de archivos críticos del sistema. El objetivo consistió en demostrar impacto de forma controlada y extraer pruebas de concepto mínimas y suficientes (*proof-of-concept*).
+3. **Marco legal aplicable:** Las actividades se desarrollaron en estricto cumplimiento de la **Ley Nacional de Delitos Informáticos Nº 26.388 de la República Argentina** (modificatoria del Código Penal en sus artículos 153 bis sobre acceso ilegítimo a sistemas informáticos y 183 sobre daño informático). Toda acción ofensiva estuvo amparada por la autorización formal de la cátedra y circunscrita al entorno de prueba aislado.
+
+### 2.3 Metodología de auditoría aplicada
+Para garantizar una evaluación exhaustiva, metódica y reproducible, el equipo del Grupo 12 adoptó un enfoque híbrido combinando el estándar de ejecución de pentesting **PTES (*Penetration Testing Execution Standard*)** y la guía de pruebas de seguridad para aplicaciones web **OWASP WSTG (*Web Security Testing Guide* v4.2)**:
+
+```
+[ PTES 1: Reconocimiento ] ──> [ PTES 2: Enumeración ] ──> [ PTES 3: Explotación ] ──> [ PTES 4: Post-Explotación ] ──> [ PTES 5: Impacto ]
+ (Inspección robots.txt)       (Descubrimiento RRHH)       (Bypass SQLi Login)         (Extracción Token API)       (Crown Jewels RCE)
+```
+
+Las fases de ejecución estructuradas fueron:
+- **Fase 1: Reconocimiento e Inteligencia (Intelligence Gathering):** Mapeo de superficie expuesta, inspección de cabeceras HTTP, análisis pasivo de directivas de indexación (`robots.txt`) y búsqueda de metadatos en código fuente HTML.
+- **Fase 2: Enumeración y Análisis de Vulnerabilidades (Vulnerability Analysis):** Inspección de rutas administrativas no indexadas, identificación de formularios web interactivos y modelado de vectores de inyección conforme a las directrices OWASP WSTG-INPV (Input Validation Testing).
+- **Fase 3: Explotación y Acceso Inicial (Exploitation - Foothold):** Pruebas de concepto dirigidas para eludir controles de autenticación (OWASP WSTG-ATHN) mediante inyecciones SQL controladas sobre campos de entrada de usuario.
+- **Fase 4: Post-Explotación y Pivoting (Post-Exploitation):** Búsqueda de artefactos residuales, archivos de configuración mal ubicados o respaldos expuestos que revelen secretos o credenciales secundarias.
+- **Fase 5: Demostración de Impacto y Acceso a "Crown Jewels":** Verificación de escalada de privilegios y ejecución remota de comandos para cuantificar el riesgo de negocio sobre la base de datos confidencial de clientes.
+- **Fase 6: Documentación y Reporte (Reporting):** Elaboración del presente informe pericial, correlación de evidencias reproducibles y formulación de recomendaciones de mitigación de causa raíz.
 
 ---
 
