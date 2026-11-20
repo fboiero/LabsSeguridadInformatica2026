@@ -1,0 +1,3 @@
+[ OK ] Correcta (ya la tenías). Reto R2 ✓
+[ OK ] Correcta (ya la tenías). Reto R3 ✓
+[ OK ] Correcta (ya la tenías). Reto R5 ✓

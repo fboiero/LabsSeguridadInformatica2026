@@ -1,0 +1,13 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 09                     │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ·  R1     El agente hace recon y encuentra el primer flag
+   ·  R2     El agente enumera y sigue la ruta oculta
+   ·  R3     El agente detecta la API expuesta
+   ✓  R4     El guardrail rechaza un objetivo fuera de alcance
+   ·  R5     Tu agente encadena token->vault (esqueleto completo)
+
+  ██████░░░░░░░░░░░░░░░░░░░░░░░░  1/5 (20%)
+

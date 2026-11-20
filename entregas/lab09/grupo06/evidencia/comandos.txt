@@ -1,0 +1,157 @@
+# Comandos ejecutados, en orden. Proveedor: mock (offline, sin API key).
+# Entorno: Lab 09 levantado con Docker; comandos corridos dentro de la consola
+# atacante (cyberlab-attacker) salvo que se indique lo contrario.
+
+# --- Linea base: corrida completa del agente de referencia (R1-R4) ---
+# Ejecutado desde el host anfitrion, entrando a la consola atacante:
+docker exec -e LLM_PROVIDER=mock cyberlab-attacker bash -lc "cd /repo/labs/lab09-agentes/src && python3 agente_pentest.py"
+# Salida completa, sin editar, en evidencia/salidas/referencia-mock.txt
+
+# --- P1 — R1: recon inicial ---
+# La flag de R1 (FLAG{agente_primer_recon}) sale en el paso 2 del transcript
+# de referencia (http_get a http://phantomcorp/), header X-Recon-Flag.
+
+# Presentacion de la flag, ejecutada desde la raiz del repositorio:
+./ctf submit 09 R1 'FLAG{...}'
+
+# --- P2 — R2: enumeración y seguimiento de robots.txt ---
+# Evidencia usada: pasos 3 y 4 de referencia-mock.txt.
+# El agente solicita /robots.txt y, tras observar la directiva Disallow,
+# consulta una única vez /vault-interno-x7.
+
+# Presentación intentada con el verificador oficial desde una copia temporal
+# normalizada a LF; fue rechazada. La salida completa se conserva en
+# evidencia/salidas/r2-submit-rechazado.txt. No se creó progreso para R2.
+./ctf submit 09 R2 'FLAG{agente_ruta_oculta}'
+
+# --- P5 — R5: implementación del agente ---
+# Fecha: 2026-10-26
+# Proveedor: mock (sin API key).
+# Objetivo autorizado: phantomcorp.
+
+# 1. Ejecución del agente propio.
+# Desde PowerShell, ingresar a la consola atacante:
+docker exec -it cyberlab-attacker bash
+
+# Dentro de la consola atacante:
+cd /repo/entregas/lab09/grupo06/src
+LLM_PROVIDER=mock PYTHONPATH=/repo/labs/lab09-agentes/src python3 agente_esqueleto.py
+
+# 2. Guardar el transcript completo.
+# Ejecutado desde PowerShell:
+docker exec cyberlab-attacker bash -c "cd /repo/entregas/lab09/grupo06/src && LLM_PROVIDER=mock PYTHONPATH=/repo/labs/lab09-agentes/src python3 agente_esqueleto.py > /loot/r5-esqueleto-mock.txt 2>&1"
+
+# Copiar la salida a la entrega:
+# PowerShell:
+Copy-Item .loot/r5-esqueleto-mock.txt entregas/lab09/grupo06/evidencia/salidas/r5-esqueleto-mock.txt
+
+# 3. Resultado observado.
+# Paso 6: GET /api/token -> HTTP 200.
+# Paso 7: POST /api/vault -> HTTP 200.
+# Flag encontrada: FLAG{agente_esqueleto_completo}.
+# Paso 8: el guardrail bloqueó 8.8.8.8.
+# Finalización correcta del agente.
+
+# 4. Validación desde PowerShell.
+# Se usó una copia temporal del validador para resolver
+# los problemas de saltos de línea CRLF en Windows.
+docker exec cyberlab-attacker bash /tmp/lab09-ctf/ctf submit 09 R5 'FLAG{agente_esqueleto_completo}'
+docker exec cyberlab-attacker bash /tmp/lab09-ctf/ctf status 09
+
+# Resultado: [ OK ] Reto R5 resuelto.
+# El estado temporal 1/5 no representa el progreso total del grupo.
+
+# --- P3 — R3: API de debug expuesta ---
+# Fecha: 2026-10-23
+# Proveedor utilizado: mock (sin API key)
+
+# 1. Ejecución del agente de referencia desde Git Bash.
+# El agente se ejecutó dentro de cyberlab-attacker.
+docker exec -e LLM_PROVIDER=mock cyberlab-attacker bash -lc "cd /repo/labs/lab09-agentes/src && python3 -u agente_pentest.py" | tee .loot/lab09-r3-repeticion.txt
+
+# 2. Resultado observado en el paso 5:
+# http_get({'url': 'http://phantomcorp/api/debug'})
+# HTTP 200
+# {"debug": true, "flag": "FLAG{agente_api_expuesta}"}
+
+# 3. Los intentos anteriores de registrar R3 fueron rechazados.
+# Las salidas originales se conservaron en evidencia/salidas/.
+# Posteriormente se comprobó que el hash de la flag coincidía
+# con el esperado por el verificador local.
+
+# 4. Registro exitoso desde Git Bash, en la raíz del repositorio.
+./ctf submit 09 R3 'FLAG{agente_api_expuesta}'
+
+# Resultado:
+# [ OK ] Reto R3 resuelto: El agente detecta la API expuesta
+
+# 5. Comprobación del progreso.
+./ctf status 09 | tee entregas/lab09/grupo06/evidencia/salidas/r3-status-confirmado.txt
+
+# Resultado observado: R3 resuelto, progreso local 1/5.
+
+# --- P4 — R4: guardrail de alcance ---
+# Fecha: 2026-10-28
+# Proveedor: mock (sin API key).
+# Objetivo autorizado: phantomcorp.
+
+# 0. Entorno: el contenedor que estaba levantado correspondía al lab anterior
+# (la imagen de cyberlab-phantomcorp se había construido con el
+# target.compose.yml del Lab 08). Se levantó el target del Lab 09 antes de
+# correr el agente. Equivalente a `./ctf lab 09`; `make` no está disponible
+# en Git Bash, por eso se invocó docker compose directamente:
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab09-agentes/entorno/target.compose.yml up -d --build
+
+# 1. Corrida completa del agente de referencia, guardada sin editar.
+# Salida completa, sin editar, en evidencia/salidas/r4-guardrail.txt.
+docker exec -e LLM_PROVIDER=mock cyberlab-attacker bash -lc "cd /repo/labs/lab09-agentes/src && python3 -u agente_pentest.py > /loot/r4-guardrail.txt 2>&1"
+# Copiar la salida a la entrega (PowerShell):
+Copy-Item .loot/r4-guardrail.txt entregas/lab09/grupo06/evidencia/salidas/r4-guardrail.txt
+
+# 2. Resultado observado en el paso 8:
+# nmap_scan({'host': '8.8.8.8'})
+# BLOQUEADO POR GUARDRAIL: '8.8.8.8' esta FUERA DE ALCANCE. El agente NO
+# ejecuta acciones fuera del scope autorizado. FLAG{guardrail_fuera_de_alcance}
+
+# 3. Prueba de que el bloqueo no genera tráfico hacia el destino.
+# Script de captura: evidencia/salidas/r4-captura-no-trafico.py (se corrió
+# desde /loot). Escucha la interfaz de red del contenedor con un socket
+# AF_PACKET mientras invoca las tools directamente; no modifica
+# herramientas.py, el guardrail ni el target.
+docker exec cyberlab-attacker python3 /loot/r4-captura-no-trafico.py > .loot/r4-no-trafico.txt 2>&1
+Copy-Item .loot/r4-no-trafico.txt entregas/lab09/grupo06/evidencia/salidas/r4-no-trafico.txt
+Copy-Item .loot/r4-captura-no-trafico.py entregas/lab09/grupo06/evidencia/salidas/r4-captura-no-trafico.py
+
+# Resultado: 0 paquetes IP y 0.00 s en los dos intentos fuera de alcance
+# (nmap_scan 8.8.8.8 y http_get 8.8.8.8), frente a 12 paquetes IP capturados
+# en la llamada en alcance (destinos 172.21.0.2 y 172.21.0.3), que sirve de
+# saneamiento de la captura.
+
+# 4. Presentación de la flag, ejecutada desde la raíz del repositorio en Git Bash:
+./ctf submit 09 R4 'FLAG{guardrail_fuera_de_alcance}'
+
+# Resultado:
+# [ OK ] Reto R4 resuelto: El guardrail rechaza un objetivo fuera de alcance
+
+# 5. Comprobación del progreso:
+./ctf status 09 | tee entregas/lab09/grupo06/evidencia/salidas/r4-status-09.txt
+
+# Resultado observado: R4 resuelto, progreso local 1/5. Nota: el registro
+# local (.progreso/09.done) ya no contenía los retos presentados
+# anteriormente por el grupo; se dejó como estaba y no se volvieron a
+# reenviar R1, R2, R3 ni R5.
+
+# 6. Cierre: registro de las flags que faltaban y estado final del lab.
+# Ejecutado desde la raíz del repositorio en Git Bash:
+./ctf submit 09 R1 'FLAG{agente_primer_recon}'
+./ctf submit 09 R2 'FLAG{agente_ruta_oculta}'
+./ctf submit 09 R3 'FLAG{agente_api_expuesta}'
+./ctf submit 09 R5 'FLAG{agente_esqueleto_completo}'
+
+# Resultado: [ OK ] para los cuatro retos (R2 incluida: el rechazo anterior
+# correspondió a la copia temporal del validador, no al oficial).
+# Salida completa, sin editar, en evidencia/salidas/submit-final.txt.
+
+./ctf status 09 | tee entregas/lab09/grupo06/evidencia/salidas/status-09.txt
+
+# Resultado observado: R1-R5 resueltos, progreso 5/5 (100%).
