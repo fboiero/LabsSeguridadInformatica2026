@@ -1,0 +1,27 @@
+== Tasks por change ==
+001-mvp-vertical-slice                     █████████████░░░░░░░ 14/22 (64%)
+002-audit-persistence                      ░░░░░░░░░░░░░░░░░░░░ 0/14 (0%)
+003-roe-and-tokens                         ░░░░░░░░░░░░░░░░░░░░ 0/14 (0%)
+004-recon-loop-a                           ░░░░░░░░░░░░░░░░░░░░ 0/15 (0%)
+005-correlation-analysis-loop-b            ░░░░░░░░░░░░░░░░░░░░ 0/17 (0%)
+006-sandbox-validation-loop-c              ░░░░░░░░░░░░░░░░░░░░ 0/15 (0%)
+007-reporting-defectdojo                   ░░░░░░░░░░░░░░░░░░░░ 0/15 (0%)
+008-grupo14-limits-enforcement             ████████████████░░░░ 9/11 (82%)
+
+== Specs (Scenarios y archivos de test declarados) ==
+agent-contracts          6 Scenarios  tests: tests/test_schemas.py, tests/test_evals.py
+asset-discovery          6 Scenarios  tests: tests/test_engagement_and_loops.py
+audit-log                4 Scenarios  tests: tests/test_audit_and_policy.py, tests/test_authorization.py
+authorization            4 Scenarios  tests: tests/test_authorization.py
+correlation              5 Scenarios  tests: tests/test_schemas.py
+engagement-lifecycle     5 Scenarios  tests: tests/test_engagement_and_loops.py
+poc-catalog              7 Scenarios  tests: tests/test_poc_catalog.py
+reporting                2 Scenarios  tests: tests/test_reporting.py
+tool-adapters            6 Scenarios  tests: tests/test_adapters.py, tests/test_audit_and_policy.py
+validation               3 Scenarios  tests: tests/test_poc_catalog.py, tests/test_authorization.py
+vuln-analysis            6 Scenarios  tests: tests/test_schemas.py, tests/test_engagement_and_loops.py, tests/test_authorization.py
+TOTAL                   54 Scenarios
+
+== Tests recolectados: 88 ==
+
+Recordá: tests verdes (`python -m pytest -q`) y evals (`python evals/run_evals.py --mode golden`).
