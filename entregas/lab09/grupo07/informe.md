@@ -20,7 +20,34 @@ El checkout local de Fernando registró **0/5 flags** al 19/11/2026; esta captur
 
 ## 2. Tu agente
 
-Pendiente del bloque A: esqueleto completado y pruebas. B adjunta su ejecución obteniendo R5. La referencia auditada no reemplaza ese requisito.
+Entrego `src/agente_esqueleto.py` completo y corriendo. Los tres TODO del loop de tool-use quedaron resueltos así:
+
+- **Fin (`tipo == "final"`):** cuando el cliente ya no pide más tools, imprimo su texto de cierre y corto el loop.
+- **Despacho de tool:** cada acción `tool` se ejecuta por el único punto de ejecución `ejecutar_tool(accion["nombre"], accion["argumentos"])`, que pasa sí o sí por los guardrails de `herramientas.py`. El agente no ejecuta nada por fuera de ahí.
+- **Realimentación:** devuelvo al cliente una lista `[{"id": accion["id"], "output": salida}]`. El `id` ata cada observación a la acción que la pidió; es lo que permite encadenar (usar en el `POST` el token que apareció en el `GET` anterior).
+
+Mantengo la condición de parada del esqueleto: `MAX_PASOS = 12`. Si el cliente nunca responde `final`, el `for` termina sin `break` y se informa el corte por límite de pasos (es un guardrail de parada, no una auditoría completa). En `src/` copié además `herramientas.py` y `llm.py` sin modificar, porque el esqueleto los importa; son copias de referencia y no se debilitan sus límites.
+
+**Corrida (mock).** Corrí `LLM_PROVIDER=mock python3 agente_esqueleto.py` contra el target oficial del lab (`entorno/phantomcorp/server.py`) levantado tal cual (= CMD del Dockerfile) en un sandbox Linux sin Docker, con `phantomcorp -> 127.0.0.1`. El loop recorrió los 8 pasos del plan y reportó las 5 flags, incluida la capstone de R5 por el encadenamiento `GET /api/token` -> `POST /api/vault`:
+
+- R1 `FLAG{agente_primer_recon}` — header `X-Recon-Flag` en `GET /`.
+- R2 `FLAG{agente_ruta_oculta}` — ruta sacada de `robots.txt`.
+- R3 `FLAG{agente_api_expuesta}` — `GET /api/debug`.
+- R5 `FLAG{agente_esqueleto_completo}` — `POST /api/vault` con el token.
+- R4 `FLAG{guardrail_fuera_de_alcance}` — el paso 8 intenta `nmap_scan(8.8.8.8)` y el guardrail lo bloquea localmente antes de ejecutar nada.
+
+[Transcript de la corrida](evidencia/salidas/transcript-esqueleto-mock.txt) · [contexto: fecha, versiones, entorno](evidencia/salidas/contexto.txt) · [comandos y procedencia](evidencia/comandos-lautaro.txt).
+
+**Qué prueba la corrida mock y qué no.** El paso 1 (`nmap_scan`) devolvió `error nmap: ... 'nmap'` porque el sandbox no tenía nmap instalado; el loop siguió sin romperse y R1 salió igual del header HTTP. La corrida demuestra que el loop ejecuta las tools, realimenta con el `id` correcto y llega a R5. **No** demuestra razonamiento ni extracción dinámica del token: `ClienteMock` sigue un plan fijo y lleva el token escrito en `PLAN`, no lo deduce del resultado del paso 6 (coincide con lo que señala la auditoría de la sección 3). Para probar que es la realimentación —y no el plan fijo— la que habilita el encadenamiento, agregué pruebas aisladas (abajo). El encadenamiento dinámico con un LLM real se vería con `LLM_PROVIDER=claude|openai`; no lo ejecuté (sin API key, y no se suben keys al repo).
+
+**Pruebas del loop (sin red).** `evidencia/pruebas_esqueleto.py` inyecta clientes-doble y reemplaza `ejecutar_tool`, sin tocar phantomcorp ni lanzar procesos. Cubre las cuatro situaciones del reparto y pasan todas ([salida](evidencia/salidas/pruebas-esqueleto.txt)):
+
+1. Acción `final`: corta el loop y no ejecuta ninguna tool.
+2. Realimentación / encadenamiento: el doble **solo** propone el `POST /api/vault` si recibió el token por `resultados`, y verifica que el `id` realimentado sea el de la acción. Así el TODO 3 queda probado con independencia del plan del mock.
+3. Tool desconocida / error: `ejecutar_tool` devuelve un string de error y el loop continúa y lo realimenta sin caerse.
+4. Agotamiento del límite: un cliente que nunca termina corta exactamente en `MAX_PASOS` e informa el corte.
+
+El envío de las flags al CTF (`./ctf submit 09 ...`) y el `status 09` en 5/5 se hacen desde el host con Docker; no se ejecutaron en este sandbox. Según el reparto, B adjunta además la corrida de este mismo esqueleto en el entorno oficial.
 
 ## 3. Auditoría crítica del agente — Lorenzo
 
