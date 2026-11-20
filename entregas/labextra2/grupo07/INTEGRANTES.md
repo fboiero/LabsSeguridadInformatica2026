@@ -1,11 +1,10 @@
-# Integrantes — Grupo 07
+# Integrantes — Lab Extra 2 · Grupo 07
 
-| Nombre | Legajo | GitHub | Bloque asignado | Declaración IA |
-|---|---:|---|---|---|
-| Lorenzo Blanc | 15034 | @LoloBlanc | D — Evidencia, P5/research e integración | Pendiente del autor |
-| Fernando Cagliero | 15136 | @Ferca19 | B — R1/R2 y P2 | Declarado en `informe.md` |
-| Guadalupe Gómez | 15397 | @guadagomezgg8 | C — R3, P3/P4 | Pendiente del autor |
-| Lautaro Mariño | 15163 | @lautaromarino0 | A — Timeline y P1 | Pendiente del autor |
+| Nombre | Legajo | GitHub | Bloque |
+|---|---:|---|---|
+| Lorenzo Blanc | 15034 | @LoloBlanc | Integración de evidencia, P5, research y PR |
+| Fernando Cagliero | 15136 | @Ferca19 | R1/R2, P2 |
+| Guadalupe Gómez | 15397 | @guadagomezgg8 | R3, P3/P4, exposición y remediación |
+| Lautaro Mariño | 15163 | @lautaromarino0 | Línea de tiempo, P1 |
 
-Cada integrante debe revisar y completar su propia declaración antes del
-cierre grupal.
+Esta rama conserva el aporte de Lorenzo y agrega los commits locales con la evidencia y el informe de Fernando. Los bloques restantes y las declaraciones de IA de Guadalupe y Lautaro siguen pendientes.
