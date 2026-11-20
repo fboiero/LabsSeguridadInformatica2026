@@ -1,0 +1,75 @@
+P3 — 28/10/2026. Terminal PowerShell; Git Bash para el motor.
+Raíz externa: C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026
+Caso: <raíz>/labs/labextra2-git-forense/caso/repo-delata
+Capturas: Tee-Object de PowerShell, texto UTF-8. Se conserva contenido y orden; los finales de línea son los de la captura Windows.
+
+Comandos Git ejecutados en orden (las variables se definen aquí para reproducirlos):
+$repo='C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026'
+$case="$repo/labs/labextra2-git-forense/caso/repo-delata"
+1. git -C $repo status --short --branch (falló: propiedad del directorio; ruta original con barras invertidas).
+2. git -C $repo status --short --branch (mismo rechazo).
+3. git -c safe.directory="$repo" -C $repo status --short --branch (rechazo: safe.directory todavía tenía barras invertidas).
+4. git -c safe.directory="$repo" -C $repo status --short --branch (ruta con /; éxito: labextra2-grupo06, limpio).
+No se modificó la configuración global: la excepción es por invocación y ruta exacta.
+Preparación: & 'C:\Program Files\Git\bin\bash.exe' ./ctf lab extra2, desde la raíz externa. Caso ausente antes de ejecutarlo. Creó la historia ficticia; emitió avisos LF→CRLF. No se leyó el generador como solución.
+5. git -c safe.directory="$case" -C $case status --short --branch -> r3-estado-inicial.txt
+6. git -c safe.directory="$case" -C $case branch -a -> r3-ramas.txt
+7. git -c safe.directory="$case" -C $case log --all --oneline --decorate -> r3-inventario.txt
+8. git -c safe.directory="$case" -C $case log feature/pasarela-pagos --format=fuller --name-status -> r3-historial.txt
+9. git -c safe.directory="$case" -C $case show feature/pasarela-pagos:.env.pasarela -> r3-rama-abandonada.txt
+10. git -c safe.directory="$case" -C $case diff main feature/pasarela-pagos -- .env.pasarela pasarela.py -> r3-comparacion-main.txt
+11. git -c safe.directory="$case" -C $case log --all --reverse --format=fuller -> r3-fechas.txt
+12. git -c safe.directory="$case" -C $case ls-tree -r --name-only main -> r3-arbol-main.txt
+13. git -c safe.directory="$case" -C $case show -s --format=raw feature/pasarela-pagos -> r3-parentesco.txt
+14. git -c safe.directory="$case" -C $case show --format=fuller feature/pasarela-pagos -- .env.pasarela pasarela.py -> r3-diff-introduccion.txt
+Desde raíz externa, mediante Git Bash:
+./ctf submit extra2 R3 'FLAG{git_rama_abandonada}' -> r3-submit.txt (rechazada)
+./ctf status extra2 -> status-extra2.txt (0/3; salida 1 por condición final del motor)
+Diagnóstico posterior: lectura binaria del manifiesto y SHA-256 de la flag ya encontrada con .NET; longitud hash=65, último carácter=13, coincidencia al quitar CR/LF=True. -> r3-diagnostico-verificador.txt
+15. git -c safe.directory="$repo" -C $repo status --short --branch (limpio).
+Git Bash ejecutó validar-r3-crlf.sh adjunto, inicialmente guardado en el directorio temporal de trabajo. -> r3-submit-compatibilidad.txt (aceptado; progreso 1/3). Reutiliza funciones oficiales y manifiesto temporal normalizado; no escribe el progreso a mano.
+16. git -c safe.directory="$case" -C $case status --short --branch -> r3-estado-final.txt
+Git Bash: ./ctf status extra2 -> status-extra2-final.txt (R3 resuelto, 1/3; salida 1 porque faltan otros retos).
+
+Los comandos de lectura de documentación/inventario no buscaron flags en soluciones ni generador. No se ejecutaron checkout, reset, fsck --lost-found, gc ni prune durante la investigación.
+Verificación final desde PowerShell, ejecutada con la cuenta propietaria tras copiar los entregables:
+17. git -C $repo status --short --branch -> labextra2-grupo06; solo ?? entregas/labextra2/grupo06/
+18. git -C $repo diff --exit-code -> sin cambios en archivos rastreados, código 0.
+19. git -C $repo diff --cached --exit-code -> sin cambios preparados, código 0.
+
+P2 — 28/10/2026. Ejecución en la copia actual del repositorio externo:
+Caso: D:/Usuario/Documents/Facultad/Seguridad_Informática/LabsSeguridadInformatica2026/labs/labextra2-git-forense/caso/repo-delata
+La notación <caso> en los comandos siguientes representa exactamente esa ruta absoluta; cwd externo.
+1. & 'C:\Program Files\Git\bin\bash.exe' ./ctf lab extra2 -> caso ausente, generado por el start.sh oficial; no usa Docker.
+2. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" status --short --branch -> ## main.
+3. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" reflog show --all --date=iso -> inventario del reflog, salida exploratoria.
+4. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" fsck --no-reflogs --unreachable --no-progress -> identifica unreachable commit bc9d0dbe6aca41d639a515395cc983e139979102, árbol y blob; r2-fsck.txt.
+5. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" reflog show --all --format=fuller -> registra autor/committer y movimiento reset; salida exploratoria.
+6. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" reflog show --all --format="%H %gd %gs" -> r2-reflog.txt.
+7. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" show --format=fuller --stat bc9d0dbe6aca41d639a515395cc983e139979102 -> metadatos y archivo, salida exploratoria.
+8. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" show bc9d0dbe6aca41d639a515395cc983e139979102 -> r2-objeto-recuperado.txt; revela notas y flag.
+9. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" cat-file -t bc9d0dbe6aca41d639a515395cc983e139979102 -> commit.
+10. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" status --short --branch -> ## main; no se movieron referencias ni se alteró el árbol.
+11. & 'C:\Program Files\Git\bin\bash.exe' ./ctf submit extra2 R2 'FLAG{git_reflog_rescata}' -> rechazo por CRLF del manifiesto; r2-submit.txt.
+12. & 'C:\Program Files\Git\bin\bash.exe' 'entregas/labextra2/grupo06/evidencia/validar-r2-crlf.sh' -> aceptado con manifiesto temporal normalizado; r2-submit-compatibilidad.txt.
+13. & 'C:\Program Files\Git\bin\bash.exe' ./ctf status extra2 -> status-extra2-p2.txt (1/3 en este checkout).
+14. git -c safe.directory="<caso>" -C "labs/labextra2-git-forense/caso/repo-delata" reflog show --all --date=iso --format="%H %gD %gs" -> r2-reflog-fechas.txt; captura fechas registradas del reflog como evidencia temporal local, no como fecha de publicación.
+Durante la investigación no se ejecutaron reset, checkout, gc, prune, fsck --lost-found ni comandos de limpieza sobre el caso. El reset/checkout que forma la historia es parte de la generación oficial recién ejecutada.
+
+P1 — 29/10/2026. Terminal PowerShell; Git Bash para el motor. Raíz externa: C:/Users/marti/OneDrive/Escritorio/LabsSeguridadInformatica2026. Caso: <raíz>/labs/labextra2-git-forense/caso/repo-delata.
+1. & 'C:\Program Files\Git\bin\bash.exe' ./ctf lab extra2 -> el caso no existía en este checkout; el generador oficial lo creó una vez. No se leyó el generador ni el manifiesto para descubrir la flag.
+2. git -C $case status --short --branch -> ## main.
+3. git -C $case log --all --oneline --decorate -> r1-inventario.txt.
+4. git -C $case log --all --reverse --format=fuller -> inventario exploratorio de autores, fechas y mensajes.
+5. git -C $case log main -p -- config.py -> descubre los diffs de introducción y limpieza.
+6. & 'C:\Program Files\Git\bin\bash.exe' ./ctf submit extra2 R1 'FLAG{git_log_no_olvida}' -> r1-submit.txt; rechazo por CR final del hash del manifiesto.
+7. & 'C:\Program Files\Git\bin\bash.exe' entregas/labextra2/grupo06/evidencia/validar-r1-crlf.sh -> r1-submit-compatibilidad.txt; el script usa una copia temporal del manifiesto sin CR, llama las funciones oficiales y acepta R1.
+8. git -C $case show --format=fuller 9333f2b4a09f7a320cb66d621c3bd53b4f694941 -- config.py -> parte de r1-introduccion-limpieza.txt.
+9. git -C $case show --format=fuller eafb81c3ec5790ce4741629458e11ab5c1a690b8 -- config.py -> parte de r1-introduccion-limpieza.txt.
+10. git -C $case log main --reverse --format=fuller -> r1-fechas.txt.
+11. git -C $case status --short --branch -> ## main; se verificó que no hubo cambios ni movimientos de referencias en el caso.
+12. & 'C:\Program Files\Git\bin\bash.exe' ./ctf status extra2 -> status-extra2-r1.txt; R1 resuelto, 1/3 en este checkout.
+
+Durante P1 no se ejecutaron checkout, reset, gc, prune, fsck --lost-found ni comandos de limpieza sobre el caso.
+
+Integración final — 29/10/2026. Git Bash: `entregas/labextra2/grupo06/evidencia/validar-status-final-crlf.sh`. El script presenta R1, R2 y R3 ya descubiertas con las funciones oficiales y un manifiesto temporal sin CR; no modifica el manifiesto de la cátedra. Resultado completo: `salidas/status-extra2-final-3de3.txt` (3/3, 100%).

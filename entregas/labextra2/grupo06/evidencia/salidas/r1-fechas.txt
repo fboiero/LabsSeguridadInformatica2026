@@ -1,0 +1,31 @@
+commit de33a75843139302dfbe034cab11e8175881540e
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Mon Aug 10 09:12:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Mon Aug 10 09:12:00 2026 -0300
+
+    inicial: deploy-tool con token por variable de entorno
+
+commit 9333f2b4a09f7a320cb66d621c3bd53b4f694941
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Mon Aug 10 18:47:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Mon Aug 10 18:47:00 2026 -0300
+
+    hotfix: deploy roto en produccion (config temporal)
+
+commit eafb81c3ec5790ce4741629458e11ab5c1a690b8
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Tue Aug 11 10:05:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Tue Aug 11 10:05:00 2026 -0300
+
+    fix: sacar credenciales del codigo (ups)
+
+commit fa714bda2ac9d31bf92774e901400be4a296c1e5
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Thu Aug 20 11:00:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Thu Aug 20 11:00:00 2026 -0300
+
+    docs: estado del proyecto

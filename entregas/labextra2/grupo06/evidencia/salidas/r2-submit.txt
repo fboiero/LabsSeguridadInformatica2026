@@ -1,0 +1,5 @@
+Comando desde la raíz externa mediante Git Bash:
+./ctf submit extra2 R2 'FLAG{git_reflog_rescata}'
+
+Salida:
+[FAIL] Flag incorrecta para el reto R2. Seguí investigando, loco.

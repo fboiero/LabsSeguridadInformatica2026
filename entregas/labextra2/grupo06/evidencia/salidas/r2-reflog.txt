@@ -1,0 +1,20 @@
+Comando: git -c safe.directory="D:/Usuario/Documents/Facultad/Seguridad_Informática/LabsSeguridadInformatica2026/labs/labextra2-git-forense/caso/repo-delata" -C "labs/labextra2-git-forense/caso/repo-delata" reflog show --all --format="%H %gd %gs"
+Directorio actual: raíz del repositorio externo
+
+fa714bda2ac9d31bf92774e901400be4a296c1e5 main@{0} commit: docs: estado del proyecto
+fa714bda2ac9d31bf92774e901400be4a296c1e5 HEAD@{0} commit: docs: estado del proyecto
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 main@{1} reset: moving to HEAD~1
+bc9d0dbe6aca41d639a515395cc983e139979102 main@{2} commit: wip: notas del cluster nuevo (no mergear todavia)
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 main@{3} commit: fix: sacar credenciales del codigo (ups)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 main@{4} commit: hotfix: deploy roto en produccion (config temporal)
+de33a75843139302dfbe034cab11e8175881540e main@{5} commit (initial): inicial: deploy-tool con token por variable de entorno
+0abdf953b75b214af59d0cf31e55ccbf2c9873d8 feature/pasarela-pagos@{0} commit: wip: pasarela de pagos (falta todo)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 feature/pasarela-pagos@{1} branch: Created from HEAD~1
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 HEAD@{1} checkout: moving from feature/pasarela-pagos to main
+0abdf953b75b214af59d0cf31e55ccbf2c9873d8 HEAD@{2} commit: wip: pasarela de pagos (falta todo)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 HEAD@{3} checkout: moving from main to feature/pasarela-pagos
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 HEAD@{4} reset: moving to HEAD~1
+bc9d0dbe6aca41d639a515395cc983e139979102 HEAD@{5} commit: wip: notas del cluster nuevo (no mergear todavia)
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 HEAD@{6} commit: fix: sacar credenciales del codigo (ups)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 HEAD@{7} commit: hotfix: deploy roto en produccion (config temporal)
+de33a75843139302dfbe034cab11e8175881540e HEAD@{8} commit (initial): inicial: deploy-tool con token por variable de entorno

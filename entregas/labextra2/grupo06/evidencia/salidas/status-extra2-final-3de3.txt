@@ -1,0 +1,21 @@
+[ OK ] Correcta (ya la tenías). Reto R1 ✓
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: Commit "perdido" por un reset (git reflog / fsck)
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: Secreto en una rama abandonada
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra2                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Secreto "borrado" en un commit viejo (git log -p)
+   ✓  R2     Commit "perdido" por un reset (git reflog / fsck)
+   ✓  R3     Secreto en una rama abandonada
+
+  ██████████████████████████████  3/3 (100%)
+
+[ OK ] ¡Lab extra2 COMPLETO! Ponete las pilas con la próxima unidad.

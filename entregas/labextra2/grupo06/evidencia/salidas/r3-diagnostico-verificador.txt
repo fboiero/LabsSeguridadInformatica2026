@@ -1,0 +1,4 @@
+Diagnóstico posterior al descubrimiento; no se utilizó el manifiesto para obtener la flag.
+Longitud del campo hash: 65
+Código del último carácter: 13
+Coincide SHA-256 tras quitar CR/LF: True

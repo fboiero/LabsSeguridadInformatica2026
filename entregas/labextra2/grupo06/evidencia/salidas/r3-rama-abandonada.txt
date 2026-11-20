@@ -1,0 +1,3 @@
+# NO COMMITEAR ESTO (lo commitee igual, despues lo veo)
+PAGOS_SECRET=FLAG{git_rama_abandonada}
+PAGOS_ENDPOINT=https://pagos.phantomcorp.example

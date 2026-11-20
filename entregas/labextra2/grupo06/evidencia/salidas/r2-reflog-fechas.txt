@@ -1,0 +1,22 @@
+Comando:
+git -c safe.directory="D:/Usuario/Documents/Facultad/Seguridad_Informática/LabsSeguridadInformatica2026/labs/labextra2-git-forense/caso/repo-delata" -C "labs/labextra2-git-forense/caso/repo-delata" reflog show --all --date=iso --format="%H %gD %gs"
+
+Directorio actual: raíz del repositorio externo
+
+fa714bda2ac9d31bf92774e901400be4a296c1e5 refs/heads/main@{2026-08-20 11:00:00 -0300} commit: docs: estado del proyecto
+fa714bda2ac9d31bf92774e901400be4a296c1e5 HEAD@{2026-08-20 11:00:00 -0300} commit: docs: estado del proyecto
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 refs/heads/main@{2026-08-12 14:22:00 -0300} reset: moving to HEAD~1
+bc9d0dbe6aca41d639a515395cc983e139979102 refs/heads/main@{2026-08-12 14:22:00 -0300} commit: wip: notas del cluster nuevo (no mergear todavia)
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 refs/heads/main@{2026-08-11 10:05:00 -0300} commit: fix: sacar credenciales del codigo (ups)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 refs/heads/main@{2026-08-10 18:47:00 -0300} commit: hotfix: deploy roto en produccion (config temporal)
+de33a75843139302dfbe034cab11e8175881540e refs/heads/main@{2026-08-10 09:12:00 -0300} commit (initial): inicial: deploy-tool con token por variable de entorno
+0abdf953b75b214af59d0cf31e55ccbf2c9873d8 refs/heads/feature/pasarela-pagos@{2026-08-05 16:30:00 -0300} commit: wip: pasarela de pagos (falta todo)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 refs/heads/feature/pasarela-pagos@{2026-08-05 16:30:00 -0300} branch: Created from HEAD~1
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 HEAD@{2026-08-05 16:30:00 -0300} checkout: moving from feature/pasarela-pagos to main
+0abdf953b75b214af59d0cf31e55ccbf2c9873d8 HEAD@{2026-08-05 16:30:00 -0300} commit: wip: pasarela de pagos (falta todo)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 HEAD@{2026-08-05 16:30:00 -0300} checkout: moving from main to feature/pasarela-pagos
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 HEAD@{2026-08-12 14:22:00 -0300} reset: moving to HEAD~1
+bc9d0dbe6aca41d639a515395cc983e139979102 HEAD@{2026-08-12 14:22:00 -0300} commit: wip: notas del cluster nuevo (no mergear todavia)
+eafb81c3ec5790ce4741629458e11ab5c1a690b8 HEAD@{2026-08-11 10:05:00 -0300} commit: fix: sacar credenciales del codigo (ups)
+9333f2b4a09f7a320cb66d621c3bd53b4f694941 HEAD@{2026-08-10 18:47:00 -0300} commit: hotfix: deploy roto en produccion (config temporal)
+de33a75843139302dfbe034cab11e8175881540e HEAD@{2026-08-10 09:12:00 -0300} commit (initial): inicial: deploy-tool con token por variable de entorno

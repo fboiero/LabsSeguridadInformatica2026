@@ -1,0 +1,12 @@
+Comando desde la raíz externa mediante Git Bash:
+./ctf status extra2
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra2                   │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ·  R1     Secreto "borrado" en un commit viejo (git log -p)
+   ✓  R2     Commit "perdido" por un reset (git reflog / fsck)
+   ·  R3     Secreto en una rama abandonada
+
+  ██████████░░░░░░░░░░░░░░░░░░░░  1/3 (33%)

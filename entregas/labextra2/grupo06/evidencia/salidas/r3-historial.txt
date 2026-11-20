@@ -1,0 +1,31 @@
+commit 0abdf953b75b214af59d0cf31e55ccbf2c9873d8
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Wed Aug 5 16:30:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Wed Aug 5 16:30:00 2026 -0300
+
+    wip: pasarela de pagos (falta todo)
+
+A	.env.pasarela
+A	pasarela.py
+
+commit 9333f2b4a09f7a320cb66d621c3bd53b4f694941
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Mon Aug 10 18:47:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Mon Aug 10 18:47:00 2026 -0300
+
+    hotfix: deploy roto en produccion (config temporal)
+
+A	config.py
+
+commit de33a75843139302dfbe034cab11e8175881540e
+Author:     dev-jperez <jperez@phantomcorp.example>
+AuthorDate: Mon Aug 10 09:12:00 2026 -0300
+Commit:     dev-jperez <jperez@phantomcorp.example>
+CommitDate: Mon Aug 10 09:12:00 2026 -0300
+
+    inicial: deploy-tool con token por variable de entorno
+
+A	README.md
+A	app.py
