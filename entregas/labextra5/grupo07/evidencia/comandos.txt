@@ -1,0 +1,10 @@
+# Evidencia de comandos — Lab Extra 5 · Grupo 07 · Lorenzo Blanc
+
+Fecha: 2026-11-20 UTC. Origen de las pruebas: datos/token sintéticos locales generados solo para verificar `jwt_tool.py`; no se levantó ni consultó el servidor del caso y no se usó su diccionario o loot.
+
+1. `./ctf lab extra5` — instrucciones del lab.
+2. `python entregas/labextra5/grupo07/jwt_tool.py --help` — opciones CLI en `salidas/cli-help.txt`.
+3. `python .loot/labextra5-smoke.py` — fixture sintético; salida en `salidas/prueba-sintetica.txt`.
+4. `./ctf status extra5` — salida completa en `salidas/status-extra5.txt`, 0/3. No se presentaron flags.
+
+El smoke verificó decodificación base64url/JSON, HS256 válido, rechazo de secreto incorrecto y firma alterada, crackeo offline sobre un diccionario sintético, ausencia de match y token malformado. La interacción con el portal y las evidencias R1–R3 quedan a cargo de Guadalupe.
