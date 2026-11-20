@@ -31,7 +31,7 @@ de documentos y evidencias se detallan al final de la sección 4.
 
 **Lautaro Mariño — Parte B (inventario R1–R2 y P2):** se utilizó **Claude (Anthropic)** como asistente, en dos aspectos. **Redacción:** ayudó a redactar las filas R1 y R2, P2 y la sección correspondiente de la bitácora a partir del análisis que hizo Lautaro de las capturas de Lorenzo (`03`, `04` y `05`); Lautaro revisó y ajustó cada texto antes de commitearlo. **Contraste de pruebas:** sirvió de soporte para contrastar algunas de las pruebas, mediante una enumeración complementaria contra el target oficial del Lab 06 en un sandbox Linux sin Docker (`evidencia/20` a `23`), y para ubicar y cotejar las fuentes (MITRE CWE, OWASP WSTG, documentación de Git, git-dumper y Nmap). **Verificación:** cada afirmación de las filas remite a una línea de evidencia; las respuestas nuevas (404 de los archivos de `/backup` y de `HEAD`/`index`/`refs`) se capturaron con `curl` y se adjuntan. El comportamiento de `http-git` se comprobó en el código del script. No se consultó `git.internal.phantomcorp` ni ningún tercero, no se leyó el código del target ni `solucion.md`, y no se atribuyen a Lautaro las capturas ni las flags de Lorenzo.
 
-**Guadalupe:** pendiente de completar su declaración al incorporar la parte D.
+**Guadalupe Gómez — Parte D (research, P4, P5 y armado):** se utilizó **Claude (Anthropic)** como asistente. **Redacción:** mejoró la redacción de P4, P5 y del mini-research (`research.md`, tema B: wordlists) a partir de las capturas de Lorenzo (`03`, `04`, `05`, `07`, `12`, `14` y `21`) y de las filas del inventario de las Partes B y C. Cada parte fue revisada y ajustada antes de commitearlos. **Fuentes:** ayudó a ubicar y cotejar las fuentes de la Parte D (OWASP Cheat Sheet Series, OWASP API Security Top 10 2023, OWASP WSTG, SecLists, Assetnote y la documentación de dirb en Kali). **Verificación:** cada afirmación de P4 y P5 remite a una línea de evidencia o a una fila del inventario; los conteos del research (4612, 9224 y 819 peticiones) salen de los encabezados de `03`, `12` y `14`.
 
 ## 1. Flags capturadas
 
@@ -155,11 +155,33 @@ alteración de contenido; el impacto debe ajustarse a lo que se demuestre [C2].
 
 **P4 — Enumeración de usuarios.**
 
-Pendiente — Parte D.
+Un ataque de autenticación tiene dos incógnitas: el usuario y la contraseña. `GET /api/users` resuelve la primera sin pedir credenciales. Según [07-api-users.txt](evidencia/07-api-users.txt), la API responde 200 con tres cuentas válidas (`admin`, `jperez` y `mgomez`) y su rol, junto con la nota `endpoint interno de RRHH - no exponer`. No muestra contraseñas, pero en la fase siguiente vale casi lo mismo por tres razones:
+
+1. **Reduce el espacio de búsqueda.** Sin la lista, el atacante tendría que adivinar pares usuario/contraseña. Con ella, solo prueba contraseñas contra cuentas que sabe que existen. OWASP identifica la enumeración de cuentas como el paso que permite dirigir las pruebas de autenticación [C3].
+2. **Ordena los objetivos por privilegio.** El rol `superuser` señala qué cuenta conviene atacar primero, y R1 ya mostró dónde usarla: `/admin` responde 403 con `Panel admin. Necesitas credenciales.` ([21-backup-archivos.txt](evidencia/21-backup-archivos.txt)). El atacante tiene usuario, rol y puerta de entrada; le falta una sola pieza.
+3. **Habilita ataques que evitan los bloqueos por cuenta.** Con nombres válidos se puede hacer *password spraying* (probar una contraseña débil contra las tres cuentas, con pocos intentos por cuenta para no disparar el bloqueo) o *credential stuffing* (probar pares filtrados de otros sitios con esos nombres) [D1]. Tener los nombres exactos es el requisito previo de ambos.
+
+Además, `jperez` y `mgomez` sugieren una convención de inicial más apellido. Es una **hipótesis**, no un hallazgo: si se confirmara, permitiría deducir otras cuentas o direcciones de correo para phishing. El problema de fondo es de diseño: la propia respuesta declara que el endpoint es interno, pero está expuesto sin autenticación. OWASP lo clasifica como una función que no verifica quién la invoca (API5:2023) [D2].
+
+Para el Lab 07, esto convierte un ataque a ciegas en uno dirigido contra `admin` en `/admin`. La evidencia actual solo prueba la divulgación: no demuestra que alguna contraseña sea débil ni que el login carezca de límites de intentos. Eso es lo que habría que medir, dentro del alcance autorizado.
 
 **P5 — Rol defensor (3 mitigaciones).**
 
-Pendiente — Parte D.
+Se eligieron los tres hallazgos que entregan información directamente útil para la fase siguiente. Cada mitigación incluye cómo comprobar que funcionó, usando la misma prueba que lo detectó.
+
+| Hallazgo | Mitigación concreta | Cómo se verifica |
+|---|---|---|
+| **R4 — `/api/users` sin autenticación** | Exigir autenticación y autorización por rol en el endpoint, con denegación por defecto: solo RRHH o administración pueden listar cuentas [D2]. Como la respuesta dice que es interno, no publicarlo hacia afuera. Devolver solo los campos necesarios: el rol de cada cuenta no tiene que viajar en un listado. Complemento para la fase siguiente: MFA y límite de intentos en el login de `/admin`, que son la defensa principal contra spraying y stuffing [D1]. | `curl -sS -i http://phantomcorp/api/users` sin credenciales debe responder 401/403 y no devolver el JSON con cuentas. |
+| **R1 — `/backup/` con listado público** | Sacar los respaldos del directorio publicado y guardarlos fuera del servidor web, cifrados y con acceso restringido. Desactivar el listado automático de directorios (en nginx, `autoindex off;`) [B1]. Revisar el web root periódicamente en busca de archivos viejos o sin referencia (`.old`, `.sql.gz`, notas), que es justo lo que busca un atacante con `dirb` [B2]. | `dirb` con la misma wordlist ya no debe reportar `/backup`, y `curl -sS -i http://phantomcorp/backup/` debe devolver 404 sin `Index of`. |
+| **R2 — `/.git/config` accesible** | No desplegar el directorio `.git` en producción: publicar un artefacto de build o el resultado de `git archive`, no un clon del repositorio [B3]. Como defensa adicional, bloquear en el servidor cualquier ruta que empiece con `/.git` (en nginx, `location ~ /\.git { deny all; }`). Como `config` estuvo expuesto, revisar si el repositorio tuvo secretos commiteados y rotarlos por precaución. | `curl -sS -i http://phantomcorp/.git/config` debe responder 403/404. Repetir también las rutas de [22-git-artefactos.txt](evidencia/22-git-artefactos.txt). |
+
+Quedan fuera de las tres, pero conviene corregirlos: deshabilitar `PUT` y `DELETE` donde no se usen (R3) [C2], y quitar los headers `Server` y `X-Powered-By` junto con el archivo `/phantomcms/VERSION` (R5). Ocultar la versión no corrige ninguna vulnerabilidad, pero quita al atacante un atajo para dirigir la búsqueda.
+
+**Fuentes de la Parte D** (consultadas el 19/11/2026):
+
+- **[D1]** OWASP Cheat Sheet Series. [Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html): definición de credential stuffing y password spraying; MFA como defensa principal.
+- **[D2]** OWASP API Security Top 10 2023. [API5:2023 — Broken Function Level Authorization](https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/): funciones que no controlan el rol de quien las invoca; denegación de acceso por defecto.
+- Las referencias [B1]–[B3], [C2] y [C3] son las de las Partes B y C.
 
 ## 4. Bitácora de comandos
 
