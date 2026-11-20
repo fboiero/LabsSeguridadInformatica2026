@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    {
+      "asset": {
+        "address": "dvwa.lab.test",
+        "id": "asset-02c25e5bf14731db",
+        "source_tool": "seed",
+        "technologies": [
+          "Apache",
+          "PHP"
+        ],
+        "type": "domain"
+      },
+      "discovered_from": [
+        "dvwa.lab.test",
+        "juiceshop.lab.test"
+      ],
+      "in_scope": true,
+      "sources": [
+        "httpx.probe",
+        "seed",
+        "subfinder.enum"
+      ]
+    },
+    {
+      "asset": {
+        "address": "juiceshop.lab.test",
+        "id": "asset-80dc7804c788b55a",
+        "source_tool": "subfinder.enum",
+        "technologies": [],
+        "type": "host"
+      },
+      "discovered_from": [
+        "dvwa.lab.test",
+        "juiceshop.lab.test"
+      ],
+      "in_scope": true,
+      "sources": [
+        "subfinder.enum"
+      ]
+    }
+  ],
+  "schema_version": 1
+}

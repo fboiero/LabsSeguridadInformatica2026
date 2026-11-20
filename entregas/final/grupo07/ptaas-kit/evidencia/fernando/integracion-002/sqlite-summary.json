@@ -1,0 +1,7 @@
+{
+  "database": "audit-68e223eab0423b8c836cc6b1c3eb605c751f835d22fd00fad3fd7af9de41d933.db",
+  "entries": 21,
+  "verify_original_exit": 0,
+  "verify_tampered_copy_exit": 1,
+  "reopen_verified": true
+}

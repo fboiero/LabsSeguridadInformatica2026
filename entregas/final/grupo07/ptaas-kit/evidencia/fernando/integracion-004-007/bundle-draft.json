@@ -1,0 +1,29 @@
+{
+  "engagement_id": "eng-lab-001",
+  "mode": "sandbox",
+  "pipeline": {
+    "recon": "fixtures sintéticas con ReconLoop (004)",
+    "correlation": "snapshots offline con Correlator (005)",
+    "analysis": "fixtures sintéticas con DetectionLoop (005)",
+    "validation_seed": "candidato CSP manual para demo, sin CVE inferida",
+    "audit": "memoria + export JSON; SQLite 002 pendiente",
+    "correlation_result": "0 coincidencias CVE",
+    "analysis_result": "inconclusive"
+  },
+  "markdown": "# Informe técnico PTES §7\n\n## Resumen ejecutivo\nEngagement eng-lab-001: 1 hallazgos. Procedencia: sandbox.\nLa severidad requiere revisión humana; no se calcula score CVSS numérico.\n\n## Alcance y metodología\nSolo laboratorio autorizado; tokens por fase, catálogo inerte y gate humano.\n## Límites\nFixture: sin tráfico. Sender restringido: sin aislamiento por contenedor. No se evalúa un LLM en vivo.\n\n## Hallazgos\n## Procedencia por fase\n- recon: fixtures sintéticas con ReconLoop (004)\n- correlation: snapshots offline con Correlator (005)\n- analysis: fixtures sintéticas con DetectionLoop (005)\n- validation_seed: candidato CSP manual para demo, sin CVE inferida\n- audit: memoria + export JSON; SQLite 002 pendiente\n- correlation_result: 0 coincidencias CVE\n- analysis_result: inconclusive\n### F-CSP-001 — Ausencia de CSP (candidato manual; validación sandbox)\nActivo: dvwa.lab.test\nAusencia de CSP (candidato manual; validación sandbox). Estado: validado en sandbox. Procedencia: sandbox. CWE-693. CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N. EPSS: unknown. Referencias: 83db7822fe3a1ec7c3f52af1ab20e4b9a633aef8a8ff265f9249d76a1db0d09c. Severidad Info provisional hasta valoración humana.\nRemediación: Definir y verificar Content-Security-Policy según la aplicación.\n\n## Conclusión y divulgación\nPriorizar revisión humana de los hallazgos. Divulgar únicamente al responsable del laboratorio; sin datos crudos ni secretos.",
+  "export": {
+    "findings": [
+      {
+        "title": "Ausencia de CSP (candidato manual; validación sandbox)",
+        "severity": "Info",
+        "description": "Ausencia de CSP (candidato manual; validación sandbox). Estado: validado en sandbox. Procedencia: sandbox. CWE-693. CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N. EPSS: unknown. Referencias: 83db7822fe3a1ec7c3f52af1ab20e4b9a633aef8a8ff265f9249d76a1db0d09c. Severidad Info provisional hasta valoración humana.",
+        "mitigation": "Definir y verificar Content-Security-Policy según la aplicación.",
+        "cwe": 693,
+        "verified": true,
+        "active": true
+      }
+    ]
+  },
+  "version": "2bbd230073e5d0cf78829b10433fd4a007fa386bc474cc2216aeefed67a2262e",
+  "subject": "2bbd230073e5d0cf78829b10433fd4a007fa386bc474cc2216aeefed67a2262e"
+}

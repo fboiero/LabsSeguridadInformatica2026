@@ -1,0 +1,24 @@
+[
+  {
+    "ts": 1795185993.939498,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "analyze",
+    "result": "OK",
+    "prev": "GENESIS",
+    "hash": "20d8c858121a9cf42233ec76f6e82fd8b535f41e9db437be9a987cf0d40daf95"
+  },
+  {
+    "ts": 1795186120.0276453,
+    "engagement": "eng-lab-001",
+    "agent": "live-lorenzo",
+    "action": "zap.baseline_scan",
+    "target": "dvwa.lab.test",
+    "phase": "analyze",
+    "result": "OK",
+    "prev": "20d8c858121a9cf42233ec76f6e82fd8b535f41e9db437be9a987cf0d40daf95",
+    "hash": "9148f94cbeb6558a8421bba39459d012f6dc31dfc93360dd1df41cd746eaeb27"
+  }
+]

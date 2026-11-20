@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "path": "robots-txt.yaml",
+      "sha256": "0c333fe55f758a03915a128681dfe1677789d51bd4a1f9bdaf5d7c832571927b",
+      "methods": [
+        "GET"
+      ],
+      "purpose": "public robots.txt presence"
+    },
+    {
+      "path": "security-txt.yaml",
+      "sha256": "a437fc99df9222e7f49ff66e91da3abd0c241a13e380378d00d1fdb3abef499a",
+      "methods": [
+        "GET"
+      ],
+      "purpose": "security.txt presence"
+    },
+    {
+      "path": "phpinfo-exposure.yaml",
+      "sha256": "a18cf8617a22bb1aef1745eca92e16f75ac8959e58e1ed8f2608f6895700560b",
+      "methods": [
+        "GET"
+      ],
+      "purpose": "phpinfo exposure check"
+    },
+    {
+      "path": "apache-server-status.yaml",
+      "sha256": "c8267832ca0f92ef4809c6b54230b74a989d1894d856a2d0284af44499fee690",
+      "methods": [
+        "GET"
+      ],
+      "purpose": "Apache server-status exposure check"
+    },
+    {
+      "path": "admin-panel-presence.yaml",
+      "sha256": "460343f458e4bd1a31873bd37a989c92b852ec9c59f2a84022dcd8de4c7ed6be",
+      "methods": [
+        "GET"
+      ],
+      "purpose": "admin path presence without authentication"
+    }
+  ]
+}

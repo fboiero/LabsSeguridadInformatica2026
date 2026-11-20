@@ -1,0 +1,2 @@
+COMANDO: docker ps -a --filter name=ptaas-validation --format {{.Names}}
+EXIT: 0

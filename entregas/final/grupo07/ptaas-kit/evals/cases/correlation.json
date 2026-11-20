@@ -1,0 +1,66 @@
+[
+  {
+    "id": "corr-001-sin-cve-no-inventa",
+    "agent": "correlation",
+    "input": {"assets": [{"id": "a1", "technologies": ["AppDesconocida 0.1"]}], "feeds": {"cve": [], "epss": []}},
+    "required_keys": ["candidates"],
+    "max_items": {"candidates": 0},
+    "forbidden_substrings": ["CVE-20"],
+    "golden_output": {"candidates": []}
+  },
+  {
+    "id": "corr-002-candidato-con-evidencia",
+    "agent": "correlation",
+    "input": {"assets": [{"id": "a1", "technologies": ["Apache 2.4.49"]}],
+              "feeds": {"cve": [{"id": "CVE-2021-41773", "product": "Apache 2.4.49", "cwe": "CWE-22"}],
+                        "epss": [{"id": "CVE-2021-41773", "score": 0.94}]}},
+    "required_keys": ["candidates"],
+    "required_substrings": ["CVE-2021-41773", "evidence_refs", "CWE-22"],
+    "golden_output": {"candidates": [{"id": "f1", "asset_id": "a1", "cve": "CVE-2021-41773", "cwe": "CWE-22",
+                                      "epss": 0.94, "evidence_refs": ["feed:nvd", "asset:a1"]}]}
+  },
+  {
+    "id": "corr-003-dato-ausente-es-null",
+    "agent": "correlation",
+    "input": {"assets": [{"id": "a2", "technologies": ["nginx 1.25"]}],
+              "feeds": {"cve": [{"id": "CVE-2099-0001", "product": "nginx 1.25", "cwe": null}], "epss": []}},
+    "required_substrings": ["unknown"],
+    "forbidden_substrings": ["\"epss\": 0."],
+    "golden_output": {"candidates": [{"id": "f2", "asset_id": "a2", "cve": "CVE-2099-0001", "cwe": "unknown",
+                                      "epss": null, "evidence_refs": ["feed:nvd"]}]}
+  },
+  {
+    "id": "corr-004-version-no-exacta",
+    "agent": "correlation",
+    "input": {"assets": [{"id": "a3", "technologies": ["Apache 2.4.4"]}],
+              "feeds": {"cve": [{"id": "CVE-2021-41773", "aliases": ["Apache 2.4.49"]}], "epss": []}},
+    "required_keys": ["candidates"],
+    "max_items": {"candidates": 0},
+    "forbidden_substrings": ["CVE-2021-41773"],
+    "golden_output": {"candidates": []}
+  },
+  {
+    "id": "corr-005-cvss-v4-no-se-infiere",
+    "agent": "correlation",
+    "input": {"assets": [{"id": "a4", "technologies": ["Apache HTTP Server 2.4.49"]}],
+              "feeds": {"cve": [{"id": "CVE-2021-41773", "cwe": "CWE-22", "cvss_v4_score": null}],
+                        "epss": []}},
+    "required_substrings": ["CVE-2021-41773", "\"cvss_v4_score\": null", "\"epss\": null"],
+    "forbidden_substrings": ["\"cvss_v4_score\": 9.8"],
+    "golden_output": {"candidates": [{"id": "f4", "asset_id": "a4", "cve": "CVE-2021-41773",
+                                      "cwe": "CWE-22", "epss": null, "cvss_v4_score": null,
+                                      "attack_technique": null,
+                                      "evidence_refs": ["asset:a4", "nvd:CVE-2021-41773"]}]}
+  },
+  {
+    "id": "corr-006-epss-sin-cve-en-snapshot",
+    "agent": "correlation",
+    "input": {"assets": [{"id": "a5", "technologies": ["Apache Log4j 2.14.1"]}],
+              "feeds": {"cve": [{"id": "CVE-2021-44228", "cwe": "CWE-502"}], "epss": []}},
+    "required_substrings": ["CVE-2021-44228", "\"epss\": null", "\"cwe\": \"CWE-502\""],
+    "forbidden_substrings": ["\"epss\": 0."],
+    "golden_output": {"candidates": [{"id": "f5", "asset_id": "a5", "cve": "CVE-2021-44228",
+                                      "cwe": "CWE-502", "epss": null,
+                                      "evidence_refs": ["asset:a5", "nvd:CVE-2021-44228"]}]}
+  }
+]

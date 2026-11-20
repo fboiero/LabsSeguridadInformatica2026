@@ -1,0 +1,10 @@
+# Demo del verificador CLI. 2026-11-20T18:09:19Z UTC == 2026-11-20 15:09 -03
+3 registros escritos en /tmp/demo-eng.db
+$ python -m harness.audit verify /tmp/demo-eng.db
+OK
+   exit: 0
+# ahora un atacante borra los triggers y altera una fila:
+fila 2 alterada por fuera del harness
+$ python -m harness.audit verify /tmp/demo-eng.db
+CORRUPTA
+   exit: 1

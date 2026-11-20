@@ -1,0 +1,75 @@
+# Diseño — 007-reporting-defectdojo
+
+## Cierre 20/11: herramientas reales integradas
+La revisión documental asistida está en docs/revisiones-cierre.md. `--tools-mode
+docker` selecciona DockerToolRunner y conserva el modo fixture por defecto.
+El runner comprueba red internal 10.99.0.0/28, traduce paths Windows/Linux,
+registra argv/exit/stdout/stderr y elimina workers en finally. Monta el código
+read-only y solo habilita escritura en el directorio de reporte de ZAP.
+Subfinder en la red sin internet puede devolver cero hosts: no inventa resultados;
+HTTPX sondea la semilla autorizada y el grafo estabiliza.
+El límite total de subfinder contempla max-time además del timeout por fuente.
+Correlación usa snapshots locales. ZAP/Nuclei alimentan DetectionLoop realmente;
+sin vínculo explícito al candidato éste sigue inconcluso. CSP permanece semilla
+manual, distinguida en el reporte. SQLite y gates no cambian. Los errores Docker
+se propagan sin sustituirlos por fixtures. La CLI permite aprobar explícitamente
+para pruebas locales identificando al operador como prueba automatizada.
+Las notas históricas de abajo describen los cortes anteriores.
+Autor: Fernando Cagliero. Revisión cruzada: pendiente de Lautaro; no se marca 1.3.
+
+La interfaz de contracts.py permanece intacta. Todo adaptador se invoca por Harness.invoke.
+Se usa TokenIssuer del 003 y EngagementGuard. No se construyen tokens directamente.
+
+006: aprobaciones explícitas por CLI, id/activo/PoC/parámetros canónicos con SHA-256,
+TTL de 15 minutos, motivos obligatorios, rechazo y vencimiento deniegan por defecto.
+Loop C máximo dos intentos, cierre en finally. Sender HTTP restringido: DNS validado
+contra CIDR del token y lab; conexión fijada a IP comprobada, sin proxies ni redirects;
+2 solicitudes, 3 segundos por conexión y 64 KiB. Es un recorte sin contenedor y no
+se afirma aislamiento de red del sistema operativo. Fixtures sintéticas son el modo
+por defecto; no existe fallback silencioso de red a fixture. Fallas quedan registradas.
+
+007: referencias a hashes existentes del audit y del mismo activo/engagement;
+reporte determinista versionado por SHA-256 y gate de entrega independiente. Formato
+Generic Findings Import, sin API real de DefectDojo. Vector base CVSS v4 validado
+estrictamente; no se inventa score. Severidad Info de exportación es conservadora
+hasta valoración humana, se explica en descripción. EPSS desconocido se muestra unknown.
+Secretos se rechazan en todos los campos exportables. No se exporta respuesta cruda.
+
+Integración: demo fixture explícita mientras 002/004/005 no estén disponibles;
+la bitácora en memoria se exporta y verifica con hash (no sustituye SQLite 002).
+La ventana RoE del ejemplo se conserva; tests usan ventanas vigentes.
+
+## Actualización tras habilitar Docker Desktop
+Se agregó DockerSender: verifica red internal y subred de laboratorio, ejecuta
+un worker Python stdlib read-only, sin capacidades, sin privilegios nuevos, usuario
+65534, límite de memoria/CPU/pids. Se elimina con --rm y cleanup en finally.
+La red del compose se fijó en 10.99.0.0/28 con DVWA .2, Juice Shop .3 y runner .4,
+coherente con el RoE del 003. La exclusión .5 no se usa como objetivo.
+Validación real de POC-CSP-001 en DVWA /login.php: validated; worker eliminado.
+Las aprobaciones de esa corrida se identifican como prueba automatizada, no como
+revisión humana académica. Reporte y exportación JSON se probaron localmente.
+Dos mutation checks detectaron la eliminación de los gates; evidencia/fernando/.
+Error real de la IA corregido: el chequeo inicial de la red Docker exigía que toda
+la subred estuviera en un único fragmento CIDR del token tras descontar .5, y rechazaba
+el lab válido. Se separó red interna dentro del máximo del lab de IP de destino dentro
+del token efectivo. Otro error: GET / redirigía; se eligió /login.php sin habilitar redirects.
+Revisión cruzada por Lautaro y archivado definitivos permanecen pendientes.
+
+## Integración de 004/005 recibidos
+team_pipeline.py usa los adaptadores de Lorenzo con sus runners inyectables
+sobre fixtures originales (sin subprocess). Usa ReconLoop, Correlator y DetectionLoop.
+No se modifica el código de los compañeros ni las fixtures. El candidato CSP sigue
+siendo manual y no se atribuye a las alertas genéricas de 005. Resultado de B inconcluso;
+C permite validación posterior explícita. La procedencia y resultados por fase forman
+parte del hash del reporte; evidencia adicional en pipeline-evidence.json y asset-graph.json.
+Tests de integración verifican la llamada a los módulos del equipo y ausencia de red/binarios.
+
+## Integración de persistencia 002 recibida
+El comando usa SqliteAuditLog de Lautaro. La ruta dentro de output contiene el
+SHA-256 del engagement_id, evitando usar IDs como segmentos de ruta. La reapertura
+conserva registros y valida su cadena antes de cualquier acción; se rechaza un
+archivo que contenga registros de otro engagement. La conexión se cierra en finally.
+Se conserva audit.json y se informa la ruta SQLite para verificación independiente
+con `python -m harness.audit verify`. Una ejecución por proceso/archivo: se mantiene
+el alcance de concurrencia de 002 (hilos de una instancia), sin prometer escritores
+multi-proceso. No cambian contratos públicos, fixtures ni aprobaciones.

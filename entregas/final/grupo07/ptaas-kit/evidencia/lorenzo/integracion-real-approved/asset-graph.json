@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    {
+      "asset": {
+        "address": "dvwa.lab.test",
+        "id": "asset-02c25e5bf14731db",
+        "source_tool": "seed",
+        "technologies": [
+          "Apache HTTP Server:2.4.25",
+          "Debian",
+          "PHP"
+        ],
+        "type": "domain"
+      },
+      "discovered_from": [
+        "dvwa.lab.test"
+      ],
+      "in_scope": true,
+      "sources": [
+        "httpx.probe",
+        "seed"
+      ]
+    }
+  ],
+  "schema_version": 1
+}

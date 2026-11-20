@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "as_of": "2026-11-19",
+  "source": "CWE entries curated from MITRE; ATT&CK links are contextual local rules",
+  "source_url": "https://cwe.mitre.org/data/definitions/22.html",
+  "records": [
+    {
+      "cwe": "CWE-22",
+      "label": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "attack_technique": "T1190",
+      "requires_context": ["public_facing_application", "exploitation_evidence"]
+    },
+    {
+      "cwe": "CWE-502",
+      "label": "Deserialization of Untrusted Data",
+      "attack_technique": null,
+      "requires_context": []
+    },
+    {
+      "cwe": "CWE-693",
+      "label": "Protection Mechanism Failure",
+      "attack_technique": null,
+      "requires_context": []
+    }
+  ]
+}

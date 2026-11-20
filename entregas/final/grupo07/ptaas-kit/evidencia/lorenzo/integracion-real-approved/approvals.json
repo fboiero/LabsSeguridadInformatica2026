@@ -1,0 +1,18 @@
+[
+  {
+    "subject": "47030be834e8ca72286ff4a0a79c2502af7f0e11a6af04adb43d13c50c5b61a6",
+    "decision": "approve",
+    "reviewer": "Codex prueba automatizada",
+    "reason": "Verificacion tecnica del recorrido local autorizada por Lorenzo; no revision academica humana",
+    "ts": 1795201619.1023881,
+    "expires": 1795202519.1023881
+  },
+  {
+    "subject": "689ba7f139996f564e383b7bb6e7ef3e6b56158021694480b0b1983cc3bba6b6",
+    "decision": "approve",
+    "reviewer": "Codex prueba automatizada",
+    "reason": "Verificacion tecnica del recorrido local autorizada por Lorenzo; no revision academica humana",
+    "ts": 1795201621.5261831,
+    "expires": 1795202521.5261831
+  }
+]

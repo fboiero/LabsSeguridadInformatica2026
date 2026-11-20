@@ -1,0 +1,15 @@
+{
+  "poc_id": "POC-CSP-001",
+  "poc_version": "1.0.0",
+  "status": "validated",
+  "detail": "sin Content-Security-Policy",
+  "parameters": {
+    "base_url": "http://dvwa.lab.test",
+    "path": "/login.php"
+  },
+  "mode": "sandbox",
+  "attempts": 1,
+  "evidence_refs": [
+    "d463012600461e6129f69c87ff6aff183209ff57850cbb9bf7b22e32b8efdce7"
+  ]
+}

@@ -1,0 +1,57 @@
+COMANDO: docker network inspect lab_lab
+EXIT: 0
+[
+    {
+        "Name": "lab_lab",
+        "Id": "11c8d28bf51973b2e2fec80b46b31f73b103c79dea426f4a95c29cd005d7a0fb",
+        "Created": "2026-11-20T13:37:42.207601271Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "10.99.0.0/28"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "1896c5138ea8be8e4bf2b228eb87de82cf2b52d2f8866560c12219ec02fa5dab": {
+                "Name": "lab-runner-1",
+                "EndpointID": "39ea1a0644bd7be25d7cfb56f5e569b5629365aca08c0cfa595a0f180819f9c8",
+                "MacAddress": "02:42:0a:63:00:04",
+                "IPv4Address": "10.99.0.4/28",
+                "IPv6Address": ""
+            },
+            "2e344651cca682dc365b091c9f53b50ed734f33a248cea04c342c0dd61b38fe6": {
+                "Name": "lab-juiceshop-1",
+                "EndpointID": "48a893ce47f1971d8b07801ea988c653a183e9e81929db216fc4328d8d9b3568",
+                "MacAddress": "02:42:0a:63:00:03",
+                "IPv4Address": "10.99.0.3/28",
+                "IPv6Address": ""
+            },
+            "d29283e9f14ac2f2d450e5bf948121e7c6b303080faffe8f1316d16ff0506a57": {
+                "Name": "lab-dvwa-1",
+                "EndpointID": "72001d75422595fe665ab6043249c8100911e378e287450c1d6b4d55312b0dde",
+                "MacAddress": "02:42:0a:63:00:02",
+                "IPv4Address": "10.99.0.2/28",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.network": "lab",
+            "com.docker.compose.project": "lab",
+            "com.docker.compose.version": "2.24.6"
+        }
+    }
+]

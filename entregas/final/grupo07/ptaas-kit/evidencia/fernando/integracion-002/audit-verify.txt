@@ -1,0 +1,3 @@
+ORIGINAL: OK (exit 0)
+COPIA ALTERADA: CORRUPTA (exit 1)
+REAPERTURA: 21 registros verificados

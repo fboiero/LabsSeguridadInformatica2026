@@ -1,0 +1,119 @@
+....FFFF                                                                 [100%]
+================================== FAILURES ===================================
+________________ test_run_sqlite_survives_restart_and_appends _________________
+
+roe = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_sqlite_survives_resta0/roe.yaml')
+tmp_path = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_sqlite_survives_resta0')
+
+    def test_run_sqlite_survives_restart_and_appends(roe, tmp_path):
+        from harness.audit import SqliteAuditLog, verify_file
+
+        first = execute(roe, tmp_path / "persistent", ApprovalStore())
+>       db = Path(first["audit_path"])
+                  ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'audit_path'
+
+tests\test_run_integration.py:86: KeyError
+---------------------------- Captured stdout call -----------------------------
+004/005 integrados con fixtures; sin LLM vivo. Validación: fixture
+Loop A (004, fixtures): grafo estabilizado
+Correlación (005, offline): 0 coincidencias CVE
+Loop B (005, fixtures): inconclusive — sin ganancia de información
+Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.
+Loop C: PENDING_HITL
+Entrega: PENDING_HITL
+Cadena audit.json: OK (memoria + export; SQLite 002 pendiente)
+________________ test_run_corrupt_sqlite_stops_before_pipeline ________________
+
+roe = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_corrupt_sqlite_stops_0/roe.yaml')
+tmp_path = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_corrupt_sqlite_stops_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002648A0FF290>
+
+    def test_run_corrupt_sqlite_stops_before_pipeline(roe, tmp_path, monkeypatch):
+        from harness.audit import AuditChainCorrupted
+
+        first = execute(roe, tmp_path / "corrupt", ApprovalStore())
+>       with sqlite3.connect(first["audit_path"]) as con:
+                             ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'audit_path'
+
+tests\test_run_integration.py:103: KeyError
+---------------------------- Captured stdout call -----------------------------
+004/005 integrados con fixtures; sin LLM vivo. Validación: fixture
+Loop A (004, fixtures): grafo estabilizado
+Correlación (005, offline): 0 coincidencias CVE
+Loop B (005, fixtures): inconclusive — sin ganancia de información
+Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.
+Loop C: PENDING_HITL
+Entrega: PENDING_HITL
+Cadena audit.json: OK (memoria + export; SQLite 002 pendiente)
+___________________ test_run_separates_engagement_databases ___________________
+
+roe = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_separates_engagement_0/roe.yaml')
+tmp_path = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_separates_engagement_0')
+
+    def test_run_separates_engagement_databases(roe, tmp_path):
+        first = execute(roe, tmp_path / "shared", ApprovalStore())
+        data = yaml.safe_load(roe.read_text(encoding="utf-8"))
+        data["engagement_id"] = "another-engagement"
+        other = tmp_path / "other-roe.yaml"
+        other.write_text(yaml.safe_dump(data), encoding="utf-8")
+        second = execute(other, tmp_path / "shared", ApprovalStore())
+>       assert first["audit_path"] != second["audit_path"]
+               ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'audit_path'
+
+tests\test_run_integration.py:122: KeyError
+---------------------------- Captured stdout call -----------------------------
+004/005 integrados con fixtures; sin LLM vivo. Validación: fixture
+Loop A (004, fixtures): grafo estabilizado
+Correlación (005, offline): 0 coincidencias CVE
+Loop B (005, fixtures): inconclusive — sin ganancia de información
+Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.
+Loop C: PENDING_HITL
+Entrega: PENDING_HITL
+Cadena audit.json: OK (memoria + export; SQLite 002 pendiente)
+004/005 integrados con fixtures; sin LLM vivo. Validación: fixture
+Loop A (004, fixtures): grafo estabilizado
+Correlación (005, offline): 0 coincidencias CVE
+Loop B (005, fixtures): inconclusive — sin ganancia de información
+Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.
+Loop C: PENDING_HITL
+Entrega: PENDING_HITL
+Cadena audit.json: OK (memoria + export; SQLite 002 pendiente)
+_________________ test_run_closes_sqlite_when_pipeline_fails __________________
+
+roe = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_closes_sqlite_when_pi0/roe.yaml')
+tmp_path = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-17/test_run_closes_sqlite_when_pi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002648A0FEFF0>
+
+    def test_run_closes_sqlite_when_pipeline_fails(roe, tmp_path, monkeypatch):
+        from harness.audit import SqliteAuditLog
+
+        closed = []
+        original_close = SqliteAuditLog.close
+
+        def close(audit):
+            closed.append(audit.db_path)
+            original_close(audit)
+
+        def fail(*args, **kwargs):
+            raise RuntimeError("pipeline falló")
+
+        monkeypatch.setattr(SqliteAuditLog, "close", close)
+        monkeypatch.setattr("harness.run.run_team_pipeline", fail)
+        with pytest.raises(RuntimeError, match="pipeline falló"):
+            execute(roe, tmp_path / "failure", ApprovalStore())
+>       assert len(closed) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests\test_run_integration.py:143: AssertionError
+---------------------------- Captured stdout call -----------------------------
+004/005 integrados con fixtures; sin LLM vivo. Validación: fixture
+=========================== short test summary info ===========================
+FAILED tests/test_run_integration.py::test_run_sqlite_survives_restart_and_appends
+FAILED tests/test_run_integration.py::test_run_corrupt_sqlite_stops_before_pipeline
+FAILED tests/test_run_integration.py::test_run_separates_engagement_databases
+FAILED tests/test_run_integration.py::test_run_closes_sqlite_when_pipeline_fails
+4 failed, 4 passed in 1.13s

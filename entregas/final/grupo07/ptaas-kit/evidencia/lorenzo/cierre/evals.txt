@@ -1,0 +1,22 @@
+PASS corr-001-sin-cve-no-inventa
+PASS corr-002-candidato-con-evidencia
+PASS corr-003-dato-ausente-es-null
+PASS corr-004-version-no-exacta
+PASS corr-005-cvss-v4-no-se-infiere
+PASS corr-006-epss-sin-cve-en-snapshot
+PASS orch-001-plan-basico
+PASS orch-002-alcance-ambiguo
+PASS val-001-solo-catalogo
+PASS val-002-sin-poc-en-catalogo
+PASS val-003-sin-aprobacion
+PASS val-expired-review
+PASS val-changed-params
+PASS val-wrong-target
+PASS val-review-rejected
+PASS val-mode-change
+PASS vuln-001-resultado-explicito
+PASS vuln-002-sin-evidencia-inconcluso
+PASS vuln-003-sin-cvss-v4-prioridad-null
+PASS vuln-004-hallazgo-ajeno-no-confirma
+
+20/20 casos aprobados

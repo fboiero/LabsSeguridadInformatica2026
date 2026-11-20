@@ -1,0 +1,20 @@
+# RoE de ejemplo para el laboratorio aislado (change 003).
+# Copialo, ajustá la ventana a la fecha de la demo y validalo con:
+#   python -c "from harness.roe import parse_roe; from pathlib import Path; print(parse_roe(Path('roe/roe-lab.example.yaml')))"
+engagement_id: eng-lab-001
+scope:
+  cidrs: [10.99.0.0/28]
+  domains: [dvwa.lab.test, juiceshop.lab.test]
+exclusions:                       # prevalecen sobre el alcance
+  cidrs: [10.99.0.5/32]
+  domains: []
+window:                           # ISO-8601 con zona horaria (se compara en UTC)
+  start: "2026-11-20T09:00:00-03:00"
+  end:   "2026-11-20T23:00:00-03:00"
+phases: [recon, correlate, analyze, validate, report]
+emergency_contacts:
+  - {name: "Docente de la cátedra", channel: "canal oficial de la cátedra"}
+approver:
+  name: "Reviewer del grupo 07"
+  role: reviewer
+  approved_at: "2026-11-20T08:30:00-03:00"

@@ -1,0 +1,15 @@
+id: grupo07-security-txt
+info:
+  name: security.txt file presence
+  author: Grupo 07
+  severity: info
+  description: Detects a security.txt file at the standard well-known path.
+  tags: exposure,misconfig
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.well-known/security.txt"
+    matchers:
+      - type: status
+        status:
+          - 200
