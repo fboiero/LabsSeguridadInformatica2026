@@ -1,0 +1,4 @@
+uid=1000(operador) gid=1000(operador) groups=1000(operador)
+phantomcorp
+--- consulta al host interno ---
+{"host": "phantomcorp-db", "msg": "Base de datos interna. Acceso restringido a la LAN.", "pivot": "FLAG{pivot_internal_host}"}

@@ -1,0 +1,12 @@
+uid=1000(operador) gid=1000(operador) groups=1000(operador)
+phantomcorp
+--- /var/www ---
+total 12
+drwxr-xr-x 2 root root 4096 Oct 23 22:16 .
+drwxr-xr-x 1 root root 4096 Oct 23 22:16 ..
+-rw-r--r-- 1 root root  107 Oct 23 22:16 .env
+--- .env ---
+DB_HOST=phantomcorp-db
+DB_USER=phantom_app
+DB_PASS=Ph@ntom-DB-2024
+APP_SECRET=FLAG{loot_credentials_found}

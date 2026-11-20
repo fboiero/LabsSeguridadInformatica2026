@@ -1,0 +1,20 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R4 resuelto: Pivoting al host interno
+
+./ctf status 08
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 08                     │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Reconocimiento del host comprometido
+   ✓  R2     Loot de credenciales
+   ✓  R3     Escalada de privilegios (SUID)
+   ✓  R4     Pivoting al host interno
+   ✓  R5     Automatizacion (fuerza bruta de legajos)
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 08 COMPLETO! Ponete las pilas con la próxima unidad.

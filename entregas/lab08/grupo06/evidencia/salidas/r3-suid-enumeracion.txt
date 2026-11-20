@@ -1,0 +1,9 @@
+/usr/local/bin/system-check
+/usr/bin/passwd
+/usr/bin/newgrp
+/usr/bin/mount
+/usr/bin/chfn
+/usr/bin/su
+/usr/bin/chsh
+/usr/bin/umount
+/usr/bin/gpasswd

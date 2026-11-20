@@ -1,0 +1,1 @@
+uid=1000(operador) gid=1000(operador) euid=0(root) groups=1000(operador)

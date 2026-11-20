@@ -1,0 +1,11 @@
+uid=0(root) gid=0(root) groups=0(root)
+attacker
+172.21.0.2 
+--- resolucion de phantomcorp-db ---
+getent: phantomcorp-db no resuelve
+--- intento de consulta al host interno desde el atacante ---
+curl: (6) Could not resolve host: phantomcorp-db
+--- contraste: alcance desde el atacante en labnet ---
+172.21.0.3      phantomcorp
+curl: (7) Failed to connect to phantomcorp port 80 after 3 ms: Could not connect to server
+TCP 80 phantomcorp: 000

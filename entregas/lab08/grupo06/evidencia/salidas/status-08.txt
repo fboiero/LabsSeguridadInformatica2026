@@ -1,0 +1,27 @@
+# Estado final del validador del Lab 08 - 2026-10-28
+# Submisiones consolidadas desde la raiz del repositorio (Git Bash):
+./ctf submit 08 R1 'FLAG{post_situational_awareness}'
+[ OK ] Correcta (ya la tenías). Reto R1 ✓
+./ctf submit 08 R2 'FLAG{loot_credentials_found}'
+[ OK ] Correcta (ya la tenías). Reto R2 ✓
+./ctf submit 08 R3 'FLAG{privesc_suid_root}'
+[ OK ] Correcta (ya la tenías). Reto R3 ✓
+./ctf submit 08 R4 'FLAG{pivot_internal_host}'
+[ OK ] Correcta (ya la tenías). Reto R4 ✓
+./ctf submit 08 R5 'FLAG{automation_pays_off}'
+[ OK ] Correcta (ya la tenías). Reto R5 ✓
+
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 08                     │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Reconocimiento del host comprometido
+   ✓  R2     Loot de credenciales
+   ✓  R3     Escalada de privilegios (SUID)
+   ✓  R4     Pivoting al host interno
+   ✓  R5     Automatizacion (fuerza bruta de legajos)
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 08 COMPLETO! Ponete las pilas con la próxima unidad.

@@ -1,0 +1,2 @@
+﻿[*] Enumerando legajos 1..250 en http://phantomcorp-db
+[+] Flag en el legajo id=187: FLAG{automation_pays_off}
