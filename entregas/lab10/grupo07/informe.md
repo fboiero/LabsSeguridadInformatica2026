@@ -8,6 +8,8 @@
 
 Se usó OpenAI Codex como asistente con acceso a la terminal local para guardar una captura inicial del SOC antes de las pruebas, ejecutar requests HTTP de comparación en el contenedor local, capturar las respuestas, analizar el comportamiento observado y redactar este bloque. La IA ejecutó las requests registradas. No se leyó el código del objetivo. Lorenzo debe revisar y poder explicar los resultados antes de la entrega grupal.
 
+Lautaro Mariño (@lautaromarino0) — bloque C (R4, fila `sqli-union`, P2): se utilizó **Claude (Anthropic)** como asistente, en dos aspectos. **Redacción:** ayudó a redactar la fila `sqli-union`, P2 y esta declaración a partir del análisis de Lautaro, que revisó y ajustó cada texto antes de commitearlo. **Contraste de pruebas:** sirvió de soporte para evadir la firma en el target del Lab 10 corrido en un sandbox Linux (`server.py` en `/app`, `phantomcorp -> 127.0.0.1`): se leyó el ruleset publicado en `GET /soc/reglas` y se mandó un `union/**/select` que pasó como benigno. **Verificación:** no se leyó el código del target ni `solucion.md`; la flag de R4 salió de la respuesta HTTP y se validó su `sha256` contra el hash del reto en `retos.manifest`. El envío al CTF se hace desde el host.
+
 ## 1. Flags capturadas
 
 Estado observado con `./ctf status 10`:
