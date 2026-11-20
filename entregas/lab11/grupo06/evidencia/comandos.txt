@@ -1,0 +1,130 @@
+# Comandos de analisis forense ejecutados, en orden (solo lectura; nunca se
+# modifico la evidencia original en labs/lab11-forensia/caso/).
+
+# --- Verificacion de integridad previa (regla de oro: verificar antes de tocar) ---
+cd labs/lab11-forensia/caso
+shasum -a 256 -c evidencia.sha256
+# Nota: en el checkout local de Windows da falso FAILED por conversion CRLF
+# del checkout (core.autocrlf=true). Verificacion de control sin ese problema:
+git show HEAD:labs/lab11-forensia/caso/logs/access.log | sha256sum
+
+# --- R1: vector de entrada / RCE en access.log ---
+grep -n -i -E "cmd=|echo|wget" labs/lab11-forensia/caso/logs/access.log
+# linea 19: cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p  (URL-encoded)
+# decodificado: echo FLAG{dfir_vector_sqli} > /tmp/.p
+
+./ctf submit 11 R1 'FLAG{dfir_vector_sqli}'
+
+# --- P2: webshell en disco y correlación log–disco ---
+# Se leyeron los artefactos; no se ejecutó ni modificó shell.php.evidencia.txt.
+Get-Content labs/lab11-forensia/caso/disco/listado.txt
+Get-Content labs/lab11-forensia/caso/disco/var/www/uploads/shell.php.evidencia.txt
+rg -n -i 'shell\.php|uploads|wget' labs/lab11-forensia/caso/logs/access.log
+
+# --- P4: recuperación de comandos luego de history -c ---
+Get-Content labs/lab11-forensia/caso/memoria/bash_history.txt
+
+# Presentación de R2 desde una copia temporal normalizada a LF: se convirtieron
+# el verificador, sus bibliotecas .sh y el manifiesto del Lab 11. Aceptada;
+# solo se persistió .progreso/11.done en el checkout.
+./ctf submit 11 R2 'FLAG{dfir_webshell_hallado}'
+
+# --- P3: custodia previa complementaria (PowerShell, sin modificar originales) ---
+# Se verifica SHA-256 de los bytes locales; comparación LF solo diagnóstica.
+# Salida completa: salidas/p3-custodia-previa.txt
+# --- P3: R3 — fuentes, privilegios y revisión de P1 ---
+# Primero se leyó evidencia.sha256 y se ejecutó Get-FileHash -Algorithm SHA256
+# para cada ruta. Resultado completo: salidas/p3-custodia-previa.txt.
+python entregas/lab11/grupo06/src/p3_analisis.py
+rg -n '.' labs/lab11-forensia/caso/memoria/bash_history.txt labs/lab11-forensia/caso/memoria/pslist.txt labs/lab11-forensia/caso/memoria/lsof.txt labs/lab11-forensia/caso/disco/listado.txt > entregas/lab11/grupo06/evidencia/salidas/r3-fuentes-rg.txt
+# Verificador oficial mediante Git Bash en copia temporal LF (ctf, bin/lib/*.sh,
+# manifest opaco); sin modificar originales y sin leer soluciones:
+bash ./ctf submit 11 R3 'FLAG{dfir_privesc_suid}'
+# RECHAZADA: salida original en salidas/r3-submit.txt. No se persistió progreso.
+bash ./ctf status 11
+# Salida completa: salidas/status-11-p3.txt; 0/5 en esta sesión.
+# Diagnóstico del hash (sin consultar el hash esperado del reto):
+# printf %s "FLAG{dfir_privesc_suid}" | sha256sum
+# Coincide con hashlib.sha256 de Python; shasum no está instalado en Git Bash.
+# --- P3: validación definitiva de R3 (2026-10-23) ---
+# Después del intento rechazado, se repitió la presentación desde
+# Git Bash, utilizando el verificador oficial del repositorio.
+
+./ctf submit 11 R3 'FLAG{dfir_privesc_suid}'
+
+# Resultado:
+# [ OK ] Reto R3 resuelto: Escalada de privilegios (SUID) en memoria
+
+# Se verificó y guardó el progreso actualizado:
+./ctf status 11 | tee entregas/lab11/grupo06/evidencia/salidas/r3-status-confirmado.txt
+
+# El intento rechazado se conserva en r3-submit.txt.
+# No se modificaron los artefactos originales del caso forense.
+
+# --- Persona 5 — R5: cadena de custodia y evidencia alterada ---
+# Fecha: 2026-10-26
+# Entorno: Windows PowerShell y Git Bash.
+# Análisis local del caso. No se utilizó Docker ni se ejecutaron artefactos sospechosos.
+
+# 1. Inventario de fuentes.
+Get-ChildItem labs/lab11-forensia/caso -Recurse
+Get-ChildItem entregas/lab11/grupo06 -Recurse
+python --version
+
+# 2. Verificación SHA-256 con Python.
+# Se utilizó hashlib.sha256 sobre los nueve archivos enumerados
+# en labs/lab11-forensia/caso/evidencia.sha256.
+# La primera comparación de bytes mostró 9 discrepancias.
+# Se comprobaron variantes CRLF/LF solo en memoria.
+# Resultado: 8 archivos coinciden en LF; logs/auth.log no coincide.
+
+# Evidencia completa:
+# evidencia/salidas/r5-custodia.txt
+
+# 3. Inspección del archivo con integridad no verificada.
+Get-Content labs/lab11-forensia/caso/logs/auth.log -Encoding UTF8
+
+# Resultado:
+# logs/auth.log:5-7 contiene anotaciones de eliminación/alteración.
+# logs/auth.log:8 contiene FLAG{dfir_custodia_alterada}.
+
+# 4. Preservación de evidencia en la carpeta de entrega.
+Copy-Item labs/lab11-forensia/caso/logs/auth.log entregas/lab11/grupo06/evidencia/salidas/r5-auth-log.txt
+
+# 5. Validación oficial con copia temporal del verificador en Git Bash.
+# Los archivos ctf, bibliotecas y manifiesto del laboratorio
+# se copiaron a /tmp/lab11-p5 y se ajustaron a LF en esa copia.
+# No se alteraron los archivos originales del repositorio.
+bash /tmp/lab11-p5/ctf submit 11 R5 'FLAG{dfir_custodia_alterada}'
+bash /tmp/lab11-p5/ctf status 11
+
+# Resultado oficial: [ OK ] Reto R5 resuelto.
+# El estado 1/5 corresponde únicamente a la copia temporal.
+
+# 6. Revisión de IOCs en modo solo lectura.
+Get-Content labs/lab11-forensia/caso/memoria/bash_history.txt -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/disco/etc/passwd.snippet -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/memoria/netstat.txt -Encoding UTF8
+
+# Se integraron al informe únicamente indicadores observados
+# con referencias a los archivos y líneas correspondientes.
+
+# --- P4: R4 — C2, exfiltración y correlación (2026-10-28) ---
+# Lecturas directas de artefactos provistos; sin ejecutar comandos del historial.
+Get-Content labs/lab11-forensia/caso/memoria/bash_history.txt -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/memoria/netstat.txt -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/memoria/lsof.txt -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/memoria/pslist.txt -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/logs/access.log -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/disco/listado.txt -Encoding UTF8
+Get-Content labs/lab11-forensia/caso/disco/var/www/uploads/shell.php.evidencia.txt -Encoding UTF8
+# Extractos relevantes conservados en salidas/r4-c2-exfiltracion.txt.
+
+# --- Validacion final de las cinco flags (Git Bash local; no usa Docker) ---
+./ctf submit 11 R1 'FLAG{dfir_vector_sqli}'
+./ctf submit 11 R2 'FLAG{dfir_webshell_hallado}'
+./ctf submit 11 R3 'FLAG{dfir_privesc_suid}'
+./ctf submit 11 R4 'FLAG{dfir_c2_exfil}'
+./ctf submit 11 R5 'FLAG{dfir_custodia_alterada}'
+./ctf status 11
+# Salidas completas: salidas/r1-r5-validacion.txt y salidas/status-11-final.txt.

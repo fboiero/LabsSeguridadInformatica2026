@@ -1,0 +1,21 @@
+# Verificacion de integridad antes de analizar logs/access.log (regla de oro
+# del forense: no se toca evidencia sin verificar antes).
+#
+# Comando ejecutado en el checkout local (Windows):
+#   cd labs/lab11-forensia/caso && shasum -a 256 -c evidencia.sha256
+#
+# Resultado: "No such file or directory" / FAILED para los 9 archivos listados.
+# Esto es un falso positivo del checkout local: git tiene core.autocrlf=true,
+# que convierte fin de linea LF -> CRLF en el working tree de Windows y deja
+# un '\r' colgando en el nombre de archivo que lista evidencia.sha256, por lo
+# que shasum no encuentra ningun archivo por nombre. No implica alteracion.
+#
+# Verificacion de control, solo lectura, contra el contenido tal como esta
+# comiteado en git (no pasa por la conversion CRLF del checkout):
+#   git show HEAD:labs/lab11-forensia/caso/logs/access.log | sha256sum
+#
+# El hash de logs/access.log calculado asi coincide con el registrado en
+# evidencia.sha256. El archivo usado para R1 esta integro.
+#
+# La verificacion completa de custodia sobre los 9 archivos (incluido el que
+# muestra una alteracion real) es responsabilidad de R5 y se documenta aparte.

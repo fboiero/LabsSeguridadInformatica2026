@@ -1,0 +1,32 @@
+Validacion final de flags del Lab 11
+Ejecutado desde la raiz del repositorio con Git Bash local.
+
+=== ./ctf submit 11 R1 'FLAG{dfir_vector_sqli}' ===
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R1 resuelto: Vector de entrada (SQLi -> RCE) en los logs
+
+=== ./ctf submit 11 R2 'FLAG{dfir_webshell_hallado}' ===
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: El webshell dropeado en el disco
+
+=== ./ctf submit 11 R3 'FLAG{dfir_privesc_suid}' ===
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: Escalada de privilegios (SUID) en memoria
+
+=== ./ctf submit 11 R4 'FLAG{dfir_c2_exfil}' ===
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R4 resuelto: Conexion C2 y exfiltracion de datos
+
+=== ./ctf submit 11 R5 'FLAG{dfir_custodia_alterada}' ===
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R5 resuelto: Cadena de custodia: evidencia alterada

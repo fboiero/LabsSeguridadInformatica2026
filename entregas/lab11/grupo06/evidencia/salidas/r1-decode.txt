@@ -1,0 +1,5 @@
+# Decodificacion URL del parametro cmd de la linea 19 (lectura, no se
+# modifico el log; la decodificacion se hizo sobre el string extraido).
+
+Entrada:  cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p
+Salida:   cmd=echo FLAG{dfir_vector_sqli} > /tmp/.p
