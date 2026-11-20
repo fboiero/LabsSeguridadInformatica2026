@@ -1,0 +1,18 @@
+# Evidencia de comandos — Lab Extra 2 · Grupo 07 · Lorenzo Blanc
+
+Las salidas de investigación se generaron sobre una copia completa y privada del caso en `.loot/labextra2-grupo07/repo-delata/`, que incluye `.git`. No se clonó, limpió ni modificó el repo de práctica durante la captura. La carpeta del caso bajo `labs/` y la copia de `.loot/` no forman parte de la entrega versionada.
+
+Comandos ejecutados, en orden:
+
+1. En el repo del curso: `git status --short --branch`
+2. En el repo del curso: `git branch -a --list '*labextra2-grupo07'`
+3. En el repo del curso: `git switch -c labextra2-grupo07 upstream/main`
+4. Generación autorizada del caso: `./ctf lab extra2`
+5. Copia completa del caso con `.git` a `.loot/labextra2-grupo07/repo-delata/` (PowerShell `Copy-Item -Recurse`, destino verificado inexistente).
+6. En la copia: `git log --oneline --all --decorate` — `salidas/case-log.txt`.
+7. En la copia: `git status --short --branch`.
+8. En la copia: `git reflog --oneline` — `salidas/case-reflog.txt`.
+9. En la copia: `git fsck --no-reflogs --unreachable` — `salidas/case-fsck.txt`.
+10. En el repo del curso: `./ctf status extra2` — `salidas/status-extra2.txt`.
+
+No se ejecutaron los comandos de búsqueda de flags; esos hallazgos y sus capturas corresponden a Fernando y Guadalupe y siguen pendientes.
