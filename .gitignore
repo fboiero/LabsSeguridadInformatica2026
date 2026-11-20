@@ -55,3 +55,8 @@ credenciales*
 solucion.md
 **/solucion.md
 .soluciones-docente/
+
+# --- Node / generadores de presentaciones ---
+node_modules/
+package-lock.json
+npm-debug.log*

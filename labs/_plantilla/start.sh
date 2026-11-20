@@ -20,7 +20,7 @@ if [ -f "$LABDIR/entorno/target.compose.yml" ]; then
     ui_warn "Docker no está corriendo. Arrancá Docker Desktop y reintentá."
   fi
 else
-  ui_info "Este lab no usa Docker (es de teoría/código)."
+  ui_info "Este lab no levanta entorno Docker (es de teoría/código local)."
 fi
 echo
 ui_info "Guía completa (leela toda antes de tirar comandos):"
