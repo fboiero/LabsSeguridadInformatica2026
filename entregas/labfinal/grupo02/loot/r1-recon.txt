@@ -1,0 +1,93 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-19 22:40 UTC
+Nmap scan report for phantomcorp (172.20.0.2)
+Host is up (0.000030s latency).
+rDNS record for 172.20.0.2: cyberlab-phantomcorp.cyberlab_labnet
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+80/tcp open  http    PhantomClientes/2.0 
+|_http-server-header: PhantomClientes/2.0 
+| http-robots.txt: 1 disallowed entry 
+|_/portal-rrhh
+|_http-title: Site doesn't have a title (text/html; charset=utf-8).
+| fingerprint-strings: 
+|   FourOhFourRequest: 
+|     HTTP/1.0 404 Not Found
+|     Server: PhantomClientes/2.0 
+|     Date: Thu, 19 Nov 2026 22:41:09 GMT
+|     Content-Type: text/html; charset=utf-8
+|     Found
+|   GetRequest: 
+|     HTTP/1.0 200 OK
+|     Server: PhantomClientes/2.0 
+|     Date: Thu, 19 Nov 2026 22:41:04 GMT
+|     Content-Type: text/html; charset=utf-8
+|     <h1>PhantomCorp Clientes</h1><p>Portal publico.</p>
+|   HTTPOptions: 
+|     HTTP/1.0 501 Unsupported method ('OPTIONS')
+|     Server: PhantomClientes/2.0 
+|     Date: Thu, 19 Nov 2026 22:41:04 GMT
+|     Connection: close
+|     Content-Type: text/html;charset=utf-8
+|     Content-Length: 360
+|     <!DOCTYPE HTML>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>Error response</title>
+|     </head>
+|     <body>
+|     <h1>Error response</h1>
+|     <p>Error code: 501</p>
+|     <p>Message: Unsupported method ('OPTIONS').</p>
+|     <p>Error code explanation: 501 - Server does not support this operation.</p>
+|     </body>
+|     </html>
+|   RTSPRequest: 
+|     <!DOCTYPE HTML>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>Error response</title>
+|     </head>
+|     <body>
+|     <h1>Error response</h1>
+|     <p>Error code: 400</p>
+|     <p>Message: Bad request version ('RTSP/1.0').</p>
+|     <p>Error code explanation: 400 - Bad request syntax or unsupported method.</p>
+|     </body>
+|_    </html>
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port80-TCP:V=7.95%I=7%D=11/19%Time=6AFF7B00%P=x86_64-pc-linux-gnu%r(Get
+SF:Request,B1,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20PhantomClientes/2\.0\x
+SF:20\r\nDate:\x20Thu,\x2019\x20Nov\x202026\x2022:41:04\x20GMT\r\nContent-
+SF:Type:\x20text/html;\x20charset=utf-8\r\n\r\n<h1>PhantomCorp\x20Clientes
+SF:</h1><p>Portal\x20publico\.</p>")%r(HTTPOptions,229,"HTTP/1\.0\x20501\x
+SF:20Unsupported\x20method\x20\('OPTIONS'\)\r\nServer:\x20PhantomClientes/
+SF:2\.0\x20\r\nDate:\x20Thu,\x2019\x20Nov\x202026\x2022:41:04\x20GMT\r\nCo
+SF:nnection:\x20close\r\nContent-Type:\x20text/html;charset=utf-8\r\nConte
+SF:nt-Length:\x20360\r\n\r\n<!DOCTYPE\x20HTML>\n<html\x20lang=\"en\">\n\x2
+SF:0\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<meta\x20charset=\
+SF:"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error\x20response</ti
+SF:tle>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n\x20\x20\x20\x20
+SF:\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20<p>Error\x20code:\x20501</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>M
+SF:essage:\x20Unsupported\x20method\x20\('OPTIONS'\)\.</p>\n\x20\x20\x20\x
+SF:20\x20\x20\x20\x20<p>Error\x20code\x20explanation:\x20501\x20-\x20Serve
+SF:r\x20does\x20not\x20support\x20this\x20operation\.</p>\n\x20\x20\x20\x2
+SF:0</body>\n</html>\n")%r(RTSPRequest,16C,"<!DOCTYPE\x20HTML>\n<html\x20l
+SF:ang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<m
+SF:eta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error
+SF:\x20response</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n
+SF:\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20<p>Error\x20code:\x20400</p>\n\x20\x20\x20\x20\x20
+SF:\x20\x20\x20<p>Message:\x20Bad\x20request\x20version\x20\('RTSP/1\.0'\)
+SF:\.</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20explanation
+SF::\x20400\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\x20metho
+SF:d\.</p>\n\x20\x20\x20\x20</body>\n</html>\n")%r(FourOhFourRequest,8E,"H
+SF:TTP/1\.0\x20404\x20Not\x20Found\r\nServer:\x20PhantomClientes/2\.0\x20\
+SF:r\nDate:\x20Thu,\x2019\x20Nov\x202026\x2022:41:09\x20GMT\r\nContent-Typ
+SF:e:\x20text/html;\x20charset=utf-8\r\n\r\nNot\x20Found");
+MAC Address: 52:D7:72:A7:30:70 (Unknown)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 96.63 seconds
