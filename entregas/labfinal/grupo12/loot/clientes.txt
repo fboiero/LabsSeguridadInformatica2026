@@ -1,0 +1,2 @@
+$ cat /app/priv/clientes.db.txt
+clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}

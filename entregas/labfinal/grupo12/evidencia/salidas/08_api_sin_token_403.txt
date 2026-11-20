@@ -1,0 +1,6 @@
+HTTP/1.0 403 Forbidden
+Server: PhantomClientes/2.0 
+Date: Fri, 20 Nov 2026 23:47:50 GMT
+Content-Type: text/plain
+
+token invalido; conseguilo del backup de RRHH

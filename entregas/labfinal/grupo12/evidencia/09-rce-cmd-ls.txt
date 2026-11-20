@@ -1,0 +1,10 @@
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Fri, 20 Nov 2026 23:47:16 GMT
+Content-Type: text/plain
+
+$ ls -la /app/priv
+total 12
+drwxr-xr-x 2 root root 4096 Nov 20 23:18 .
+drwxr-xr-x 1 root root 4096 Nov 20 23:18 ..
+-rw-r--r-- 1 root root   75 Nov 20 23:18 clientes.db.txt
