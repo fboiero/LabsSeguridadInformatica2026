@@ -1,6 +1,6 @@
 # Informe — Laboratorio 10 · Detección y evasión
 
-**Grupo:** 14 · **Integrantes:** COMPLETAR (nombre — usuario GitHub; ver `INTEGRANTES.md`)
+**Grupo:** 14 · **Integrantes:** Fede Peron (@fedeeperon), Laureano Gomez Redondo (@Laureano-GR), Martín Cesano (@martincesano), Martín Gaido (@martingaidoo), Valentina Chiapero (@valechiapero)
 
 > **Estado de la entrega:** este equipo no tiene Docker, por lo que el entorno
 > `phantomcorp` **no se pudo levantar**. No hay flags ni salidas reales en este informe.
