@@ -1,0 +1,4 @@
+id: juice-shop-errors
+kind: inert_check
+target: juice-shop.lab.test
+method: GET
