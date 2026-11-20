@@ -1,0 +1,12 @@
+2026-11-19 (UTC−03:00) | Fernando Cagliero | Checkout local | Git Bash
+Desde la raíz del repositorio:
+
+{ bash ./ctf status 10; printf "[ctf status] código de salida: %s\n" "$?"; } > entregas/lab10/grupo07/evidencia/salidas/status-10-local.txt 2>&1
+
+Estado consultado: 0/5 registrados en este checkout.
+
+Pendientes de integrar
+- Guadalupe (R1/R3/R5): registros crudos inicial y final del SOC, ruleset y eventos que respaldan la intrusión.
+- Lorenzo (R2): horario, requests crudos de prueba y benigno, y alerta correspondiente.
+- Lautaro (R4): horario, salida original del reto y pruebas locales de la regla de P2.
+- Grupo: captura consolidada de status, con las cinco flags respaldadas por su evidencia.
