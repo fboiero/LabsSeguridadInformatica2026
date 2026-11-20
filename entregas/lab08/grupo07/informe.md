@@ -15,6 +15,8 @@ no se afirma una salida R5 que no se haya observado.
 
 Se usó OpenAI Codex como asistente con acceso a la terminal local para preparar y ejecutar la enumeración del contenedor víctima, capturar los resultados, investigar fuentes sobre gestión de secretos y redactar el bloque asignado. La IA ejecutó los comandos registrados. No se leyó el código del objetivo para obtener flags. El objetivo compiló desde una copia temporal con solo los finales de línea normalizados a LF, porque el checkout de Windows convertía `setup.sh` a CRLF y el shebang fallaba; las fuentes originales y la configuración de red no se modificaron. Lorenzo debe revisar y poder explicar la evidencia antes de la entrega final.
 
+Lautaro Mariño (@lautaromarino0) — bloque D: se utilizó **Claude (Anthropic)** como asistente, en dos aspectos. **Redacción:** ayudó a redactar la corrida de R5 en la sección 3, P2 y P5, y `research.md`, a partir del análisis de Lautaro, que revisó y ajustó cada texto antes de commitearlo. **Contraste de pruebas:** sirvió de soporte para correr el `recolector.py` de Fernando contra el `db/server.py` del lab en un sandbox Linux (sin el build de contenedores) y capturar la salida de R5. **Verificación:** la flag de R5 no se tomó de leer el código del target ni de `solucion.md`: se obtuvo de la respuesta del servicio y se validó su `sha256` contra el hash del reto en `retos.manifest`. La topología de P2 se leyó del Compose del lab. El cruce operativo (R3/R4, SUID, pivot) es del bloque C; no se afirma una ejecución del pivot que no se haya observado.
+
 ## 1. Flags capturadas
 
 Estado observado con `./ctf status 08`:
