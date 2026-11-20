@@ -38,3 +38,12 @@ la subred estuviera en un único fragmento CIDR del token tras descontar .5, y r
 el lab válido. Se separó red interna dentro del máximo del lab de IP de destino dentro
 del token efectivo. Otro error: GET / redirigía; se eligió /login.php sin habilitar redirects.
 Revisión cruzada por Lautaro y archivado definitivos permanecen pendientes.
+
+## Integración de 004/005 recibidos
+team_pipeline.py usa los adaptadores de Lorenzo con sus runners inyectables
+sobre fixtures originales (sin subprocess). Usa ReconLoop, Correlator y DetectionLoop.
+No se modifica el código de los compañeros ni las fixtures. El candidato CSP sigue
+siendo manual y no se atribuye a las alertas genéricas de 005. Resultado de B inconcluso;
+C permite validación posterior explícita. La procedencia y resultados por fase forman
+parte del hash del reporte; evidencia adicional en pipeline-evidence.json y asset-graph.json.
+Tests de integración verifican la llamada a los módulos del equipo y ausencia de red/binarios.

@@ -41,3 +41,19 @@ La aprobación DEBE estar ligada al hash del informe completo y vencer; cambiar 
 - GIVEN el proyecto en modo laboratorio
 - WHEN ocurre el caso descrito
 - THEN la entrega queda pendiente sin archivos publicados
+
+## Requirement: Integración explícita de 004/005
+El comando DEBE llamar ReconLoop, Correlator y DetectionLoop del equipo mediante
+sus adaptadores y Harness.invoke. La demo offline DEBE identificar fixtures sintéticas,
+correlación sin coincidencias y el candidato manual para validación, sin inventar CVE.
+La procedencia de cada fase DEBE acompañar al informe y su versión aprobada.
+
+### Scenario: HTTPX no ofrece versión exacta
+- GIVEN las fixtures de 004 con PHP y Apache sin versión
+- WHEN se correlaciona con los snapshots de 005
+- THEN la lista CVE es vacía y el candidato CSP se identifica como semilla manual
+
+### Scenario: análisis sin vínculo explícito al candidato
+- GIVEN las alertas genéricas de las fixtures de 005
+- WHEN DetectionLoop las analiza
+- THEN el candidato queda inconcluso hasta su validación separada con aprobación

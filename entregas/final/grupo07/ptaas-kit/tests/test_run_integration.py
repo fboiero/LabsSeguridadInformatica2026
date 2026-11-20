@@ -45,3 +45,34 @@ def test_explicit_fixture_gates_and_export(roe, tmp_path):
     data = json.loads((tmp_path / "out/published/defectdojo.json").read_text(encoding="utf-8"))
     assert data["findings"][0]["verified"] is False
     assert "fixture" in data["findings"][0]["description"]
+
+
+def test_integrates_team_loops_and_keeps_unknowns(roe, tmp_path):
+    out = execute(roe, tmp_path / "integrated", ApprovalStore())
+    stages = json.loads(
+        (tmp_path / "integrated/pipeline-evidence.json").read_text(encoding="utf-8")
+    )
+    assert stages["recon"]["implementation"] == "harness.recon_loop.ReconLoop"
+    assert stages["recon"]["iterations"] >= 1
+    assert stages["correlation"]["candidates"] == []
+    assert stages["analysis"]["status"] == "inconclusive"
+    assert stages["validation_seed"]["origin"] == "manual_demo_seed"
+    assert (tmp_path / "integrated/asset-graph.json").exists()
+    names = {e["action"] for e in out["audit"]}
+    assert {
+        "subfinder.enum",
+        "httpx.probe",
+        "cve.lookup",
+        "zap.baseline_scan",
+        "nuclei.safe_templates",
+    } <= names
+    assert out["bundle"]["pipeline"]["analysis"] == "fixtures sintéticas con DetectionLoop (005)"
+
+
+def test_demo_fixture_runners_never_execute_binaries(roe, tmp_path, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("la demo fixture no debe ejecutar herramientas ni conectar red")
+
+    monkeypatch.setattr("subprocess.run", forbidden)
+    monkeypatch.setattr("socket.getaddrinfo", forbidden)
+    execute(roe, tmp_path / "offline", ApprovalStore())
