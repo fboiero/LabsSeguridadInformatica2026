@@ -1,0 +1,9 @@
+'UNION SELECT' => True
+'UNION/**/SELECT' => True
+'union /* comentario\nmultilinea */ SELECT' => True
+'UNION\tSELECT' => True
+'UNIONSELECT' => False
+'reunion SELECT' => False
+'UNION/*sin cierre SELECT' => False
+'documentacion: UNION/**/SELECT' => True
+8 casos OK; el ultimo ilustra un posible falso positivo. No prueba SQL ni evasiones HTTP.
