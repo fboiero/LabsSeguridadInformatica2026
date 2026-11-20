@@ -106,10 +106,66 @@ Las fases de ejecución estructuradas fueron:
 ---
 
 <!-- ========================================================================= -->
-<!-- H-02 (ALTA): Inyección SQL en Login de RRHH (A redactar por Matías Mariatti)-->
+<!-- H-02 (ALTA): Inyección SQL en Login de RRHH (Redactado por Matías Mariatti) -->
 <!-- ========================================================================= -->
 ### H-02 · Inyección SQL (SQLi) en Formulario de Autenticación de RRHH
-*(Hallazgo técnico asignado a Matías Mariatti — Grupo 12)*
+- **Auditor responsable:** Matías Mariatti (`@matiasmariatticasc`)
+- **Severidad:** **Alta**  
+- **CVSS v3.1:** `8.2` (Alta) · **Vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N`  
+  *Justificación del score:*
+  - **Attack Vector (AV:N):** La vulnerabilidad es accesible directamente a través de la red HTTP pública/interna sin requerir acceso físico ni presencia en el segmento de red local.
+  - **Attack Complexity (AC:L):** Complejidad de explotación baja; no existen mecanismos de protección como Web Application Firewall (WAF), rate limiting, tokens anti-CSRF ni sanitización de caracteres especiales.
+  - **Privileges Required (PR:N):** No se requieren credenciales ni privilegios previos; el formulario de autenticación está expuesto a cualquier atacante no autenticado.
+  - **User Interaction (UI:N):** La explotación no requiere la intervención ni engaño de ningún usuario legítimo.
+  - **Scope (S:U):** Sin cambio de alcance; el compromiso afecta directamente a la base de datos y la sesión de la propia aplicación web.
+  - **Confidentiality (C:H):** Impacto crítico en la confidencialidad en el contexto de la aplicación; el bypass de autenticación permite impersonar al usuario administrador (`admin`) y acceder al dashboard privado que revela archivos de respaldo críticos.
+  - **Integrity (I:L):** Impacto bajo en la integridad; permite eludir la lógica de autorización de la sesión, aunque en este punto específico no se ejecutan sentencias de modificación masiva de datos (UPDATE/DELETE).
+  - **Availability (A:N):** Sin impacto directo en la disponibilidad del servicio.
+- **CWE:** CWE-89: *Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')*.
+- **Ubicación:** Endpoint `POST /portal-rrhh/login` (y ruta alternativa `POST /portal/login`), parámetro vulnerable: `user`.
+- **Descripción:**  
+  El formulario de autenticación del portal de Recursos Humanos construye dinámicamente las sentencias SQL concatenando directamente las entradas del usuario sin aplicar sanitización ni consultas parametrizadas en el backend de Python/SQLite:
+  ```python
+  sql = f"SELECT user, rol FROM users WHERE user='{user}' AND pass='{pw}'"
+  ```
+  Al suministrar una comilla simple (`'`) en el campo `user`, seguida de un operador lógico disyuntivo (`OR 1=1`) y caracteres de comentario de línea en SQL (`--`), el atacante altera la lógica booleana de la consulta:
+  ```sql
+  SELECT user, rol FROM users WHERE user='' OR 1=1--' AND pass='...'
+  ```
+  Dado que la condición `1=1` evalúa siempre a verdadero (*tautología*), el motor SQLite ignora completamente la verificación de la contraseña y retorna el primer registro coincidente de la tabla `users`, el cual corresponde al usuario administrador (`admin`, con rol `admin`), provocando un **Bypass de Autenticación completo**.
+- **Evidencia reproducible:**  
+  Envío de petición HTTP POST mediante `curl` conteniendo el payload malicioso en el cuerpo de la solicitud:
+  ```bash
+  curl -i -s -X POST http://phantomcorp/portal-rrhh/login        -H "Content-Type: application/x-www-form-urlencoded"        -d "user=' OR 1=1--&pass=dummy"
+  ```
+  *Respuesta obtenida del servidor (Código HTTP 200 OK):*
+  ```text
+  HTTP/1.0 200 OK
+  Server: PhantomClientes/2.0
+  Date: Thu, 19 Nov 2026 19:35:10 GMT
+  Content-Type: text/plain; charset=utf-8
+
+  Bienvenido admin. Dashboard RRHH.
+  FLAG{final_sqli_foothold}
+  Backup de config disponible en: /backup/rrhh.conf
+  ```
+- **Impacto:**  
+  Este hallazgo constituye el **acceso inicial (*Foothold*)** dentro de la cadena de compromiso del engagement:
+  1. Permite a cualquier atacante externo no autenticado tomar control de la sesión del administrador de RRHH sin poseer la clave secreta.
+  2. Expone en la respuesta administrativa la ruta oculta de respaldos del sistema (`/backup/rrhh.conf`), la cual contiene credenciales de base de datos y el token maestro de API, habilitando la siguiente fase de post-explotación (H-03).
+  3. Demuestra un fallo estructural en las prácticas de desarrollo seguro de software (SDLC) de PhantomCorp S.A., incumpliendo los requisitos de control de acceso del estándar OWASP ASVS v4.0 (V5: Malicious Code Architecture) y NIST SP 800-53 (AC-3: Access Enforcement).
+- **Remediación:**  
+  1. **Implementación estricta de consultas preparadas (*Prepared Statements*):**
+     Reemplazar la interpolación de cadenas por consultas parametrizadas nativas del driver `sqlite3`, asegurando que el motor trate las entradas del usuario estrictamente como literales de datos y nunca como código ejecutable:
+     ```python
+     # Código corregido y seguro:
+     sql = "SELECT user, rol FROM users WHERE user = ? AND pass = ?"
+     row = DB.execute(sql, (user, pw)).fetchone()
+     ```
+  2. **Almacenamiento seguro de contraseñas:**
+     Migrar el esquema de almacenamiento de contraseñas de texto plano a funciones de hash criptográfico lentas y adaptativas con salting (ej. Argon2id, PBKDF2 o bcrypt).
+  3. **Manejo defensivo de excepciones:**
+     Eliminar el retorno de excepciones directas de la base de datos (`Error SQL: {e}`), adoptando mensajes genéricos de error para evitar que los atacantes realicen *fingerprinting* de la sintaxis SQL.
 
 ---
 
