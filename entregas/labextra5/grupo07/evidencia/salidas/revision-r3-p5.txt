@@ -1,0 +1,53 @@
+69-                                   hashlib.sha256).digest())
+70-        if not hmac.compare_digest(fir, esperada):
+71-            return None
+72:        payload = json.loads(b64url_dec(pay))
+73:        if payload.get("exp", 0) < time.time():
+74-            return None
+75-        return payload
+76-    except Exception:
+--
+96-        elif path == "/login":
+97-            user = params.get("user", [""])[0]
+98-            pwd = params.get("pass", [""])[0]
+99:            u = USUARIOS.get(user)
+100-            if not u or u["pass"] != pwd:
+101-                self._send(401, b'{"error": "credenciales invalidas"}',
+102-                           "application/json")
+103-                return
+104:            payload = {
+105-                "sub": user, "role": u["role"],
+106-                "iat": int(time.time()), "exp": int(time.time()) + 3600,
+107-                # R1: esto NO debería viajar en el token (no está cifrado!)
+108:                "nota_interna": f"deploy-tag {FLAG_CLAIM}",
+109-            }
+110-            self._send(200, json.dumps({"token": firmar(payload)}).encode(),
+111-                       "application/json")
+112:        elif path == "/perfil":
+113:            payload = self._payload_o_401()
+114-            if not payload:
+115-                return
+116:            u = USUARIOS.get(payload["sub"])
+117-            if not u:
+118-                self._send(404, b'{"error": "usuario inexistente"}',
+119-                           "application/json")
+--
+122-                                        "role": u["role"],
+123-                                        "datos": u["datos"]}).encode(),
+124-                       "application/json")
+125:        elif path == "/admin":
+126:            payload = self._payload_o_401()
+127-            if not payload:
+128-                return
+129:            if payload.get("role") != "admin":
+130-                self._send(403, b'{"error": "solo administradores"}',
+131-                           "application/json")
+132-                return
+--
+140-    def _payload_o_401(self):
+141-        auth = self.headers.get("Authorization", "")
+142-        token = auth.removeprefix("Bearer ").strip()
+143:        payload = verificar(token) if token else None
+144-        if not payload:
+145-            self._send(401, b'{"error": "token invalido o expirado"}',
+146-                       "application/json")

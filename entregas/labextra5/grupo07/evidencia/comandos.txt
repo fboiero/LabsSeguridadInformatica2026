@@ -1,0 +1,10 @@
+Lab Extra 5 — Grupo 07 — Fernando Cagliero (@Ferca19)
+Fecha: 19/11/2026 (America/Buenos_Aires)
+
+Revisión estática del flujo local de /perfil (no levanta el servidor ni extrae
+tokens/flags):
+  rg -n -C 3 "payload =|nota_interna|elif path == \"/perfil\"|USUARIOS.get|elif path == \"/admin\"|payload.get" labs/labextra5-jwt/objetivo/server.py
+
+La salida del fragmento revisado está en salidas/revision-r3-p5.txt. Las
+fuentes conceptuales de P3/P5 están listadas en referencias.md. No se ejecutó
+el flujo de login, el crack offline ni la forja en este bloque.
