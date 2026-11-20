@@ -1,0 +1,25 @@
+== PTaaS — recorrido grupo 14 (laboratorio aislado, adaptadores inertes) ==
+
+[1] Autorización
+  -> estado = RECON
+[2] Recon (loop A, tope = 5 )
+  -> iter 1: 2 activos nuevos -> continue (2 activos nuevos)
+  -> iter 2: 1 activos nuevos -> continue (1 activos nuevos)
+  -> iter 3: 0 activos nuevos -> stop (grafo estabilizado)
+[3] Correlación
+  -> evidencia citada por referencia: sha256:630550f5d40c6987… (47 bytes)
+[4] Análisis
+  -> zap.baseline_scan -> candidato SQLi
+[5] Validación (gate HITL)
+  -> sin aprobación -> PENDING_HITL
+  -> con aprobación -> PoC del catálogo reproducido en sandbox
+[6] Reporte
+  -> informe generado con 1 hallazgo(s)
+[7] Entrega
+  -> estado = DELIVERED · delivered = True
+
+== Bitácora ==
+  registros: 9 · {'OK': 8, 'PENDING_HITL': 1}
+  cadena de hashes íntegra: True
+
+RESULTADO: OK — recorrido completo

@@ -120,6 +120,21 @@ class AuditLog:
         return body
 
 
+def evidence_ref(content: str | bytes, *, uri: str | None = None) -> dict:
+    """Referencia inerte a una evidencia para la bitácora (audit-log: 'sin datos
+    sensibles en claro'). Devuelve el digest SHA-256 y el tamaño, NUNCA el
+    contenido: así la bitácora nunca almacena credenciales ni datos del cliente.
+    El contenido real se guarda fuera de banda y se cita por `uri` opcional.
+    """
+    if isinstance(content, str):
+        content = content.encode()
+    digest = hashlib.sha256(content).hexdigest()
+    ref = {"evidence": f"sha256:{digest}", "bytes": len(content)}
+    if uri:
+        ref["uri"] = uri
+    return ref
+
+
 class KillSwitch:
     engaged: bool = False
 
