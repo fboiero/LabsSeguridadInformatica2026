@@ -1,0 +1,27 @@
+Lab 08 — bloque de Lorenzo — Grupo 07
+Fecha local: 2026-11-19 (America/Buenos_Aires)
+
+Preparación del objetivo local. El checkout tiene `core.autocrlf` aplicado: Docker ejecutó el shebang con CRLF y falló al lanzar setup.sh. Para no editar fuentes ni redes del curso, se copió Dockerfile + setup.sh a .loot/lab08-build/victima, se normalizó CRLF a LF solo en esa copia, se construyó la imagen y Compose la levantó con --no-build:
+  docker build --progress=plain -t cyberlab-phantomcorp .loot/lab08-build/victima
+  docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab08-postexplotacion/entorno/target.compose.yml up -d --no-build
+
+Enumeración ejecutada como operador en cyberlab-phantomcorp:
+  id
+  whoami
+  hostname
+  uname -a
+  ip addr
+  cat /etc/hosts
+  ls -la /opt
+  find /opt -maxdepth 2 -type f -print -exec sh -c 'printf -- "--- %s ---\n" "$1"; cat "$1"' _ {} \;
+  ls -la /var/www
+  cat /var/www/.env
+  ls -la /home/operador
+  cat /home/operador/.bash_history
+
+Las flags observadas se enviaron desde la raíz del repositorio mediante Git Bash:
+  ./ctf submit 08 R1 'FLAG{post_situational_awareness}'
+  ./ctf submit 08 R2 'FLAG{loot_credentials_found}'
+  ./ctf status 08
+
+Las salidas completas están en salidas/r1-r2-recon-loot.txt y salidas/status-08.txt.
