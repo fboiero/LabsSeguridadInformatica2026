@@ -1,0 +1,25 @@
+Lab Extra 2 — Grupo 07 — bloque B (Fernando Cagliero)
+Fecha local: 19/11/2026 (America/Argentina/Buenos_Aires, UTC-03:00)
+Origen: PowerShell/Git Bash en Windows; repo ficticio generado por el laboratorio.
+Caso: LabsSeguridadInformatica2026/labs/labextra2-git-forense/caso/repo-delata
+
+1. Generar el caso con el flujo oficial (desde la raíz del repo):
+   & 'C:\Program Files\Git\bin\bash.exe' -c './ctf lab extra2'
+
+2. R1 — revisar el diff histórico de main:
+   git -C labs/labextra2-git-forense/caso/repo-delata log main --date=iso-strict --format='%H %ad %an <%ae> %s' --patch
+   Salida cruda: evidencia/salidas/r1-git-log-p.txt
+
+3. R2 — consultar reflog y buscar objetos inalcanzables:
+   git -C labs/labextra2-git-forense/caso/repo-delata reflog --all --date=iso-strict
+   git -C labs/labextra2-git-forense/caso/repo-delata fsck --full --no-reflogs --unreachable
+   Salidas crudas: evidencia/salidas/r2-reflog.txt y evidencia/salidas/r2-fsck.txt
+
+4. Seguir el commit inalcanzable hasta su contenido:
+   git -C labs/labextra2-git-forense/caso/repo-delata show --stat --oneline bc9d0dbe6aca41d639a515395cc983e139979102
+   git -C labs/labextra2-git-forense/caso/repo-delata show bc9d0dbe6aca41d639a515395cc983e139979102
+   git -C labs/labextra2-git-forense/caso/repo-delata cat-file -p fc979fdad9fb6246fd683eb2087b2d7e94ef0563
+   Salidas crudas: evidencia/salidas/r2-commit-stat.txt, r2-commit-content.txt y r2-unreachable-blob.txt
+
+El análisis se realizó en el repo ficticio generado. No se leyó el generador
+para recuperar las flags ni se envió ninguna a ./ctf submit.
