@@ -140,8 +140,8 @@ def test_opencode_no_expone_error_crudo(monkeypatch, tmp_path):
     executable.touch()
     monkeypatch.setattr(
         "runtime.providers.subprocess.run",
-        lambda *args, **kwargs: CompletedProcess([], 1, "", "SECRET_SYNTHETIC_PASSWORD"),
+        lambda *args, **kwargs: CompletedProcess([], 1, "SECRET_STDOUT", "SECRET_STDERR"),
     )
     with pytest.raises(ProviderError) as error:
         OpenCodeProvider(executable=executable).generate('{"agent":"analysis"}')
-    assert "SECRET" not in str(error.value)
+    assert str(error.value) == "opencode_generation_failed (exit_code=1)"

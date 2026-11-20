@@ -78,7 +78,8 @@ class OpenCodeProvider:
         except (OSError, subprocess.TimeoutExpired, UnicodeError):
             raise ProviderError("opencode_unavailable_or_timeout") from None
         if response.returncode != 0:
-            raise ProviderError("opencode_generation_failed")
+            # La salida cruda puede incluir credenciales o partes del prompt.
+            raise ProviderError(f"opencode_generation_failed (exit_code={response.returncode})")
         if len(response.stdout) > 65536:
             raise ProviderError("response_limit_exceeded")
         try:
