@@ -1,0 +1,21 @@
+# Lab 08 — Parte D (Lautaro Mariño). Comandos y procedencia.
+# R5: corrida del recolector.py (de Fernando) contra el host interno.
+# Entorno: sandbox Linux (sin build de contenedores; Docker Hub bloqueado). Se
+# corre db/server.py del lab directo (= servicio del host interno). En el entorno
+# real va DESDE la victima tras pivotear (make shell-victima).
+# No se leyo el codigo del target para obtener la flag: sale del servicio y se
+# valida su sha256 contra retos.manifest.
+
+# levantar el host interno del lab
+python3 labs/lab08-postexplotacion/entorno/db/server.py &
+
+# correr el recolector (en la victima real: --base http://phantomcorp-db)
+python3 entregas/lab08/grupo07/src/recolector.py --base http://phantomcorp-db --desde 1 --hasta 250
+#   -> FLAG{automation_pays_off} en id=187
+
+# validacion de la flag contra el manifest (no se lee solucion)
+printf '%s' 'FLAG{automation_pays_off}' | sha256sum
+#   -> d2b677ab...55ca == retos.manifest R5
+
+# envio al CTF (desde el HOST, no desde la victima):
+# ./ctf submit 08 R5 'FLAG{automation_pays_off}' ; ./ctf status 08
