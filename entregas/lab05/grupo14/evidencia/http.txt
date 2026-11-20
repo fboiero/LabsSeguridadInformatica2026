@@ -1,0 +1,27 @@
+=== curl -I phantomcorp ===
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1 
+Date: Sat, 24 Oct 2026 01:49:17 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS 2.4.1
+X-Backend-Flag: FLAG{http_headers_leak_info}
+
+
+=== robots.txt ===
+User-agent: *
+Disallow: /admin
+Disallow: /panel-interno-9x2f
+# Recordatorio infra: /panel-interno-9x2f sigue accesible desde afuera. Migrar a VPN.
+
+=== GET /panel-interno-9x2f ===
+<!doctype html><html><body>
+<h1>Panel interno PhantomCorp</h1>
+<p>Acceso restringido. Si llegaste aca por robots.txt, felicitaciones: acabas
+de hacer enumeracion de rutas. Esa es exactamente la tecnica.</p>
+<pre>FLAG{recon_hidden_path}</pre>
+</body></html>
+=== GET :8080/ ===
+phantom-dev-api. Proba /status
+
+=== GET :8080/status ===
+{"service":"phantom-dev-api","version":"0.9.3-DEV","debug":true,"flag":"FLAG{dev_service_exposed}"}
