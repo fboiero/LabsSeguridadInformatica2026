@@ -11,7 +11,7 @@ Se usó OpenAI Codex como asistente con acceso a la terminal para extraer una co
 
 ## 1. Resumen del incidente
 
-El 5 de septiembre de 2026, el log de acceso muestra actividad de `185.220.101.42` que llegó al endpoint `/api/reporte` y permitió ejecución remota de comandos. Los artefactos posteriores muestran un webshell, una escalada mediante `/usr/local/bin/system-check`, una cuenta con UID 0 y persistencia por cron. Al capturar la memoria, había una conexión `nc` establecida hacia `45.13.37.7:4444`; el historial también registra la preparación y el envío de un archivo con datos de clientes. La evidencia respalda la intención y el comando de exfiltración, pero no confirma recepción en el servidor externo; `auth.log` además no coincide con la cadena de custodia.
+El 5 de septiembre de 2026, el log de acceso registra a `185.220.101.42` enviando a `/api/reporte` una solicitud cuyo parámetro `cmd` decodificado contiene un marcador después de `echo` (`logs/access.log:19`). El verificador del laboratorio clasifica R1 como SQLi → RCE; el log acredita la solicitud y el marcador, pero no permite reconstruir la consulta SQL interna. A las 02:19:02 UTC se registra la descarga de un webshell y, a las 02:19:48 UTC, un acceso a ese recurso; el listado de disco ubica `/var/www/uploads/shell.php` a las 02:19. Los artefactos posteriores muestran una escalada mediante `/usr/local/bin/system-check`, una cuenta con UID 0 y persistencia por cron. Al capturar la memoria, había una conexión `nc` establecida hacia `45.13.37.7:4444`; el historial también registra la preparación y el envío de un archivo con datos de clientes. La evidencia respalda la intención y el comando de exfiltración, pero no confirma recepción en el servidor externo; `auth.log` además no coincide con la cadena de custodia. [Extracción de referencias de Fernando](evidencia/salidas/fernando-hallazgos.txt).
 
 ## 2. Cadena de custodia
 
@@ -36,9 +36,9 @@ La fuente es `labs/lab11-forensia/caso/` en `upstream/main@a1abb79449a68f3cae29d
 
 Lautaro debe completar el contexto previo de entrada y correlacionar la secuencia completa. No se usan los timestamps de `auth.log` por su fallo de integridad.
 
-## 4. Indicadores de compromiso (extracto de Lorenzo)
+## 4. Indicadores de compromiso
 
-> Fernando integra el inventario completo y valida sus referencias.
+Inventario integrado a partir de las referencias de Lorenzo y Fernando. El hash del extracto defangeado no debe atribuirse al archivo original del servidor.
 
 | Tipo | Valor | Dónde apareció |
 |---|---|---|
@@ -46,6 +46,7 @@ Lautaro debe completar el contexto previo de entrada y correlacionar la secuenci
 | C2 TCP | `45.13.37.7:4444` | `memoria/netstat.txt:4`; proceso `nc`, `memoria/pslist.txt:9` |
 | Host de descarga/upload HTTP | `45.13.37.7:80` (puerto por defecto inferido de las URLs `http://`) | `memoria/bash_history.txt:4,9`; descarga también en `memoria/netstat.txt:5` |
 | Webshell | `/var/www/uploads/shell.php` (captura defangeada) | `disco/var/www/uploads/shell.php.evidencia.txt`; `logs/access.log:20-22` |
+| SHA-256 del extracto del webshell | `38f7251c9fe2f554a2a9808fea0b154f1f4e88f7b47c1e4afbd589055a22fc42` | Hash del archivo de evidencia defangeado `disco/var/www/uploads/shell.php.evidencia.txt`; no es un hash verificado del archivo original en el servidor. |
 | Binario SUID anómalo | `/usr/local/bin/system-check`, descrito como copia de Bash | `disco/listado.txt:5`; `memoria/pslist.txt:8` |
 | Usuario backdoor | `phantom-svc`, UID 0 | `disco/etc/passwd.snippet:4` |
 | Persistencia | `/etc/cron.d/phantom-maint` | `disco/listado.txt:6`; comentario del artefacto defangeado |
@@ -74,7 +75,9 @@ Lautaro debe completar el contexto previo de entrada y correlacionar la secuenci
 
 **P2 — cómo se detectó la alteración:** pendiente — bloque de Guadalupe.
 
-**P3 — correlación de tres artefactos:** pendiente — bloque de Fernando.
+**P3 — correlación de tres artefactos.** `logs/access.log:20-21` registra a las 02:19:02 UTC una solicitud de descarga de `/var/www/uploads/shell.php` desde `185.220.101.42` y a las 02:19:48 UTC un acceso HTTP 200 al mismo recurso desde ese origen. `disco/listado.txt:4` registra el archivo, de 431 bytes, a las 02:19; esa hora tiene precisión de un minuto y el listado no especifica zona horaria. En la captura de memoria de las 02:30 UTC, `memoria/pslist.txt:6` asocia el PID 1201, bajo `www-data`, con la descarga, y `memoria/netstat.txt:5` vincula ese PID con `45.13.37.7:80` en estado `TIME_WAIT`.
+
+La coincidencia de ruta, origen y proceso respalda que se descargó el webshell y luego se accedió a él. La relación temporal entre el log y el listado depende de que este último use UTC. La memoria corrobora actividad posterior; los extractos no determinan la hora exacta de inicio del proceso ni de apertura o cierre de la conexión. [Referencias y extracción](evidencia/salidas/fernando-hallazgos.txt).
 
 **P4 — recuperación tras `history -c`:** el `bash_history` del disco fue borrado, pero la secuencia se recuperó de memoria (`memoria/bash_history.txt:1-10`). La sesión y los datos que manejaba permanecían en el estado volátil capturado; borrar el archivo de historial no elimina evidencia ya presente en la memoria del proceso o recogida antes de que desaparezca.
 
