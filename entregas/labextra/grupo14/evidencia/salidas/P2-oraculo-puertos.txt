@@ -1,0 +1,7 @@
+# P2: oraculo de escaneo de puertos via SSRF
+## puerto 9999 (cerrado):
+No pude traer http://127.0.0.1:9999/: <urlopen error [Errno 111] Connection refused>
+## puerto 9000 (abierto):
+<h3>Previsualizacion de http://127.0.0.1:9000/</h3><hr><!doctype html><html><body style="font-family:monospace">
+<h2>PhantomCorp — Panel interno (solo localhost)</h2>
+<p>Si estás viendo esto desde 

@@ -1,0 +1,12 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                    PROGRESO · LAB extra                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     El server fetchea por vos: panel interno en localhost
+   ✓  R2     Descubrir la intranet en la red interna
+   ✓  R3     Exfiltrar datos sensibles a traves del SSRF
+
+  ██████████████████████████████  3/3 (100%)
+
+[ OK ] ¡Lab extra COMPLETO! Ponete las pilas con la próxima unidad.
