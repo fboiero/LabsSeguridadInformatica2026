@@ -1,0 +1,14 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 10                      │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Acceso a la vista del SOC
+   ✓  R2     Disparar una deteccion (te vieron)
+   ✓  R3     Conocer el ruleset del IDS
+   ✓  R4     Evadir una firma de deteccion
+   ✓  R5     Encontrar la intrusion en el ruido
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 10 COMPLETO! Ponete las pilas con la próxima unidad.

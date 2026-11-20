@@ -1,0 +1,2 @@
+200 OK (procesado como benigno)
+Tu request ERA maliciosa pero NINGUNA firma la detectó. FLAG{signature_evaded}

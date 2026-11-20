@@ -1,0 +1,3 @@
+🚨 ALERTA IDS · firma 'scanner-ua' disparada.
+Tu request fue DETECTADA y logueada. FLAG{detection_triggered}
+Para ver todas las reglas: GET /soc/reglas
