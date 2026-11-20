@@ -16,6 +16,7 @@ base de todo.
 import argparse
 import re
 import sys
+from urllib.parse import unquote
 
 # Formato nginx combined:  IP - - [fecha] "METODO ruta HTTP/x" status ...
 LOG_RE = re.compile(r'^(\S+) \S+ \S+ \[([^\]]+)\] "(\S+) (\S+) [^"]*" (\d{3})')
@@ -32,27 +33,26 @@ def parsear_linea(linea: str):
 
 def construir_timeline(path: str, ip: str = None) -> list:
     """Recorre el log, parsea cada línea y devuelve la lista de eventos.
-    Si `ip` no es None, filtrá SOLO los eventos de esa IP (la del atacante).
-
-    TODO:
-      - abrí el archivo y parseá cada línea con parsear_linea().
-      - descartá las que devuelven None.
-      - si `ip` fue pasada, quedate solo con las de esa IP.
-      - el log ya viene en orden cronológico; no hace falta reordenar.
-    """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá construir_timeline()")
+    Si `ip` no es None, filtra SOLO los eventos de esa IP (la del atacante).
+    El log ya viene en orden cronológico; no se reordena."""
+    with open(path, encoding="utf-8", errors="replace") as f:
+        eventos = (parsear_linea(l) for l in f)
+        return [e for e in eventos if e and (ip is None or e["ip"] == ip)]
 
 
 def clasificar_fase(ruta: str) -> str:
-    """Mapea una petición a la fase del ataque, para etiquetar la timeline.
-    Devolvé una etiqueta corta: RECON · ENUM · EXPLOIT · RCE · WEBSHELL · EXFIL.
-
-    TODO: mirá las rutas del caso (login, /api/reporte?cmd=, shell.php,
-    clientes...) y devolvé la fase que corresponde. Pista: usá 'in' sobre la ruta.
-    """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá clasificar_fase()")
+    """Mapea una petición a la fase del ataque (RECON · ENUM · EXPLOIT · RCE ·
+    WEBSHELL · EXFIL). Heurística por subcadenas, pensada para este caso."""
+    r = unquote(ruta)
+    if "/api/reporte" in r and "cmd=" in r:
+        return "RCE"
+    if "shell.php" in r:
+        return "EXFIL" if "clientes" in r else "WEBSHELL"
+    if ("portal" in r and "login" in r) or "/backup/" in r:
+        return "EXPLOIT"
+    if r in ("/", "/robots.txt"):
+        return "RECON"
+    return "ENUM"
 
 
 def main() -> int:
