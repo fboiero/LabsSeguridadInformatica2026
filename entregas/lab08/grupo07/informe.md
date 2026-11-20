@@ -51,7 +51,7 @@ En el entorno real esto se corre **desde la víctima** (`make shell-victima`), p
 
 **P1 — SUID y `-p`:** pendiente — bloque de Guadalupe.
 
-**P2 — pivoting:** pendiente — bloque de Lautaro.
+**P2 — pivoting:** el host comprometido `phantomcorp` tiene **dos interfaces**: `labnet` (el segmento que ve la consola atacante) e `internalnet`. El host interno `phantomcorp-db` está **solo** en `internalnet`, que está declarada `internal: true` en el Compose: no tiene salida ni es alcanzable desde `labnet`. Por eso la consola atacante no llega a la DB y hay que **pivotear**: usar la víctima, que está en ambas redes, como puente hacia el segmento interno. Desde la víctima se confirma el acceso al host interno (R4) y, ya adentro, se corre el recolector contra `phantomcorp-db` para R5. El pivot no agrega una vulnerabilidad nueva: aprovecha que un host comprometido en la frontera tiene visibilidad de la red interna. (Topología observada en `labs/lab08-postexplotacion/entorno/target.compose.yml`; la evidencia operativa del cruce R4 corresponde al bloque C.)
 
 **P3 — cómo evitar secretos en `.env` y `.bash_history`:** el `.env` observado guarda credenciales y un secreto en `/var/www`, accesible desde la cuenta `operador`; poner variables en un archivo con nombre oculto no lo protege. El archivo debe quedar fuera del webroot y con acceso restringido, pero los permisos por sí solos no sustituyen una gestión de secretos: en despliegue conviene inyectarlos desde un gestor central, con identidad de workload, privilegio mínimo, vigencia limitada, auditoría y rotación/revocación si se exponen. Para el shell, no se deben pasar contraseñas como argumentos ni pegarlas en comandos que puedan quedar en el historial o en logs; se usan entradas secretas del cliente, descriptores de archivo o mecanismos de credenciales del gestor. `HISTCONTROL`/`HISTIGNORE` sirven como higiene de historial, pero no son un control de seguridad equivalente. En la evidencia de esta sesión, `.bash_history` contiene comandos de inspección, no el valor de la contraseña. [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) · [GNU Bash Reference Manual — Bash Variables](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html).
 
@@ -66,7 +66,11 @@ ese ID y termina para evitar solicitudes innecesarias. El programa automatiza
 estas reglas, pero una persona define el alcance, el indicador de hallazgo y
 qué hacer ante fallos.
 
-**P5 — defensas SUID y pivoting:** pendiente — bloque de Lautaro.
+**P5 — defensas SUID y pivoting:** 
+
+*SUID:* el vector fue `system-check`, una copia de `bash` con bit SUID (`chmod 4755`), que da shell con EUID 0. Mitigación concreta: **no poner SUID sobre shells ni intérpretes** y quitar los bits SUID innecesarios (`find / -perm -4000 -type f`), reemplazándolos por `sudo` acotado a comandos puntuales con logging, o por capabilities específicas; montar los filesystems de datos con `nosuid`. 
+
+*Pivoting:* la segmentación ya existe (`internalnet` es `internal: true`), pero un host de la frontera la puentea. Mitigación concreta: **restringir el egress de la víctima hacia el host interno** a solo el puerto/servicio necesario (firewall de host o network policy), exigir autenticación al servicio de DB y aplicar micro-segmentación con privilegio mínimo de red, de modo que comprometer el host web no otorgue acceso amplio al segmento interno.
 
 ## 5. Bitácora de comandos
 
