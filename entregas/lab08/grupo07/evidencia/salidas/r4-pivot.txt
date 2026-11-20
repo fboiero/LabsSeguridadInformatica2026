@@ -1,0 +1,9 @@
+# R4 — Pivoting · evidencia (Guadalupe)
+# Host interno db/server.py corrido local (phantomcorp-db -> 127.0.0.1:80), sandbox sin Docker.
+# Salvedad: el pivot/segmentacion NO se reproduce asi; la flag es la del servicio interno. Ver P2.
+# Fecha: 2026-11-20T22:51:39Z UTC
+
+$ curl -s 'http://phantomcorp-db/'
+{"host": "phantomcorp-db", "msg": "Base de datos interna. Acceso restringido a la LAN.", "pivot": "FLAG{pivot_internal_host}"}
+
+# FLAG{pivot_internal_host} -> sha256 verificado contra retos.manifest (R4).

