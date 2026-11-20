@@ -1,0 +1,8 @@
+version: "0.1.0"
+status: pending_teacher_review
+entries:
+  - {id: PROPOSAL-AUTH-SQLI-001, title: "Bypass de autenticación SQLi en login", kind: active_check, enabled: true, executable: false, lab_targets: [juice-shop], review_required: true, reason: "Visible para propuesta; requiere una PoC activa y aprobación docente."}
+  - {id: PROPOSAL-DOM-XSS-001, title: "XSS DOM en búsqueda", kind: active_check, enabled: true, executable: false, lab_targets: [juice-shop], review_required: true, reason: "Visible para propuesta; requiere navegador y revisión docente."}
+  - {id: PROPOSAL-UPLOAD-001, title: "Validación de límites y tipo de archivo", kind: active_check, enabled: true, executable: false, lab_targets: [juice-shop], review_required: true, reason: "Visible para propuesta; requiere adaptador multipart y fixtures versionados."}
+  - {id: PROPOSAL-ADMIN-AUTHZ-001, title: "Autorización de rutas administrativas", kind: active_check, enabled: true, executable: false, lab_targets: [juice-shop], review_required: true, covered_by: POC-ADMINAUTHZ-001, reason: "Visible para propuesta; la comprobación de solo lectura equivalente ya está catalogada."}
+  - {id: PROPOSAL-CAPTCHA-001, title: "Exposición de solución CAPTCHA", kind: active_check, enabled: true, executable: false, lab_targets: [juice-shop], review_required: true, covered_by: POC-CAPTCHA-001, reason: "Visible para propuesta; la comprobación de solo lectura equivalente ya está catalogada."}

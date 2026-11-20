@@ -1,0 +1,37 @@
+{
+    "state":  "RECON_COMPLETE",
+    "stop_reason":  "graph_stabilized",
+    "rounds":  2,
+    "assets":  [
+                   {
+                       "address":  "juice-shop.lab.test",
+                       "port":  3000,
+                       "status":  200,
+                       "source":  "httpx.probe"
+                   }
+               ],
+    "out_of_scope":  [
+
+                     ],
+    "trace":  [
+                  {
+                      "round":  1,
+                      "changed":  true,
+                      "graph_digest":  "87c0bc8f3eefd171b9d4453d6792fe290ee2794214cd27dbb586159f83e80dd7"
+                  },
+                  {
+                      "round":  2,
+                      "changed":  false,
+                      "graph_digest":  "87c0bc8f3eefd171b9d4453d6792fe290ee2794214cd27dbb586159f83e80dd7"
+                  }
+              ],
+    "audit":  {
+                  "engagement":  "juice-shop-recon",
+                  "event_count":  4,
+                  "head_hash":  "29c5aa5a417cd7dea17066c4192662b5491c3f4ab694aeeb54446cae55d87c5d",
+                  "external_anchor":  false,
+                  "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+              },
+    "target_removed":  true,
+    "network_removed":  true
+}

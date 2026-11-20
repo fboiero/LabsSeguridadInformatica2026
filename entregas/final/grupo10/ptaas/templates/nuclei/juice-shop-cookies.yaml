@@ -1,0 +1,13 @@
+id: juice-shop-cookies
+info:
+  name: Juice Shop cookie flags
+  author: grupo10
+  severity: low
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200"

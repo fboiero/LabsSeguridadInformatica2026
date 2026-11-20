@@ -1,0 +1,98 @@
+audit-log|recuperación entre procesos|tests/audit_log/test_persistence.py::test_recuperacion_entre_procesos
+audit-log|commit fallido|tests/audit_log/test_persistence.py::test_commit_fallido_sin_fallback
+audit-log|archivos independientes|tests/audit_log/test_persistence.py::test_archivos_independientes
+audit-log|identidad incompatible|tests/audit_log/test_persistence.py::test_identidad_incompatible
+audit-log|modificación de registro intermedio|tests/audit_log/test_integrity.py::test_modificacion_de_registro_intermedio
+audit-log|borrado intermedio|tests/audit_log/test_integrity.py::test_borrado_intermedio
+audit-log|archivo ausente|tests/audit_log/test_integrity.py::test_archivo_ausente_no_se_crea
+audit-log|truncamiento final estructuralmente consistente|tests/audit_log/test_integrity.py::test_truncamiento_final_declara_limite
+audit-log|corrupción detectada desde el comando|tests/audit_log/test_integrity.py::test_corrupcion_desde_comando_no_se_repara
+audit-log|intento de edición o borrado SQL|tests/audit_log/test_integrity.py::test_edicion_y_borrado_sql_rechazados
+audit-log|dos escritores|tests/audit_log/test_concurrency.py::test_dos_escritores_sin_perdidas
+audit-log|bloqueo persistente|tests/audit_log/test_concurrency.py::test_bloqueo_persistente_acotado
+audit-log|secreto sintético en evidencia o error|tests/audit_log/test_privacy.py::test_secreto_en_error_o_salida_no_se_persiste
+audit-log|objetivo inválido con credenciales|tests/audit_log/test_privacy.py::test_objetivo_invalido_con_credenciales
+tool-adapters|ejecución autorizada con historial disponible|tests/tool_adapters/test_audit_fail_closed.py::test_intento_confirmado_antes_de_ejecutar
+tool-adapters|no se puede guardar el intento|tests/tool_adapters/test_audit_fail_closed.py::test_no_se_puede_guardar_intento_no_ejecuta
+tool-adapters|acción bloqueada o pendiente de aprobación|tests/tool_adapters/test_audit_fail_closed.py::test_sin_aprobacion_no_ejecuta
+tool-adapters|kill switch activo|tests/tool_adapters/test_audit_fail_closed.py::test_kill_switch_primero
+tool-adapters|excepción del adaptador|tests/tool_adapters/test_audit_fail_closed.py::test_error_adaptador_se_registra_sin_reintento
+tool-adapters|herramienta termina pero falla el registro final|tests/tool_adapters/test_audit_fail_closed.py::test_fallo_final_o_doble_suspende
+tool-adapters|fallo doble de herramienta y bitácora|tests/tool_adapters/test_audit_fail_closed.py::test_fallo_final_o_doble_suspende
+tool-adapters|reinicio con intento sin desenlace|tests/tool_adapters/test_audit_fail_closed.py::test_reinicio_con_intento_pendiente
+agent-contracts|coordinación con proveedor controlado|tests/test_runtime.py::test_coordinacion_con_contextos_separados
+agent-contracts|propuesta fuera del objetivo|tests/test_runtime.py::test_propuesta_fuera_de_alcance_se_bloquea
+agent-contracts|falta aprobación inicial|tests/test_runtime.py::test_sin_aprobacion_cero_llamadas
+agent-contracts|dos respuestas inválidas|tests/test_runtime.py::test_dos_invalidas_escalan_sin_filtrar
+agent-contracts|candidato inventado|tests/test_runtime.py::test_candidato_sin_fuente_es_rechazado
+agent-contracts|presupuesto agotado|tests/test_runtime.py::test_presupuesto_global_incluye_reintentos
+agent-contracts|proveedor no disponible|tests/test_runtime.py::test_proveedor_no_disponible_persiste_resumen
+agent-contracts|borrador terminado|tests/test_runtime.py::test_coordinacion_con_contextos_separados
+authorization|Alcance inválido|tests/test_roe.py::test_parser_rejects_bad_roe
+authorization|Ventana inválida o fase no permitida|tests/test_roe.py::test_issuance_needs_operator_and_current_window
+authorization|Aprobación fuera del documento|tests/test_roe.py::test_issuance_needs_operator_and_current_window
+authorization|TTL y fin exclusivo|tests/test_roe.py::test_issuance_caps_ttl_and_uses_exclusive_end
+authorization|Objeto copiado o reemplazado|tests/test_roe.py::test_harness_only_trusts_one_live_issued_token
+authorization|Recorrido permitido y bloqueado|tests/test_roe.py::test_checkpoint_bundle_no_approval_then_inert_run
+attack-mapping|Serie de fallos compatible|tests/test_attack_pilot.py::test_pilot_decisions
+attack-mapping|Falta de evidencia conductual|tests/test_attack_pilot.py::test_pilot_decisions
+attack-mapping|Referencias inventadas o cruzadas|tests/test_attack_pilot.py::test_rejects_unsupported_decisions
+attack-mapping|Ruteo por rol y tope separado|tests/test_runtime.py::test_opencode_solo_generacion_stateless
+defensive-reporting|Evidencia estática preexistente|tests/test_defensive_report.py::test_draft_sanitized_and_bound_to_report
+defensive-reporting|Evidencia incompleta|tests/test_defensive_report.py::test_incomplete_report_not_validated
+defensive-reporting|Falta aprobación o cambiaron los datos|tests/test_defensive_report.py::test_export_fails_closed
+defensive-reporting|Aprobación ligada a un borrador exacto|tests/test_defensive_report.py::test_export_is_local_bound_and_no_overwrite
+evidence-intake|Carpeta explícita con exportaciones autorizadas|tests/test_phantomcorp_evidence.py::test_collect_fixed_names_and_no_hito_is_credited
+evidence-intake|Archivo inesperado o no conforme|tests/test_phantomcorp_evidence.py::test_rejects_invalid_artifacts_without_echo
+evidence-intake|Hito no acreditado automáticamente|tests/test_phantomcorp_evidence.py::test_collect_fixed_names_and_no_hito_is_credited
+evidence-quality|Evidencia histórica de la rama del grupo|tests/test_evidence_quality.py::test_status_extracts_only_closed_labels
+evidence-quality|Estado incompleto o inventado|tests/test_evidence_quality.py::test_analysis_rejects_bad_outputs
+evidence-quality|Contexto Bandit acotado y ligado al informe|tests/test_evidence_quality.py::test_context_is_closed_and_bound_to_bandit_bytes
+evidence-quality|Comparación reproducible|tests/test_evidence_quality.py::test_comparison_uses_the_same_cases
+defensive-delivery|El borrador referencia solo evidencia conocida|tests/test_delivery.py::test_sandbox_document_contract
+defensive-delivery|Una decisión no respaldada bloquea la entrega|tests/test_delivery.py::test_delivery_blocks_unsupported_decisions
+defensive-delivery|Sin aprobación o con bytes distintos|tests/test_delivery.py::test_approval_gate_and_format
+defensive-delivery|Formato genérico sin hallazgos inventados|tests/test_delivery.py::test_approval_gate_and_format
+active-lab|R1 a R4 en el laboratorio autorizado|tests/test_active_phantomcorp.py::test_four_fixed_steps_and_sanitized_evidence
+active-lab|Comando fuera del catálogo|tests/test_active_phantomcorp.py::test_unapproved_command_is_rejected
+active-lab|Falla o respuesta inesperada|tests/test_active_phantomcorp.py::test_unexpected_marker_stops_chain
+active-lab|Evidencia sanitizada y reproducible|tests/test_active_phantomcorp.py::test_four_fixed_steps_and_sanitized_evidence
+review-loop|Elección iterativa con evidencia nueva|tests/test_review_loop.py::test_model_receives_new_evidence_between_rounds
+review-loop|Tope, no progreso y escalado|tests/test_review_loop.py::test_stops_without_external_actions
+review-loop|Aprobación individual antes de usar Docker|tests/test_review_loop.py::test_approval_is_bound_to_case_and_bytes
+review-loop|Sandbox documental aislado y eliminado|tests/test_review_loop.py::test_docker_boundary_and_removal
+poc-catalog|Catálogo válido y solo de laboratorio|tests/test_poc_catalog.py::test_catalog_has_inert_checks
+poc-catalog|ID o parámetro fuera del catálogo|tests/test_poc_catalog.py::test_gate_and_parameters
+poc-catalog|Gate por hallazgo|tests/test_poc_catalog.py::test_gate_and_parameters
+poc-catalog|Canario inerte|tests/test_poc_catalog.py::test_canary_is_inert
+asset-discovery|Loop A estabilizado|tests/test_recon_correlation_reporting.py::test_recon_loop_stabilizes_and_never_probes_foreign_target
+asset-discovery|Descubrimiento fuera de alcance|tests/test_recon_correlation_reporting.py::test_graph_rejects_out_of_scope_and_subfinder_filters
+asset-discovery|Salida de herramienta fija|tests/test_recon_correlation_reporting.py::test_graph_rejects_out_of_scope_and_subfinder_filters
+correlation|Candidato con evidencia|tests/test_recon_correlation_reporting.py::test_correlation_requires_evidence_and_unknowns_are_null
+correlation|Candidato sin evidencia|tests/test_recon_correlation_reporting.py::test_correlation_requires_evidence_and_unknowns_are_null
+correlation|Template fuera de allowlist|tests/test_recon_correlation_reporting.py::test_analysis_allowlist_and_no_progress
+correlation|Loop B sin progreso|tests/test_recon_correlation_reporting.py::test_analysis_allowlist_and_no_progress
+reporting|Campos obligatorios|tests/test_recon_correlation_reporting.py::test_reporting_requires_fields_status_and_hitl
+reporting|Estado de validación visible|tests/test_recon_correlation_reporting.py::test_reporting_requires_fields_status_and_hitl
+reporting|Gate de entrega|tests/test_recon_correlation_reporting.py::test_reporting_requires_fields_status_and_hitl
+reporting|Exportación reproducible|tests/test_recon_correlation_reporting.py::test_reporting_requires_fields_status_and_hitl
+evidence-review|Cambian los bytes de un recibo revisado|tests/test_evidence_demo.py::test_review_digest_binds_archived_receipt_bytes
+evidence-review|Cambia un informe tras su revisión|tests/test_defectdojo.py::test_modified_report_does_not_reach_network
+evidence-review|Regresión de procedencia|tests/test_evidence_demo.py::test_contract_mutations_are_detected
+relevo-panel|Revisión pendiente sobrevive al reinicio|tests/test_relevo.py::test_review_pauses_and_survives_restart
+relevo-panel|Evidencia modificada|tests/test_relevo.py::test_changed_evidence_blocks_review
+relevo-panel|Caso desconocido|tests/test_relevo.py::test_unknown_case_is_rejected
+relevo-panel|Cobertura documental después de la decisión|tests/test_relevo.py::test_coverage_handoff
+relevo-panel|Inicio limpio y aprobación de una sola consulta|tests/test_relevo.py::test_new_session_gate
+validation-luna|Validación usa el modelo dedicado|tests/test_validation_model.py::test_validation_has_dedicated_luna_model
+validation-luna|Validación request aceptado|tests/test_validation_model.py::test_validation_request_is_accepted_by_provider
+autonomous-catalog-session|El agente elige el siguiente control disponible|tests/test_relevo.py::test_coverage_handoff
+autonomous-catalog-session|Una sesión conserva su sandbox|tests/test_relevo.py::test_session_sandbox_path_is_stable
+teacher-proposals|Propuestas docentes visibles pero no ejecutables|tests/test_proposals.py::test_teacher_proposals_are_disabled
+dynamic-catalog-paths|El agente propone una ruta nueva del dominio autorizado|tests/test_relevo.py::test_agent_can_propose_new_path
+dynamic-catalog-paths|Una ruta fuera del dominio se rechaza|tests/test_relevo.py::test_agent_cannot_escape_authorized_scope
+dynamic-catalog-paths|El gate muestra la ruta exacta antes de ejecutar|tests/test_relevo.py::test_agent_can_propose_new_path
+dynamic-catalog-paths|Evaluadores de exposición devuelven validated|tests/test_poc_catalog.py::test_new_evaluators
+dynamic-catalog-paths|Una ruta administrativa protegida no se reporta como hallazgo|tests/test_poc_catalog.py::test_protected_admin_route_is_not_a_finding
+dynamic-catalog-paths|Rutas inseguras se rechazan antes del sender|tests/test_poc_catalog.py::test_invalid_dynamic_paths
+dynamic-catalog-paths|La ruta elegida llega al sender|tests/test_poc_catalog.py::test_dynamic_path_is_passed_to_sender

@@ -1,0 +1,13 @@
+id: juice-shop-frame
+info:
+  name: Juice Shop missing frame protection
+  author: grupo10
+  severity: low
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && !contains(tolower(header), 'x-frame-options')"

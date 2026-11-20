@@ -1,0 +1,28 @@
+{
+    "state":  "validated",
+    "poc_id":  "POC-CSP-001",
+    "response_scope":  "juice-shop.lab.test:3000",
+    "audit":  {
+                  "engagement":  "juice-shop-poc-sandbox",
+                  "event_count":  2,
+                  "head_hash":  "7b694e23baa500fa29dd24553a27f44ae10b8c1be96c4a986c59910e12449cc5",
+                  "external_anchor":  false,
+                  "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+              },
+    "network":  "internal_only",
+    "confirmed_findings":  [
+
+                           ],
+    "version":  "1.0.0",
+    "status":  "validated",
+    "detail":  "CSP ausente",
+    "parameters":  {
+                       "path":  "/",
+                       "base_url":  "http://juice-shop.lab.test:3000"
+                   },
+    "http_status":  200,
+    "response_hash":  "e3dbfb01644cb057ebb8cc36fb2440bb5c515f79a9651272da3b0ff1009cfeab",
+    "target_removed":  true,
+    "network_removed":  true,
+    "sandbox":  "ephemeral_internal_no_persistence"
+}

@@ -1,0 +1,17 @@
+{
+    "laboratory":  "OWASP Juice Shop",
+    "synthetic":  false,
+    "timestamp_utc":  "2026-11-18T23:32:51.0060107Z",
+    "image":  "bkimminich/juice-shop@sha256:877fc77b12d72b42e486eb09b6b1711cc56514306d92006b284e7e7cf076a809",
+    "image_id":  "sha256:634032bbcc50e4d2096734bc6a984265973c966db13933354dc85a9218d54836",
+    "internal_network":  true,
+    "published_ports":  0,
+    "http":  {
+                 "method":  "GET",
+                 "path":  "/",
+                 "status":  200
+             },
+    "target_removed":  true,
+    "network_removed":  true,
+    "exploitability_validated":  false
+}

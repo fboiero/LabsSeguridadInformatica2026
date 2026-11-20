@@ -1,0 +1,60 @@
+{
+    "state":  "SCANS_COMPLETE_WITH_ERRORS",
+    "target":  "juice-shop.lab.test",
+    "network":  "internal_only",
+    "tools":  [
+                  {
+                      "tool":  "subfinder.passive",
+                      "image":  "projectdiscovery/subfinder@sha256:2f5ddea311db2a8b848e40f1b669fc655d0eb78b74a74ead93d3850e372b12bf",
+                      "returncode":  0,
+                      "stdout_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "stdout_lines":  0,
+                      "stderr_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "stderr_excerpt":  "",
+                      "target":  "juice-shop.lab.test",
+                      "raw_output_persisted":  false
+                  },
+                  {
+                      "tool":  "httpx.probe.official",
+                      "image":  "projectdiscovery/httpx@sha256:f8275a7c6aaec187249df9eaf4ad9196f4677adfc6a51a47b4aaa1d4db4f8ffc",
+                      "returncode":  0,
+                      "stdout_sha256":  "b85dfae37dce36f4eafb80f866dd26401dcea9c1de8e7fa064ccc74fd4b1842c",
+                      "stdout_lines":  1,
+                      "stderr_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "stderr_excerpt":  "",
+                      "target":  "juice-shop.lab.test",
+                      "raw_output_persisted":  false
+                  },
+                  {
+                      "tool":  "nuclei.safe_templates",
+                      "image":  "projectdiscovery/nuclei@sha256:582d5546902e67052097cb2d07296c642d50a1afc5e44623cb038845df9a32eb",
+                      "returncode":  0,
+                      "stdout_sha256":  "2c4ae21817d11f7a06f3624820198aaed176f8e76852d2f927ae14b7cee938d8",
+                      "stdout_lines":  2,
+                      "stderr_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "stderr_excerpt":  "",
+                      "target":  "juice-shop.lab.test",
+                      "raw_output_persisted":  false
+                  },
+                  {
+                      "tool":  "zap.baseline_scan",
+                      "image":  "zaproxy/zap-stable@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af",
+                      "returncode":  3,
+                      "stdout_sha256":  "de63800801fd394d7a63005f74f685abcf58056a3a65604eaf3fecdefecede12",
+                      "stdout_lines":  40,
+                      "stderr_sha256":  "4af2aba2a10e5f6084ae540633e87c6077b3c1b57b9fcfed518b4eea73f41baa",
+                      "stderr_excerpt":  "2026-11-19 00:28:46,586 Failed to access summary file /tmp/zap_out.json",
+                      "target":  "juice-shop.lab.test",
+                      "raw_output_persisted":  false
+                  }
+              ],
+    "audit":  {
+                  "engagement":  "juice-shop-official-scans",
+                  "event_count":  8,
+                  "head_hash":  "163af0a311bc9ac4c8db735765615d15ad24acc394306dc50cb2efd744b259e6",
+                  "external_anchor":  false,
+                  "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+              },
+    "target_removed":  true,
+    "network_removed":  true
+}

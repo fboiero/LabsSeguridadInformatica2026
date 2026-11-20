@@ -1,0 +1,13 @@
+id: juice-shop-errors
+info:
+  name: Juice Shop error disclosure
+  author: grupo10
+  severity: low
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers:
+      - type: word
+        part: body
+        words: ["stack trace"]

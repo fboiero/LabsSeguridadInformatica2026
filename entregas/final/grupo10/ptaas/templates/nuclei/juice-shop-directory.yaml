@@ -1,0 +1,13 @@
+id: juice-shop-directory
+info:
+  name: Juice Shop directory listing
+  author: grupo10
+  severity: low
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers:
+      - type: word
+        part: body
+        words: ["Index of /"]
