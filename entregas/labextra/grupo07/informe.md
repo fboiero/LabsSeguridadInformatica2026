@@ -2,9 +2,9 @@
 
 **Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero (@Ferca19), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0)
 
-**Estado parcial:** solo se documentan R3 y P2, asignados a Lorenzo. R1/P1/P5 (Fernando), R2/P3 (Guadalupe) y P4/cierre/integración (Lautaro) todavía no están incluidos. El estado observado del CTF es 1/3.
+**Estado parcial:** la captura remota de Lorenzo registra R3 resuelto (1/3) antes del bloque de Fernando. La captura local de Fernando, posterior a R1, registra R1 resuelto y R2/R3 pendientes (1/3). Son estados de ejecuciones locales distintas; no se presenta un estado combinado posterior a la integración.
 
-**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para organizar evidencia que yo capturé, redactar esta sección y consultar la documentación oficial enlazada en `research.md`. Verifiqué cada resultado con las salidas crudas del contenedor del laboratorio, el estado local del CTF y las páginas oficiales citadas. No usé IA para inventar ejecuciones ni para atribuirme los bloques pendientes. Declaraciones de los otros integrantes: pendientes de sus aportes.
+**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para organizar evidencia que yo capturé, redactar esta sección y consultar la documentación oficial enlazada en `research.md`. Verifiqué cada resultado con las salidas crudas del contenedor del laboratorio, el estado local del CTF y las páginas oficiales citadas. No usé IA para inventar ejecuciones ni para atribuirme los bloques pendientes. Fernando Cagliero (@Ferca19) usó OpenAI Codex para ejecutar y documentar R1 en el entorno local, organizar las salidas y redactar P1/P5. Contrastó el análisis de metadata con documentación oficial de AWS y OWASP. Las declaraciones de Guadalupe y Lautaro quedan pendientes de cada autor.
 
 ---
 
@@ -12,7 +12,11 @@
 
 ### R1 — Panel interno en localhost
 
-Pendiente: asignado a Fernando.
+Desde la consola atacante no pude resolver directamente phantomcorp-intra. El portal público phantomcorp sí expone un formulario que pasa una URL al endpoint /preview. Usé esa funcionalidad para consultar loopback desde el servidor. La respuesta de 127.0.0.1:80 devolvió el portal; el sondeo de puertos encontró el panel de localhost en 127.0.0.1:9000 y respuestas Connection refused en puertos cerrados.
+
+Comando final: curl -sS -i -G --data-urlencode 'url=http://127.0.0.1:9000/' --max-time 5 http://phantomcorp/preview
+
+La respuesta fue HTTP 200 OK y mostró el panel interno que se describe como accesible solo desde localhost. Su deploy key ficticia fue FLAG{ssrf_localhost_panel_interno}. La captura completa está en evidencia/salidas/04-r1-final.txt; el sondeo está en evidencia/salidas/03-loopback-port-probes.txt. El status local de Fernando registra R1 resuelto. La petición a localhost la realizó el servidor, no el host atacante.
 
 ### R2 — Intranet en la red interna
 
@@ -32,14 +36,13 @@ Los datos son ficticios y pertenecen al entorno del curso. La captura demuestra 
 
 ## 2. Evidencia de progreso
 
-La salida completa está en `evidencia/salidas/status-extra.txt`: R3 ✓; R1 y R2 pendientes; total 1/3. Los comandos y sus capturas crudas se encuentran bajo `evidencia/`.
+La captura remota de Lorenzo está en evidencia/salidas/status-extra.txt: R3 resuelto, R1/R2 pendientes (1/3) en esa ejecución. La captura local de Fernando, evidencia/salidas/05-status-after-r1.txt, registra R1 resuelto y R2/R3 pendientes (1/3) después de su submission local. No se adjunta una captura posterior que combine ambos estados. Las capturas R1 de Fernando están en evidencia/salidas/01-direct-intra.txt, 02-portal-home.txt, 02-ssrf-loopback-80.txt, 03-loopback-port-probes.txt y 04-r1-final.txt.
 
 ## 3. Preguntas de análisis
 
 ### P1 — Modelo de confianza por red
 
-Pendiente: asignado a Fernando.
-
+La consola atacante no pudo resolver phantomcorp-intra directamente; el portal público phantomcorp sí era accesible. El formulario /preview aceptaba una URL indicada por el usuario y el servidor hacía la petición saliente. La evidencia confirma que ese servidor alcanzaba su propio loopback: 127.0.0.1:80 respondió con el portal y 127.0.0.1:9000 con el panel interno. Así, el aislamiento de red del atacante no impedía que el servidor actuara desde su propia posición y reflejara la respuesta. El alcance probado aquí es localhost; el acceso a la intranet corresponde a R2 y no se afirma en este bloque.
 ### P2 — Oráculo de puertos
 
 En las tres solicitudes, el destino fue `127.0.0.1` desde el proceso `/preview`; cambié únicamente el puerto. Para `127.0.0.1:80/`, el servidor devolvió HTTP 200 y la página del portal. Para los puertos 9 y 8080 devolvió HTTP 502 y el cuerpo incluyó `Connection refused`. En esta prueba, el contraste entre respuesta de aplicación y rechazo de conexión reveló que el puerto 80 aceptaba HTTP mientras que los puertos 9 y 8080 rechazaban la conexión.
@@ -56,8 +59,11 @@ Pendiente: asignado a Lautaro.
 
 ### P5 — Metadata service cloud
 
-Pendiente: asignado a Fernando. El análisis documental de metadata asignado a Lorenzo está en `research.md`.
+En una instancia EC2, IMDS es un servicio local que puede entregar metadatos de la instancia. Su endpoint IPv4 es 169.254.169.254. Si hay un rol IAM asociado, la ruta iam/security-credentials/<nombre-del-rol> entrega credenciales temporales para los permisos de ese rol; AWS indica que las rota automáticamente. Por eso, una SSRF que logra que la aplicación consulte IMDS y devuelva el contenido podría exponer datos de instancia o credenciales utilizables contra los recursos permitidos por IAM. El impacto depende de que el endpoint esté accesible, de la configuración y de los permisos del rol; no equivale por sí solo a control de toda la cuenta.
 
+IMDSv2 agrega una sesión: primero requiere una solicitud PUT que obtiene un token y después las consultas de metadata deben incluirlo. Si la instancia exige IMDSv2, un endpoint SSRF que solo permite un GET simple puede quedar bloqueado; no es una protección completa si se controlan método y encabezados. Como defensa, exigir IMDSv2, limitar el acceso de red del proceso a metadata y otros destinos internos, evitar devolver respuestas arbitrarias del fetch y asignar al rol solo los permisos necesarios. Las credenciales expuestas deben revocarse/rotarse según el procedimiento del servicio.
+
+Fuentes: [AWS — configurar IMDSv2 como requisito](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-IMDS-new-instances.html), [AWS — credenciales de seguridad de metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-metadata-security-credentials.html) y [OWASP — SSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html).
 ## 4. Conclusión ejecutiva
 
 Pendiente de integración por Lautaro cuando estén disponibles R1/R2, P1/P3/P4/P5 y el research completo.

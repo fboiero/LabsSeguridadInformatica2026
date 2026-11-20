@@ -7,4 +7,4 @@
 | Guadalupe Gómez | 15397 | @guadagomezgg8 | R2, P3 |
 | Lautaro Mariño | 15163 | @lautaromarino0 | P4, mitad del research, conclusión e integración |
 
-La entrega actual contiene únicamente el bloque y las evidencias de Lorenzo. Las declaraciones de IA de los demás integrantes deben agregarse cuando realicen sus aportes.
+La rama conserva R3/P2 y el research de Lorenzo, y agrega R1/P1/P5 y la evidencia de Fernando. R2/P3 de Guadalupe y P4/cierre/integración de Lautaro siguen pendientes.
