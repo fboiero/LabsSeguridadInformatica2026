@@ -18,6 +18,8 @@ class Asset:
     def __post_init__(self):
         if not self.source_tool:
             raise SchemaError("Asset requiere source_tool")
+        if not self.address:
+            raise SchemaError("Asset requiere address")
 
 
 @dataclass
@@ -64,6 +66,17 @@ def dedupe(candidates: list[CandidateFinding]) -> list[CandidateFinding]:
         else:
             merged[key] = CandidateFinding(**{**c.__dict__, "evidence_refs": list(c.evidence_refs)})
     return list(merged.values())
+
+
+def dedupe_assets(assets: list[Asset]) -> list[Asset]:
+    """Un activo se incorpora una sola vez; la clave es (tipo, dirección).
+
+    Evita re-sondear el mismo activo descubierto por más de una herramienta.
+    """
+    seen: dict[tuple[str, str], Asset] = {}
+    for a in assets:
+        seen.setdefault((a.type, a.address), a)
+    return list(seen.values())
 
 
 def priority_score(cvss_v4: float, epss: float | None, asset_criticality: int) -> float:

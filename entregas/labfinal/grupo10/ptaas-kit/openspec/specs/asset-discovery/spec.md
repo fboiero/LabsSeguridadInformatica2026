@@ -1,6 +1,6 @@
 # Delta — asset-discovery
 
-Tests: tests/test_engagement_and_loops.py
+Tests: tests/test_engagement_and_loops.py, tests/asset_discovery/test_rate_limit.py, tests/asset_discovery/test_passive_before_active.py, tests/asset_discovery/test_asset_integrity.py
 
 ## Requirement: Relevamiento solo dentro de alcance
 El sistema DEBE descubrir únicamente activos cubiertos por el scope token vigente; todo descubrimiento fuera de alcance DEBE registrarse como "fuera de alcance" sin ser tocado.
@@ -46,3 +46,19 @@ El sistema NO DEBE superar `rate_limit_rps_per_target`.
 - GIVEN un límite de 5 rps por target
 - WHEN el adaptador intenta emitir más de 5 solicitudes por segundo
 - THEN el adaptador se auto-limita y no excede el umbral
+
+## Requirement: Deduplicación de activos descubiertos
+El relevamiento NO DEBE incorporar el mismo activo más de una vez; dos descubrimientos del mismo `(tipo, dirección)` se fusionan en uno para no re-sondearlo.
+
+### Scenario: activo repetido
+- GIVEN un activo ya presente en el inventario
+- WHEN el recon lo vuelve a proponer desde otra herramienta de origen
+- THEN no se incorpora dos veces y no se re-sondea
+
+## Requirement: Dirección de activo obligatoria
+El `AssetGraph` NO DEBE aceptar activos sin `address`: un activo sin dirección no puede sondearse de forma acotada y queda fuera del modelo.
+
+### Scenario: activo sin dirección
+- GIVEN un activo propuesto sin `address`
+- WHEN se intenta incorporarlo al grafo
+- THEN se rechaza por schema inválido

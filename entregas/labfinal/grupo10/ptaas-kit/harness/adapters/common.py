@@ -4,6 +4,7 @@ from __future__ import annotations
 import ipaddress
 import re
 import subprocess
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
@@ -57,6 +58,36 @@ def reject_forbidden(argv: list[str], forbidden: list[str]) -> None:
         for f in forbidden:
             if a == f or a.startswith(f + "="):
                 raise ForbiddenArgument(f"argumento prohibido: {a}")
+
+
+@dataclass
+class RateLimiter:
+    """Auto-limitación por target: no más de ``rps`` solicitudes por segundo.
+
+    Ventana deslizante de 1 s por target. ``now`` se inyecta para pruebas
+    deterministas (sin dormir el proceso). Hace cumplir
+    ``limits.rate_limit_rps_per_target`` de ``policy.yaml``.
+    """
+
+    rps: int
+    _hits: dict[str, list[float]] = field(default_factory=dict)
+
+    def allow(self, target: str, now: float) -> bool:
+        if self.rps <= 0:
+            return False
+        window = self._hits.setdefault(target, [])
+        window[:] = [t for t in window if now - t < 1.0]
+        if len(window) >= self.rps:
+            return False
+        window.append(now)
+        return True
+
+
+def rate_limiter_from_policy() -> RateLimiter:
+    """Construye un ``RateLimiter`` con el tope declarado en ``policy.yaml``."""
+    from harness.policy_loader import load_policy
+
+    return RateLimiter(int(load_policy()["limits"]["rate_limit_rps_per_target"]))
 
 
 Runner = Callable[[list[str], int], str]
