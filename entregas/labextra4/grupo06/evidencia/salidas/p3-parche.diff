@@ -1,0 +1,25 @@
+diff --git a/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/labs/labextra4-cracking/src/cracker.py b/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/entregas/labextra4/grupo06/cracker.py
+index 2df1383..771bbad 100644
+--- a/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/labs/labextra4-cracking/src/cracker.py	
++++ b/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/entregas/labextra4/grupo06/cracker.py	
+@@ -57,8 +57,18 @@ def aplicar_reglas(palabra: str) -> list:
+     la palabra sola, palabra+año (2024..2026), palabra+números comunes
+     (1, 12, 123), palabra con mayúscula inicial... Agregá las que se te ocurran.
+     Esto es lo que john hace con --rules y hashcat con -r."""
+-    # TODO
+-    raise NotImplementedError("Completá aplicar_reglas()")
++    # Orden estable y cantidad acotada; sin candidatos de cuentas concretas.
++    sufijos = ("", "2024", "2025", "2026", "1", "12", "123")
++    bases = (palabra, palabra.capitalize(), palabra.lower(), palabra.upper())
++    variantes = []
++    vistas = set()
++    for base in bases:
++        for sufijo in sufijos:
++            candidato = base + sufijo
++            if candidato not in vistas:
++                vistas.add(candidato)
++                variantes.append(candidato)
++    return variantes
+ 
+ 
+ def crackear(sombra: list, diccionario: str, con_reglas: bool = False) -> dict:

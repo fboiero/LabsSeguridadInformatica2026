@@ -1,0 +1,16 @@
+'luna' -> ['luna', 'luna2024', 'luna2025', 'luna2026', 'luna1', 'luna12', 'luna123', 'Luna', 'Luna2024', 'Luna2025', 'Luna2026', 'Luna1', 'Luna12', 'Luna123', 'LUNA', 'LUNA2024', 'LUNA2025', 'LUNA2026', 'LUNA1', 'LUNA12', 'LUNA123']
+'LuNa' -> ['LuNa', 'LuNa2024', 'LuNa2025', 'LuNa2026', 'LuNa1', 'LuNa12', 'LuNa123', 'Luna', 'Luna2024', 'Luna2025', 'Luna2026', 'Luna1', 'Luna12', 'Luna123', 'luna', 'luna2024', 'luna2025', 'luna2026', 'luna1', 'luna12', 'luna123', 'LUNA', 'LUNA2024', 'LUNA2025', 'LUNA2026', 'LUNA1', 'LUNA12', 'LUNA123']
+'' -> ['', '2024', '2025', '2026', '1', '12', '123']
+'123' -> ['123', '1232024', '1232025', '1232026', '1231', '12312', '123123']
+'ñandú' -> ['ñandú', 'ñandú2024', 'ñandú2025', 'ñandú2026', 'ñandú1', 'ñandú12', 'ñandú123', 'Ñandú', 'Ñandú2024', 'Ñandú2025', 'Ñandú2026', 'Ñandú1', 'Ñandú12', 'Ñandú123', 'ÑANDÚ', 'ÑANDÚ2024', 'ÑANDÚ2025', 'ÑANDÚ2026', 'ÑANDÚ1', 'ÑANDÚ12', 'ÑANDÚ123']
+Contrato, orden, deduplicación y variantes: OK
+Prueba AISLADA usuario=admin reglas=False intentos=49 segundos=0.000188900 hallada=None
+Prueba AISLADA usuario=admin reglas=True intentos=95 segundos=0.000304500 hallada='phantom2026'
+Base de diccionario: 'phantom'
+Longitud: 11 mayúscula: False minúscula: True dígito: True
+Loot mediante descifrar_loot de la copia:
+Notas de admin — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_reglas_mangling}
+

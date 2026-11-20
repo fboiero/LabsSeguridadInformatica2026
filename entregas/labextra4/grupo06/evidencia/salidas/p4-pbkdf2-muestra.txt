@@ -1,0 +1,9 @@
+Python: 3.13.0
+Sistema: Windows-11-10.0.26200-SP0
+Procesador: Intel64 Family 6 Model 154 Stepping 4, GenuineIntel
+Algoritmo: PBKDF2-HMAC-SHA256, iteraciones=200000
+Sample: 20 synthetic candidates; no comparison or cracking
+Dictionary candidates: 49
+Measured total time: 1.431237 s
+Measured rate: 13.97 candidates/s
+Average: 71.562 ms/candidate

@@ -1,0 +1,12 @@
+
+[36m  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra4                    │
+  ╰────────────────────────────────────────────────────────────╯[0m
+
+   [32m✓[0m  R1     MD5 + diccionario (caida instantanea)
+   [32m✓[0m  R2     SHA-256 + diccionario
+   [32m✓[0m  R3     SHA-256 + regla de mangling (no esta literal en el diccionario)
+
+  [32m██████████████████████████████[90m[0m  3/3 (100%)
+
+[32m[ OK ][0m ¡Lab extra4 COMPLETO! Ponete las pilas con la próxima unidad.

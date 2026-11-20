@@ -1,0 +1,11 @@
+[INFO] root: PBKDF2 omitido en corrida general
+[OK] admin: coincidencia encontrada
+[OK] operador: coincidencia encontrada
+[OK] analista: coincidencia encontrada
+[INFO] Recuperadas: 3 de 4
+  ✓ operador: riverplate
+  ✓ analista: matecocido
+  ✓ admin: phantom2026
+  ✗ root: no cayó (¿falta una regla? ¿es pbkdf2?)
+
+3/4 contraseñas recuperadas

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\Muhammed\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labextra4\grupo06\cracker.py", line 113, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\Muhammed\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labextra4\grupo06\cracker.py", line 98, in main
+    sombra = cargar_sombra(args.sombra)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Muhammed\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labextra4\grupo06\cracker.py", line 52, in cargar_sombra
+    raise NotImplementedError("Completá cargar_sombra()")
+NotImplementedError: Completá cargar_sombra()

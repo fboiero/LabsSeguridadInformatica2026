@@ -1,0 +1,15 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: SHA-256 + regla de mangling (no esta literal en el diccionario)
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra4                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ·  R1     MD5 + diccionario (caida instantanea)
+   ·  R2     SHA-256 + diccionario
+   ✓  R3     SHA-256 + regla de mangling (no esta literal en el diccionario)
+
+  ██████████░░░░░░░░░░░░░░░░░░░░  1/3 (33%)
+
