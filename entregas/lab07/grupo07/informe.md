@@ -8,6 +8,8 @@
 
 Se usó OpenAI Codex como asistente con acceso a la terminal local para planificar el bloque, preparar y ejecutar requests HTTP contra el contenedor PhantomCorp del laboratorio, interpretar las respuestas observadas y redactar este informe y la evidencia de R1/R2. La IA ejecutó las requests registradas; no se consultó el código del objetivo para obtener las flags. Las pruebas de esta edición se verificaron con las respuestas HTTP y el estado del CTF (2/5). Lorenzo debe revisar y poder explicar los payloads antes de la entrega final.
 
+Lautaro Mariño (@lautaromarino0) — bloque B (R3 y R4): se utilizó **Claude (Anthropic)** como asistente, en dos aspectos. **Redacción:** ayudó a redactar las filas de R3 y R4 a partir del análisis de Lautaro, que revisó y ajustó cada payload y texto antes de commitearlo. **Contraste de pruebas:** sirvió de soporte para explotar en **caja negra** el target del Lab 07 corrido en un sandbox Linux (`server.py` en `/app` = WORKDIR del Dockerfile, `phantomcorp -> 127.0.0.1`), encadenando comandos en `/herramientas/ping` (R3) y saliendo de `public/` con `../` en `/descargar` (R4). **Verificación:** no se leyó el código del target ni `solucion.md`; las flags salieron de las respuestas HTTP y se validó el `sha256` de cada una contra el hash del reto en `retos.manifest`. El envío al CTF y el `status` consolidado se hacen desde el host.
+
 ## 1. Flags capturadas
 
 Estado observado con `./ctf status 07`:
