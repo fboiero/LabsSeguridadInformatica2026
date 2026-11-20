@@ -1,0 +1,7 @@
+[
+  {"nombre": "Filtracion de datos de tarjetas y DNI por compromiso del servidor web publico", "sle": 300000, "aro": 0.25},
+  {"nombre": "Ransomware que entra por el acceso remoto de empleados sin MFA", "sle": 150000, "aro": 0.3},
+  {"nombre": "Toma de cuentas de empleados por contrasenas debiles o reutilizadas", "sle": 25000, "aro": 1.2},
+  {"nombre": "Perdida del disco de backups de la oficina (robo, incendio o falla)", "sle": 60000, "aro": 0.1},
+  {"nombre": "Caida o defacement del sitio web publico (DDoS o vandalismo)", "sle": 8000, "aro": 0.5}
+]
