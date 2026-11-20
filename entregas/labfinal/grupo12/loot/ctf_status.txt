@@ -1,6 +1,6 @@
 
   ╭────────────────────────────────────────────────────────────╮
-  │                   PROGRESO · LAB final                    │
+  │                    PROGRESO · LAB final                    │
   ╰────────────────────────────────────────────────────────────╯
 
    ✓  R1     Recon/enum: portal interno localizado
