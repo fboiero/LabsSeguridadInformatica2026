@@ -1,0 +1,14 @@
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Wed, 21 Oct 2026 20:08:23 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<!doctype html><html><body><h1>Index of /backup</h1>
+<pre>
+respaldo-db-2024.sql.gz
+config.old
+notas-infra.txt   ->  FLAG{dir_enumeration_backup}
+</pre>
+<p>Este directorio no deberia estar accesible. Enumeracion de directorios 101.</p>
+</body></html>

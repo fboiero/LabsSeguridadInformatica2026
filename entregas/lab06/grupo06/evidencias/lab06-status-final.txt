@@ -1,0 +1,14 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 06                     │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Enumeracion de directorios
+   ✓  R2     Repositorio Git expuesto
+   ✓  R3     Metodos HTTP peligrosos habilitados
+   ✓  R4     Enumeracion de usuarios via API
+   ✓  R5     Fingerprinting de tecnologia
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 06 COMPLETO! Ponete las pilas con la próxima unidad.
