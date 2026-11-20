@@ -1,0 +1,97 @@
+{
+  "engagement_id": "lab-p5-20261119-01",
+  "version": 1,
+  "report_hash": "f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af",
+  "audit_head": "5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+  "demo": false,
+  "delivered": true,
+  "stages": {
+    "recon": "real",
+    "analysis": "real",
+    "validation": "real"
+  },
+  "findings": [
+    {
+      "id": "DVWA-ZAP-10038",
+      "status": "validated",
+      "status_label": "validado en sandbox",
+      "stable_id": "78da6b37bc9e2f9b42300b74d8ea064f6f66c6cf080f9ef84ae0eb40f68158b9",
+      "evidence_refs": [
+        "ef7f66a332360156179604eaf5d92c27cd0ddcd27f2de32d6593abb3648bea63",
+        "5ab3fa54e50e371d2d37e42206971884a71b6df5d045de4c6669a42581de87ce",
+        "af3fe5d65231842471d090fa40976f54093e4d1dc43a33b0612cafa516c3312a"
+      ]
+    },
+    {
+      "id": "DVWA-ZAP-10020",
+      "status": "validated",
+      "status_label": "validado en sandbox",
+      "stable_id": "150dd552227c98f700e91bd02f4daab35f25bdfedb2b449c6fa279dbf119929d",
+      "evidence_refs": [
+        "cff82fdb331c61d8d0f36fd505004692a13c06d3e6dae08ddd131dcf469ae22b",
+        "6d3ee626258a910f3259c13d3b39f68f1604ad8a4f7f43e018a163e2c5d34766",
+        "7b99075e7a6e294e75630bd55b59f0cacea9f7be8ac618dc6cdf69bea3fcd83b"
+      ]
+    },
+    {
+      "id": "DVWA-ZAP-10010",
+      "status": "validated",
+      "status_label": "validado en sandbox",
+      "stable_id": "fdb64fd3b57a711d85c76e8f5d88f1e9914eff6900fda202801e476c30fdb49a",
+      "evidence_refs": [
+        "197ad2b0e081960cbaa5e70e0de4d46de357381d77ca0881f08fec7af2d086ca",
+        "8923c0ca91d9648f9ef1ac5134fc0c665e8dbdf992018bd4de5d3241645ed3a8",
+        "8768f4c925611cc71f7eb1e8e6fd7533bc1542729676a95b65add046c747194b"
+      ]
+    },
+    {
+      "id": "DVWA-ZAP-10054",
+      "status": "validated",
+      "status_label": "validado en sandbox",
+      "stable_id": "533b8e940594017f10134ceb2168e6955bcf236c03d5df502201cb39ea91d363",
+      "evidence_refs": [
+        "8d76aabd5957158c535fa8e05381e3d5985daf08ae8d6ef2e7bf8c15c00e41c3",
+        "a6fa942d041ea181a9ee444c5c00228e2cfa6e04bd9c0beca0e7ab8e03aa3dd5",
+        "dad3623d93acc823955057d035ee2f95ce9eb8f507f3c9a861801f6bd79df10e"
+      ]
+    },
+    {
+      "id": "DVWA-ZAP-10009",
+      "status": "not_validated",
+      "status_label": "no validado",
+      "stable_id": "7af9e6e964d24dd83ae242dd9d0c031e7f06c3fd3b255d41de38dd562fc1b710",
+      "evidence_refs": [
+        "5cb9b686d443603f96ceddcdf698def36bf153f770bd5631e1c5cc918157811a"
+      ]
+    },
+    {
+      "id": "DVWA-ZAP-10036",
+      "status": "not_validated",
+      "status_label": "no validado",
+      "stable_id": "081fc8648ce6ae4f086aa091032f1b08ae8f5a1d6934d2356eb78314acfab375",
+      "evidence_refs": [
+        "7899b6f12ca4dbe1567f3b4e1ac2c7b31272f3aeb1825b6309bcd7389df852a5"
+      ]
+    },
+    {
+      "id": "DVWA-ZAP-10021",
+      "status": "not_validated",
+      "status_label": "no validado",
+      "stable_id": "2cbd477b9b1a57e602a8f58158c4c125a4d5ebee6373f55a53ba8435357c759c",
+      "evidence_refs": [
+        "a705860e357dd59f36805623bb0cd7551d82f2091fef5a8411d08903aa24c8f0"
+      ]
+    },
+    {
+      "id": "JUICESHOP-ZAP-10038",
+      "status": "validated",
+      "status_label": "validado en sandbox",
+      "stable_id": "c481115ba73a9fcf98d4b494f222e0e463d698c33ae281ffd15851c1a3e3f137",
+      "evidence_refs": [
+        "cc8a694563af30abab384f728a39a482ee03ea8c2cb7c030e3a1d33573aa55ce",
+        "073c7634dc6cb52cf37441ee6045e5f19c6529bd9c0343114e233dae39603ecd",
+        "5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef"
+      ]
+    }
+  ]
+}

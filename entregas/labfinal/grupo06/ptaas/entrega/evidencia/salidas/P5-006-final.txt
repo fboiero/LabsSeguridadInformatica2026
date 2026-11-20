@@ -1,0 +1,16 @@
+## pytest (runner, Python 3.12)
+313 passed, 1 skipped in 13.86s
+
+## evals golden
+17/17 casos aprobados
+
+## progress
+== Tasks por change ==
+001-mvp-vertical-slice                     ██████████████░░░░░░ 15/22 (68%)
+002-audit-persistence                      ███░░░░░░░░░░░░░░░░░ 2/14 (14%)
+003-roe-and-tokens                         ███████████████████░ 13/14 (93%)
+004-recon-loop-a                           ████████████████████ 15/15 (100%)
+005-correlation-analysis-loop-b            ░░░░░░░░░░░░░░░░░░░░ 0/17 (0%)
+006-sandbox-validation-loop-c              ███████████████████░ 14/15 (93%)
+007-reporting-defectdojo                   █████░░░░░░░░░░░░░░░ 4/15 (27%)
+

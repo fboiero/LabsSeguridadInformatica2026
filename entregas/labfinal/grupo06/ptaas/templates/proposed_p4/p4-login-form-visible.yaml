@@ -1,0 +1,21 @@
+id: p4-login-form-visible
+info:
+  name: Formulario de login accesible
+  author: grupo06-p4-propuesta
+  severity: info
+  description: Detección informativa. No confirma vulnerabilidad; requiere revisión.
+  tags: panel
+http:
+- method: GET
+  path:
+  - '{{BaseURL}}/login.php'
+  redirects: false
+  max-redirects: 0
+  matchers-condition: and
+  matchers:
+  - type: status
+    status:
+    - 200
+  - type: dsl
+    dsl:
+    - contains(tolower(body), "<form")

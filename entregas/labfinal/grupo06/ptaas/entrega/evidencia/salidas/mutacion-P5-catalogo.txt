@@ -1,0 +1,37 @@
+## Línea base (sin mutación)
+FAILED tests/test_sandbox_loop_c.py::test_entrada_agregada_al_archivo_durante_el_loop_no_se_usa
+1 failed, 37 passed, 41 deselected in 1.19s
+
+## M-P5-1: run_parametrized no llama a _check_target_params
+FAILED tests/test_sandbox_loop_c.py::test_entrada_agregada_al_archivo_durante_el_loop_no_se_usa
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[//example.com/]
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[http://example.com/]
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[/../../etc/passwd]
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[/a/../../b]
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[login.php]
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[]
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q&admin=1]
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q=1]
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q#x]
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q y]
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[../q]
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[]
+13 failed, 25 passed, 41 deselected in 1.52s
+
+## M-P5-2: validate_entries acepta agentes como aprobadores
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[security-reviewer]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[spec-author]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[harness-engineer]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[tool-adapter-dev]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[orchestrator]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[claude]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[opencode]
+FAILED tests/test_sandbox_loop_c.py::test_entrada_agregada_al_archivo_durante_el_loop_no_se_usa
+8 failed, 30 passed, 41 deselected in 1.18s
+
+## M-P5-3: path acepta segmentos '..'
+FAILED tests/test_sandbox_loop_c.py::test_entrada_agregada_al_archivo_durante_el_loop_no_se_usa
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[/../../etc/passwd]
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[/a/../../b]
+3 failed, 35 passed, 41 deselected in 1.23s
+

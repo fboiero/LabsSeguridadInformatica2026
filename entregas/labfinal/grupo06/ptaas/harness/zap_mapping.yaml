@@ -1,0 +1,50 @@
+# Change 008 — Mapeo de alertas de ZAP baseline a hallazgos del informe.
+#
+# ZAP entrega título, CWE, riesgo y remediación, pero NO un vector CVSS v4.0, y
+# estos hallazgos de configuración no tienen CVE (NVD no aplica). El vector lo
+# asigna el ANALISTA, como en cualquier pentest. Esta tabla es esa evaluación:
+# la propuso P5 con asistencia de IA y NO vale hasta que una persona la revise y
+# complete `approved_by` y `approved_at`. El recorrido rechaza la tabla sin firma
+# o firmada por un agente (harness/zap_analysis.py).
+#
+# poc_id: verificación inerte del catálogo que confirma la alerta en el sandbox
+# (null = no hay verificación en el catálogo: el hallazgo queda "no validado").
+# Las alertas de riesgo 0 (informativas) no generan hallazgos.
+# Cambiar un vector o agregar un plugin = nueva revisión y nueva firma.
+
+approved_by: "Martin Beccereca" # ← nombre de la persona que revisó y aprueba esta tabla
+approved_at: "2026-11-19" # ← fecha de la aprobación (AAAA-MM-DD)
+
+plugins:
+  "10020": # Missing Anti-clickjacking Header (CWE-1021)
+    poc_id: POC-HDR-001
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Requiere que la víctima interactúe con una página del atacante; impacto bajo en integridad (acciones inducidas por UI)."
+  "10038": # Content Security Policy (CSP) Header Not Set (CWE-693)
+    poc_id: POC-CSP-001
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Falta de defensa en profundidad: solo agrava otra falla (AT:P, p. ej. una inyección presente)."
+  "10010": # Cookie No HttpOnly Flag (CWE-1004)
+    poc_id: POC-COOKIE-001
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Facilita el robo de la cookie de sesión solo si existe un XSS (AT:P); impacto en confidencialidad."
+  "10054": # Cookie without SameSite Attribute (CWE-1275)
+    poc_id: POC-COOKIE-001
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Facilita CSRF con interacción de la víctima; impacto bajo en integridad."
+  "10023": # Information Disclosure - Debug Error Messages (CWE-1295)
+    poc_id: POC-ERRDISC-001
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Divulgación de información técnica sin interacción; confidencialidad baja."
+  "10009": # In Page Banner Information Leak (CWE-497)
+    poc_id: null
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Revela versión del servidor en páginas; confidencialidad baja. Sin verificación en el catálogo."
+  "10036": # Server Leaks Version Information via "Server" HTTP Response Header Field (CWE-497)
+    poc_id: null
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Revela versión del servidor en encabezados; confidencialidad baja. Sin verificación en el catálogo."
+  "10021": # X-Content-Type-Options Header Missing (CWE-693)
+    poc_id: null
+    cvss_v4_vector: "CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:A/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+    rationale: "Permite MIME sniffing en navegadores antiguos bajo condiciones específicas; impacto bajo."

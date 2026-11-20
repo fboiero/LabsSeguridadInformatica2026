@@ -1,0 +1,12 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_active_evidence_replaces_seed_provenance _________________
+tests/test_recon_loop_a.py:493: in test_active_evidence_replaces_seed_provenance
+    assert observed['source_tool'] == 'httpx.probe'
+E   AssertionError: assert 'scope.seed' == 'httpx.probe'
+E     
+E     - httpx.probe
+E     + scope.seed
+=========================== short test summary info ============================
+FAILED tests/test_recon_loop_a.py::test_active_evidence_replaces_seed_provenance
+1 failed in 0.66s

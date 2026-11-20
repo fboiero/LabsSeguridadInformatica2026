@@ -1,0 +1,38 @@
+## Línea base (sin mutación)
+harness/sandbox.py:0 harness/validation.py:0 
+62 passed, 1 skipped in 4.45s
+
+## M13: el Sender no valida que el host sea del laboratorio
+harness/sandbox.py:1 harness/validation.py:0 
+FAILED tests/test_sandbox_loop_c.py::test_objetivo_fuera_del_lab_se_rechaza_antes_del_contenedor - Failed: DID NOT RAISE ScopeViolation
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[gopher://dvwa.lab.test] - Failed: DID NOT RAISE ScopeViolation
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[ftp://dvwa.lab.test] - Failed: DID NOT RAISE ScopeViolation
+3 failed, 59 passed, 1 skipped in 4.65s
+
+## M14: el contenedor solo se destruye ante un error raro (sin finally)
+harness/sandbox.py:1 harness/validation.py:0 
+FAILED tests/test_sandbox_loop_c.py::test_verificacion_finalizada_destruye_el_contenedor - AssertionError: assert ([ContainerSpec(name='ptaas-sbx-p5-test-f8d817
+FAILED tests/test_sandbox_loop_c.py::test_fallo_del_runtime_destruye_igual_y_no_valida - AssertionError: assert ([ContainerSpec(name='ptaas-sbx-p5-test-d47fc227
+FAILED tests/test_sandbox_loop_c.py::test_evaluador_que_falla_deja_el_hallazgo_no_validado - AssertionError: assert ['ptaas-sbx-p5-test-3062c378'] == []
+FAILED tests/test_sandbox_loop_c.py::test_si_la_destruccion_falla_se_aborta_y_no_sigue - Failed: DID NOT RAISE SandboxAborted
+FAILED tests/test_sandbox_loop_c.py::test_timeout_deja_no_validado_y_destruye - assert []
+5 failed, 57 passed, 1 skipped in 4.91s
+
+## M15: is_approved siempre verdadero (sin gate HITL)
+harness/sandbox.py:0 harness/validation.py:1 
+FAILED tests/test_sandbox_loop_c.py::test_sin_aprobacion_queda_pendiente_y_no_envia - AssertionError: assert 'validated' == 'PENDING_HITL'
+FAILED tests/test_sandbox_loop_c.py::test_parametros_cambiados_despues_de_aprobar - AssertionError: assert 'validated' == 'PENDING_HITL'
+FAILED tests/test_sandbox_loop_c.py::test_otra_verificacion_que_la_aprobada - AssertionError: assert 'validated' == 'PENDING_HITL'
+FAILED tests/test_sandbox_loop_c.py::test_token_vencido_sin_aprobacion_queda_no_validado - AssertionError: assert 'bloqueado por el harness' == 'sin aprobación
+4 failed, 58 passed, 1 skipped in 5.70s
+
+## M16: la aprobación no compara el hash de parámetros
+harness/sandbox.py:0 harness/validation.py:1 
+FAILED tests/test_sandbox_loop_c.py::test_parametros_cambiados_despues_de_aprobar - AssertionError: assert 'validated' == 'PENDING_HITL'
+1 failed, 61 passed, 1 skipped in 5.41s
+
+## M17: no se detectan intentos contradictorios
+harness/sandbox.py:0 harness/validation.py:1 
+FAILED tests/test_sandbox_loop_c.py::test_intentos_contradictorios_no_validan - AssertionError: assert 'validated' == 'not_validated'
+1 failed, 61 passed, 1 skipped in 5.77s
+

@@ -1,0 +1,29 @@
+## Línea base (sin mutación)
+líneas mutadas: 0
+8 passed, 41 deselected in 22.94s
+
+## M25: el recorrido no espera la aprobación de la primera acción activa
+líneas mutadas: 1
+FAILED tests/test_reporting_e2e.py::test_recorrido_sin_aprobacion_de_primera_accion - AssertionError: assert (0 != 0)
+1 failed, 7 passed, 41 deselected in 17.39s
+
+## M26: no se descartan candidatos sobre activos no relevados
+líneas mutadas: 1
+FAILED tests/test_reporting_e2e.py::test_recorrido_descarta_candidatos_fuera_de_lo_relevado - assert False
+1 failed, 7 passed, 41 deselected in 18.56s
+
+## M27: se acepta un directorio de salida existente
+líneas mutadas: 1
+FAILED tests/test_reporting_e2e.py::test_recorrido_no_sobrescribe_salida_existente - FileExistsError: [Errno 17] File exists: '/tmp/pytest-of-root/pyt
+1 failed, 7 passed, 41 deselected in 14.80s
+
+## M28: un informe DEMO sigue el camino de entrega
+líneas mutadas: 1
+FAILED tests/test_reporting_e2e.py::test_recorrido_con_analisis_simulado_sale_demo - AssertionError: assert ('REPORT' == 'DEMO'
+1 failed, 7 passed, 41 deselected in 24.73s
+
+## M29: verify_evidence no verifica la cadena
+líneas mutadas: 1
+FAILED tests/test_reporting_e2e.py::test_verificacion_detecta_bitacora_exportada_alterada - AssertionError: assert not True
+1 failed, 7 passed, 41 deselected in 21.09s
+

@@ -1,0 +1,14 @@
+P3 — 2026-11-13 — verificación de base, antes de implementación
+Python 3.12.4. Dependencias pytest 9.2.0 y PyYAML 6.0.3 en carpeta de trabajo externa al repositorio.
+PYTHONDONTWRITEBYTECODE=1; PYTHONUTF8=1; PYTHONPATH apunta a work/deps de la sesión.
+python -m pytest -q -p no:cacheprovider
+162 passed in 1.37s — exit 0
+python evals/run_evals.py --mode golden
+10/10 casos aprobados — exit 0
+python tools/progress.py
+73 Scenarios; 162 tests recolectados — exit 0
+004: 0/15; 007: 2/15. No se modificaron marcas de tasks.
+La diferencia respecto de los 77 tests del README corresponde a la base actual con pruebas adicionales de P1/P2; no se añadieron tests en esta sesión.
+Antes de instalar dependencias: pytest y yaml ausentes; progress falló por codificación cp1252. Se resolvió usando dependencias externas y PYTHONUTF8=1, sin cambiar el proyecto.
+Una ejecución restringida no pudo cargar pytest.__main__; la corrida con acceso a las dependencias produjo los resultados anteriores.
+Se redactaron diseño y deltas de 004 y propuesta separada de 007 para P3. No se implementó código, no se ejecutaron herramientas de reconocimiento ni se accedió a Git remoto.

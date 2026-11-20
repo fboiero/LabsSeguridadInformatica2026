@@ -1,0 +1,43 @@
+## Suite existente (sin test_reporting_e2e.py)
+313 passed, 1 skipped in 15.12s
+
+## tests/test_reporting_e2e.py en rojo
+FAILED tests/test_reporting_e2e.py::test_hallazgo_validado_en_la_bitacora - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_estado_sale_de_la_bitacora_y_no_del_hallazgo - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_validado_declarado_sin_respaldo_falla - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_validado_declarado_con_resultado_negativo_en_bitacora_falla - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_hallazgo_pendiente_figura_sin_aprobacion[PENDING_HITL-esperando aprobaci\xf3n del Reviewer] - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_hallazgo_pendiente_figura_sin_aprobacion[not_validated-sin aprobaci\xf3n] - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_hallazgo_sin_ningun_registro_figura_sin_aprobacion - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_no_validado_de_impacto_alto_se_lista_y_se_destaca - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_referencia_inexistente_falla - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_bitacora_alterada_no_genera_informe - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_referencias_validas_y_cabeza_de_bitacora - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_mismas_entradas_mismo_hash - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_hallazgo_modificado_genera_version_nueva - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_entrega_sin_aprobacion_queda_en_report - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_aprobacion_de_otra_version_se_rechaza - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_entrega_aprobada_queda_en_bitacora - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_cli_approve_delivery_sin_motivo_falla - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_cli_approve_delivery_registra_la_aprobacion - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_deliver_con_booleano_no_alcanza_para_el_gate_registrado - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[title-Cookie PHPSESSID=abc123 sin HttpOnly-cookie de sesi\xf3n] - ModuleNotFoundError: No module named 'harn...
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[remediation-Rotar eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnbmF0dXJh-token JWT] - ModuleNotFoundError: No mod...
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[remediation-Authorization: Bearer abc.def-Authorization] - ModuleNotFoundError: No module named 'harness.rep...
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[remediation-Cambiar password=admin123-contrase\xf1a] - ModuleNotFoundError: No module named 'harness.report_...
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[title------BEGIN RSA PRIVATE KEY----- expuesta-clave privada] - ModuleNotFoundError: No module named 'harnes...
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[title-Reflejo de ptaas1a2b3c4d en la respuesta-canario] - ModuleNotFoundError: No module named 'harness.repo...
+FAILED tests/test_reporting_e2e.py::test_informe_sin_datos_sensibles_se_genera - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_exportar_un_informe_no_entregado_se_rechaza - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_contenido_exportado - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_severidad_desconocida_no_se_inventa - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_hallazgos_duplicados_se_unen - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_identificador_estable_entre_corridas - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_etapa_simulada_marca_demo - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_procedencia_invalida_se_rechaza - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_informe_demo_no_se_entrega_ni_exporta - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_informe_real_no_es_demo - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_divulgacion_con_datos_ausentes_usa_unknown - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_divulgacion_sin_datos_en_el_roe - ModuleNotFoundError: No module named 'harness.report_builder'
+FAILED tests/test_reporting_e2e.py::test_informe_desde_una_corrida_real_del_loop_c - ModuleNotFoundError: No module named 'harness.report_builder'
+38 failed in 4.65s

@@ -1,0 +1,24 @@
+[
+  {
+    "target": "dvwa.lab.test",
+    "template-id": "p4-login-form-visible",
+    "host": "dvwa.lab.test",
+    "matched-at": "http://dvwa.lab.test/login.php",
+    "type": "http",
+    "timestamp": "2026-11-20T01:45:47.898058976Z",
+    "matcher-status": true,
+    "name": "Formulario de login accesible",
+    "severity": "info"
+  },
+  {
+    "target": "juiceshop.lab.test",
+    "template-id": "p4-security-header-csp",
+    "host": "juiceshop.lab.test",
+    "matched-at": "http://juiceshop.lab.test:3000/",
+    "type": "http",
+    "timestamp": "2026-11-20T01:45:50.050003926Z",
+    "matcher-status": true,
+    "name": "Ausencia de Content-Security-Policy",
+    "severity": "info"
+  }
+]

@@ -1,0 +1,65 @@
+...................................                                      [100%]
+251 passed in 9.91s
+---
+FAILED tests/test_sandbox_loop_c.py::test_verificacion_finalizada_destruye_el_contenedor - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_un_contenedor_distinto_por_verificacion - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_fallo_del_runtime_destruye_igual_y_no_valida - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_evaluador_que_falla_deja_el_hallazgo_no_validado - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_si_la_destruccion_falla_se_aborta_y_no_sigue - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_contenedor_huerfano_se_elimina_antes_de_empezar - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_argv_de_docker_endurecido - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_objetivo_fuera_del_lab_se_rechaza_antes_del_contenedor - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[file:///etc/passwd] - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[gopher://dvwa.lab.test] - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[ftp://dvwa.lab.test] - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[http://] - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_esquema_o_url_no_permitidos[dvwa.lab.test] - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_objetivo_del_lab_devuelve_respuesta - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_token_de_otra_fase_bloquea_sin_contenedor - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_kill_switch_aborta_sin_contenedor - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_timeout_deja_no_validado_y_destruye - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_respuesta_grande_se_trunca_y_se_marca - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_no_sigue_redirecciones_en_la_especificacion - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_fetch_del_contenedor_no_sigue_redireccion - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_fetch_del_contenedor_trunca - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_fetch_del_contenedor_respeta_timeout - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_limites_se_leen_de_un_perfil - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_limites_por_defecto_del_design - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_sin_aprobacion_queda_pendiente_y_no_envia - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_parametros_cambiados_despues_de_aprobar - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_otra_verificacion_que_la_aprobada - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_aprobacion_rechazada - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_verificacion_fuera_del_catalogo - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_token_vencido_sin_aprobacion_queda_no_validado - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_intentos_contradictorios_no_validan - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_intentos_no_superan_el_maximo_de_policy - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_bitacora_guarda_hash_y_no_el_cuerpo - ModuleNotFoundError: No module named 'harness.sandbox'
+FAILED tests/test_sandbox_loop_c.py::test_decision_del_reviewer_queda_en_bitacora - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_params_hash_es_canonico - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_cli_aprobar_sin_motivo_falla - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_cli_aprobar_sin_reviewer_falla - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_cli_lista_solo_pendientes - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_cli_aprobar_con_reviewer_y_motivo - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[security-reviewer] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[spec-author] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[harness-engineer] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[tool-adapter-dev] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[orchestrator] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[claude] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_entrada_aprobada_por_un_agente_se_rechaza[opencode] - Failed: DID NOT RAISE InvalidCatalog
+FAILED tests/test_sandbox_loop_c.py::test_catalogo_congelado_es_inmutable - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_entrada_agregada_al_archivo_durante_el_loop_no_se_usa - ModuleNotFoundError: No module named 'harness.validation'
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[//example.com/] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[http://example.com/] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[/../../etc/passwd] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[/a/../../b] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[login.php] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_path_que_cambia_el_objetivo_se_rechaza[] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q&admin=1] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q=1] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q#x] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[q y] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[../q] - Failed: DID NOT RAISE ParameterError
+FAILED tests/test_sandbox_loop_c.py::test_param_name_con_caracteres_especiales_se_rechaza[] - Failed: DID NOT RAISE ParameterError
+SKIPPED [1] tests/test_sandbox_loop_c.py:233: requiere Docker y el lab levantado (PTAAS_SANDBOX_DOCKER=1)
+60 failed, 2 passed, 1 skipped in 7.78s

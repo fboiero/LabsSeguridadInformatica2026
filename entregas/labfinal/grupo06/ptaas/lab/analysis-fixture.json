@@ -1,0 +1,22 @@
+{
+  "fixture": true,
+  "nota": "Análisis SIMULADO (P5) mientras no exista el change 005 de P4. Los candidatos son verificaciones del catálogo inerte sobre los objetivos del lab. Los vectores CVSS son valores de ejemplo, no una evaluación: por eso el recorrido marca el informe DEMO y no lo entrega ni lo exporta.",
+  "candidates": [
+    {"id": "DVWA-HDR", "title": "Falta de protección contra clickjacking", "asset": "dvwa.lab.test",
+     "cwe": "CWE-1021", "cvss_v4_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+     "remediation": "Enviar X-Frame-Options: DENY o CSP frame-ancestors 'none'",
+     "poc_id": "POC-HDR-001", "path": "/login.php"},
+    {"id": "DVWA-CSP", "title": "Ausencia de Content-Security-Policy", "asset": "dvwa.lab.test",
+     "cwe": "CWE-693", "cvss_v4_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N",
+     "remediation": "Definir una Content-Security-Policy restrictiva",
+     "poc_id": "POC-CSP-001", "path": "/login.php"},
+    {"id": "DVWA-COOKIE", "title": "Cookie de sesión sin flags Secure / HttpOnly / SameSite", "asset": "dvwa.lab.test",
+     "cwe": "CWE-614", "cvss_v4_vector": "CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:A/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N",
+     "remediation": "Emitir la cookie de sesión con Secure, HttpOnly y SameSite=Strict",
+     "poc_id": "POC-COOKIE-001", "path": "/login.php"},
+    {"id": "JUICE-HDR", "title": "Falta de protección contra clickjacking", "asset": "juiceshop.lab.test",
+     "cwe": "CWE-1021", "cvss_v4_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+     "remediation": "Enviar X-Frame-Options: DENY o CSP frame-ancestors 'none'",
+     "poc_id": "POC-HDR-001", "path": "/"}
+  ]
+}

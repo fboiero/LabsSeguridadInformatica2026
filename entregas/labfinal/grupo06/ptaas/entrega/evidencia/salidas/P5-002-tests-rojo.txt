@@ -1,0 +1,16 @@
+FAILED tests/test_audit_persistence.py::test_registros_recuperados_tras_reinicio
+FAILED tests/test_audit_persistence.py::test_archivo_de_otro_engagement_rechaza_el_evento
+FAILED tests/test_audit_persistence.py::test_abrir_un_archivo_de_otro_engagement_falla
+FAILED tests/test_audit_persistence.py::test_cadena_corrupta_al_abrir_no_acepta_registros
+FAILED tests/test_audit_persistence.py::test_cli_verify_con_fila_borrada_falla_e_informa_el_indice
+FAILED tests/test_audit_persistence.py::test_cli_verify_archivo_integro - Att...
+FAILED tests/test_audit_persistence.py::test_cli_verify_detecta_alteracion - ...
+FAILED tests/test_audit_persistence.py::test_update_directo_es_rechazado_por_la_base
+FAILED tests/test_audit_persistence.py::test_delete_directo_es_rechazado_por_la_base
+FAILED tests/test_audit_persistence.py::test_la_api_sqlite_no_ofrece_borrado
+FAILED tests/test_audit_persistence.py::test_escrituras_concurrentes_no_bifurcan_la_cadena
+FAILED tests/test_audit_persistence.py::test_ancla_detecta_borrado_del_ultimo_registro
+FAILED tests/test_audit_persistence.py::test_cli_verify_con_ancla - Attribute...
+FAILED tests/test_audit_persistence.py::test_evento_con_password_se_rechaza_en_sqlite
+FAILED tests/test_audit_persistence.py::test_harness_registra_en_la_bitacora_persistente
+15 failed, 5 passed in 0.35s

@@ -1,0 +1,17 @@
+.................................FF......                                [100%]
+================================== FAILURES ===================================
+__________________ test_http_empty_output_is_not_convergence __________________
+tests\test_recon_loop_a.py:281: in test_http_empty_output_is_not_convergence
+    assert result['status'] == 'ERROR' and result['error'] == 'empty_output'
+E   AssertionError: assert ('OK' == 'ERROR'
+E     
+E     - ERROR
+E     + OK)
+_____________________ test_stopped_checkpoint_is_terminal _____________________
+tests\test_recon_loop_a.py:288: in test_stopped_checkpoint_is_terminal
+    assert not calls and g.iteration == 2
+E   AssertionError: assert (not [('subfinder.enum', 'dvwa.lab.test'), ('httpx.probe', 'dvwa.lab.test'), ('subfinder.enum', 'dvwa.lab.test'), ('httpx.probe', 'dvwa.lab.test')])
+=========================== short test summary info ===========================
+FAILED tests/test_recon_loop_a.py::test_http_empty_output_is_not_convergence
+FAILED tests/test_recon_loop_a.py::test_stopped_checkpoint_is_terminal - Asse...
+2 failed, 39 passed in 3.38s

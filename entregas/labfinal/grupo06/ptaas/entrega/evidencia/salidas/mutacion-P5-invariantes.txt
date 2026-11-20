@@ -1,0 +1,11 @@
+## Línea base
+84 passed, 2 skipped in 3.75s
+## M43 (I1): un módulo del harness ejecuta nmap directamente
+E         {'harness\\loops.py': ['nmap (l�nea 204)']}
+FAILED tests/test_invariantes.py::test_i1_ninguna_herramienta_de_seguridad_se_ejecuta_fuera_de_un_adaptador
+1 failed, 2 passed in 0.14s
+## M44 (I6): Harness.invoke no chequea el kill switch
+líneas mutadas: 1
+FAILED tests/test_authorization.py::test_kill_switch_aborta_sin_ejecutar - Fa...
+FAILED tests/test_sandbox_loop_c.py::test_kill_switch_aborta_sin_contenedor
+2 failed, 79 passed, 2 skipped in 3.77s

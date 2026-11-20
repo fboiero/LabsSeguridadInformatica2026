@@ -1,0 +1,47 @@
+{
+  "engagement_id": "lab-p5-20261119-01",
+  "status": "OK",
+  "image": "projectdiscovery/nuclei@sha256:582d5546902e67052097cb2d07296c642d50a1afc5e44623cb038845df9a32eb",
+  "network": "ptaas-p3_lab",
+  "gate_active_analysis": {
+    "reviewer": "Martin Beccereca",
+    "reason": "Nuclei con los 5 templates aprobados, sobre los activos del lab"
+  },
+  "templates": [
+    {
+      "archivo": "p4-login-form-visible.yaml",
+      "sha256": "c755b285d7af33267df97c0304bf885ef092080e71f8d73d19caca0f491d4be7",
+      "propuso": "Maria Belen Benito (P4)",
+      "aprobo": "Martin Beccereca (P5)"
+    },
+    {
+      "archivo": "p4-security-header-csp.yaml",
+      "sha256": "d3edb3b8ffef3f328336e870de669fa32a84fb2e3fe6acde9f087551e0f0dba3",
+      "propuso": "Maria Belen Benito (P4)",
+      "aprobo": "Martin Beccereca (P5)"
+    },
+    {
+      "archivo": "p4-security-header-x-content-type-options.yaml",
+      "sha256": "af938535c8839f62076632844a2dd07cbdcc7248a485622418f622edf5a8f29d",
+      "propuso": "Maria Belen Benito (P4)",
+      "aprobo": "Martin Beccereca (P5)"
+    },
+    {
+      "archivo": "p4-security-header-x-frame-options.yaml",
+      "sha256": "31e02c05b0506a7d4bc265afae94cf461e00d422251930d4f3a029ad9a273993",
+      "propuso": "Maria Belen Benito (P4)",
+      "aprobo": "Martin Beccereca (P5)"
+    },
+    {
+      "archivo": "p4-server-header-present.yaml",
+      "sha256": "ab17ff8ea112cc96deb025162061095022121077b349a8c9b350f66de0a86b84",
+      "propuso": "Maria Belen Benito (P4)",
+      "aprobo": "Martin Beccereca (P5)"
+    }
+  ],
+  "audit_anchor": {
+    "count": 3,
+    "head": "7841a4a623461a1a3bdcf0684913816323fd6113d491695e2be653f6a892e372"
+  },
+  "findings": 2
+}

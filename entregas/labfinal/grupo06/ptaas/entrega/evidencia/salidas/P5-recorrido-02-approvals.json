@@ -1,0 +1,70 @@
+{
+  "deliveries": {},
+  "findings": {
+    "DVWA-COOKIE": {
+      "approved_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+      "approved_poc_id": "POC-COOKIE-001",
+      "params": {
+        "base_url": "http://dvwa.lab.test",
+        "path": "/login.php"
+      },
+      "params_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+      "poc_id": "POC-COOKIE-001",
+      "reason": "Verificaci\u00f3n inerte del cat\u00e1logo sobre DVWA, en alcance",
+      "reviewer": "Martin Beccereca",
+      "status": "approved",
+      "ts": 1795043245.304982
+    },
+    "DVWA-CSP": {
+      "approved_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+      "approved_poc_id": "POC-CSP-001",
+      "params": {
+        "base_url": "http://dvwa.lab.test",
+        "path": "/login.php"
+      },
+      "params_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+      "poc_id": "POC-CSP-001",
+      "reason": "Verificaci\u00f3n inerte del cat\u00e1logo sobre DVWA, en alcance",
+      "reviewer": "Martin Beccereca",
+      "status": "approved",
+      "ts": 1795043245.6283033
+    },
+    "DVWA-HDR": {
+      "approved_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+      "approved_poc_id": "POC-HDR-001",
+      "params": {
+        "base_url": "http://dvwa.lab.test",
+        "path": "/login.php"
+      },
+      "params_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+      "poc_id": "POC-HDR-001",
+      "reason": "Verificaci\u00f3n inerte del cat\u00e1logo sobre DVWA, en alcance",
+      "reviewer": "Martin Beccereca",
+      "status": "approved",
+      "ts": 1795043246.1204634
+    },
+    "JUICE-HDR": {
+      "approved_hash": "a9d3a3c1d5e1c0e17f65e72baa95b15d3f5ba0451f1df85ac15b68e3c5891a4d",
+      "approved_poc_id": "POC-HDR-001",
+      "params": {
+        "base_url": "http://juiceshop.lab.test:3000",
+        "path": "/"
+      },
+      "params_hash": "a9d3a3c1d5e1c0e17f65e72baa95b15d3f5ba0451f1df85ac15b68e3c5891a4d",
+      "poc_id": "POC-HDR-001",
+      "reason": "Verificaci\u00f3n inerte del cat\u00e1logo sobre Juice Shop, en alcance",
+      "reviewer": "Martin Beccereca",
+      "status": "approved",
+      "ts": 1795043246.9620438
+    }
+  },
+  "gates": {
+    "lab-p5-20261118-01:first_active_action": {
+      "engagement_id": "lab-p5-20261118-01",
+      "gate": "first_active_action",
+      "reason": "RoE firmado, alcance del lab",
+      "reviewer": "Martin Beccereca",
+      "ts": 1795043114.3896587
+    }
+  }
+}

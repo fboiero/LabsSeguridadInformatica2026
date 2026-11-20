@@ -1,0 +1,14 @@
+# Verificación de la corrección pedida por P4 (007 · 1.3) — 2026-11-20
+## Cambio (a2dd6a6)
+--- a/entregas/labfinal/grupo06/ptaas/harness/report_builder.py
++++ b/entregas/labfinal/grupo06/ptaas/harness/report_builder.py
++    # Revisión de P4 (007 · 1.3): el motivo viene de la bitácora y llega al informe y a la
++    # exportación, así que pasa por el mismo filtro que los campos del hallazgo.
++    _check_sensitive(f.id, (reason,))
+
+## tests/test_reporting_e2e.py
+52 passed in 5.41s
+## Tests del pedido de P4
+3 passed, 49 deselected in 0.05s
+## Suite completa
+480 passed, 2 skipped in 20.12s

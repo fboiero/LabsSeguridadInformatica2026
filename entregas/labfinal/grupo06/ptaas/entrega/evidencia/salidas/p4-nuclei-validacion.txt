@@ -1,0 +1,14 @@
+﻿VALIDACION DE TEMPLATES NUCLEI - PERSONA 4
+Motor: Nuclei v3.11.1
+Imagen: projectdiscovery/nuclei:latest
+Red: none (sin acceso a red)
+
+Comando ejecutado:
+docker run --rm --network none --mount type=bind,...,readonly projectdiscovery/nuclei:latest -validate -t /templates -duc -disable-update-check -ni
+
+Resultado:
+[INF] All templates validated successfully
+
+Templates: 5
+Estado: sintaxis validada, segunda aprobacion humana pendiente.
+No se ejecutaron escaneos.

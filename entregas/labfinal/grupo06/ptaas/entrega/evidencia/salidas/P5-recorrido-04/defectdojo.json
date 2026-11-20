@@ -1,0 +1,124 @@
+{
+  "findings": [
+    {
+      "title": "Content Security Policy (CSP) Header Not Set",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-693\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: validado en sandbox\nVerificación: POC-CSP-001 v1.0.0\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: ef7f66a332360156179604eaf5d92c27cd0ddcd27f2de32d6593abb3648bea63, 5ab3fa54e50e371d2d37e42206971884a71b6df5d045de4c6669a42581de87ce, af3fe5d65231842471d090fa40976f54093e4d1dc43a33b0612cafa516c3312a\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.",
+      "cwe": 693,
+      "unique_id_from_tool": "78da6b37bc9e2f9b42300b74d8ea064f6f66c6cf080f9ef84ae0eb40f68158b9",
+      "active": true,
+      "verified": true,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "validated"
+      ]
+    },
+    {
+      "title": "Missing Anti-clickjacking Header",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-1021\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: validado en sandbox\nVerificación: POC-HDR-001 v1.0.0\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: cff82fdb331c61d8d0f36fd505004692a13c06d3e6dae08ddd131dcf469ae22b, 6d3ee626258a910f3259c13d3b39f68f1604ad8a4f7f43e018a163e2c5d34766, 7b99075e7a6e294e75630bd55b59f0cacea9f7be8ac618dc6cdf69bea3fcd83b\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app. If you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive.",
+      "cwe": 1021,
+      "unique_id_from_tool": "150dd552227c98f700e91bd02f4daab35f25bdfedb2b449c6fa279dbf119929d",
+      "active": true,
+      "verified": true,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "validated"
+      ]
+    },
+    {
+      "title": "Cookie No HttpOnly Flag",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-1004\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: validado en sandbox\nVerificación: POC-COOKIE-001 v1.0.0\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: 197ad2b0e081960cbaa5e70e0de4d46de357381d77ca0881f08fec7af2d086ca, 8923c0ca91d9648f9ef1ac5134fc0c665e8dbdf992018bd4de5d3241645ed3a8, 8768f4c925611cc71f7eb1e8e6fd7533bc1542729676a95b65add046c747194b\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Ensure that the HttpOnly flag is set for all cookies.",
+      "cwe": 1004,
+      "unique_id_from_tool": "fdb64fd3b57a711d85c76e8f5d88f1e9914eff6900fda202801e476c30fdb49a",
+      "active": true,
+      "verified": true,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "validated"
+      ]
+    },
+    {
+      "title": "Cookie without SameSite Attribute",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-1275\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: validado en sandbox\nVerificación: POC-COOKIE-001 v1.0.0\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: 8d76aabd5957158c535fa8e05381e3d5985daf08ae8d6ef2e7bf8c15c00e41c3, a6fa942d041ea181a9ee444c5c00228e2cfa6e04bd9c0beca0e7ab8e03aa3dd5, dad3623d93acc823955057d035ee2f95ce9eb8f507f3c9a861801f6bd79df10e\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.",
+      "cwe": 1275,
+      "unique_id_from_tool": "533b8e940594017f10134ceb2168e6955bcf236c03d5df502201cb39ea91d363",
+      "active": true,
+      "verified": true,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "validated"
+      ]
+    },
+    {
+      "title": "In Page Banner Information Leak",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-497\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: no validado — fuera del catálogo\nVerificación: ninguna\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: 5cb9b686d443603f96ceddcdf698def36bf153f770bd5631e1c5cc918157811a\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Configure the server to prevent such information leaks. For example: Under Tomcat this is done via the \"server\" directive and implementation of custom error pages. Under Apache this is done via the \"ServerSignature\" and \"ServerTokens\" directives.",
+      "cwe": 497,
+      "unique_id_from_tool": "7af9e6e964d24dd83ae242dd9d0c031e7f06c3fd3b255d41de38dd562fc1b710",
+      "active": true,
+      "verified": false,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "not-validated"
+      ]
+    },
+    {
+      "title": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-497\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: no validado — fuera del catálogo\nVerificación: ninguna\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: 7899b6f12ca4dbe1567f3b4e1ac2c7b31272f3aeb1825b6309bcd7389df852a5\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details.",
+      "cwe": 497,
+      "unique_id_from_tool": "081fc8648ce6ae4f086aa091032f1b08ae8f5a1d6934d2356eb78314acfab375",
+      "active": true,
+      "verified": false,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "not-validated"
+      ]
+    },
+    {
+      "title": "X-Content-Type-Options Header Missing",
+      "description": "Activo: dvwa.lab.test\nCWE: CWE-693\nCVSS v4.0: CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:A/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: no validado — fuera del catálogo\nVerificación: ninguna\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: a705860e357dd59f36805623bb0cd7551d82f2091fef5a8411d08903aa24c8f0\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages. If possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing.",
+      "cwe": 693,
+      "unique_id_from_tool": "2cbd477b9b1a57e602a8f58158c4c125a4d5ebee6373f55a53ba8435357c759c",
+      "active": true,
+      "verified": false,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "not-validated"
+      ]
+    },
+    {
+      "title": "Content Security Policy (CSP) Header Not Set",
+      "description": "Activo: juiceshop.lab.test\nCWE: CWE-693\nCVSS v4.0: CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N\nEPSS: unknown\nEstado: validado en sandbox\nVerificación: POC-CSP-001 v1.0.0\nSeveridad: no fue calculada (vector CVSS v4.0 sin puntaje en el contrato Finding).\nReferencias de bitácora: cc8a694563af30abab384f728a39a482ee03ea8c2cb7c030e3a1d33573aa55ce, 073c7634dc6cb52cf37441ee6045e5f19c6529bd9c0343114e233dae39603ecd, 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef\nInforme: lab-p5-20261119-01 v1 · f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af\nCabeza de la bitácora: 5fe1b16fbb5f87d02813cd7d38574ee33b2f2eeea431fa86d60ba58db62ec5ef",
+      "severity": "Info",
+      "mitigation": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.",
+      "cwe": 693,
+      "unique_id_from_tool": "c481115ba73a9fcf98d4b494f222e0e463d698c33ae281ffd15851c1a3e3f137",
+      "active": true,
+      "verified": true,
+      "tags": [
+        "ptaas",
+        "severity-unknown",
+        "validated"
+      ]
+    }
+  ]
+}

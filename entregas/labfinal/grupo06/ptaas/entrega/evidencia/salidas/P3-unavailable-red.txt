@@ -1,0 +1,20 @@
+.......................................................FF.               [100%]
+=================================== FAILURES ===================================
+_____________ test_passive_unavailable_is_audited_and_seeds_probed _____________
+tests/test_recon_loop_a.py:463: in test_passive_unavailable_is_audited_and_seeds_probed
+    assert g.status == 'STOPPED'
+E   AssertionError: assert 'PENDING_HITL' == 'STOPPED'
+E     
+E     - STOPPED
+E     + PENDING_HITL
+__________________ test_no_sources_is_unavailable_not_success __________________
+tests/test_recon_loop_a.py:478: in test_no_sources_is_unavailable_not_success
+    assert result['status'] == 'UNAVAILABLE' and result['reason'] == 'no_local_sources'
+E   AssertionError: assert ('ERROR' == 'UNAVAILABLE'
+E     
+E     - UNAVAILABLE
+E     + ERROR)
+=========================== short test summary info ============================
+FAILED tests/test_recon_loop_a.py::test_passive_unavailable_is_audited_and_seeds_probed
+FAILED tests/test_recon_loop_a.py::test_no_sources_is_unavailable_not_success
+2 failed, 56 passed in 5.10s

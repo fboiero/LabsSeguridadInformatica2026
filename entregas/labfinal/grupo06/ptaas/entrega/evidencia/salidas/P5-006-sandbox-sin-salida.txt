@@ -1,0 +1,13 @@
+# 006 · 3.3 — El sandbox no alcanza hosts fuera del laboratorio
+# Fecha: 2026-11-18 · Ejecutó: P5 (persona), en el host Windows, desde ptaas/
+# Lab levantado con tools/p3_lab (red ptaas-p3_lab, internal=true, 10.99.0.0/24).
+# DockerRuntime.probe_egress crea un contenedor efímero en esa red e intenta
+# abrir una conexión TCP con timeout de 5 s. True = conectó; False = no conectó.
+
+PS C:\...\ptaas> python -c "from harness.sandbox import DockerRuntime; print(DockerRuntime().probe_egress('ptaas-p3_lab', ('1.1.1.1', 80)))"
+False
+
+# Control positivo: mismo método contra un host del laboratorio. Demuestra que
+# el False anterior se debe al aislamiento y no a una falla de Docker.
+PS C:\...\ptaas> python -c "from harness.sandbox import DockerRuntime; print(DockerRuntime().probe_egress('ptaas-p3_lab', ('dvwa.lab.test', 80)))"
+True

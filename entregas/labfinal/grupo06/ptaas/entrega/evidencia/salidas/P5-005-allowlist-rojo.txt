@@ -1,0 +1,10 @@
+FAILED tests/test_nuclei_harness.py::test_allowlist_aprobada_se_acepta - Modu...
+FAILED tests/test_nuclei_harness.py::test_hash_con_crlf_de_git_en_windows_se_acepta
+FAILED tests/test_nuclei_harness.py::test_template_modificado_despues_de_aprobar_se_rechaza
+FAILED tests/test_nuclei_harness.py::test_template_sin_fila_en_el_manifiesto_se_rechaza
+FAILED tests/test_nuclei_harness.py::test_sin_segunda_aprobacion_humana_se_rechaza[]
+FAILED tests/test_nuclei_harness.py::test_sin_segunda_aprobacion_humana_se_rechaza[Pendiente]
+FAILED tests/test_nuclei_harness.py::test_sin_segunda_aprobacion_humana_se_rechaza[security-reviewer]
+FAILED tests/test_nuclei_harness.py::test_quien_propone_no_puede_ser_la_segunda_aprobacion
+FAILED tests/test_nuclei_harness.py::test_allowlist_vacia_se_rechaza - Module...
+9 failed, 5 passed in 0.34s

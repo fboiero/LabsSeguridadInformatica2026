@@ -1,0 +1,94 @@
+# Comandos ejecutados por P2 — 2026-11-11
+
+Directorio: `entregas/labfinal/grupo06/ptaas/`
+Entorno: Windows, Python 3.13.0 (el kit pide 3.12; no había 3.12 instalado),
+venv local `.venv`, dependencias de `requirements-dev.txt`.
+
+## Línea base
+
+```text
+python -m pytest -q
+82 passed in 1.46s
+
+python tools/progress.py
+003-roe-and-tokens   0/14 (0%)
+007-reporting-defectdojo  0/15 (0%)
+```
+
+## Tests en rojo (antes de implementar)
+
+```text
+python -m pytest tests/test_roe_tokens.py tests/test_redteam_guard.py tests/test_reporting_gates.py -q
+ERROR tests/test_roe_tokens.py  (ModuleNotFoundError: harness.roe)
+ERROR tests/test_redteam_guard.py (ImportError: RedirectPolicy)
+2 errors in 0.59s
+
+python -m pytest tests/test_reporting_gates.py -q
+8 passed in 0.06s   # los gates 3.1/3.3 ya existían
+```
+
+Salidas: `entrega/evidencia/salidas/red-003-007-tests.txt` y `red-007-gates.txt`.
+
+## Implementación y verificación
+
+```text
+python -m pytest -q
+152 passed
+
+python evals/run_evals.py --mode golden
+10/10 casos aprobados
+
+python -m ruff check <archivos de P2>
+All checks passed!
+
+python tools/progress.py
+001 15/22 · 002 2/14 · 003 13/14 · 007 2/15
+authorization: 16 Scenarios
+```
+
+Salidas: `p2-pytest.txt`, `p2-evals-golden.txt`, `p2-progress.txt`.
+
+## Mutaciones
+
+Cada mutación se aplicó, se corrió el test y se restauró con
+`git checkout -- <archivo>`. Salidas: `mutacion-M1-*.txt` a
+`mutacion-M9-*.txt`. Resumen en `entrega/mutaciones.md`.
+
+## Nota de entorno
+
+`mypy harness` ya fallaba en la línea base (45 errores, sobre todo
+`policy_loader.py`, `poc/catalog.py` y adaptadores existentes). No se usó como
+criterio de cierre; `ruff` sobre los archivos de P2 pasa.
+
+## Revisión adicional de P2 — 2026-11-13
+
+El commit `9a76691` contiene los tests; corridos en un worktree aislado contra
+la implementación anterior, fallaron por comportamiento (6 casos y luego 1 de
+auditoría). La corrección quedó en `937a234`; resultados detallados en
+`p2-review-tests-red.txt`. No se usó la corrida inicial de `red-003-007-tests.txt`
+como evidencia de fallos funcionales: esa corrida terminó durante la recolección
+por imports todavía inexistentes.
+
+```text
+.venv\Scripts\python.exe -m pytest -q
+162 passed
+
+.venv\Scripts\python.exe evals/run_evals.py --mode golden
+10/10 casos aprobados
+
+.venv\Scripts\python.exe -X utf8 tools/progress.py
+003-roe-and-tokens 13/14 · 007-reporting-defectdojo 2/15
+authorization: 23 Scenarios · total: 73 Scenarios
+
+.venv\Scripts\python.exe -m ruff check harness/roe.py harness/tokens.py harness/contracts.py harness/adapters/common.py tests/test_roe_tokens.py tests/test_redteam_guard.py tests/test_reporting_gates.py
+All checks passed!
+
+.venv\Scripts\python.exe -m mypy --strict --follow-imports=skip harness/roe.py harness/tokens.py
+Success: no issues found in 2 source files
+```
+
+La opción `-X utf8` evita que la consola Windows CP1252 falle al imprimir las
+barras Unicode de `progress.py`; no cambia el resultado del cálculo.
+El chequeo estricto siguiendo imports todavía señala diagnósticos preexistentes
+en `contracts.py` y `policy_loader.py`; no aparecen errores en `roe.py` ni en
+`tokens.py`.

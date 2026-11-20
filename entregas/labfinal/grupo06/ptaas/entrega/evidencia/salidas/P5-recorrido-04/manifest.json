@@ -1,0 +1,21 @@
+{
+  "engagement_id": "lab-p5-20261119-01",
+  "status": "DELIVERED",
+  "message": "informe entregado y exportado",
+  "stages": {
+    "recon": "real",
+    "analysis": "real",
+    "validation": "real"
+  },
+  "started_at": "2026-11-20T01:12:44.675671+00:00",
+  "finished_at": "2026-11-20T01:16:35.210198+00:00",
+  "report_hash": "f4ef94d4893947131ab01dcda490fcd8f0d05d3a1ae05e6c123ed6e0ea82c3af",
+  "files_sha256": {
+    "defectdojo.json": "384d23aa46df391d8facc2ca91542c2f0326413456afa1102480bce27fc7c06c",
+    "evidence.json": "2115afe682fd52d5de6447bb356feeb0fd41436b13cc7a9cb207fead0a9ed11e",
+    "graph.json": "af7f3971f766ccaa2b62e0a22e65c05ea79c204d76cea05ca478e843cf631fa9",
+    "harness-audit.json": "02fe9df16c7bbe8bf22686f4183ca6f5c01e1819cde0a38658d22d54cdf850d3",
+    "report.json": "694960d55adf055d5c13f84473b3abd125c0c4fbe28b6f7bcb59d3f7b9c60b3a",
+    "report.md": "a1f8b62a470b357942e7e43cc84a60b4fc7022ec99694a84e2fd269ac083ef6c"
+  }
+}

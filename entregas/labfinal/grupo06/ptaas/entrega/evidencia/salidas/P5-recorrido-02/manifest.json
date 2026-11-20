@@ -1,0 +1,20 @@
+{
+  "engagement_id": "lab-p5-20261118-01",
+  "status": "DEMO",
+  "message": "el informe contiene etapas simuladas: no se entrega",
+  "stages": {
+    "recon": "real",
+    "analysis": "fixture",
+    "validation": "real"
+  },
+  "started_at": "2026-11-18T23:04:35.951094+00:00",
+  "finished_at": "2026-11-18T23:07:48.558666+00:00",
+  "report_hash": "02cc4153e9c155769cd84d20576d9b74685ca8db5b253578364e6320cf0ec1fe",
+  "files_sha256": {
+    "evidence.json": "7ab94b4bd70bc9deff58fde42987948c012389e5964a5e6cbb51116b38173e04",
+    "graph.json": "bcf612c44d662d3c3b8aa4244e2321b9c4dfcea21facbd382c79d82979c0567d",
+    "harness-audit.json": "03f9d5dc31bbe5a847f4acd6d1d4d88daadfe70a01fd9aa6a19f40b4d331534b",
+    "report.json": "d475a4dde51df76db4e1d9af75ea1ea8d3db947279ecb1704c426cfc5346e12a",
+    "report.md": "cd693723ef274104a5517a55bb2005569d081fcc1904047f5deba65aed06c67a"
+  }
+}

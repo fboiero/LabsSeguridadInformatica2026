@@ -1,0 +1,12 @@
+FAILED tests/test_reporting_e2e.py::test_recorrido_roe_invalido_no_hace_nada - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_recorrido_sin_aprobacion_de_primera_accion - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_recorrido_no_sobrescribe_salida_existente - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_recorrido_descarta_candidatos_fuera_de_lo_relevado - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_recorrido_hallazgo_sin_decision_no_se_envia - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_recorrido_con_analisis_simulado_sale_demo - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_recorrido_completo_con_etapas_reales_entrega_y_exporta - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_verificacion_detecta_bitacora_exportada_alterada - ModuleNotFoundError: No module named 'harness.pipeline'
+FAILED tests/test_reporting_e2e.py::test_cli_approve_gate_registra_la_aprobacion - assert (2 == 0)
+FAILED tests/test_reporting_e2e.py::test_cli_approve_gate_sin_motivo_falla - AttributeError: 'ApprovalStore' object has no attribute 'gate_approved'. Did you mean: 'is_approved'?
+FAILED tests/test_reporting_e2e.py::test_cli_approve_gate_solo_admite_gates_conocidos - AttributeError: 'ApprovalStore' object has no attribute 'gate_approved'. Did you mean: 'is_approved'?
+11 failed, 38 passed in 8.89s

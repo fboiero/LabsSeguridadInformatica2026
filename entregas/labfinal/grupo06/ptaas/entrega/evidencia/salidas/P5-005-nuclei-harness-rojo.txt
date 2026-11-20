@@ -1,0 +1,4 @@
+FAILED tests/test_nuclei_harness.py::test_nuclei_corre_por_el_harness_con_un_host_del_lab
+FAILED tests/test_nuclei_harness.py::test_juice_shop_usa_su_puerto_del_lab - ...
+FAILED tests/test_nuclei_harness.py::test_host_fuera_del_lab_no_construye_url
+3 failed, 2 passed in 0.18s

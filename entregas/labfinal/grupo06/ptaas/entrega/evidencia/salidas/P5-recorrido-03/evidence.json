@@ -1,0 +1,553 @@
+{
+  "count": 30,
+  "head": "fc748b0cc5945aaaa121e0ce470b03d90e8061460d9008ed8b63223227e275aa",
+  "entries": [
+    {
+      "seq": 1,
+      "prev": "GENESIS",
+      "hash": "c1512c67b711ee61b88e3a22b9f70a0dfdaac86f7d012d2738d55325e0791cef",
+      "data": {
+        "event": "pipeline.start",
+        "engagement": "lab-p5-20261119-01",
+        "stages": {
+          "recon": "real",
+          "analysis": "real",
+          "validation": "real"
+        },
+        "roe_approval_hash": "6ecc3d82112937d7e0c535903c0bba492b1ad2778237ce8892f3b94e325a95d4"
+      }
+    },
+    {
+      "seq": 2,
+      "prev": "c1512c67b711ee61b88e3a22b9f70a0dfdaac86f7d012d2738d55325e0791cef",
+      "hash": "b4fa9f20abc183e48ac9f336a6097be84fd7bd6a9f0e2557a029b83f6065e321",
+      "data": {
+        "event": "hitl.decision.observed",
+        "engagement": "lab-p5-20261119-01",
+        "gate": "first_active_action",
+        "reviewer": "Martin Beccereca",
+        "reason": "RoE firmado, alcance del lab",
+        "decided_at": 1795136753.875152
+      }
+    },
+    {
+      "seq": 3,
+      "prev": "b4fa9f20abc183e48ac9f336a6097be84fd7bd6a9f0e2557a029b83f6065e321",
+      "hash": "e7bbc36dce32674b2649b45e0816f67cbba0732462af8d2b690fde5db77fd86d",
+      "data": {
+        "event": "stage.recon",
+        "engagement": "lab-p5-20261119-01",
+        "status": "STOPPED",
+        "reason": "grafo estabilizado",
+        "assets": [
+          "dvwa.lab.test",
+          "juiceshop.lab.test"
+        ]
+      }
+    },
+    {
+      "seq": 4,
+      "prev": "e7bbc36dce32674b2649b45e0816f67cbba0732462af8d2b690fde5db77fd86d",
+      "hash": "d093ae5e1cf6edd6be909306e77b09de7bc095046fa7f415ff36c4f7184be92b",
+      "data": {
+        "event": "hitl.decision.observed",
+        "engagement": "lab-p5-20261119-01",
+        "gate": "active_analysis",
+        "reviewer": "Martin Beccereca",
+        "reason": "ZAP baseline autorizado sobre los activos del lab",
+        "decided_at": 1795136761.4271643
+      }
+    },
+    {
+      "seq": 5,
+      "prev": "d093ae5e1cf6edd6be909306e77b09de7bc095046fa7f415ff36c4f7184be92b",
+      "hash": "ed28eb546c44b7da0b0065659eaa6ca25c1263b7abc99246322cdbad654bfb65",
+      "data": {
+        "event": "stage.analysis.zap",
+        "engagement": "lab-p5-20261119-01",
+        "asset": "dvwa.lab.test",
+        "status": "STOP_COMPLETE",
+        "reason": "analysis_evidence_collected",
+        "rounds": 1,
+        "alerts": 11
+      }
+    },
+    {
+      "seq": 6,
+      "prev": "ed28eb546c44b7da0b0065659eaa6ca25c1263b7abc99246322cdbad654bfb65",
+      "hash": "2fedbbbd59d1f5736d8c5c137439844e9525476e38769f24393683330ef40275",
+      "data": {
+        "event": "stage.analysis.zap",
+        "engagement": "lab-p5-20261119-01",
+        "asset": "juiceshop.lab.test",
+        "status": "STOP_COMPLETE",
+        "reason": "analysis_evidence_collected",
+        "rounds": 1,
+        "alerts": 3
+      }
+    },
+    {
+      "seq": 7,
+      "prev": "2fedbbbd59d1f5736d8c5c137439844e9525476e38769f24393683330ef40275",
+      "hash": "c26e55baf8225068cdbb7be542d88c6205ffefa59f584b7b6260ebb40a2706e9",
+      "data": {
+        "event": "analysis.discarded",
+        "engagement": "lab-p5-20261119-01",
+        "asset": "juiceshop.lab.test",
+        "pluginid": "10098",
+        "name": "Cross-Domain Misconfiguration",
+        "risk": 2,
+        "reason": "sin mapeo aprobado: no hay vector CVSS evaluado"
+      }
+    },
+    {
+      "seq": 8,
+      "prev": "c26e55baf8225068cdbb7be542d88c6205ffefa59f584b7b6260ebb40a2706e9",
+      "hash": "ef81de0bbe2c852c465957bb6e22f58f99d571821a1219a13fd3a5d7481fed8c",
+      "data": {
+        "event": "stage.analysis",
+        "engagement": "lab-p5-20261119-01",
+        "provenance": "real",
+        "findings": [
+          "DVWA-ZAP-10038",
+          "DVWA-ZAP-10020",
+          "DVWA-ZAP-10010",
+          "DVWA-ZAP-10054",
+          "DVWA-ZAP-10009",
+          "DVWA-ZAP-10023",
+          "DVWA-ZAP-10036",
+          "DVWA-ZAP-10021",
+          "JUICESHOP-ZAP-10038"
+        ]
+      }
+    },
+    {
+      "seq": 9,
+      "prev": "ef81de0bbe2c852c465957bb6e22f58f99d571821a1219a13fd3a5d7481fed8c",
+      "hash": "65b3a8323f61022c48b5b7279832d39d8468a7cdbafe64710978530166030256",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10038",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-CSP-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 10,
+      "prev": "65b3a8323f61022c48b5b7279832d39d8468a7cdbafe64710978530166030256",
+      "hash": "05ff870312a7ef10536b4d93fd7cd9dc49aed38c82a5385e3bb22786376663d3",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10038",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-CSP-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 11,
+      "prev": "05ff870312a7ef10536b4d93fd7cd9dc49aed38c82a5385e3bb22786376663d3",
+      "hash": "9bee61fcfbe168f9e0e875060df99df9d2201a8ecaef8c205c5a9740ed1ef888",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10038",
+        "poc_id": "POC-CSP-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "2283595e1abcf9b82e2099f83daa8d4968f99fc51ffeac708fa191af92bc8457",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 12,
+      "prev": "9bee61fcfbe168f9e0e875060df99df9d2201a8ecaef8c205c5a9740ed1ef888",
+      "hash": "12c606dd648fd035f7b52016a1008d97e00110f733f04a2482de1e87cce5ccba",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10020",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-HDR-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 13,
+      "prev": "12c606dd648fd035f7b52016a1008d97e00110f733f04a2482de1e87cce5ccba",
+      "hash": "ccdca42e319ad6b3ec76554da01be7e28671256eebe01451bcec70a5bb3b64cf",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10020",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-HDR-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 14,
+      "prev": "ccdca42e319ad6b3ec76554da01be7e28671256eebe01451bcec70a5bb3b64cf",
+      "hash": "3015a6f9959cdc0102b9210663be823dcea593f288faed8f47c6499f9af562b5",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10020",
+        "poc_id": "POC-HDR-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "2283595e1abcf9b82e2099f83daa8d4968f99fc51ffeac708fa191af92bc8457",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 15,
+      "prev": "3015a6f9959cdc0102b9210663be823dcea593f288faed8f47c6499f9af562b5",
+      "hash": "9e379b5d6719d22485cec1e8a9381ed38c1d8811774cb11478f22a8d2bda3e40",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10010",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-COOKIE-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 16,
+      "prev": "9e379b5d6719d22485cec1e8a9381ed38c1d8811774cb11478f22a8d2bda3e40",
+      "hash": "6f7ed1a6f4c167fab6046d2bd6b3ff4947c42df0e06f63495e18aabc3979dd1d",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10010",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-COOKIE-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 17,
+      "prev": "6f7ed1a6f4c167fab6046d2bd6b3ff4947c42df0e06f63495e18aabc3979dd1d",
+      "hash": "e401cff08b00d1d3e1ebe315f6dde45c55eacb500924c291c99e00b1fa5260cd",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10010",
+        "poc_id": "POC-COOKIE-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "2283595e1abcf9b82e2099f83daa8d4968f99fc51ffeac708fa191af92bc8457",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 18,
+      "prev": "e401cff08b00d1d3e1ebe315f6dde45c55eacb500924c291c99e00b1fa5260cd",
+      "hash": "776b4e3ea22037a0ff8f4d7e70dc53fb76625855c9f1b327ed682cb1f76d03ce",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10054",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-COOKIE-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 19,
+      "prev": "776b4e3ea22037a0ff8f4d7e70dc53fb76625855c9f1b327ed682cb1f76d03ce",
+      "hash": "fdb1b017248f8c559468743a27c2b7f5e6c0d62750e49700b0c1d85d53d5d820",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10054",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-COOKIE-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/"
+        },
+        "http_status": 302,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "body_len": 0,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 20,
+      "prev": "fdb1b017248f8c559468743a27c2b7f5e6c0d62750e49700b0c1d85d53d5d820",
+      "hash": "6d98c464b48142f7187fe3d0b1b1057bb1b667eab5b39920c97e5637d62b2c7c",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10054",
+        "poc_id": "POC-COOKIE-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "2283595e1abcf9b82e2099f83daa8d4968f99fc51ffeac708fa191af92bc8457",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 21,
+      "prev": "6d98c464b48142f7187fe3d0b1b1057bb1b667eab5b39920c97e5637d62b2c7c",
+      "hash": "4b1a9b1aef66ddcb593b8295a693ca1c2a21d7b1c7f3d70619b8f5aa190ce2fd",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10009",
+        "poc_id": "NINGUNA",
+        "poc_version": null,
+        "catalog_version": "0.1.0",
+        "params_hash": "fc7b0b1281d2395f6781c1141bb8dfe8036f3aa36cfd892ded00979b09e84ec1",
+        "status": "not_validated",
+        "reason": "fuera del catálogo",
+        "attempts": 0
+      }
+    },
+    {
+      "seq": 22,
+      "prev": "4b1a9b1aef66ddcb593b8295a693ca1c2a21d7b1c7f3d70619b8f5aa190ce2fd",
+      "hash": "1e5724dfd4440e985690a1585254196564102c4f367baeecdb3949dabd273701",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10023",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-ERRDISC-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/instructions.php"
+        },
+        "http_status": 200,
+        "body_sha256": "706275768abb1cadeb8e852aeb6c055eedd11621139367c17df5a2816c6c449a",
+        "body_len": 14014,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 23,
+      "prev": "1e5724dfd4440e985690a1585254196564102c4f367baeecdb3949dabd273701",
+      "hash": "539fca847a48596d629ea2244655d68f56ad8365fb84e09c1ff6ce363bc26834",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10023",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-ERRDISC-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/instructions.php"
+        },
+        "http_status": 200,
+        "body_sha256": "706275768abb1cadeb8e852aeb6c055eedd11621139367c17df5a2816c6c449a",
+        "body_len": 14014,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 24,
+      "prev": "539fca847a48596d629ea2244655d68f56ad8365fb84e09c1ff6ce363bc26834",
+      "hash": "3198bd33f3d286aa4b292a117d178038e521fecd8865f3f47fce32d9a071617a",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10023",
+        "poc_id": "POC-ERRDISC-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "13110e14c75c5196f128c6bcd23b9e345a784e90835bb82232c24becc11e923f",
+        "status": "not_validated",
+        "reason": "no se observó la debilidad",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 25,
+      "prev": "3198bd33f3d286aa4b292a117d178038e521fecd8865f3f47fce32d9a071617a",
+      "hash": "0288c8a0ba600db2c703aeab827f0403fafc3a5be4fad78252c7bba29d7bfa47",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10036",
+        "poc_id": "NINGUNA",
+        "poc_version": null,
+        "catalog_version": "0.1.0",
+        "params_hash": "63c92f2612bb451776ec2ef490d988a3a90f094bb6ceb3eb0c855b3c03f29029",
+        "status": "not_validated",
+        "reason": "fuera del catálogo",
+        "attempts": 0
+      }
+    },
+    {
+      "seq": 26,
+      "prev": "0288c8a0ba600db2c703aeab827f0403fafc3a5be4fad78252c7bba29d7bfa47",
+      "hash": "d0e80446679f21265844dac1c249a4d26e645f40f99cf2a839a50e1de2eb37dd",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "DVWA-ZAP-10021",
+        "poc_id": "NINGUNA",
+        "poc_version": null,
+        "catalog_version": "0.1.0",
+        "params_hash": "c3108bb14048ad9e1812143997eb825e8b53e934ac29bc2b8b9cdbf4056012f5",
+        "status": "not_validated",
+        "reason": "fuera del catálogo",
+        "attempts": 0
+      }
+    },
+    {
+      "seq": 27,
+      "prev": "d0e80446679f21265844dac1c249a4d26e645f40f99cf2a839a50e1de2eb37dd",
+      "hash": "362820082727e940d27fa217040ee2e0ce5c748083049f0aa443b1d3280f95ca",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "JUICESHOP-ZAP-10038",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-CSP-001",
+        "params": {
+          "base_url": "http://juiceshop.lab.test:3000",
+          "path": "/"
+        },
+        "http_status": 200,
+        "body_sha256": "7a077ea089234d5fb7e9f5775a384573ec97da96d8c74aaf230984fc723fe48b",
+        "body_len": 9984,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 28,
+      "prev": "362820082727e940d27fa217040ee2e0ce5c748083049f0aa443b1d3280f95ca",
+      "hash": "ae676ff86f64889c09a7681d1e2fc227c5a308028bd90d3663c29fb72aefd711",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "JUICESHOP-ZAP-10038",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-CSP-001",
+        "params": {
+          "base_url": "http://juiceshop.lab.test:3000",
+          "path": "/"
+        },
+        "http_status": 200,
+        "body_sha256": "7a077ea089234d5fb7e9f5775a384573ec97da96d8c74aaf230984fc723fe48b",
+        "body_len": 9984,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 29,
+      "prev": "ae676ff86f64889c09a7681d1e2fc227c5a308028bd90d3663c29fb72aefd711",
+      "hash": "e065b4392f43b985bfae579e3df225794b715d85624024f57fc5fb925c9e8b22",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261119-01",
+        "finding_id": "JUICESHOP-ZAP-10038",
+        "poc_id": "POC-CSP-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "a9d3a3c1d5e1c0e17f65e72baa95b15d3f5ba0451f1df85ac15b68e3c5891a4d",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 30,
+      "prev": "e065b4392f43b985bfae579e3df225794b715d85624024f57fc5fb925c9e8b22",
+      "hash": "fc748b0cc5945aaaa121e0ce470b03d90e8061460d9008ed8b63223227e275aa",
+      "data": {
+        "event": "pipeline.end",
+        "engagement": "lab-p5-20261119-01",
+        "status": "ABORTED",
+        "message": ""
+      }
+    }
+  ]
+}
