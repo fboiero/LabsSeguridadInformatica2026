@@ -1,0 +1,12 @@
+# R1 — Recon + Enumeración — Portal interno oculto
+# Ejecutado desde la consola de ataque del lab contra el host `phantomcorp`.
+
+$ curl -s http://phantomcorp/robots.txt
+User-agent: *
+Disallow: /portal-rrhh
+
+$ curl -s http://phantomcorp/portal-rrhh
+<!doctype html><title>Portal RRHH PhantomCorp</title><h1>Portal interno RRHH</h1><form method=post action=/portal/login><input name=user><input name=pass type=password></form><!-- recon: portal interno localizado. FLAG{final_recon_portal} -->
+
+# El robots.txt revela la ruta /portal-rrhh, no enlazada desde el sitio público.
+# El HTML del portal confirma el hallazgo: FLAG{final_recon_portal}
