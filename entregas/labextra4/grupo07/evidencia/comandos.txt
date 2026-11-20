@@ -1,0 +1,13 @@
+Lab Extra 4 — Grupo 07 — Fernando Cagliero (@Ferca19)
+Fecha: 19/11/2026 (America/Buenos_Aires)
+
+Desde la raíz del repositorio, para repetir la medición CPU de P1:
+  python entregas/labextra4/grupo07/evidencia/medir_p1.py
+
+Para repetir el cálculo proyectado de P4:
+  python entregas/labextra4/grupo07/evidencia/calcular_p4_gpu.py
+
+Las salidas capturadas están en evidencia/salidas/. P1 usa hashlib y el salt
+de prueba público incluido en el caso; no incluye E/S ni comparación del
+cracker. P4 extrapola un benchmark público de RTX 4090 a 200.000 iteraciones.
+No se realizó cracking de hashes ni se ejecutó una flota de GPU.
