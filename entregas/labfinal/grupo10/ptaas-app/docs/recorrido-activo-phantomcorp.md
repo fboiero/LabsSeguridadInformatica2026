@@ -18,7 +18,7 @@ docker run -d --name cyberlab-phantomcorp --hostname phantomcorp -p 127.0.0.1:18
 ## Ejecutar el PTaaS
 
 ```powershell
-cd entregas/final/grupo10/ptaas
+cd entregas/labfinal/grupo10/ptaas-app
 $run = "runs/phantomcorp-active-$(Get-Date -Format yyyyMMdd-HHmmss)"
 .\.venv\Scripts\python.exe -B -m runtime.active_phantomcorp --base-url http://127.0.0.1:18080 --approve-lab --output $run
 ```

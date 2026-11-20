@@ -1,6 +1,6 @@
 # Guion de defensa — Grupo 10 (10 minutos)
 
-Ejecutar desde `entregas/final/grupo10/ptaas` con el entorno Python del proyecto.
+Ejecutar desde `entregas/labfinal/grupo10/ptaas-app` con el entorno Python del proyecto.
 La demo lee recibos de corridas reales previas. No levanta Docker, no contacta el
 laboratorio y no reemplaza la corrida integrada en vivo exigida por la rúbrica.
 

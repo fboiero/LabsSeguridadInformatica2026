@@ -2,7 +2,7 @@
 
 ## Alcance comprobado
 
-Entrega en `entregas/final/grupo10/ptaas/`, derivada parcialmente del kit docente
+Entrega en `entregas/labfinal/grupo10/ptaas-app/`, derivada parcialmente del kit docente
 `a1abb79`. No se editaron sus fuentes en `labs/`. No se hicieron escaneos,
 pruebas contra terceros ni llamadas a herramientas reales de pentest.
 
