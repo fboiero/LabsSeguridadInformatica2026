@@ -6,6 +6,62 @@ import pytest
 from runtime.relevo import Store, sandbox_state_file
 
 
+@pytest.mark.parametrize('phase', ['support', 'document'])
+def test_correlation_optional_context_survives_restart_without_queries(tmp_path, monkeypatch, phase):
+    path = tmp_path / 'context.db'
+    store = Store(path)
+    session = store.start_live('juice', auto=True)['id']
+    with sqlite3.connect(path) as db:
+        db.execute("INSERT INTO coverage_reviews(session_id,snapshot,observation) VALUES(?,?,?)",
+                   (session, '[]', 'CSP ausente; impacto no verificado'))
+        db.execute("UPDATE live_turns SET role='Correlación' WHERE session_id=?", (session,))
+        db.execute('UPDATE sessions SET state=? WHERE id=?',
+                   ('DOCUMENT_REVIEW' if phase == 'document' else 'ACTIVE', session))
+    monkeypatch.setattr('runtime.relevo.run_header_review', lambda *a: pytest.fail('no debe repetir consultas'))
+
+    class Model:
+        name = 'fixture'
+        def __init__(self):
+            self.requests = []
+        def generate(self, prompt):
+            request = json.loads(prompt)
+            self.requests.append(request)
+            if 'contexto_humano_no_verificado' not in request:
+                return json.dumps({'texto': 'CSP ausente, impacto incierto.',
+                                   'pregunta_humana': '¿Hay evidencia adicional de impacto?'})
+            return json.dumps({'texto': 'Se mantiene como observación, sin impacto confirmado.',
+                               'pregunta_humana': '¿Otra pregunta?'})
+
+    model = Model()
+    paused = store.advance(session, model)
+    assert paused['state'] == 'AWAITING_CONTEXT' and paused['context_question']
+    store = Store(path)
+    assert store.get(session)['context_question'] == paused['context_question']
+    resumed = store.correlation_answer(session, '')
+    assert resumed['state'] == ('DOCUMENT_REVIEW' if phase == 'document' else 'ACTIVE')
+    with pytest.raises(ValueError):
+        store.correlation_answer(session, 'respuesta duplicada')
+    result = store.advance(session, model)
+    assert result['state'] == ('DOCUMENT_REVIEW' if phase == 'document' else 'ACTIVE')
+    assert result['role'] == 'Redacción'
+    assert model.requests[-1]['contexto_humano_no_verificado']['respuesta'] == 'No tengo contexto adicional.'
+    assert any('sin impacto confirmado' in event['message'] for event in result['events'])
+
+
+def test_correlation_can_continue_without_question(tmp_path):
+    store = Store(tmp_path / 'no-question.db')
+    session = store.start_live('juice')['id']
+    with sqlite3.connect(store.path) as db:
+        db.execute("INSERT INTO coverage_reviews(session_id,snapshot,observation) VALUES(?,?,?)", (session, '[]', ''))
+        db.execute("UPDATE sessions SET state='DOCUMENT_REVIEW' WHERE id=?", (session,))
+    class Model:
+        def generate(self, prompt):
+            return '{"texto":"Observación sin impacto confirmado."}'
+    result = store.advance(session, Model())
+    assert result['state'] == 'DOCUMENT_REVIEW' and result['role'] == 'Redacción'
+    assert not result['context_question']
+
+
 @pytest.mark.parametrize('outcome', ['approve', 'reject'])
 def test_coverage_handoff(tmp_path, monkeypatch, outcome):
     path = tmp_path / 'coverage.db'

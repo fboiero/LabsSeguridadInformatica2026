@@ -65,3 +65,12 @@ distingue consultas con resultado, omitidas, sin recibo válido y sin evidencia.
 Un control pendiente no es un hallazgo. El resumen generado es un borrador. Si
 cerrás la pestaña entre turnos, abrí la sesión desde el historial y pulsá
 «Continuar revisión documental».
+
+### Consulta opcional de Correlación
+
+Durante la interpretación de resultados, Correlación puede pedir contexto a la
+persona cuando lo considere útil; no es una pausa obligatoria. La sesión queda
+guardada y puede retomarse desde el historial, respondiendo o indicando que no hay
+más contexto. La respuesta se identifica como no verificada y no autoriza ni repite
+consultas. Sin evidencia suficiente, corresponde conservar la observación y sus
+límites, sin presentarla como hallazgo confirmado. Redacción no agrega un gate.

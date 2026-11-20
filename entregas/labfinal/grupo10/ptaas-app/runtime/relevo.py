@@ -150,6 +150,10 @@ class Store:
                     session_id INTEGER PRIMARY KEY, evidence TEXT NOT NULL, validated INTEGER NOT NULL DEFAULT 0,
                     proposal TEXT NOT NULL DEFAULT '', draft TEXT NOT NULL DEFAULT ''
                 );
+                CREATE TABLE IF NOT EXISTS correlation_context (
+                    session_id INTEGER PRIMARY KEY, phase TEXT NOT NULL, question TEXT NOT NULL,
+                    answer TEXT, interpretation TEXT NOT NULL
+                );
             """)
             columns = {row[1] for row in db.execute("PRAGMA table_info(fresh_reviews)")}
             if "path" not in columns:
@@ -199,11 +203,13 @@ class Store:
             turn = db.execute("SELECT role FROM live_turns WHERE session_id=?", (session,)).fetchone()
             fresh = db.execute("SELECT action, path, auto FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
             report = db.execute('SELECT snapshot,summary FROM coverage_reviews WHERE session_id=?', (session,)).fetchone()
+            context = db.execute('SELECT question FROM correlation_context WHERE session_id=? AND answer IS NULL', (session,)).fetchone()
         return {"id": row[0], "case": row[1], "fingerprint": row[2], "state": row[3],
                 "decision": row[4], "created": row[5], "role": turn[0] if turn else None,
                 "fresh": bool(fresh), "check": fresh[0] if fresh else "",
                 "path": fresh[1] if fresh else "", "auto": bool(fresh[2]) if fresh else False,
                 "coverage": json.loads(report[0]) if report else [],
+                "context_question": context[0] if context else "",
                 "proposal": work[2] if work else "", "draft": report[1] if report else work[3] if work else "",
                 "events": [{"actor": r[0], "kind": r[1], "message": r[2], "time": r[3]} for r in rows]}
 
@@ -211,6 +217,38 @@ class Store:
         with sqlite3.connect(self.path) as db:
             rows = db.execute("SELECT id FROM sessions ORDER BY id DESC LIMIT 50").fetchall()
         return [self.get(int(row[0])) for row in rows]
+
+    def correlation_answer(self, session: int, answer: str) -> dict[str, Any]:
+        if not isinstance(answer, str) or len(answer.strip()) > 1000:
+            raise ValueError('respuesta inválida: máximo 1000 caracteres')
+        answer = answer.strip() or 'No tengo contexto adicional.'
+        with sqlite3.connect(self.path, isolation_level=None) as db:
+            db.execute('BEGIN IMMEDIATE')
+            row = db.execute("SELECT phase,question,interpretation FROM correlation_context WHERE session_id=? AND answer IS NULL", (session,)).fetchone()
+            state = db.execute('SELECT state FROM sessions WHERE id=?', (session,)).fetchone()
+            if not row or not state or state[0] != 'AWAITING_CONTEXT':
+                raise ValueError('no hay una pregunta de Correlación pendiente')
+            db.execute('UPDATE correlation_context SET answer=? WHERE session_id=?', (answer, session))
+            self.event(db, session, 'Vos', 'contexto aportado', answer)
+            db.execute("UPDATE sessions SET state=? WHERE id=?", ('DOCUMENT_REVIEW' if row[0] == 'document' else 'ACTIVE', session))
+            self.event(db, session, 'Coordinador', 'pase', 'Correlación reconsidera el contexto aportado, sin repetir consultas.')
+            db.commit()
+        return self.get(session)
+
+    def correlation_context(self, session: int) -> tuple[str, str, str] | None:
+        with sqlite3.connect(self.path) as db:
+            return db.execute('SELECT question,answer,interpretation FROM correlation_context WHERE session_id=? AND answer IS NOT NULL', (session,)).fetchone()
+
+    def pause_for_context(self, db: sqlite3.Connection, session: int, phase: str, question: Any, text: str) -> bool:
+        if question is None or question == '':
+            return False
+        if not isinstance(question, str) or not 1 <= len(question.strip()) <= 500:
+            raise ValueError('pregunta de contexto inválida')
+        db.execute('INSERT INTO correlation_context(session_id,phase,question,interpretation) VALUES(?,?,?,?)',
+                   (session, phase, question.strip(), text))
+        db.execute("UPDATE sessions SET state='AWAITING_CONTEXT' WHERE id=?", (session,))
+        self.event(db, session, 'Correlación', 'pregunta de contexto', question.strip())
+        return True
 
     def start_live(self, case: str, auto: bool = False) -> dict[str, Any]:
         if case != "juice":
@@ -361,6 +399,13 @@ class Store:
         request = {'agent': agent, 'contexto': question, 'pregunta': question,
                    'cobertura': results, 'resultados': results, 'revision': '',
                    'tarea': task + ' No ejecutes herramientas ni inventes hallazgos. Respondé JSON {"texto":"..."}.'}
+        context = self.correlation_context(session) if role == 'Correlación' else None
+        if role == 'Correlación':
+            request['tarea'] += (' Solo si necesitás contexto humano para interpretar la evidencia, agregá "pregunta_humana" con una pregunta breve; si no, omitila. '
+                                'El contexto humano no es evidencia verificada. Sin evidencia suficiente, dejá una observación con sus límites, no un hallazgo confirmado.')
+            if context:
+                request['contexto_humano_no_verificado'] = {'pregunta': context[0], 'respuesta': context[1], 'interpretacion_previa': context[2]}
+                request['tarea'] += ' Ya se respondió: no preguntes de nuevo; continuá con los límites correspondientes.'
         try:
             raw = provider.generate(json.dumps(request, ensure_ascii=False))
             parsed = parse_model_json(raw)
@@ -368,6 +413,9 @@ class Store:
                     or parsed.get('motivo') or parsed.get('pregunta'))
             if not isinstance(text, str) or not 1 <= len(text.strip()) <= 1600:
                 raise ValueError('texto_invalido')
+            human_question = parsed.get('pregunta_humana') if role == 'Correlación' and not context else None
+            if human_question is not None and (not isinstance(human_question, str) or not 1 <= len(human_question.strip()) <= 500):
+                raise ValueError('pregunta de contexto inválida')
         except (ProviderError, ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
             with sqlite3.connect(self.path) as db:
                 db.execute("UPDATE sessions SET state='RETRY_TURN' WHERE id=?", (session,))
@@ -375,8 +423,14 @@ class Store:
                            f'No se pudo completar la aportación de {role} ({type(error).__name__}: {error}); la evidencia se conserva.')
             return self.get(session)
         with sqlite3.connect(self.path) as db:
+            if self.pause_for_context(db, session, 'support', human_question, text):
+                db.commit()
+                return self.get(session)
             coverage = db.execute('SELECT snapshot,observation FROM coverage_reviews WHERE session_id=?', (session,)).fetchone()
             observation = coverage[1] if coverage else ''
+            if context:
+                observation += '\nContexto humano no verificado: ' + context[1]
+                db.execute('DELETE FROM correlation_context WHERE session_id=?', (session,))
             label = 'interpretación' if role == 'Correlación' else 'actualización del borrador'
             combined = (observation + '\n' if observation else '') + f'{role}: {text}'
             if coverage:
@@ -461,19 +515,30 @@ class Store:
                 raise ValueError('revisión no disponible')
             snapshot, observation, review = db.execute('SELECT snapshot,observation,review FROM coverage_reviews WHERE session_id=?', (session,)).fetchone()
         role = 'Redacción' if review else 'Correlación'
+        context = self.correlation_context(session) if not review else None
         request = {'agent': 'reporting' if review else 'correlation', 'cobertura': json.loads(snapshot),
                    'observacion': observation, 'revision': review,
                    'tarea': ('Redactá un breve borrador de cierre.' if review else 'Interpretá la evidencia y sus límites.') +
                             ' Separá resultados de pendientes. Recomendá mejoras defensivas de configuración, sin comandos, '
-                            'sondeos ni hallazgos inferidos. Respondé JSON {"texto":"..."} o un texto breve.'}
+                             'sondeos ni hallazgos inferidos. Respondé JSON {"texto":"..."} o un texto breve.'}
+        if not review:
+            request['tarea'] += (' Solo si necesitás contexto humano para interpretar la evidencia, agregá al JSON "pregunta_humana" con una pregunta breve. '
+                                'El contexto humano no es evidencia verificada; sin evidencia suficiente, mantené la observación y sus límites.')
+            if context:
+                request['contexto_humano_no_verificado'] = {'pregunta': context[0], 'respuesta': context[1], 'interpretacion_previa': context[2]}
+                request['tarea'] += ' Ya se respondió: no preguntes de nuevo.'
         try:
             raw = provider.generate(json.dumps(request, ensure_ascii=False))
+            human_question = None
             try:
                 response = parse_model_json(raw)
                 text = next((response[key] for key in ('texto', 'resumen', 'conclusion')
                              if isinstance(response.get(key), str) and response[key].strip()), '')
                 if not text:
                     raise ValueError('texto_invalido')
+                human_question = response.get('pregunta_humana') if not review and not context else None
+                if human_question is not None and (not isinstance(human_question, str) or not 1 <= len(human_question.strip()) <= 500):
+                    raise ValueError('pregunta de contexto inválida')
             except (ValueError, TypeError, json.JSONDecodeError):
                 text = raw.strip()
                 if not text or text[:1] in '{[':
@@ -487,6 +552,12 @@ class Store:
                            f'Falló la revisión documental ({type(error).__name__}: {error}). La cobertura se conserva; podés reintentar sin repetir consultas.')
             return self.get(session)
         with sqlite3.connect(self.path) as db:
+            if self.pause_for_context(db, session, 'document', human_question, text):
+                db.commit()
+                return self.get(session)
+            if context:
+                text = 'Contexto humano no verificado: ' + context[1] + '\n' + text
+                db.execute('DELETE FROM correlation_context WHERE session_id=?', (session,))
             self.event(db, session, role, 'revisión documental', text)
             if review:
                 db.execute('UPDATE coverage_reviews SET summary=? WHERE session_id=?', (text, session))
@@ -732,6 +803,8 @@ def serve(store: Store, port: int) -> None:
                     self.reply(store.advance(int(body["id"]), OpenCodeProvider()))
                 elif self.path == "/api/respond":
                     self.reply(store.respond(int(body["id"]), body["decision"], body.get("comment", "")))
+                elif self.path == "/api/correlation-context":
+                    self.reply(store.correlation_answer(int(body["id"]), body.get("answer", "")))
                 elif self.path == "/api/retry":
                     self.reply(store.retry(int(body["id"])))
                 elif self.path == "/api/check":
