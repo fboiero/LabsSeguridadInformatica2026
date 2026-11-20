@@ -14,7 +14,7 @@ Estado real: el **núcleo determinista** está implementado y testeado (77 tests
 - [x] 2.0b Adaptadores acotados nmap y Nuclei (argv builders + perfiles)
 - [x] 2.0c Catálogo de verificaciones inertes y evaluadores (`harness/poc/`)
 - [x] 2.0d Reporte con CWE + CVSS v4 + remediación y gate de entrega (`reporting.py`)
-- [ ] 2.1 authorization: cargar RoE firmado → emitir token (falta parser de RoE)
+- [x] 2.1 authorization: cargar RoE firmado → emitir token (resuelto en el change 003)
 - [ ] 2.2 asset-discovery: adaptadores subfinder/httpx + loop A conectado a LangGraph
 - [ ] 2.3 correlation: clientes NVD/EPSS/CWE reales
 - [ ] 2.4 vuln-analysis: adaptador ZAP baseline + loop B conectado
