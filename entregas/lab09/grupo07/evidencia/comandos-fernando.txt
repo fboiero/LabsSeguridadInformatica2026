@@ -1,0 +1,105 @@
+# 2026-11-19 (UTC−03:00) · Checkout local de Fernando Cagliero · Git Bash
+# Desde la raíz del repositorio:
+# bash entregas/lab09/grupo07/evidencia/comandos-fernando.txt
+set -euo pipefail
+
+salidas=entregas/lab09/grupo07/evidencia/salidas
+mkdir -p "$salidas"
+{
+    estado=0
+    bash ./ctf status 09 || estado=$?
+    printf '[ctf status] código de salida: %s\n' "$estado"
+} > "$salidas/status-09-fernando.txt" 2>&1
+
+python -X utf8 -B - > "$salidas/pruebas-locales-fernando.txt" 2>&1 <<'PY'
+import ast
+import json
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
+from urllib.error import HTTPError
+
+src = Path("labs/lab09-agentes/src")
+sys.stdout.reconfigure(newline="\n")
+
+print("=== P1/P3: intercambio local con respuestas de proveedor simuladas ===")
+sys.path.insert(0, str(src.resolve()))
+import llm
+
+herramientas = {
+    "normalizar_nombre": {
+        "desc": "Quita espacios y convierte un nombre a minúsculas",
+        "params": {"texto": "Nombre"},
+    },
+}
+llamada = {
+    "id": "local-01",
+    "function": {
+        "name": "normalizar_nombre",
+        "arguments": json.dumps({"texto": "  Ana  "}),
+    },
+}
+respuestas = [
+    {"choices": [{"message": {"role": "assistant", "tool_calls": [llamada]}}]},
+    {"choices": [{"message": {"role": "assistant", "content": "Nombre normalizado: ana"}}]},
+]
+
+with patch.dict(llm.os.environ, {"OPENAI_API_KEY": "valor-ficticio-local"}):
+    with patch.object(llm, "_post_json", side_effect=respuestas) as transporte:
+        cliente = llm.ClienteOpenAI("Normaliza un nombre de ejemplo.", herramientas)
+        accion = cliente.paso()
+        assert accion["tipo"] == "tool" and accion["nombre"] == "normalizar_nombre"
+        print("1. Acción:", accion)
+
+        salida = accion["argumentos"]["texto"].strip().lower()
+        resultado = {"id": accion["id"], "output": salida}
+        print("2. Resultado local:", resultado)
+
+        final = cliente.paso([resultado])
+        mensaje = transporte.call_args_list[1].args[2]["messages"][-2]
+        assert mensaje == {"role": "tool", "tool_call_id": "local-01", "content": "ana"}
+        print("3. Mensaje vinculado en el adaptador:", mensaje)
+        assert final == {"tipo": "final", "texto": "Nombre normalizado: ana"}
+        print("4. Acción de cierre:", final)
+
+print("\n=== R4: prueba aislada del rechazo por alcance ===")
+ruta = src / "herramientas.py"
+modulo = ast.parse(ruta.read_text(encoding="utf-8"), filename=str(ruta))
+alcance = next(
+    nodo.value
+    for nodo in modulo.body
+    if isinstance(nodo, ast.Assign)
+    and any(isinstance(destino, ast.Name) and destino.id == "ALCANCE" for destino in nodo.targets)
+)
+nombres = {"_host_de", "_verificar_alcance", "nmap_scan", "http_get", "http_post"}
+funciones = [nodo for nodo in modulo.body if isinstance(nodo, ast.FunctionDef) and nodo.name in nombres]
+lanzar_proceso = Mock(side_effect=AssertionError("Intento de iniciar un proceso"))
+abrir_red = Mock(side_effect=AssertionError("Intento de abrir una conexion"))
+contexto = {
+    "ALCANCE": ast.literal_eval(alcance),
+    "FLAG_GUARDRAIL": "[marcador ficticio]",
+    "json": json,
+    "subprocess": SimpleNamespace(run=lanzar_proceso),
+    "urllib": SimpleNamespace(
+        request=SimpleNamespace(urlopen=abrir_red, Request=abrir_red),
+        error=SimpleNamespace(HTTPError=HTTPError),
+    ),
+}
+# Carga solo las funciones bajo prueba. El módulo original no se importa.
+exec(compile(ast.Module(body=funciones, type_ignores=[]), str(ruta), "exec"), contexto)
+url = "https://fuera-de-alcance.invalid/"
+for nombre, argumentos in [
+    ("nmap_scan", ("fuera-de-alcance.invalid",)),
+    ("http_get", (url,)),
+    ("http_post", (url, {})),
+]:
+    salida = contexto[nombre](*argumentos)
+    assert salida.startswith("BLOQUEADO POR GUARDRAIL:"), (nombre, salida)
+    print(f"{nombre}: rechazo local de fuera-de-alcance.invalid")
+
+lanzar_proceso.assert_not_called()
+abrir_red.assert_not_called()
+print(f"Procesos solicitados: {lanzar_proceso.call_count}")
+print(f"Operaciones HTTP solicitadas: {abrir_red.call_count}")
+PY
