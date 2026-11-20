@@ -27,10 +27,36 @@ nuclei:
   include_tags: ["tech", "exposure", "misconfig", "headers", "panel"]
   exclude_tags: ["intrusive", "dos", "fuzz", "bruteforce", "rce", "sqli", "xss", "oast", "cve", "kev"]
   # Flags de seguridad: sin OAST/Interactsh (sin tráfico a terceros), sin auto-actualización.
-  fixed_args: ["-jsonl", "-silent", "-ni", "-duc", "-disable-update-check"]
+  fixed_args: ["-jsonl", "-silent", "-ni", "-duc", "-disable-update-check", "-disable-redirects"]
   rate_limit_rps: 5
   timeout_s: 600
+  manifest_path: "templates/allowlist/manifest.json"
   output: jsonl
+
+subfinder:
+  binary: subfinder
+  fixed_args: ["-json", "-silent", "-duc"]
+  rate_limit_rps: 5
+  timeout_s: 10
+  max_time_minutes: 2
+  output: jsonl
+
+httpx:
+  binary: httpx
+  # No se habilitan uploads, paths arbitrarios ni requests crudos.
+  fixed_args: ["-j", "-silent", "-duc", "-sc", "-title", "-td"]
+  rate_limit_rps: 5
+  timeout_s: 5
+  output: jsonl
+
+zap:
+  binary: zap-baseline.py
+  fixed_args: ["-m", "1"]
+  timeout_s: 180
+  output: json
+
+snapshots:
+  max_age_days: 90
 
 targets:
   # En desarrollo solo se permiten estos hosts de laboratorio (red aislada).
