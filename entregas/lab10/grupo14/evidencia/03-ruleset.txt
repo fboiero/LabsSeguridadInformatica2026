@@ -1,0 +1,8 @@
+=== Ruleset del IDS (firmas activas) ===
+Conocer las reglas es el primer paso para evadirlas. FLAG{signature_ruleset}
+  scanner-ua      User-Agent contiene sqlmap|nikto|nmap|dirb
+  path-traversal  la ruta contiene '../'
+  git-probe       la ruta contiene '/.git'
+  sqli-union      el query matchea /union\s+select/  (OJO: exige un ESPACIO)
+
+Una firma que exige un espacio se esquiva quitando el espacio. Pensá.

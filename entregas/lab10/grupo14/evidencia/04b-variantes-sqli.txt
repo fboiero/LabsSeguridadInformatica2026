@@ -1,0 +1,11 @@
+Variantes sqli-union contra /api?q=  (firma: re.search("union\s+select", query_crudo, re.I))
+403=detectado por la firma | 200=evadio
+
+  q=UNION%20SELECT   -> 200 (evadio: %20 no es \s en el query crudo)
+  q=UNION/**/SELECT  -> 200 (evadio: comentario SQL en vez de espacio)
+  q=UNION+SELECT     -> 200 (evadio: + no es \s)
+  union<TAB>select (request crudo por ncat)   -> 400 Bad Request (whitespace literal rompe la request line)
+  union<ESPACIO>select (request crudo por ncat) -> 400 Bad Request
+
+Conclusion: la firma union\s+select sobre el query CRUDO no puede dispararse con trafico HTTP valido:
+todo whitespace literal da 400, y toda codificacion valida del ataque (%20, +, /**/) evade el regex.
