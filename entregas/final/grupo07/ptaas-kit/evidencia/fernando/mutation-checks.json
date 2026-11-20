@@ -1,0 +1,14 @@
+[
+  {
+    "mutation": "harness/validation.py",
+    "test": "tests/test_validation_flow.py::test_no_approval_never_creates_sender",
+    "detected": true,
+    "output": "F                                                                        [100%]\n================================== FAILURES ===================================\n____________________ test_no_approval_never_creates_sender ____________________\n\n    def test_no_approval_never_creates_sender():\n        h, t, r, a = setup()\n    \n        def forbidden():\n            pytest.fail(\"sin gate no se crea sender\")\n    \n>       out = validate_finding(h, t, r, a, forbidden)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests\\test_validation_flow.py:34: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\nharness\\validation.py:207: in validate_finding\n    out = harness.invoke(\nharness\\contracts.py:149: in invoke\n    out = adapter.run(action, target, token)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nharness\\validation.py:85: in run\n    sender = self.factory()\n             ^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\n    def forbidden():\n>       pytest.fail(\"sin gate no se crea sender\")\nE       Failed: sin gate no se crea sender\n\ntests\\test_validation_flow.py:32: Failed\n=========================== short test summary info ===========================\nFAILED tests/test_validation_flow.py::test_no_approval_never_creates_sender\n1 failed in 0.18s\n"
+  },
+  {
+    "mutation": "harness/report_bundle.py",
+    "test": "tests/test_report_bundle.py::test_delivery_requires_exact_bundle_and_approval",
+    "detected": true,
+    "output": "F                                                                        [100%]\n================================== FAILURES ===================================\n______________ test_delivery_requires_exact_bundle_and_approval _______________\n\ntmp_path = WindowsPath('C:/Users/FERCA/AppData/Local/Temp/pytest-of-FERCA/pytest-6/test_delivery_requires_exact_b0')\n\n    def test_delivery_requires_exact_bundle_and_approval(tmp_path):\n        b = bundle()\n        a = ApprovalStore()\n>       with pytest.raises(PermissionError):\nE       Failed: DID NOT RAISE PermissionError\n\ntests\\test_report_bundle.py:55: Failed\n=========================== short test summary info ===========================\nFAILED tests/test_report_bundle.py::test_delivery_requires_exact_bundle_and_approval\n1 failed in 0.14s\n"
+  }
+]

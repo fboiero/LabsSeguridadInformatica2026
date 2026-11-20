@@ -33,3 +33,17 @@ Cada Sender DEBE limitar timeout, bytes y solicitudes y cerrarse incluso ante ex
 - GIVEN el proyecto en modo laboratorio
 - WHEN ocurre el caso descrito
 - THEN se rechaza sin persistir respuestas
+
+## Requirement: Contenedor efímero sobre red interna
+El modo sandbox DEBE comprobar que la red Docker es internal y del laboratorio,
+ejecutar un worker read-only sin privilegios y eliminarlo al terminar o fallar.
+
+### Scenario: red Docker pública
+- GIVEN una red Docker que no es internal
+- WHEN se crea una validación
+- THEN se rechaza sin ejecutar worker
+
+### Scenario: worker falla
+- GIVEN un worker en ejecución
+- WHEN devuelve error o timeout
+- THEN se elimina el worker y no queda estado

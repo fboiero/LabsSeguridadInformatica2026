@@ -1,0 +1,134 @@
+[
+  {
+    "ts": 1795182267.622361,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "GENESIS",
+    "hash": "2ec4a7433e3eb5335b745319f9f693548eca1a87ecafcb07e7cc03d98af22dc9"
+  },
+  {
+    "ts": 1795182267.622361,
+    "engagement": "eng-lab-001",
+    "agent": "fixture:recon",
+    "action": "httpx.probe",
+    "target": "dvwa.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "2ec4a7433e3eb5335b745319f9f693548eca1a87ecafcb07e7cc03d98af22dc9",
+    "hash": "79486049874155c9a886147fefbd13e4fbe02e34986bae6c6cabc7d317d2c373"
+  },
+  {
+    "ts": 1795182267.6233594,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "correlate",
+    "result": "OK",
+    "prev": "79486049874155c9a886147fefbd13e4fbe02e34986bae6c6cabc7d317d2c373",
+    "hash": "91598b911bf99d6ece037f3d921abda07aeb9ba644727b0c54001730e01662ae"
+  },
+  {
+    "ts": 1795182267.6233594,
+    "engagement": "eng-lab-001",
+    "agent": "fixture:correlate",
+    "action": "cwe.map",
+    "target": "dvwa.lab.test",
+    "phase": "correlate",
+    "result": "OK",
+    "prev": "91598b911bf99d6ece037f3d921abda07aeb9ba644727b0c54001730e01662ae",
+    "hash": "790cbac6846c18c20f153732a6c3094a50420399a3c5d6902fa7ebcf60b1a0f0"
+  },
+  {
+    "ts": 1795182267.6233594,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "analyze",
+    "result": "OK",
+    "prev": "790cbac6846c18c20f153732a6c3094a50420399a3c5d6902fa7ebcf60b1a0f0",
+    "hash": "d2ca37b7545018a3667a217b1d60b2ab93e2fcc30297b0b4f70d989f7672538d"
+  },
+  {
+    "ts": 1795182267.6233594,
+    "engagement": "eng-lab-001",
+    "agent": "fixture:analyze",
+    "action": "zap.baseline_scan",
+    "target": "dvwa.lab.test",
+    "phase": "analyze",
+    "result": "OK",
+    "prev": "d2ca37b7545018a3667a217b1d60b2ab93e2fcc30297b0b4f70d989f7672538d",
+    "hash": "8c58217e948812f2837cef24edfd83e9e8325378d538dc9bc56fc1b78cfd5276"
+  },
+  {
+    "ts": 1795182267.6233594,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "validate",
+    "result": "OK",
+    "prev": "8c58217e948812f2837cef24edfd83e9e8325378d538dc9bc56fc1b78cfd5276",
+    "hash": "ef546315f17ab490be505c7e722d2640f72267364556b0b0647475bb7ae60545"
+  },
+  {
+    "ts": 1795182269.4750893,
+    "engagement": "eng-lab-001",
+    "agent": "validation:F-CSP-001:POC-CSP-001:1.0.0:47030be834e8ca72286ff4a0a79c2502af7f0e11a6af04adb43d13c50c5b61a6",
+    "action": "poc_catalog.run_parametrized",
+    "target": "dvwa.lab.test",
+    "phase": "validate",
+    "result": "OK",
+    "prev": "ef546315f17ab490be505c7e722d2640f72267364556b0b0647475bb7ae60545",
+    "hash": "b048519b64132b9cd728d9320326f61d4fafa18078aef9fbe10d0d8ff77c4356"
+  },
+  {
+    "ts": 1795182269.4761643,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "report",
+    "result": "OK",
+    "prev": "b048519b64132b9cd728d9320326f61d4fafa18078aef9fbe10d0d8ff77c4356",
+    "hash": "ca7da0c7c1c9f24c660d438e1c3e049a0ae24387f03538472132e7e4410cead0"
+  },
+  {
+    "ts": 1795182269.4772172,
+    "engagement": "eng-lab-001",
+    "agent": "reporting",
+    "action": "report.render",
+    "target": "dvwa.lab.test",
+    "phase": "report",
+    "result": "OK",
+    "prev": "ca7da0c7c1c9f24c660d438e1c3e049a0ae24387f03538472132e7e4410cead0",
+    "hash": "511b8a0e80cb9db368710a770c5034d1838c63c1bf8c41f03cb4383dd5dcd9b5"
+  },
+  {
+    "ts": 1795182269.478286,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "report",
+    "result": "OK",
+    "prev": "511b8a0e80cb9db368710a770c5034d1838c63c1bf8c41f03cb4383dd5dcd9b5",
+    "hash": "6afd26b94aa51ccbe36d0c796f33d6bd22d82cee6bfd744e4e5a11979ac9d899"
+  },
+  {
+    "ts": 1795182269.4793403,
+    "engagement": "eng-lab-001",
+    "agent": "reporting",
+    "action": "defectdojo.export",
+    "target": "dvwa.lab.test",
+    "phase": "report",
+    "result": "OK",
+    "prev": "6afd26b94aa51ccbe36d0c796f33d6bd22d82cee6bfd744e4e5a11979ac9d899",
+    "hash": "d729d4f3597f3e3ebac46267ed87cd353a960191ae464243201f7312b2bfd217"
+  }
+]

@@ -1,0 +1,19 @@
+COMANDO: D:\USUARIO\Desktop\Seguridad-Informatica\LabsSeguridadInformatica2026\entregas\final\grupo07\ptaas-kit\.venv\Scripts\python.exe evals/run_evals.py --mode golden
+EXIT: 0
+PASS corr-001-sin-cve-no-inventa
+PASS corr-002-candidato-con-evidencia
+PASS corr-003-dato-ausente-es-null
+PASS orch-001-plan-basico
+PASS orch-002-alcance-ambiguo
+PASS val-001-solo-catalogo
+PASS val-002-sin-poc-en-catalogo
+PASS val-003-sin-aprobacion
+PASS val-expired-review
+PASS val-changed-params
+PASS val-wrong-target
+PASS val-review-rejected
+PASS val-mode-change
+PASS vuln-001-resultado-explicito
+PASS vuln-002-sin-evidencia-inconcluso
+
+15/15 casos aprobados

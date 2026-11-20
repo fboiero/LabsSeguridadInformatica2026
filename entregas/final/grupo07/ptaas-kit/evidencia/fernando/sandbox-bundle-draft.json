@@ -1,0 +1,20 @@
+{
+  "engagement_id": "eng-lab-001",
+  "mode": "sandbox",
+  "markdown": "# Informe técnico PTES §7\n\n## Resumen ejecutivo\nEngagement eng-lab-001: 1 hallazgos. Procedencia: sandbox.\nLa severidad requiere revisión humana; no se calcula score CVSS numérico.\n\n## Alcance y metodología\nSolo laboratorio autorizado; tokens por fase, catálogo inerte y gate humano.\n## Límites\nFixture: sin tráfico. Sender restringido: sin aislamiento por contenedor. No se evalúa un LLM en vivo.\n\n## Hallazgos\n### F-CSP-001 — Ausencia de CSP (candidato fixture; validación sandbox)\nActivo: dvwa.lab.test\nAusencia de CSP (candidato fixture; validación sandbox). Estado: validado en sandbox. Procedencia: sandbox. CWE-693. CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N. EPSS: unknown. Referencias: b048519b64132b9cd728d9320326f61d4fafa18078aef9fbe10d0d8ff77c4356. Severidad Info provisional hasta valoración humana.\nRemediación: Definir y verificar Content-Security-Policy según la aplicación.\n\n## Conclusión y divulgación\nPriorizar revisión humana de los hallazgos. Divulgar únicamente al responsable del laboratorio; sin datos crudos ni secretos.",
+  "export": {
+    "findings": [
+      {
+        "title": "Ausencia de CSP (candidato fixture; validación sandbox)",
+        "severity": "Info",
+        "description": "Ausencia de CSP (candidato fixture; validación sandbox). Estado: validado en sandbox. Procedencia: sandbox. CWE-693. CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N. EPSS: unknown. Referencias: b048519b64132b9cd728d9320326f61d4fafa18078aef9fbe10d0d8ff77c4356. Severidad Info provisional hasta valoración humana.",
+        "mitigation": "Definir y verificar Content-Security-Policy según la aplicación.",
+        "cwe": 693,
+        "verified": true,
+        "active": true
+      }
+    ]
+  },
+  "version": "bcc5a764d698defb9a617b6a44ee28deb7dd1b18279e02266e59a85e5c55c445",
+  "subject": "bcc5a764d698defb9a617b6a44ee28deb7dd1b18279e02266e59a85e5c55c445"
+}

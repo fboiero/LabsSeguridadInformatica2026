@@ -22,3 +22,19 @@ Secretos se rechazan en todos los campos exportables. No se exporta respuesta cr
 Integración: demo fixture explícita mientras 002/004/005 no estén disponibles;
 la bitácora en memoria se exporta y verifica con hash (no sustituye SQLite 002).
 La ventana RoE del ejemplo se conserva; tests usan ventanas vigentes.
+
+## Actualización tras habilitar Docker Desktop
+Se agregó DockerSender: verifica red internal y subred de laboratorio, ejecuta
+un worker Python stdlib read-only, sin capacidades, sin privilegios nuevos, usuario
+65534, límite de memoria/CPU/pids. Se elimina con --rm y cleanup en finally.
+La red del compose se fijó en 10.99.0.0/28 con DVWA .2, Juice Shop .3 y runner .4,
+coherente con el RoE del 003. La exclusión .5 no se usa como objetivo.
+Validación real de POC-CSP-001 en DVWA /login.php: validated; worker eliminado.
+Las aprobaciones de esa corrida se identifican como prueba automatizada, no como
+revisión humana académica. Reporte y exportación JSON se probaron localmente.
+Dos mutation checks detectaron la eliminación de los gates; evidencia/fernando/.
+Error real de la IA corregido: el chequeo inicial de la red Docker exigía que toda
+la subred estuviera en un único fragmento CIDR del token tras descontar .5, y rechazaba
+el lab válido. Se separó red interna dentro del máximo del lab de IP de destino dentro
+del token efectivo. Otro error: GET / redirigía; se eligió /login.php sin habilitar redirects.
+Revisión cruzada por Lautaro y archivado definitivos permanecen pendientes.

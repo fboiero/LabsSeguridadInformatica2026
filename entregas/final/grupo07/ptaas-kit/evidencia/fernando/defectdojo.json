@@ -1,0 +1,13 @@
+{
+  "findings": [
+    {
+      "title": "Ausencia de CSP (candidato fixture; validación sandbox)",
+      "severity": "Info",
+      "description": "Ausencia de CSP (candidato fixture; validación sandbox). Estado: validado en sandbox. Procedencia: sandbox. CWE-693. CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N. EPSS: unknown. Referencias: b048519b64132b9cd728d9320326f61d4fafa18078aef9fbe10d0d8ff77c4356. Severidad Info provisional hasta valoración humana.",
+      "mitigation": "Definir y verificar Content-Security-Policy según la aplicación.",
+      "cwe": 693,
+      "verified": true,
+      "active": true
+    }
+  ]
+}
