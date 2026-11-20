@@ -1,0 +1,22 @@
+# Comandos usados — Lab Extra 3 (hardening defensivo)
+
+# 1. Ver al verificador atacar el objetivo VULNERABLE (0/5)
+python3 labs/labextra3-hardening/verificar-defensa.py
+
+# 2. Copiar el objetivo a la entrega y parcharlo ahi (D1-D5)
+cp -r labs/labextra3-hardening/objetivo entregas/labextra3/grupo14/objetivo
+
+# 3. Verificar la copia parchada (da las flags, 5/5)
+python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo14/objetivo
+
+# 4. Regresion funcional (la app sigue andando)
+curl localhost:18799/
+curl "localhost:18799/login?user=admin&pass=sup3r-s3cr3t0"
+curl "localhost:18799/descargar?archivo=manual.txt"
+
+# 5. Entregar las 5 flags
+./ctf submit extra3 D1 'FLAG{def_banner_neutralizado}'
+./ctf submit extra3 D2 'FLAG{def_debug_apagado}'
+./ctf submit extra3 D3 'FLAG{def_rutas_blindadas}'
+./ctf submit extra3 D4 'FLAG{def_sqli_parametrizado}'
+./ctf submit extra3 D5 'FLAG{def_traversal_bloqueado}'
