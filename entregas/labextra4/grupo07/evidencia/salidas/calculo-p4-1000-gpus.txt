@@ -1,0 +1,14 @@
+PBKDF2-HMAC-SHA256, proyecci�n ideal a 200000 iteraciones
+Hashcat RTX 4090 fuente: 8,865,700 intentos/s @ 999 iteraciones
+Regla de escala usada: velocidad proporcional a 1/iteraciones
+Estimaci�n por RTX 4090: 44,284.17 intentos/s
+1000 RTX 4090, escala lineal ideal: 44,284,172 intentos/s
+Diccionario: 49 candidatos
+Tiempo de c�lculo con 1 GPU: 0.001106490 s
+Latencia estimada de una verificaci�n por GPU: 0.000022581 s
+GPU activas para 49 candidatos: 49
+Lotes paralelos necesarios: 1
+Tiempo ideal del diccionario con la flota: 0.000022581 s
+No se divide la cantidad de candidatos por la flota completa: con 49
+candidatos, solo 49 GPUs pueden verificar uno cada una en el primer lote.
+La proyecci�n no es una ejecuci�n de 1000 GPUs ni una medici�n directa a 200000 iteraciones.

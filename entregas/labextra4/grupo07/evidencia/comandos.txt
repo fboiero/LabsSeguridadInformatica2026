@@ -1,0 +1,19 @@
+# Evidencia de comandos — Lab Extra 4 · Grupo 07 · Lorenzo Blanc
+
+Fecha de captura: 2026-11-20 UTC. No se inspeccionaron ni modificaron los archivos de hashes, diccionario, cracker u objetos `.enc`, porque no pertenecen al bloque D de Lorenzo.
+
+1. `./ctf lab extra4` — preparación del laboratorio; no genera ni cambia el caso.
+2. `./ctf status extra4` — salida completa en `salidas/status-extra4.txt`: 0/3, sin flags presentadas.
+
+Fuentes oficiales de P3 y P5 están enlazadas en `informe.md`. Lorenzo no realizó benchmarks ni atribuyó resultados a cuentas. Fernando agrega sus comandos P1/P4 a continuación; implementación del cracker y crackeo siguen en los bloques asignados.
+
+## P1/P4 — Fernando Cagliero (@Ferca19)
+
+Desde la raíz del repositorio:
+  python entregas/labextra4/grupo07/evidencia/medir_p1.py
+  python entregas/labextra4/grupo07/evidencia/calcular_p4_gpu.py
+
+Salidas: evidencia/salidas/medicion-p1-local.txt y
+evidencia/salidas/calculo-p4-1000-gpus.txt. P1 mide primitivas con hashlib,
+sin E/S ni comparación del cracker. P4 extrapola un benchmark publicado de
+RTX 4090; no se ejecutó cracking ni una flota GPU.
