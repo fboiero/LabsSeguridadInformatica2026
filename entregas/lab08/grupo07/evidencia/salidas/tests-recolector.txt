@@ -1,0 +1,11 @@
+test_http_404_returns_none (test_recolector.RecolectorTests.test_http_404_returns_none) ... ok
+test_inclusive_range_and_stops_at_first_flag (test_recolector.RecolectorTests.test_inclusive_range_and_stops_at_first_flag) ... ok
+test_missing_and_error_results_are_skipped (test_recolector.RecolectorTests.test_missing_and_error_results_are_skipped) ... ok
+test_no_flag_scans_both_inclusive_endpoints (test_recolector.RecolectorTests.test_no_flag_scans_both_inclusive_endpoints) ... ok
+test_reversed_range_makes_no_requests (test_recolector.RecolectorTests.test_reversed_range_makes_no_requests) ... ok
+test_timeout_returns_none_and_reports_error (test_recolector.RecolectorTests.test_timeout_returns_none_and_reports_error) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.562s
+
+OK
