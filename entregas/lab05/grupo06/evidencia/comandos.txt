@@ -1,0 +1,91 @@
+# Bitácora integrada — Lab 05, Grupo 06
+
+## Aporte remoto: escaneos y banners de R1/R2
+
+# Comandos usados desde la consola del atacante
+
+nmap -Pn phantomcorp > /loot/nmap-default.txt
+nmap -Pn -sV -p- phantomcorp > /loot/nmap-sV-all.txt
+ncat -w2 phantomcorp 31337 </dev/null > /loot/r1-banner-31337.txt
+ncat -w2 phantomcorp 21 </dev/null > /loot/r2-banner-ftp21.txt
+
+## Consolidación de flags desde Bash de Git
+
+Para evitar la conversión de finales de línea del checkout principal, el
+registro final se ejecutó en un checkout temporal con archivos LF. Las flags
+fueron las observadas en los banners y respuestas del laboratorio:
+
+./ctf submit 05 R1 'FLAG{high_port_secret_service}'
+./ctf submit 05 R2 'FLAG{banner_grab_proftpd_135}'
+./ctf submit 05 R3 'FLAG{http_headers_leak_info}'
+./ctf submit 05 R4 'FLAG{recon_hidden_path}'
+./ctf submit 05 R5 'FLAG{dev_service_exposed}'
+./ctf status 05 > .loot/ctf-status-05-final.txt
+
+## Aporte local: R3/R4, puerto 80 y P3
+
+Lab 05 — Grupo 06 — 16/10/2026
+Alcance: R3, R4, puerto 80 y P3. Solo phantomcorp, desde cyberlab-attacker.
+
+1. Acciones registradas durante una sesión del laboratorio, dentro de cyberlab-attacker:
+   curl -I http://phantomcorp
+   curl -I http://phantomcorp | tee /loot/http80-headers.txt
+   La segunda salida ya existía; se leyó y conservó sin repetir ni sobrescribir.
+
+2. Inspección local, PowerShell en la raíz del repo (antes de escribir):
+   git status --short
+   git branch --show-current
+   rg --files -g AGENTS.md -g '*05*' -g '*ctf*'
+   Get-ChildItem entregas/lab05/grupo06
+   docker ps --format '{{.Names}} {{.Status}}'
+   Resultado: rama lab05-grupo06, árbol limpio, carpeta grupo06 inexistente,
+   cyberlab-attacker y cyberlab-phantomcorp levantados.
+   Se leyeron README del lab, plantilla, rúbrica, CONTRIBUTING.md,
+   PROTOCOLO-EVIDENCIA.md, ctf y bin/lib/check.sh para seguir la consigna
+   y entender el registro. No se leyó solucion.md ni el código del target.
+   docker exec cyberlab-attacker sh -c 'ls -la /loot; cat /loot/http80-headers.txt'
+   docker inspect cyberlab-attacker --format '{{json .Mounts}}'
+   /loot corresponde a .loot/; /repo está montado solo lectura.
+
+3. Consulta de robots.txt, ejecutada desde PowerShell:
+   docker exec cyberlab-attacker bash -lc 'set -o pipefail; curl -sS -i http://phantomcorp/robots.txt | tee /loot/http80-robots.txt'
+   Resultado: HTTP 200; /admin y /panel-interno-9x2f en Disallow.
+
+4. Registro de R3, PowerShell en la raíz, invocando Bash de Git instalado:
+   & 'C:/Program Files/Git/bin/bash.exe' -c './ctf submit 05 R3 "FLAG{http_headers_leak_info}" > .loot/ctf-submit-r3.txt 2>&1'
+   Resultado: R3 aceptado. El registro ctf corre en el host, sin tráfico al objetivo.
+
+5. Consulta de la ruta descubierta, desde PowerShell:
+   docker exec cyberlab-attacker bash -c 'set -o pipefail; curl -sS -i http://phantomcorp/panel-interno-9x2f | tee /loot/http80-panel-interno.txt'
+   Resultado: HTTP 200; Panel interno PhantomCorp; FLAG{recon_hidden_path}.
+
+6. Registro de R4 y captura de progreso, PowerShell en la raíz:
+   & 'C:/Program Files/Git/bin/bash.exe' -c './ctf submit 05 R4 "FLAG{recon_hidden_path}" > .loot/ctf-submit-r4.txt 2>&1; ./ctf status 05 > .loot/ctf-status-05.txt 2>&1'
+   Resultado: R4 aceptado; R3 y R4 completos, 2/5.
+   Nota: ctf status devuelve código 1 cuando faltan retos, aunque imprime
+   correctamente el estado. La aceptación se confirma en las salidas y en
+   .progreso/05.done (R3 y R4).
+
+7. Preparación documental, PowerShell:
+   New-Item -ItemType Directory -Force entregas/lab05/grupo06/evidencia/salidas
+   Se copiaron con Copy-Item desde .loot/ a evidencia/salidas/ estos archivos:
+   http80-headers.txt, http80-robots.txt, http80-panel-interno.txt,
+   ctf-submit-r3.txt, ctf-submit-r4.txt, ctf-status-05.txt.
+   Se redactaron informe.md y esta bitácora. No se modificó labs/.
+
+8. Verificación final:
+   Comparación SHA256 con Get-FileHash entre cada original de .loot/ y su copia.
+   git add -- entregas/lab05/grupo06
+   git diff --cached --check
+   git diff --cached --stat
+   git status --short
+   Se revisó que todos los archivos preparados pertenezcan a grupo06.
+   No se ejecutaron commit, push ni consultas a otros objetivos.
+
+9. Preservación de evidencia en Git:
+   Se agregó .gitattributes dentro de grupo06 para conservar los bytes de
+   evidencia/salidas/* sin conversión de saltos de línea. Los espacios finales
+   y líneas vacías forman parte de las respuestas crudas; no se corrigieron.
+   Se repitieron git add y git diff --cached --check tras esta configuración.
+   git add --renormalize -- entregas/lab05/grupo06/evidencia/salidas
+   Se verificó cada blob del índice contra git hash-object --no-filters del original: todos idénticos.
