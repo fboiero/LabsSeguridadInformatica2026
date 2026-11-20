@@ -1,0 +1,69 @@
+{
+  "provenance": {
+    "recon": "Docker real con ReconLoop (004)",
+    "correlation": "snapshots offline con Correlator (005)",
+    "analysis": "Docker real con DetectionLoop (005)",
+    "validation_seed": "candidato CSP manual para demo, sin CVE inferida",
+    "audit": "SQLite persistente (002) + export JSON; verificable con harness.audit verify",
+    "correlation_result": "0 coincidencias CVE",
+    "analysis_result": "inconclusive"
+  },
+  "recon": {
+    "implementation": "harness.recon_loop.ReconLoop",
+    "iterations": 1,
+    "reason": "grafo estabilizado",
+    "assets": [
+      {
+        "id": "asset-02c25e5bf14731db",
+        "type": "domain",
+        "address": "dvwa.lab.test",
+        "source_tool": "seed",
+        "technologies": [
+          "Apache HTTP Server:2.4.25",
+          "Debian",
+          "PHP"
+        ]
+      }
+    ]
+  },
+  "correlation": {
+    "candidates": [],
+    "reason": "sin match exacto; no se fabrica CVE"
+  },
+  "analysis": {
+    "finding_id": "F-CSP-001",
+    "status": "inconclusive",
+    "rationale": "sin ganancia de información",
+    "evidence_refs": [
+      "manual-demo-seed:CSP:requiere-validación",
+      "nuclei:grupo07-robots-txt@http://dvwa.lab.test/robots.txt",
+      "zap:10009",
+      "zap:10010",
+      "zap:10020-1",
+      "zap:10021",
+      "zap:10036-2",
+      "zap:10038-1",
+      "zap:10054-1",
+      "zap:10111",
+      "zap:10112"
+    ],
+    "cvss_v4_score": null,
+    "priority": null
+  },
+  "validation_seed": {
+    "origin": "manual_demo_seed",
+    "candidate": {
+      "id": "F-CSP-001",
+      "asset_id": "asset-02c25e5bf14731db",
+      "cwe": "CWE-693",
+      "cve": null,
+      "epss": null,
+      "attack_technique": null,
+      "evidence_refs": [
+        "manual-demo-seed:CSP:requiere-validación"
+      ],
+      "confidence": "medium",
+      "cvss_v4_score": null
+    }
+  }
+}

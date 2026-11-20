@@ -18,5 +18,5 @@
 - [x] 3.2 Test: loop A termina por tope
 - [x] 3.3 Test: un activo fuera de alcance nunca llega a un adaptador
 - [x] 3.4 Test: el adaptador respeta el rate limit
-- [ ] 3.5 Corrida real contra el lab y bitácora verificada con `audit verify` (pendiente: Docker apagado y change 002)
+- [x] 3.5 Corrida real de loop A contra DVWA y bitácora SQLite verificada con `audit verify` (evidencia/lorenzo/integracion-real-pending/)
 - [x] 3.6 Archivar deltas en `openspec/specs/`

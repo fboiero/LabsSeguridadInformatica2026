@@ -1,0 +1,2 @@
+audit.db: exit=0; OK
+alterada.db: exit=1; CORRUPTA

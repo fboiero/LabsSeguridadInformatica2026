@@ -1,5 +1,17 @@
 # Corridas reales de Lorenzo — 20/11/2026
 
+## Actualización de cierre
+Las herramientas reales ya están conectadas al recorrido completo por
+`python -m harness.run --tools-mode docker --validation-mode sandbox`.
+Ver `integracion-real-pending/` (sin aprobación, gates pendientes),
+`integracion-real-approved/` (aprobaciones explícitas identificadas como prueba,
+validación real y JSON local) y `cierre/` (170 tests, 20/20 evals, lint y avance).
+Ambas corridas usan SQLite del 002 y `audit verify`. Las revisiones documentales
+se cerraron a pedido de Lorenzo, identificadas en `docs/revisiones-cierre.md`.
+El candidato CSP sigue manual; la correlación no fabricó CVE y el loop B
+concluyó inconcluso. La nota histórica de abajo describe la primera corrida
+independiente, anterior a esta integración.
+
 Red Docker `lab_lab`, `internal: true`, sin puertos publicados.
 DVWA en 10.99.0.2, Juice Shop en 10.99.0.3; preflight HTTP 200 para ambos.
 Las herramientas se ejecutaron contra `dvwa.lab.test` por `Harness.invoke`,
