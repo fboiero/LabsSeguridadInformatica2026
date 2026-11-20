@@ -1,0 +1,19 @@
+# Comandos usados — Lab Extra 4 (cracking)
+# (cracker.py está en entregas/labextra4/grupo14/src/)
+
+# 1. Crackear el volcado con diccionario + reglas de mangling
+python3 src/cracker.py crackear labs/labextra4-cracking/caso/sombra.txt \
+        labs/labextra4-cracking/caso/diccionario.txt --reglas
+
+# 2. Medir intentos/segundo por algoritmo (P1)
+python3 src/cracker.py velocidad labs/labextra4-cracking/caso/sombra.txt
+
+# 3. Abrir el loot de cada usuario con la contraseña crackeada
+python3 src/cracker.py descifrar labs/labextra4-cracking/caso/loot/operador.enc --password riverplate
+python3 src/cracker.py descifrar labs/labextra4-cracking/caso/loot/analista.enc --password matecocido
+python3 src/cracker.py descifrar labs/labextra4-cracking/caso/loot/admin.enc    --password phantom2026
+
+# 4. Entregar flags
+./ctf submit extra4 R1 'FLAG{crack_diccionario_md5}'
+./ctf submit extra4 R2 'FLAG{crack_sha256_diccionario}'
+./ctf submit extra4 R3 'FLAG{crack_reglas_mangling}'
