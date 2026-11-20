@@ -1,0 +1,15 @@
+# Evidencia de comandos — Lab Extra 3 · Grupo 07 · Lorenzo Blanc
+
+Fecha de captura: 2026-11-20 UTC. El original bajo `labs/labextra3-hardening/objetivo/` se mantuvo intacto. Todas las verificaciones de parche se ejecutaron sobre la copia versionable `entregas/labextra3/grupo07/objetivo/`.
+
+1. `./ctf lab extra3` — preparación; salida en terminal.
+2. `python labs/labextra3-hardening/verificar-defensa.py` — primer intento de captura en la consola Windows falló al imprimir el símbolo `✗` por la codificación CP1252. Se repitió con `PYTHONIOENCODING=utf-8`.
+3. `PYTHONIOENCODING=utf-8 python labs/labextra3-hardening/verificar-defensa.py` — baseline del original; salida en `salidas/verificador-inicial.txt`.
+4. Copia única del objetivo original a `entregas/labextra3/grupo07/objetivo/` con `Copy-Item -Recurse`.
+5. Se modificó solo la copia: `VERSION` se neutralizó y se quitó el bloque de `/api/status`; no se tocó el original.
+6. `PYTHONIOENCODING=utf-8 python labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo07/objetivo` — salida después de D1/D2 en `salidas/verificador-parcial.txt`.
+7. `./ctf submit extra3 D1 'FLAG{def_banner_neutralizado}'` — aceptada.
+8. `./ctf submit extra3 D2 'FLAG{def_debug_apagado}'` — aceptada.
+9. `./ctf status extra3` — 2/5, guardado en `salidas/status-extra3.txt`.
+
+La salida inicial marcó D5 bloqueado aun con el original sin cambios; el parcial volvió a marcarlo igual. No se reclamó D5. No se probó regresión funcional integrada, que corresponde a Guadalupe.
