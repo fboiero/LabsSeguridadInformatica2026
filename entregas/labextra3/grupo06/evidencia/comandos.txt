@@ -1,0 +1,126 @@
+P3 / Lab Extra 03 — 28/10/2026 — PowerShell y Git Bash.
+$repo='C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026'
+$py='C:/Users/Muhammed/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
+$dest="$repo/entregas/labextra3/grupo06"
+$env:PYTHONIOENCODING='utf-8'
+Directorio de trabajo de capturas: C:/Users/Muhammed/Documents/Codex/2026-10-28/accede-a-c-users-muhammed-desktop-6/work/extra3
+Las capturas se hicieron con 2>&1 | Tee-Object; se preserva el texto crudo, incluidos errores y estados no exitosos. A continuación se usan nombres abreviados de los archivos locales adjuntos.
+
+1. git -c safe.directory="$repo" -C $repo status --short --branch -> labextra3-grupo06, limpio.
+2. Lectura del plan adjunto, CONTRIBUTING, README del lab, entregable, rúbrica, PROTOCOLO-EVIDENCIA, server.py, start.sh y reglas CI. Inventario rg --files --hidden -g '!.git/**'; búsqueda recursiva AGENTS.md: ninguno en el repo. Se consultó el verificador para comprender su lanzamiento y compatibilidad, no para obtener flags por lectura.
+3. & $py --version -> Python 3.12.14. No se instalaron dependencias.
+4. Test-Path C:/tmp y C:/tmp/phantom_hardening.db -> False. Creación de C:/tmp requerido por el original; creación de carpeta de entrega y Copy-Item del objetivo oficial (no existía copia previa).
+5. & $py "$repo/labs/labextra3-hardening/verificar-defensa.py" -> verificador-inicial.txt, 1/5 (D5 falso positivo Windows), código 1.
+6. & $py probar-d4.py "$repo/labs/labextra3-hardening/objetivo/server.py" antes -> d4-antes-intento1.txt. Pruebas HTTP realizadas; error de limpieza por conexión SQLite del propio script sin cerrar.
+7. Se agregó db.close() al script de pruebas después de crear sus datos temporales.
+8. & $py probar-d4.py "$repo/labs/labextra3-hardening/objetivo/server.py" antes -> d4-antes.txt, código 0.
+9. Cambio únicamente de comentario D4 y consulta en objetivo/server.py del grupo: SQL fijo con dos ? y tupla (user, pwd). Ningún cambio al código original.
+10. & $py probar-d4.py "$dest/objetivo/server.py" despues -> d4-despues.txt, código 0.
+11. git diff --no-index -- "$repo/labs/labextra3-hardening/objetivo/server.py" "$dest/objetivo/server.py" -> d4-parche.diff. Código 1 significa diferencias; aviso de conversión LF/CRLF de Git.
+12. & $py "$repo/labs/labextra3-hardening/verificar-defensa.py" --dir "$dest/objetivo" -> verificador-despues-p3.txt, 2/5 (D4 real y D5 falso positivo), código 1.
+13. & 'C:/Program Files/Git/bin/bash.exe' "$repo/ctf" submit extra3 D4 'FLAG{def_sqli_parametrizado}' -> d4-submit.txt, rechazo por CRLF.
+14. & 'C:/Program Files/Git/bin/bash.exe' validar-d4-crlf.sh -> d4-submit-compatibilidad.txt, D4 aceptada por funciones oficiales; manifiesto temporal normalizado, original intacto.
+15. & 'C:/Program Files/Git/bin/bash.exe' "$repo/ctf" status extra3 -> status-extra3.txt, 1/5 (solo D4). Código 1 porque aún no se completaron todas las defensas.
+16. Copia de informe, script de pruebas, script de compatibilidad y salidas a la entrega. No se copia el plan interno.
+17. git -C $repo diff --exit-code -- labs bin ctf .github README.md CONTRIBUTING.md -> sin cambios.
+18. git -C $repo diff --cached --exit-code -> sin archivos preparados.
+19. git -C $repo status --short --branch -> solo nueva carpeta entregas/labextra3/grupo06/ en labextra3-grupo06.
+
+Para reproducir pruebas: ejecutar con el Python indicado evidencia/probar-d4.py <ruta/server.py> antes|despues. El modo antes exige bypass en el original; despues exige bloqueo en la copia. D5 es observación y se imprime independientemente. Los temporales se eliminan al terminar; ningún servidor de pruebas queda ejecutándose.
+
+
+P2 / Lab Extra 03 — 28/10/2026 — PowerShell.
+
+1. Get-Content entregas/labextra3/grupo06/objetivo/server.py -Encoding UTF8
+   Lectura del código existente antes del parche.
+
+2. py -3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo06/objetivo
+   Verificador posterior al primer parche D3: 4/5, con errores de conexión. La salida se observó en consola.
+
+3. py -3 -m py_compile entregas/labextra3/grupo06/objetivo/server.py
+   Comprobación de sintaxis: sin errores.
+
+4. Prueba HTTP inicial mediante Python en PowerShell.
+   Falló durante init_db() porque /tmp no estaba disponible para esa ejecución.
+
+5. Prueba HTTP con importlib.util, ThreadingHTTPServer y directorios temporales.
+   Resultados: / HTTP 200; /robots.txt HTTP 200 sin /backup; /backup HTTP 404; manual.txt HTTP 200.
+
+6. Creación de evidencia/probar-d3.py mediante Set-Content -Encoding UTF8.
+   Script reproducible de la prueba anterior.
+
+7. py -3 entregas/labextra3/grupo06/evidencia/probar-d3.py | Tee-Object -FilePath entregas/labextra3/grupo06/evidencia/salidas/d3-despues.txt
+   Se guardó la salida real de la prueba local.
+
+8. git diff --check
+   Sin errores de formato.
+
+9. Verificador oficial sobre la copia del grupo, con PYTHONIOENCODING=utf-8: D3 aprobada, GET /backup HTTP 404, robots sin referencia a /backup. Salida: evidencia/salidas/d3-verificador.txt.
+
+10. Se ejecutó validar-d3-crlf.sh desde Git Bash.
+    Se utilizó una copia temporal del manifiesto con saltos de línea normalizados, sin modificar archivos oficiales.
+    Resultado: D3 aceptada, FLAG{def_rutas_blindadas}.
+    Evidencia: evidencia/salidas/d3-submit-compatibilidad.txt.
+
+11. Se ejecutó ./ctf status extra3 desde Git Bash.
+    Estado local: D3 resuelta, 1/5.
+    Evidencia: evidencia/salidas/d3-status.txt.
+
+
+P4 / Lab Extra 03 — 29/10/2026 — Git Bash (bash.exe de Git para Windows).
+
+1. python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo06/objetivo
+   Verificador oficial antes de tocar D5: salida intermitente por "connection refused" en Windows (D2/D3/D5 con status 0 en algunas corridas), igual al problema ya documentado por P2/P3. No se tomó como resultado válido.
+
+2. Lectura de entregas/labextra3/grupo06/objetivo/server.py (bloque /descargar) y de labs/labextra3-hardening/verificar-defensa.py para confirmar el payload exacto de D5 (../../../../etc/passwd) sin tocar el verificador ni el manifiesto.
+
+3. Edición de objetivo/server.py: bloque /descargar reemplazado por resolución de ruta (os.path.realpath) y verificación de que el resultado quede dentro de DESCARGAS, más bloqueo explícito de rutas absolutas. Ningún otro bloque (D1-D4) modificado.
+
+4. mkdir -p /e/tmp
+   Creación del directorio que python3 resuelve como "/tmp" en este Windows (python3 -c "import os; print(os.path.abspath('/tmp'))" -> E:\tmp), requerido por DB y DESCARGAS del server.
+
+5. PORT=18777 python3 entregas/labextra3/grupo06/objetivo/server.py (en segundo plano) -> evidencia/salidas/d5-despues.txt
+   curl -i a GET /, GET /descargar?archivo=manual.txt, GET /descargar?archivo=../../../../etc/passwd, GET /descargar?archivo=../centinela-p4.txt (centinela propio creado y luego borrado, fuera de DESCARGAS) y GET /descargar?archivo=/etc/passwd (ruta absoluta). Los tres payloads de traversal devolvieron 404 real; home y manual.txt devolvieron 200 con el contenido esperado.
+
+6. git diff -- entregas/labextra3/grupo06/objetivo/server.py -> evidencia/salidas/d5-parche.diff.
+   Diff acotado al bloque /descargar (D5), sin tocar D1-D4 ya parcheados por otros integrantes.
+
+7. PYTHONIOENCODING=utf-8 python3 labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo06/objetivo --port 19050 -> evidencia/salidas/d5-verificador.txt
+   Corrida limpia (sin errores de conexión): D3 y D4 bloqueadas, D5 bloqueada por 404 real ("traversal /etc/passwd -> 404 (bloqueado)"), D1/D2 vulnerables (pendientes de su responsable). 3/5 reportado por el verificador en esta copia parcial.
+
+8. ./ctf submit extra3 D5 'FLAG{def_traversal_bloqueado}' -> evidencia/salidas/d5-submit.txt. Aceptada sin problema de CRLF.
+
+9. ./ctf status extra3 -> mostró solo D5 resuelta (1/5): el estado del motor había perdido D3 y D4, ya validadas antes por P2 y P3. Se reenviaron esas dos flags conocidas (FLAG{def_rutas_blindadas}, FLAG{def_sqli_parametrizado}) sin repetir sus ataques, para restaurar el progreso real del grupo.
+
+10. ./ctf status extra3 -> evidencia/salidas/d5-status.txt, 3/5 (D3, D4, D5). D1 y D2 pendientes.
+
+11. Limpieza: borrado del centinela de prueba (/e/tmp/centinela-p4.txt) y de los artefactos temporales del servidor de pruebas (/e/tmp/phantom_descargas, /e/tmp/phantom_hardening.db). No se modificó labs/, el verificador ni el manifiesto.
+
+
+P1 / Lab Extra 03 — 29/10/2026 — PowerShell.
+
+1. Edición de `entregas/labextra3/grupo06/objetivo/server.py`: `VERSION` se reemplazó por `Servidor` y `/api/status` pasó a devolver 404 sin datos de diagnóstico.
+2. `C:/Users/marti/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -m py_compile entregas/labextra3/grupo06/objetivo/server.py`.
+3. `C:/Users/marti/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe entregas/labextra3/grupo06/evidencia/probar-d1-d2.py` -> `evidencia/salidas/d1-d2-despues.txt`. La prueba usa base, descargas y puerto temporales en loopback; resultado: home 200, banner neutralizado y `/api/status` 404.
+4. Ejecución del verificador oficial con `PYTHONIOENCODING=utf-8` y puerto 19222: D1 fue bloqueada, pero D2 figuró bloqueada por un `WinError 10061` y D3 también sufrió el mismo fallo de conexión. Esa corrida no se usa como evidencia de D2.
+5. `git diff --check` y revisión del diff acotado a `entregas/labextra3/grupo06/`.
+
+6. Se reemplazó la ruta fija `/tmp` de la copia por `tempfile.gettempdir()` porque el intérprete de Windows no podía abrir la base SQLite en `C:\tmp`; el objetivo de referencia y el verificador no fueron modificados.
+7. `PYTHONIOENCODING=utf-8 <python> labs/labextra3-hardening/verificar-defensa.py --dir entregas/labextra3/grupo06/objetivo --port 19231 2>&1 | Tee-Object .../verificador-final-5de5.txt` -> 5/5 limpio.
+8. `bash evidencia/registrar-flags-final.sh 2>&1 | Tee-Object .../ctf-registro-final.txt` -> D1–D5 aceptadas con una copia temporal del manifiesto normalizada; no se editó el manifiesto original.
+9. `./ctf status extra3 2>&1 | Tee-Object .../status-extra3-final-5de5.txt` -> 5/5 (100%).
+
+P2 / Revisión cruzada D1 — 29/10/2026 — PowerShell.
+
+1. Lectura de evidencia/probar-d1-d2.py y d1-d2-parche.diff.
+   Se revisó la eliminación de la información de versión del banner.
+
+2. py -3 entregas/labextra3/grupo06/evidencia/probar-d1-d2.py
+   Resultado: GET / HTTP 200; Server: 'Servidor '.
+   GET /api/status HTTP 404. Pruebas D1 y D2: OK.
+
+3. Repetición de la prueba y captura con Tee-Object.
+   Evidencia: evidencia/salidas/p2-revision-d1.txt.
+
+4. Verificador oficial de las cinco defensas.
+   Resultado observado: 5/5 defensas correctas.

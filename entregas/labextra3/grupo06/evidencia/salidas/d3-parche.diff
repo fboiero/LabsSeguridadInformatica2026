@@ -1,0 +1,20 @@
+﻿diff --git a/entregas/labextra3/grupo06/objetivo/server.py b/entregas/labextra3/grupo06/objetivo/server.py
+index 3547abe..c877a55 100644
+--- a/entregas/labextra3/grupo06/objetivo/server.py
++++ b/entregas/labextra3/grupo06/objetivo/server.py
+@@ -56,11 +56,11 @@ class Handler(BaseHTTPRequestHandler):
+         if path == "/":
+             self._html(200, "<h1>PhantomCorp</h1><p>Portal de empleados.</p>")
+         elif path == "/robots.txt":
+-            # D3: el robots delata las rutas sensibles
+-            self._txt(200, "User-agent: *\nDisallow: /backup\nDisallow: /api/status\n")
++            # D3: no publicar rutas sensibles en robots.txt
++            self._txt(200, "User-agent: *\n")
+         elif path == "/backup":
+-            # D3: y la ruta sensible responde sin autenticaci├│n
+-            self._txt(200, "dump_pre_migracion: usuarios=1 OK ÔÇö BORRAR ESTE ENDPOINT")
++            # D3: impedir el acceso publico al backup
++            self._txt(404, "404 - no existe")
+         elif path == "/api/status":
+             # D2: endpoint de debug en producci├│n
+             self._json(200, '{"debug": true, "env": "produccion", '

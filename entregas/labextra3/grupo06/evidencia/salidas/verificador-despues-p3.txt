@@ -1,0 +1,13 @@
+
+== Lab Extra 3 · verificación de defensas ==
+[2mObjetivo bajo prueba: C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/entregas/labextra3/grupo06/objetivo\server.py[0m
+
+  [31m✗[0m D1 — todavía vulnerable  [2m(header Server: 'PhantomServer/2.4.1-debug ')[0m
+  [31m✗[0m D2 — todavía vulnerable  [2m(GET /api/status -> 200 '{"debug": true, "env": "produccion", "db": "/tmp/phantom_har')[0m
+  [31m✗[0m D3 — todavía vulnerable  [2m(GET /backup -> 200; robots menciona /backup: True)[0m
+  [32m✓[0m D4 — ataque BLOQUEADO  [2m(bypass admin'--: bloqueado; OR 1=1: bloqueado)[0m
+      flag: FLAG{def_sqli_parametrizado}
+  [32m✓[0m D5 — ataque BLOQUEADO  [2m(traversal /etc/passwd -> 404 (bloqueado))[0m
+      flag: FLAG{def_traversal_bloqueado}
+
+[31m2/5 defensas correctas.[0m

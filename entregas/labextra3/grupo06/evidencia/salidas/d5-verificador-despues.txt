@@ -1,0 +1,15 @@
+
+== Lab Extra 3 · verificación de defensas ==
+[2mObjetivo bajo prueba: entregas/labextra3/grupo06/objetivo\server.py[0m
+
+  [32m✓[0m D1 — ataque BLOQUEADO  [2m(header Server: '')[0m
+      flag: FLAG{def_banner_neutralizado}
+  [32m✓[0m D2 — ataque BLOQUEADO  [2m(GET /api/status -> 0 '<urlopen error [WinError 10061] No se puede establecer una c')[0m
+      flag: FLAG{def_debug_apagado}
+  [31m✗[0m D3 — todavía vulnerable  [2m(GET /backup -> 0; robots menciona /backup: False)[0m
+  [32m✓[0m D4 — ataque BLOQUEADO  [2m(bypass admin'--: bloqueado; OR 1=1: bloqueado)[0m
+      flag: FLAG{def_sqli_parametrizado}
+  [32m✓[0m D5 — ataque BLOQUEADO  [2m(traversal /etc/passwd -> 0 (bloqueado))[0m
+      flag: FLAG{def_traversal_bloqueado}
+
+[31m4/5 defensas correctas.[0m

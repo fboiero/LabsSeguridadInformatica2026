@@ -1,0 +1,23 @@
+diff --git a/entregas/labextra3/grupo06/objetivo/server.py b/entregas/labextra3/grupo06/objetivo/server.py
+index 58cc85e..adbed89 100644
+--- a/entregas/labextra3/grupo06/objetivo/server.py
++++ b/entregas/labextra3/grupo06/objetivo/server.py
+@@ -26,7 +26,8 @@ import sqlite3
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+ from urllib.parse import urlparse, parse_qs
+
+-VERSION = "PhantomServer/2.4.1-debug"   # D1: banner que canta todo
++# D1: nombre genérico; no expone el producto ni la versión desplegada.
++VERSION = "Servidor"
+
+ DB = "/tmp/phantom_hardening.db"
+ DESCARGAS = "/tmp/phantom_descargas"    # raíz "pública" de /descargar
+@@ -62,9 +63,8 @@ class Handler(BaseHTTPRequestHandler):
+             # D3: impedir el acceso publico al backup
+             self._txt(404, "404 - no existe")
+         elif path == "/api/status":
+-            # D2: endpoint de debug en producción
+-            self._json(200, '{"debug": true, "env": "produccion", '
+-                            '"db": "' + DB + '", "pid": ' + str(os.getpid()) + '}')
++            # D2: el endpoint de diagnóstico no se publica en producción.
++            self._txt(404, "404 - no existe")

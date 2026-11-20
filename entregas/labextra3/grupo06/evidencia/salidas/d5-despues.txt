@@ -1,0 +1,36 @@
+=== GET / (home) ===
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 29 Oct 2026 14:11:52 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>PhantomCorp</h1><p>Portal de empleados.</p>
+=== GET /descargar?archivo=manual.txt (legitimo) ===
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 29 Oct 2026 14:11:52 GMT
+Content-Type: text/plain; charset=utf-8
+
+Manual de la intranet PhantomCorp.
+
+=== GET /descargar?archivo=../../../../etc/passwd (payload del verificador oficial) ===
+HTTP/1.0 404 Not Found
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 29 Oct 2026 14:11:52 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+=== GET /descargar?archivo=../centinela-p4.txt (centinela propio, fuera de DESCARGAS) ===
+HTTP/1.0 404 Not Found
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 29 Oct 2026 14:11:52 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado
+=== GET /descargar?archivo=/etc/passwd (ruta absoluta) ===
+HTTP/1.0 404 Not Found
+Server: PhantomServer/2.4.1-debug 
+Date: Thu, 29 Oct 2026 14:11:52 GMT
+Content-Type: text/plain; charset=utf-8
+
+no encontrado

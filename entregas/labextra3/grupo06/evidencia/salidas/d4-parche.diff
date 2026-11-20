@@ -1,0 +1,21 @@
+diff --git a/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/labs/labextra3-hardening/objetivo/server.py b/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/entregas/labextra3/grupo06/objetivo/server.py
+index 46b81c5..3547abe 100644
+--- a/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/labs/labextra3-hardening/objetivo/server.py	
++++ b/C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026/entregas/labextra3/grupo06/objetivo/server.py	
+@@ -66,13 +66,13 @@ class Handler(BaseHTTPRequestHandler):
+             self._json(200, '{"debug": true, "env": "produccion", '
+                             '"db": "' + DB + '", "pid": ' + str(os.getpid()) + '}')
+         elif path == "/login":
+-            # D4: SQLi clásico — consulta por interpolación de strings
++            # D4: parámetros enlazados; las credenciales son datos, no SQL
+             user = params.get("user", [""])[0]
+             pwd = params.get("pass", [""])[0]
+             db = sqlite3.connect(DB)
+             cur = db.execute(
+-                "SELECT user FROM usuarios WHERE user = '" + user
+-                + "' AND password = '" + pwd + "'")     # ¡NUNCA así!
++                "SELECT user FROM usuarios WHERE user = ? AND password = ?",
++                (user, pwd))
+             if cur.fetchone():
+                 self._html(200, "<h1>Bienvenido, " + user + "</h1>")
+             else:

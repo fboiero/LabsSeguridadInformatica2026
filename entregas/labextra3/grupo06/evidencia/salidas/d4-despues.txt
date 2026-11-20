@@ -1,0 +1,14 @@
+Objetivo: C:\Users\Muhammed\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labextra3\grupo06\objetivo\server.py; modo: despues; servidor solo loopback; datos temporales aislados
+{"prueba": "admin legitimo", "GET": "/login?user=admin&pass=sup3r-s3cr3t0", "status": 200, "body": "<h1>Bienvenido, admin</h1>"}
+{"prueba": "password incorrecta", "GET": "/login?user=admin&pass=incorrecta", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"prueba": "usuario inexistente", "GET": "/login?user=nadie&pass=x", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"prueba": "comentario SQL en usuario", "GET": "/login?user=admin%27--&pass=x", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"prueba": "tautologia en password", "GET": "/login?user=x&pass=%27+OR+1%3D1+--", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"prueba": "tautologia en usuario", "GET": "/login?user=%27+OR+%271%27%3D%271%27+--&pass=x", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"prueba": "apostrofes legitimos", "GET": "/login?user=o%27connor&pass=clave%27valida", "status": 200, "body": "<h1>Bienvenido, o'connor</h1>"}
+{"prueba": "apostrofe aislado", "GET": "/login?user=%27&pass=x", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"prueba": "campos vacios", "GET": "/login?user=&pass=", "status": 401, "body": "<h1>Credenciales inválidas</h1>"}
+{"GET": "/", "status": 200, "body": "<h1>PhantomCorp</h1><p>Portal de empleados.</p>"}
+{"GET": "/descargar?archivo=manual.txt", "status": 200, "body": "Manual de la intranet PhantomCorp.\r\n"}
+{"revision_D5": "centinela fuera de descargas", "status": 200, "body": "CENTINELA_FUERA_DE_DESCARGAS"}
+Pruebas D4 y regresiones: OK. D5 se registra como observacion independiente.
