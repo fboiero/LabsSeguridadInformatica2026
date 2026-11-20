@@ -1,0 +1,11 @@
+test_argumentos_invalidos_no_tienen_error_normalizado (__main__.Auditoria.test_argumentos_invalidos_no_tienen_error_normalizado) ... ok
+test_mock_ignora_resultados_y_no_extrae_token (__main__.Auditoria.test_mock_ignora_resultados_y_no_extrae_token) ... ok
+test_r4_bloquea_las_tres_tools_antes_de_efectos (__main__.Auditoria.test_r4_bloquea_las_tres_tools_antes_de_efectos) ... ok
+test_redirect_estandar_construye_destino_sin_revalidar_scope (__main__.Auditoria.test_redirect_estandar_construye_destino_sin_revalidar_scope) ... ok
+test_scope_no_restringe_puerto_y_parser_no_es_urlparse (__main__.Auditoria.test_scope_no_restringe_puerto_y_parser_no_es_urlparse) ... ok
+test_tool_desconocida_no_ejecuta (__main__.Auditoria.test_tool_desconocida_no_ejecuta) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.008s
+
+OK
