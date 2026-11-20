@@ -14,14 +14,23 @@ def hash_password(password: str, salt: bytes = None, iters: int = 200_000) -> st
     """Devuelve una cadena 'pbkdf2_sha256$iters$salt_hex$dk_hex'.
     Pista: secrets.token_bytes para el salt; hashlib.pbkdf2_hmac('sha256', ...).
     ¿Por qué salt por usuario? ¿Por qué 200.000 iteraciones y no una?"""
-    # TODO
-    raise NotImplementedError("Completá hash_password()")
+    # Salt aleatorio por usuario: dos usuarios con la misma clave tienen hashes distintos
+    # y se invalidan las rainbow tables. Las iteraciones encarecen cada intento del atacante.
+    salt = salt if salt is not None else secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, iters)
+    return f"pbkdf2_sha256${iters}${salt.hex()}${dk.hex()}"
 
 def verify_password(password: str, almacenado: str) -> bool:
     """Verifica una contraseña contra el registro de hash_password().
     DEBE comparar en tiempo constante (hmac.compare_digest)."""
-    # TODO
-    raise NotImplementedError("Completá verify_password()")
+    try:
+        algo, iters, salt_hex, dk_hex = almacenado.split("$")
+        if algo != "pbkdf2_sha256":
+            return False
+        dk = hashlib.pbkdf2_hmac("sha256", password.encode(), bytes.fromhex(salt_hex), int(iters))
+    except ValueError:
+        return False
+    return hmac.compare_digest(dk.hex(), dk_hex)  # tiempo constante
 
 # --- B.2: segundo factor (TOTP / RFC 6238) ---
 def hotp(secret: bytes, contador: int, digitos: int = 6, algo: str = "sha1") -> str:
@@ -34,8 +43,8 @@ def hotp(secret: bytes, contador: int, digitos: int = 6, algo: str = "sha1") -> 
 def totp(secret: bytes, t: int = None, paso: int = 30, digitos: int = 6) -> str:
     """TOTP (RFC 6238): HOTP usando como contador el tiempo dividido en pasos.
     Pista: contador = t // paso. Si t es None, usá time.time()."""
-    # TODO
-    raise NotImplementedError("Completá totp()")
+    t = time.time() if t is None else t
+    return hotp(secret, int(t) // paso, digitos)
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Autenticación (Lab 03).")
