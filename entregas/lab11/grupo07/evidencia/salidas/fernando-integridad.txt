@@ -1,0 +1,11 @@
+disco/etc/passwd.snippet: OK
+disco/listado.txt: OK
+disco/var/www/uploads/shell.php.evidencia.txt: OK
+logs/access.log: OK
+logs/auth.log: FAILED
+memoria/bash_history.txt: OK
+memoria/lsof.txt: OK
+memoria/netstat.txt: OK
+memoria/pslist.txt: OK
+sha256sum: WARNING: 1 computed checksum did NOT match
+[sha256sum] código de salida: 1

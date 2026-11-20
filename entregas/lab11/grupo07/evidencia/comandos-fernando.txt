@@ -1,0 +1,114 @@
+# Lab 11 · Fernando Cagliero · 2026-11-19 (UTC−03:00) · Git Bash
+# Desde la raíz del repositorio:
+# bash entregas/lab11/grupo07/evidencia/comandos-fernando.txt
+set -euo pipefail
+
+revision=a1abb79449a68f3cae29d1e9d43a4ac4a4f53960
+copia=.loot/lab11-grupo07/fernando
+caso="$copia/labs/lab11-forensia/caso"
+salidas=entregas/lab11/grupo07/evidencia/salidas
+mkdir -p "$copia" "$salidas"
+
+# Extraer una copia byte a byte desde Git al preparar el análisis.
+if [ ! -d "$caso" ]; then
+    git archive "$revision" labs/lab11-forensia/caso | tar -x -C "$copia"
+fi
+
+{
+    estado=0
+    (cd "$caso" && sha256sum -c evidencia.sha256) || estado=$?
+    printf '[sha256sum] código de salida: %s\n' "$estado"
+} > "$salidas/fernando-integridad.txt" 2>&1
+
+python -X utf8 - "$caso" > "$salidas/fernando-hallazgos.txt" 2>&1 <<'PY'
+from hashlib import sha256
+from pathlib import Path
+import re
+import sys
+from urllib.parse import parse_qs, urlsplit
+
+sys.stdout.reconfigure(newline="\n")
+caso = Path(sys.argv[1])
+acceso = "logs/access.log"
+listado = "disco/listado.txt"
+webshell = "disco/var/www/uploads/shell.php.evidencia.txt"
+usuarios = "disco/etc/passwd.snippet"
+procesos = "memoria/pslist.txt"
+conexiones = "memoria/netstat.txt"
+archivos = (acceso, listado, webshell, usuarios, procesos, conexiones)
+esperados = {}
+for registro in (caso / "evidencia.sha256").read_text(encoding="utf-8").splitlines():
+    hash_captura, ruta = registro.split(maxsplit=1)
+    esperados[ruta] = hash_captura
+
+print("SHA-256 de las fuentes usadas, verificados contra el manifiesto:")
+for ruta in archivos:
+    calculado = sha256((caso / ruta).read_bytes()).hexdigest()
+    if calculado != esperados[ruta]:
+        raise SystemExit(f"Hash inesperado en fuente del análisis: {ruta}")
+    print(f"{calculado}  {ruta}")
+
+def lineas(ruta):
+    return (caso / ruta).read_text(encoding="utf-8").splitlines()
+
+def datos_http(linea):
+    registro = re.match(r'^(\S+).*?\[([^\]]+)\] "(\S+) (\S+) HTTP/[^"]+" (\d+)', linea)
+    if registro is None:
+        raise ValueError("Formato inesperado en access.log")
+    ip, fecha, metodo, objetivo, estado = registro.groups()
+    url = urlsplit(objetivo)
+    return f"{ip} [{fecha}] {metodo} {url.path} HTTP {estado}", parse_qs(url.query)
+
+print("\nR1: marcador de la solicitud de entrada")
+for posicion, linea in enumerate(lineas(acceso), start=1):
+    if not linea or linea.startswith("#"):
+        continue
+    datos, parametros = datos_http(linea)
+    cmd = parametros.get("cmd", [""])[0]
+    marcador = re.search(r"\becho\s+['\"]?(FLAG\{[^{}\s]+\})", cmd)
+    if marcador:
+        print(f"{acceso}:{posicion} | {datos} | parámetro cmd decodificado")
+        print(f"R1 marcador: {marcador.group(1)}")
+
+print("\nR2: marcador hallado al leer el extracto de disco")
+for posicion, linea in enumerate(lineas(webshell), start=1):
+    marcador = re.search(r"FLAG\{[^{}\s]+\}", linea)
+    if marcador:
+        print(f"{webshell}:{posicion} | comentario del artefacto")
+        print(f"R2 marcador: {marcador.group()}")
+
+print("\nReferencias de IOCs y de la correlación de P3:")
+http = lineas(acceso)
+for posicion in (20, 21):
+    datos, parametros = datos_http(http[posicion - 1])
+    if posicion == 20:
+        cmd = parametros["cmd"][0]
+        assert all(texto in cmd for texto in ("wget", "45.13.37.7", "/s.php", "/var/www/uploads/shell.php"))
+        datos += " | solicitud de descarga y escritura de shell.php"
+    print(f"{acceso}:{posicion} | {datos}")
+for ruta, posiciones in ((listado, (4, 6)), (usuarios, (4,)), (conexiones, (4, 5))):
+    contenido = lineas(ruta)
+    for posicion in posiciones:
+        print(f"{ruta}:{posicion} | {contenido[posicion - 1]}")
+captura = lineas(procesos)
+print(f"{procesos}:1 | {captura[0]}")
+pid, ppid, usuario, comando = captura[5].split(maxsplit=3)
+assert "wget" in comando and "45.13.37.7" in comando and "/s.php" in comando
+print(f"{procesos}:6 | PID {pid}; padre {ppid}; usuario {usuario}; descarga del artefacto")
+PY
+
+# Validación local de los marcadores obtenidos de la copia.
+{
+    for reto in R1 R2; do
+        marcador=$(sed -n "s/^$reto marcador: //p" "$salidas/fernando-hallazgos.txt")
+        printf 'Validación local de %s\n' "$reto"
+        bash ./ctf submit 11 "$reto" "$marcador"
+    done
+    printf 'Validación de R1 y R2 finalizada.\n'
+} > "$salidas/fernando-validacion.txt" 2>&1
+
+{
+    estado=0
+    bash ./ctf status 11 || estado=$?
+    printf '[ctf status] código de salida: %s\n' "$estado"
+} > "$salidas/fernando-status-11.txt" 2>&1

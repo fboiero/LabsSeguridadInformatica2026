@@ -1,0 +1,11 @@
+Validación local de R1
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R1 resuelto: Vector de entrada (SQLi -> RCE) en los logs
+Validación local de R2
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: El webshell dropeado en el disco
+Validación de R1 y R2 finalizada.
