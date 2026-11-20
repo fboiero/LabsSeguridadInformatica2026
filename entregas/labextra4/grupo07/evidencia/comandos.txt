@@ -1,0 +1,8 @@
+# Evidencia de comandos — Lab Extra 4 · Grupo 07 · Lorenzo Blanc
+
+Fecha de captura: 2026-11-20 UTC. No se inspeccionaron ni modificaron los archivos de hashes, diccionario, cracker u objetos `.enc`, porque no pertenecen al bloque D de Lorenzo.
+
+1. `./ctf lab extra4` — preparación del laboratorio; no genera ni cambia el caso.
+2. `./ctf status extra4` — salida completa en `salidas/status-extra4.txt`: 0/3, sin flags presentadas.
+
+Fuentes oficiales de P3 y P5 están enlazadas en `informe.md`. No se realizaron benchmarks ni se atribuyen resultados a las cuentas; P1/P4, la implementación y el crackeo están asignados a otros integrantes.
