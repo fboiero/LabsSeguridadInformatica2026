@@ -1,0 +1,17 @@
+[
+  {
+    "archivo": "evidencia/lorenzo/20261120T143854Z/audit.json",
+    "registros": 2,
+    "cadena_json_valida": true
+  },
+  {
+    "archivo": "evidencia/lorenzo/20261120T144215Z/audit.json",
+    "registros": 2,
+    "cadena_json_valida": true
+  },
+  {
+    "archivo": "evidencia/lorenzo/20261120T144633Z/audit.json",
+    "registros": 2,
+    "cadena_json_valida": true
+  }
+]

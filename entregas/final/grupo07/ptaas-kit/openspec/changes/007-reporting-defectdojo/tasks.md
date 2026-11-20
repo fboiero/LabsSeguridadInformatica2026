@@ -21,4 +21,4 @@
 - [ ] 3.5 Recorrido end-to-end con un solo comando contra el lab
 - [ ] 3.6 Archivar el delta en `openspec/specs/reporting/spec.md`
 
-Revisión 1.3 y archivado 3.6 pendientes de Lautaro. 3.5 pendiente: recon/análisis usan fixtures hasta integrar 004/005; validación real en Docker verificada.
+Revisión 1.3 y archivado 3.6 pendientes de Lautaro. 3.5 pendiente: 004/005 ya están integrados con fixtures; HTTPX, Nuclei y ZAP tienen corridas reales independientes en `evidencia/lorenzo/`, pero todavía no alimentan el recorrido completo con herramientas reales. La validación real en Docker está verificada. El candidato CSP de la demo sigue siendo manual; la nueva alerta real de ZAP no se conecta automáticamente al loop C.
