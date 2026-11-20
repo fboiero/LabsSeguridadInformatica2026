@@ -1,0 +1,42 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-20 23:46 UTC
+Nmap scan report for phantomcorp (172.18.0.3)
+Host is up (0.000040s latency).
+rDNS record for 172.18.0.3: cyberlab-phantomcorp.cyberlab_labnet
+
+PORT   STATE SERVICE VERSION
+80/tcp open  http    PhantomClientes/2.0 
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port80-TCP:V=7.95%I=7%D=11/20%Time=6B00DBD2%P=x86_64-pc-linux-gnu%r(Get
+SF:Request,B1,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20PhantomClientes/2\.0\x
+SF:20\r\nDate:\x20Fri,\x2020\x20Nov\x202026\x2023:46:26\x20GMT\r\nContent-
+SF:Type:\x20text/html;\x20charset=utf-8\r\n\r\n<h1>PhantomCorp\x20Clientes
+SF:</h1><p>Portal\x20publico\.</p>")%r(HTTPOptions,229,"HTTP/1\.0\x20501\x
+SF:20Unsupported\x20method\x20\('OPTIONS'\)\r\nServer:\x20PhantomClientes/
+SF:2\.0\x20\r\nDate:\x20Fri,\x2020\x20Nov\x202026\x2023:46:26\x20GMT\r\nCo
+SF:nnection:\x20close\r\nContent-Type:\x20text/html;charset=utf-8\r\nConte
+SF:nt-Length:\x20360\r\n\r\n<!DOCTYPE\x20HTML>\n<html\x20lang=\"en\">\n\x2
+SF:0\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<meta\x20charset=\
+SF:"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error\x20response</ti
+SF:tle>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n\x20\x20\x20\x20
+SF:\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20<p>Error\x20code:\x20501</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>M
+SF:essage:\x20Unsupported\x20method\x20\('OPTIONS'\)\.</p>\n\x20\x20\x20\x
+SF:20\x20\x20\x20\x20<p>Error\x20code\x20explanation:\x20501\x20-\x20Serve
+SF:r\x20does\x20not\x20support\x20this\x20operation\.</p>\n\x20\x20\x20\x2
+SF:0</body>\n</html>\n")%r(RTSPRequest,16C,"<!DOCTYPE\x20HTML>\n<html\x20l
+SF:ang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x20\x20<m
+SF:eta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<title>Error
+SF:\x20response</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20<body>\n
+SF:\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20<p>Error\x20code:\x20400</p>\n\x20\x20\x20\x20\x20
+SF:\x20\x20\x20<p>Message:\x20Bad\x20request\x20version\x20\('RTSP/1\.0'\)
+SF:\.</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20explanation
+SF::\x20400\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\x20metho
+SF:d\.</p>\n\x20\x20\x20\x20</body>\n</html>\n")%r(FourOhFourRequest,8E,"H
+SF:TTP/1\.0\x20404\x20Not\x20Found\r\nServer:\x20PhantomClientes/2\.0\x20\
+SF:r\nDate:\x20Fri,\x2020\x20Nov\x202026\x2023:46:31\x20GMT\r\nContent-Typ
+SF:e:\x20text/html;\x20charset=utf-8\r\n\r\nNot\x20Found");
+MAC Address: 06:48:04:E2:A1:6B (Unknown)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 88.77 seconds

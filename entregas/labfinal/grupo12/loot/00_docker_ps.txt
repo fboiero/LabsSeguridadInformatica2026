@@ -1,0 +1,3 @@
+NAME                   IMAGE                                                                     COMMAND                  SERVICE       CREATED          STATUS          PORTS
+cyberlab-attacker      sha256:bdd59399d76040cb06e158f17f71a383b280ac583c767ddd34595eea1a0c814f   "sleep infinity"         attacker      28 minutes ago   Up 43 seconds   
+cyberlab-phantomcorp   sha256:36c56dc5764ce6c61e4d70ce06e3573d13445582d2fc6d5b31faed110d46a25d   "python3 /app/server…"   phantomcorp   28 minutes ago   Up 43 seconds   80/tcp
