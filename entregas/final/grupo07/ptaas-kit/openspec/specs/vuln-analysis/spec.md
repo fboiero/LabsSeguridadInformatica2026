@@ -1,6 +1,6 @@
 # Delta — vuln-analysis
 
-Tests: tests/test_schemas.py, tests/test_engagement_and_loops.py, tests/test_authorization.py
+Tests: tests/test_schemas.py, tests/test_engagement_and_loops.py, tests/test_authorization.py, tests/test_detection_loop.py, tests/test_adapters_004_005.py
 
 ## Requirement: Análisis no destructivo
 El análisis DEBE usar solo capabilities marcadas `destructive: false`.
@@ -49,3 +49,24 @@ Ante dos salidas con schema inválido, el sistema DEBE escalar a HITL.
 - GIVEN dos respuestas consecutivas que no validan
 - WHEN se procesa la tercera solicitud
 - THEN el estado pasa a PENDING_HITL y no se reintenta
+
+## Change 005 — análisis de bajo impacto y loop B
+
+### Requirement: ZAP baseline y Nuclei de solo lectura
+El análisis DEBE usar ZAP baseline y templates revisadas con GET; no debe invocar PoCs, enviar payloads de explotación ni usar OAST.
+
+### Scenario: request de template no GET
+- GIVEN un template con método distinto de GET o cuerpo
+- WHEN se construye argv
+- THEN el adaptador lo rechaza antes de ejecutar
+
+### Requirement: Loop B sin ganancia
+El loop B DEBE detenerse después de dos iteraciones sin evidencia nueva y marcar el hallazgo como `inconclusive`.
+
+### Scenario: dos iteraciones vacías
+- GIVEN dos iteraciones consecutivas sin refs nuevas
+- WHEN se evalúa la decisión del loop
+- THEN se devuelve `inconclusive` con el motivo de parada
+
+### Requirement: Prioridad sin CVSS v4 inferido
+La prioridad solo DEBE calcularse cuando el snapshot contiene CVSS v4; CVSS v3 o ausencia de score no debe producir valor numérico.

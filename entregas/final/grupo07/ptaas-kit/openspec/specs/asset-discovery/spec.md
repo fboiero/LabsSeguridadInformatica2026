@@ -1,6 +1,6 @@
 # Delta — asset-discovery
 
-Tests: tests/test_engagement_and_loops.py
+Tests: tests/test_engagement_and_loops.py, tests/test_asset_graph.py, tests/test_recon_loop.py
 
 ## Requirement: Relevamiento solo dentro de alcance
 El sistema DEBE descubrir únicamente activos cubiertos por el scope token vigente; todo descubrimiento fuera de alcance DEBE registrarse como "fuera de alcance" sin ser tocado.
@@ -38,6 +38,27 @@ El loop A DEBE detenerse cuando no aparezcan activos nuevos o al alcanzar el top
 - GIVEN que se llegó a `max_loop_iterations.recon`
 - WHEN el agente propone otra iteración
 - THEN el harness la rechaza y el engagement avanza de fase
+
+## Change 004 — grafo versionado y seguridad de recon
+
+### Requirement: Persistencia versionada del grafo
+El `AssetGraph` DEBE guardar schema versionada, IDs estables, fuentes, tecnologías y relaciones; una versión desconocida DEBE fallar explícitamente.
+
+### Scenario: guardar y recuperar el grafo
+- GIVEN activos observados por más de una herramienta
+- WHEN se guarda y carga el grafo
+- THEN se fusionan fuentes y tecnologías sin duplicar el nodo
+
+### Requirement: Descubrimientos fuera de alcance
+Los activos descubiertos fuera del RoE DEBEN guardarse como fuera de alcance y NO DEBEN alcanzar un adaptador activo.
+
+### Scenario: subdominio ajeno al RoE
+- GIVEN que subfinder devuelve un host externo al scope
+- WHEN el loop intenta sondearlo
+- THEN el Guard lo bloquea, el audit lo registra como BLOCKED y el adapter no lo recibe
+
+### Requirement: Parada de loop A
+El loop A DEBE detenerse con `decide_recon` ante grafo estabilizado o tope de iteraciones.
 
 ## Requirement: Respeto del rate limit
 El sistema NO DEBE superar `rate_limit_rps_per_target`.
