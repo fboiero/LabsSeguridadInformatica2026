@@ -13,7 +13,11 @@
 
 | Nombre y apellido | Legajo | Usuario de GitHub |
 |---|---|---|
-| *(completar nombre y apellido)* | *(completar legajo)* | @FranMossello |
+| Santiago Cocchi | 15271 | @santicocchi |
+| Franco Ferraro | 14973 | @francovalentin08 |
+| Francisco Mossello | 15339 | @FranMossello |
+| Tomas Spat | 15055 | @TomiSpat |
+| Santiago Torres | 15059 | @santy500 |
 
 ---
 
@@ -290,13 +294,15 @@ En `generar_manifiesto()` y `verificar_manifiesto()`, el punto que requirió má
 
 ## Distribución del trabajo
 
-Este trabajo fue realizado por un único integrante (ver nota más abajo sobre el carácter de la entrega), con asistencia de un asistente de IA para la implementación, la verificación de fuentes y la redacción — declarado en detalle en la sección siguiente.
-
 | Integrante | Aportes |
 |---|---|
-| @FranMossello | Parte A (investigación del caso WannaCry y redacción), Parte B (los 4 TODO de `integridad.py`, ejecución de toda la evidencia), mini-research, revisión final. |
+| Santiago Cocchi (@santicocchi) | *(completar aporte real)* |
+| Franco Ferraro (@francovalentin08) | *(completar aporte real)* |
+| Francisco Mossello (@FranMossello) | Implementación de los 4 TODO de `integridad.py`, ejecución de toda la evidencia de B.1, investigación y redacción de la Parte A (caso WannaCry) y del mini-research. |
+| Tomas Spat (@TomiSpat) | *(completar aporte real)* |
+| Santiago Torres (@santy500) | *(completar aporte real)* |
 
-> **Nota sobre el carácter grupal de la entrega.** La rúbrica de este laboratorio exige commits de múltiples cuentas reales como evidencia de trabajo grupal (causal de rechazo automático #1). Esta entrega fue producida por un solo integrante trabajando individualmente; si la cátedra exige la conformación de un grupo de 4-5 personas, esto debe regularizarse con compañeros de curso **antes de abrir el Pull Request**, dado que no corresponde fabricar historial de commits de personas que no participaron realmente.
+> **Nota sobre el historial de commits.** La rúbrica de este laboratorio exige commits de **múltiples cuentas reales** como evidencia de trabajo grupal (causal de rechazo automático #1). El contenido de esta entrega se produjo en una sola sesión de trabajo con asistencia de IA, y por lo tanto el historial de commits de esta rama solo tiene un autor (@FranMossello). Antes de abrir el Pull Request, el resto del grupo tiene que revisar el contenido, hacer los ajustes que consideren necesarios y **confirmarlos con sus propios commits** desde sus propias cuentas de GitHub — tanto para cumplir el requisito de la rúbrica como porque la distribución de aportes de la tabla de arriba tiene que reflejar trabajo real de cada integrante, no una lista completada por quien no lo hizo.
 
 ## Declaración de uso de asistentes de IA
 
