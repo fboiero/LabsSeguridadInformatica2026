@@ -3,10 +3,10 @@
 **Grupo:** 14 · **Integrantes:** Fede Peron (@fedeeperon), Laureano Gomez Redondo (@Laureano-GR), Martín Cesano (@martincesano), Martín Gaido (@martingaidoo), Valentina Chiapero (@valechiapero) · **Fecha:** 19/11/2026
 **Proveedor usado:** mock (offline, sin API key)
 
-> **Estado de la entrega.** El equipo que preparó esta entrega no tiene Docker, por lo
-> que el entorno PhantomCorp no se pudo levantar. El código del agente está completo y
-> se ejecutó con el motor mock, pero **no hay evidencia del target real ni flags
-> capturadas**. Lo que depende del entorno está marcado **PENDIENTE (requiere Docker)**.
+> **Estado de la entrega.** Entorno PhantomCorp levantado con Docker (vía WSL) y agente
+> ejecutado con motor `mock` contra el target real. **5/5 flags capturadas (100%)** y
+> registradas con `./ctf submit`. Los transcripts completos y la salida de `./ctf status 09`
+> están en `evidencia/` (`agente_pentest.txt`, `agente_esqueleto.txt`, `ctf-status.txt`).
 
 ## 0. Declaración de uso de IA
 
@@ -16,30 +16,103 @@
   redactar este informe y el research.
 - **Restricciones aplicadas:** no se usó ninguna API key ni llamadas externas (motor
   `mock`); no se consultó `solucion.md`; no se inventaron flags ni salidas.
-- **Verificación:** el transcript es la salida real de la corrida local (con las flags
-  reemplazadas por `FLAG{REDACTADA}`). PENDIENTE: revisión humana del código y de las
-  respuestas; el grupo debe poder defenderlos oralmente.
+- **Verificación:** los transcripts de las dos secciones son la salida real de las
+  corridas locales contra el target PhantomCorp (sin redacción de flags, ya que son las
+  del CTF del curso, no secretos). El grupo debe poder defender el código y las
+  decisiones oralmente.
 
 ## 1. Flags capturadas
 
-**PENDIENTE (requiere Docker).** Comandos que debe correr el humano:
+**5/5 (100%).** Todas verificadas contra el target real y registradas con `./ctf submit 09`.
 
-```bash
-./ctf lab 09
-export LLM_PROVIDER=mock        # o claude/openai con la key en variable de entorno
-make shell
-cd /repo/labs/lab09-agentes/src
-python3 agente_pentest.py       # R1-R4 (agente de referencia)
-./ctf submit 09 R1 'FLAG{...}'  # idem R2, R3, R4
-./ctf status 09                 # pegar acá la salida real
+| Reto | Flag | Hallazgo | Origen |
+|------|------|----------|--------|
+| R1 | `FLAG{agente_primer_recon}` | Recon inicial | Header `X-Recon-Flag` en `GET /` |
+| R2 | `FLAG{agente_ruta_oculta}` | Ruta oculta | `GET /vault-interno-x7` (revelada por `robots.txt`) |
+| R3 | `FLAG{agente_api_expuesta}` | API expuesta | `GET /api/debug` (JSON `{"debug":true,"flag":...}`) |
+| R4 | `FLAG{guardrail_fuera_de_alcance}` | Guardrail de alcance | Bloqueo de `nmap_scan 8.8.8.8` (fuera de scope) |
+| R5 | `FLAG{agente_esqueleto_completo}` | Encadenamiento | `GET /api/token` → `POST /api/vault` con el token |
+
+R1–R4 los captura el agente de referencia (`agente_pentest.py`); R5 lo captura el
+esqueleto del alumno (`agente_esqueleto.py`), que encadena token→vault. Ambas corridas
+con `LLM_PROVIDER=mock` (offline, sin API key).
+
+Salida de `./ctf status 09` (evidencia en `evidencia/ctf-status.txt`):
+
+```
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 09                      │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     El agente hace recon y encuentra el primer flag
+   ✓  R2     El agente enumera y sigue la ruta oculta
+   ✓  R3     El agente detecta la API expuesta
+   ✓  R4     El guardrail rechaza un objetivo fuera de alcance
+   ✓  R5     Tu agente encadena token->vault (esqueleto completo)
+
+  ██████████████████████████████  5/5 (100%)
+
+[ OK ] ¡Lab 09 COMPLETO! Ponete las pilas con la próxima unidad.
 ```
 
-Para R5: ejecutar `entregas/lab09/grupo14/src/agente_esqueleto.py` con
-`labs/lab09-agentes/src` en el `PYTHONPATH` (importa `herramientas` y `llm`), contra el
-target levantado, y enviar con `./ctf submit 09 R5 'FLAG{...}'`.
+Transcript del agente de referencia (R1–R4, evidencia en `evidencia/agente_pentest.txt`):
 
-Lo único observable offline: el guardrail bloquea `8.8.8.8` y devuelve su mensaje de
-bloqueo (que contiene el flag de R4, no reproducido acá); ver transcript.
+```
+[paso 1] → nmap_scan({'host': 'phantomcorp'})
+    error nmap: Command '['nmap', '-Pn', '-sV', '--top-ports', '50', 'phantomcorp']' timed out after 60 seconds
+
+[paso 2] → http_get({'url': 'http://phantomcorp/'})
+    HTTP 200
+    Server: PhantomCapstone/1.0
+    X-Recon-Flag: FLAG{agente_primer_recon}
+
+    PhantomCorp Capstone. Auditame.
+    [+] FLAG NUEVA: FLAG{agente_primer_recon}
+
+[paso 3] → http_get({'url': 'http://phantomcorp/robots.txt'})
+    HTTP 200
+    User-agent: *
+    Disallow: /vault-interno-x7
+
+[paso 4] → http_get({'url': 'http://phantomcorp/vault-interno-x7'})
+    HTTP 200
+    Ruta interna. FLAG{agente_ruta_oculta}
+    [+] FLAG NUEVA: FLAG{agente_ruta_oculta}
+
+[paso 5] → http_get({'url': 'http://phantomcorp/api/debug'})
+    HTTP 200
+    {"debug": true, "flag": "FLAG{agente_api_expuesta}"}
+    [+] FLAG NUEVA: FLAG{agente_api_expuesta}
+
+[paso 6] → http_get({'url': 'http://phantomcorp/api/token'})
+    HTTP 200
+    {"token": "T-9f3k-vault", "uso": "POST /api/vault con {\"token\": ...}"}
+
+[paso 7] → http_post({'url': 'http://phantomcorp/api/vault', 'data': {'token': 'T-9f3k-vault'}})
+    HTTP 200
+    {"ok": true, "flag": "FLAG{agente_esqueleto_completo}"}
+    [+] FLAG NUEVA: FLAG{agente_esqueleto_completo}
+
+[paso 8] → nmap_scan({'host': '8.8.8.8'})
+    BLOQUEADO POR GUARDRAIL: '8.8.8.8' esta FUERA DE ALCANCE. El agente NO ejecuta acciones fuera del scope autorizado. FLAG{guardrail_fuera_de_alcance}
+    [+] FLAG NUEVA: FLAG{guardrail_fuera_de_alcance}
+
+[agente] Fin: Auditoría simulada completa. Revisá las flags en el transcript.
+
+=== Flags encontradas (5) ===
+  FLAG{agente_api_expuesta}
+  FLAG{agente_esqueleto_completo}
+  FLAG{agente_primer_recon}
+  FLAG{agente_ruta_oculta}
+  FLAG{guardrail_fuera_de_alcance}
+```
+
+> Nota de entorno: `nmap_scan` dio *timeout* (el target no expone puertos nmap-eables en
+> el tiempo dado); no afecta la captura, porque los hallazgos salen por HTTP. Además, el
+> contenedor `cyberlab-phantomcorp` comparte nombre con targets de otros labs: hubo que
+> forzar el rebuild de la imagen del lab09 (`--build --force-recreate`) porque Docker
+> reusaba una imagen cacheada (`PhantomClientes/2.0`) en vez de la del capstone
+> (`PhantomCapstone/1.0`). Con la imagen cacheada, R1–R3 y R5 no existían (404 / sin header).
 
 ## 2. Tu agente
 
@@ -55,54 +128,71 @@ Archivo: `src/agente_esqueleto.py`. Se completaron los tres TODO:
 
 El detector de flags (`re.findall`) ya venía dado y se mantuvo.
 
-Salida de la corrida local con mock (**sin target**, ver limitación):
+Salida de la corrida local con mock **contra el target real** (evidencia en
+`evidencia/agente_esqueleto.txt`):
 
 ```
 [paso 1] tool=nmap_scan args={'host': 'phantomcorp'}
-[resultado] error nmap: [WinError 2] The system cannot find the file specified
+[resultado] error nmap: Command '[...'nmap'...]' timed out after 60 seconds
 [paso 2] tool=http_get args={'url': 'http://phantomcorp/'}
-[resultado] error http_get: <urlopen error [Errno 11001] getaddrinfo failed>
-... (pasos 3 a 6: http_get a /robots.txt, /vault-interno-x7, /api/debug, /api/token; mismo error)
+[resultado] HTTP 200 · X-Recon-Flag: FLAG{agente_primer_recon}
+[paso 3] tool=http_get args={'url': 'http://phantomcorp/robots.txt'}
+[resultado] HTTP 200 · Disallow: /vault-interno-x7
+[paso 4] tool=http_get args={'url': 'http://phantomcorp/vault-interno-x7'}
+[resultado] HTTP 200 · Ruta interna. FLAG{agente_ruta_oculta}
+[paso 5] tool=http_get args={'url': 'http://phantomcorp/api/debug'}
+[resultado] HTTP 200 · {"debug": true, "flag": "FLAG{agente_api_expuesta}"}
+[paso 6] tool=http_get args={'url': 'http://phantomcorp/api/token'}
+[resultado] HTTP 200 · {"token": "T-9f3k-vault", ...}
 [paso 7] tool=http_post args={'url': 'http://phantomcorp/api/vault', 'data': {'token': 'T-9f3k-vault'}}
-[resultado] error http_post: <urlopen error [Errno 11001] getaddrinfo failed>
+[resultado] HTTP 200 · {"ok": true, "flag": "FLAG{agente_esqueleto_completo}"}
 [paso 8] tool=nmap_scan args={'host': '8.8.8.8'}
-[resultado] BLOQUEADO POR GUARDRAIL: '8.8.8.8' esta FUERA DE ALCANCE. El agente NO ejecuta acciones fuera del scope autorizado. FLAG{REDACTADA}
+[resultado] BLOQUEADO POR GUARDRAIL: '8.8.8.8' esta FUERA DE ALCANCE. ... FLAG{guardrail_fuera_de_alcance}
 [final] Auditoría simulada completa. Revisá las flags en el transcript.
-=== Flags encontradas (1) ===
+=== Flags encontradas (5) ===
+  FLAG{agente_api_expuesta}
+  FLAG{agente_esqueleto_completo}
+  FLAG{agente_primer_recon}
+  FLAG{agente_ruta_oculta}
+  FLAG{guardrail_fuera_de_alcance}
 ```
 
-El loop funciona: ejecuta las 8 acciones, realimenta y corta en `final`. **Flag R5:
-PENDIENTE (requiere Docker)**: sin el target no hay respuesta de `/api/token` ni de
-`/api/vault`, por lo que no se pudo verificar el encadenamiento token a vault. Nota: el
-mock envía un token fijo (`T-9f3k-vault`) en vez de leerlo de la respuesta; es una
-limitación del mock, un LLM real tomaría el token de la salida del paso 6.
+El loop funciona: ejecuta las 8 acciones, realimenta con `[{"id","output"}]` y corta en
+`final`. **R5 verificado:** el paso 6 obtiene el token de `/api/token` y el paso 7 lo
+usa en `POST /api/vault`, que devuelve `FLAG{agente_esqueleto_completo}`. Nota: el mock
+emite el token fijo (`T-9f3k-vault`) en el paso 7 en vez de leerlo de la salida del paso
+6; es una limitación del mock (plan de acciones precargado), un LLM real tomaría el token
+de la respuesta real del paso 6.
 
 ## 3. Auditoría crítica del agente
 
-**Transcript:** ver sección 2 (corrida mock sin target). El transcript con el target
-real es **PENDIENTE (requiere Docker)** y debe pegarse completo y reanalizarse.
+**Transcript:** ver sección 1 (agente de referencia, R1–R4) y sección 2 (esqueleto,
+R5), ambos contra el target real; evidencia completa en `evidencia/`.
 
-**Aciertos y errores** (sobre la corrida mock; no sobre un LLM real):
+**Aciertos y errores** (observados en la corrida real con mock; no sobre un LLM real):
 
-- *Paso 1, `nmap_scan phantomcorp`:* primer paso lógico (recon). Falló solo por no
-  tener nmap ni target en este equipo. Un humano habría hecho lo mismo.
-- *Pasos 2–3, `/` y `/robots.txt`:* decisión correcta (enumeración web básica;
-  robots.txt suele delatar rutas ocultas).
-- *Paso 4, `/vault-interno-x7`:* sigue una pista de ruta oculta; el mock la conoce de
-  antemano, un LLM real debería leerla de robots.txt (a verificar con el target).
-- *Pasos 5–6, `/api/debug` y `/api/token`:* buena progresión hacia la API expuesta.
-- *Paso 7, `POST /api/vault`:* encadenamiento correcto en lo conceptual, pero el token
-  está hardcodeado: no se adapta si el token cambia.
+- *Paso 1, `nmap_scan phantomcorp`:* primer paso lógico (recon). Dio *timeout* a 60s (el
+  target no expone puertos nmap-eables en ese tiempo); el agente igual siguió. Un humano
+  habría hecho el mismo recon inicial.
+- *Pasos 2–3, `/` y `/robots.txt`:* correcto. El `/` trajo R1 en el header
+  `X-Recon-Flag` y `robots.txt` delató `/vault-interno-x7` (enumeración web básica).
+- *Paso 4, `/vault-interno-x7`:* sigue la ruta oculta de robots.txt y captura R2. Con el
+  mock la ruta viene en el plan precargado; un LLM real la deduciría del `Disallow`.
+- *Pasos 5–6, `/api/debug` y `/api/token`:* buena progresión hacia la API expuesta
+  (R3 en `/api/debug`; `/api/token` entrega el token efímero para el encadenamiento).
+- *Paso 7, `POST /api/vault`:* encadenamiento correcto y captura R5, pero con el mock el
+  token va hardcodeado: no se adapta si el token cambia (un LLM lo leería del paso 6).
 - *Paso 8, `nmap 8.8.8.8`:* acción fuera de alcance, deliberada para probar el
   guardrail; un humano nunca la ejecutaría.
-- *Errores generales:* el agente no distingue "error de red" de "sin hallazgos" (siguió
-  igual tras seis fallos seguidos, sin reintentar ni abortar); no resume ni deduplica;
-  el mock no razona. Con un LLM real se sumaría el riesgo de alucinar hallazgos.
+- *Errores generales:* el agente no distingue "error/timeout" de "sin hallazgos" (siguió
+  igual tras el timeout de nmap, sin reintentar ni abortar); no resume ni deduplica
+  (dedup de flags solo lo hace el detector final); el mock no razona (plan fijo). Con un
+  LLM real se sumaría el riesgo de alucinar hallazgos.
 
 **El guardrail (R4):** el mock pide escanear `8.8.8.8`. `nmap_scan` llama a
 `_verificar_alcance()`, que extrae el host y, como no está en `ALCANCE = {"phantomcorp"}`,
-devuelve un mensaje de bloqueo sin ejecutar nada (incluye el flag del reto, no
-reproducido acá). Es imprescindible porque la validación está en el **código** y no
+devuelve un mensaje de bloqueo sin ejecutar nada; ese mensaje contiene
+`FLAG{guardrail_fuera_de_alcance}` (R4). Es imprescindible porque la validación está en el **código** y no
 depende de que el modelo obedezca el prompt: un LLM puede ser engañado (prompt injection
 en una respuesta del target) o equivocarse, y sin guardrail escanearía a un tercero
 (Ley 26.388). Todas las tools pasan por el mismo chequeo.
