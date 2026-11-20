@@ -1,0 +1,8 @@
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Wed, 28 Oct 2026 18:58:11 GMT
+Content-Type: text/plain
+
+Bienvenido admin. Dashboard RRHH.
+FLAG{final_sqli_foothold}
+Backup de config disponible en: /backup/rrhh.conf

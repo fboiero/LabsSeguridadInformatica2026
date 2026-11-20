@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Wed, 28 Oct 2026 17:10:31 GMT
+Content-Type: text/html; charset=utf-8
+
+<!doctype html><title>Portal RRHH PhantomCorp</title><h1>Portal interno RRHH</h1><form method=post action=/portal/login><input name=user><input name=pass type=password></form><!-- recon: portal interno localizado. FLAG{final_recon_portal} -->

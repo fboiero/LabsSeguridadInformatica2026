@@ -1,0 +1,6 @@
+HTTP/1.0 404 Not Found
+Server: PhantomClientes/2.0 
+Date: Thu, 29 Oct 2026 13:11:17 GMT
+Content-Type: text/html; charset=utf-8
+
+Not Found

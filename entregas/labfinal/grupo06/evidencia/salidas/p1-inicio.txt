@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Wed, 28 Oct 2026 17:10:20 GMT
+Content-Type: text/html; charset=utf-8
+
+<h1>PhantomCorp Clientes</h1><p>Portal publico.</p>

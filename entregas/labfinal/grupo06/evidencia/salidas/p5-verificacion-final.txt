@@ -1,0 +1,33 @@
+﻿PERSONA 5 - VERIFICACION INDEPENDIENTE
+Fecha: 30/10/2026
+Entorno: PhantomClientes/2.0
+
+R1 - RECONOCIMIENTO
+GET /robots.txt: HTTP 200
+Ruta descubierta: /portal-rrhh
+GET /portal-rrhh: HTTP 200
+Formulario POST /portal/login
+Flag encontrada: FLAG{final_recon_portal}
+
+R2 - INYECCION SQL
+Credenciales invalidas: HTTP 401
+Prueba controlada de SQLi: HTTP 200
+Acceso observado: Dashboard RRHH como admin
+Flag encontrada: FLAG{final_sqli_foothold}
+
+R3 - EXPOSICION DE SECRETOS
+GET /backup/rrhh.conf: accesible
+Variables observadas: DB_USER, DB_PASS, API_TOKEN
+Valores sensibles omitidos
+Flag encontrada: FLAG{final_token_looted}
+
+R4 - IMPACTO
+API /api/reporte: ejecucion de id como root
+Directorio priv: contiene clientes.db.txt
+Primera linea: 48210 registros (nombre, DNI, tarjeta)
+Flag encontrada: FLAG{final_crown_jewels}
+No se consultaron registros individuales.
+
+RESULTADO
+R1, R2, R3 y R4 reproducidos en el entorno autorizado.
+Validacion oficial del estado CTF: 4/4 (100%), completada el 30/10/2026.
