@@ -1,0 +1,16 @@
+# login diego -> token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk1MTQwMzkxLCJleHAiOjE3OTUxNDM5OTEsIm5vdGFfaW50ZXJuYSI6ImRlcGxveS10YWcgRkxBR3tqd3Rfc29sb19iYXNlNjR9In0.qjZF0BOymntVXZA3fZTHv07vUe9HQ9xPejCLvvyhc-M
+
+# decodificar (R1): payload en claro
+HEADER:  {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+PAYLOAD: {
+  "sub": "diego",
+  "role": "user",
+  "iat": 1795140391,
+  "exp": 1795143991,
+  "nota_interna": "deploy-tag FLAG{jwt_solo_base64}"
+}
+FIRMA:   aa3645d013b29a7b555d90377d94c7bf…

