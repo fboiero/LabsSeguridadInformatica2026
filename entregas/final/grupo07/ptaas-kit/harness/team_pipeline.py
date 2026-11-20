@@ -7,6 +7,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
 
+from harness.adapters.common import Runner
 from harness.adapters.feed_adapter import CveLookup, CweMapLookup, EpssLookup
 from harness.adapters.httpx_adapter import HttpxProbe
 from harness.adapters.nuclei_adapter import NucleiSafeTemplates
@@ -49,17 +50,30 @@ def fixture_runner(argv: list[str], timeout_s: int) -> str:
 
 
 def run_team_pipeline(
-    harness: Harness, issuer: TokenIssuer, target: str, output: Path
+    harness: Harness, issuer: TokenIssuer, target: str, output: Path,
+    tools_mode: str = 'fixture', network: str = 'lab_lab',
 ) -> dict[str, Any]:
+    if tools_mode not in {'fixture', 'docker'}:
+        raise ValueError('modo de herramientas inválido')
+    runner: Runner = fixture_runner
+    provenance = dict(PROVENANCE)
+    zap_profile = None
+    if tools_mode == 'docker':
+        from harness.adapters.common import load_profiles
+        from harness.docker_runner import DockerToolRunner
+        runner = DockerToolRunner(output, network)
+        zap_profile = dict(load_profiles()['zap'], report_dir=str(output.resolve()))
+        provenance.update(recon='Docker real con ReconLoop (004)',
+                          analysis='Docker real con DetectionLoop (005)')
     harness.tools.update(
         {
-            "subfinder.enum": cast(ToolAdapter, SubfinderEnum(runner=fixture_runner)),
-            "httpx.probe": cast(ToolAdapter, HttpxProbe(runner=fixture_runner)),
+            "subfinder.enum": cast(ToolAdapter, SubfinderEnum(runner=runner)),
+            "httpx.probe": cast(ToolAdapter, HttpxProbe(runner=runner)),
             "cve.lookup": cast(ToolAdapter, CveLookup()),
             "epss.lookup": cast(ToolAdapter, EpssLookup()),
             "cwe.map": cast(ToolAdapter, CweMapLookup()),
-            "zap.baseline_scan": cast(ToolAdapter, ZapBaselineScan(runner=fixture_runner)),
-            "nuclei.safe_templates": cast(ToolAdapter, NucleiSafeTemplates(runner=fixture_runner)),
+            "zap.baseline_scan": cast(ToolAdapter, ZapBaselineScan(runner=runner, profile=zap_profile)),
+            "nuclei.safe_templates": cast(ToolAdapter, NucleiSafeTemplates(runner=runner)),
         }
     )
     recon = ReconLoop(harness).run(target, issuer.issue(Phase.RECON), output / "asset-graph.json")
@@ -79,7 +93,7 @@ def run_team_pipeline(
     analysis = DetectionLoop(harness).analyze(seed, target, issuer.issue(Phase.ANALYZE))
     result = {
         "provenance": {
-            **PROVENANCE,
+            **provenance,
             "correlation_result": f"{len(candidates)} coincidencias CVE",
             "analysis_result": analysis.status,
         },
@@ -101,8 +115,8 @@ def run_team_pipeline(
     (output / "pipeline-evidence.json").write_text(
         json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print("Loop A (004, fixtures):", recon.reason)
+    print(f"Loop A (004, {tools_mode}):", recon.reason)
     print("Correlación (005, offline):", len(candidates), "coincidencias CVE")
-    print("Loop B (005, fixtures):", analysis.status, "—", analysis.rationale)
+    print(f"Loop B (005, {tools_mode}):", analysis.status, "—", analysis.rationale)
     print("Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.")
     return result

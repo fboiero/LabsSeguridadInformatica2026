@@ -1,4 +1,20 @@
 # Delta — reporting
+## Requirement: Herramientas reales en el recorrido
+El modo --tools-mode docker DEBE ejecutar los adaptadores de A/B con Docker en
+red internal 10.99.0.0/28, sin shell y con cleanup incluso ante timeout. Sin fallback
+a fixtures. La correlación sigue offline y el candidato CSP sigue manual hasta
+validación explícita. La procedencia DEBE acompañar el reporte y los gates se mantienen.
+
+### Scenario: Modo Docker sin aprobación
+- GIVEN un laboratorio interno y RoE vigente
+- WHEN se pide el modo docker
+- THEN los loops usan Docker y la entrega queda PENDING_HITL sin aprobación
+
+### Scenario: Red pública o error de herramienta
+- GIVEN red no interna o herramienta con error
+- WHEN se intenta el recorrido
+- THEN falla sin usar fixtures y elimina su worker
+# Extensión 20/11: ejecución Docker de 004/005 integrada al reporte.
 
 Tests: tests/test_report_bundle.py, tests/test_run_integration.py
 

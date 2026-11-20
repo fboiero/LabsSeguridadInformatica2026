@@ -88,6 +88,7 @@ def execute(
     delivery_bundle: Path | None = None,
     validation_mode: str = "fixture",
     network: str = "lab_lab",
+    tools_mode: str = 'fixture',
 ) -> dict[str, Any]:
     roe = parse_roe(roe_path)
     output.mkdir(parents=True, exist_ok=True)
@@ -101,7 +102,7 @@ def execute(
             raise ValueError("bitácora de otro engagement")
         return _execute_with_audit(
             roe, output, approvals, audit, approve, reviewer, reason,
-            delivery_bundle, validation_mode, network,
+            delivery_bundle, validation_mode, network, tools_mode,
         )
     finally:
         audit.close()
@@ -118,6 +119,7 @@ def _execute_with_audit(
     delivery_bundle: Path | None,
     validation_mode: str,
     network: str,
+    tools_mode: str,
 ) -> dict[str, Any]:
     ks = KillSwitch()
     issuer = TokenIssuer(roe, audit, killswitch=ks)
@@ -130,8 +132,8 @@ def _execute_with_audit(
         if bundle["engagement_id"] != roe.engagement_id:
             raise ValueError("engagement ajeno")
     else:
-        print("004/005 integrados con fixtures; sin LLM vivo. Validación: " + validation_mode)
-        pipeline = run_team_pipeline(harness, issuer, target, output)
+        print(f"004/005: {tools_mode}; sin LLM vivo. Validación: {validation_mode}")
+        pipeline = run_team_pipeline(harness, issuer, target, output, tools_mode, network)
         request = ValidationRequest(
             "F-CSP-001",
             target,
@@ -208,6 +210,7 @@ def main() -> int:
     ap.add_argument("--deliver-bundle", type=Path)
     ap.add_argument("--validation-mode", choices=["fixture", "sandbox"], default="fixture")
     ap.add_argument("--network", default="lab_lab")
+    ap.add_argument('--tools-mode', choices=['fixture', 'docker'], default='fixture')
     args = ap.parse_args()
     if args.approve and (not args.reviewer or not args.reason):
         ap.error("aprobación requiere --reviewer y --reason")
@@ -223,6 +226,7 @@ def main() -> int:
             args.deliver_bundle,
             args.validation_mode,
             args.network,
+            args.tools_mode,
         )
         approvals.save(args.approvals)
     except (ValueError, PermissionError, RuntimeError, AuditChainCorrupted) as exc:
