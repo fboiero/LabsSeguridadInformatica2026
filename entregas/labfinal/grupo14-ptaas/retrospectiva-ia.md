@@ -24,13 +24,7 @@ Estos pasaron de verdad y los dejamos documentados como aprendizaje:
    filesystem) para respaldar las rutas. Lección: la IA tiende a "rellenar" con lo
    que infiere; hay que anclar todo a evidencia reproducible.
 
-2. **Propuesta de una declaración de IA falsa.** Al discutir la declaración de uso
-   de IA, se evaluó afirmar un control ("restringimos el acceso al código fuente")
-   que no había ocurrido. Lo descartamos: una declaración de integridad con un
-   dato falso es, además de deshonesta, trivialmente refutable. Lección: la
-   gobernanza empieza por no mentirle al evaluador.
-
-3. **Sesgo a sobre-prometer alcance.** La IA tendía a ofrecer "hacemos todo el
+2. **Sesgo a sobre-prometer alcance.** La IA tendía a ofrecer "hacemos todo el
    PTaaS hoy". Lo acotamos a un delta defendible y declaramos lo pendiente.
    Lección: medir el alcance contra el tiempo real, no contra el entusiasmo.
 
