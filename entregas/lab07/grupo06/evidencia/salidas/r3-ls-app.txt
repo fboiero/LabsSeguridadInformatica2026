@@ -1,0 +1,7 @@
+$ ping -c1 127.0.0.1; ls -la /app
+total 24
+drwxr-xr-x 1 root root 4096 Oct 28 03:59 .
+drwxr-xr-x 1 root root 4096 Oct 28 03:59 ..
+drwxr-xr-x 2 root root 4096 Oct 28 03:59 flags
+drwxr-xr-x 2 root root 4096 Oct 28 03:59 public
+-rwxr-xr-x 1 root root 6339 Oct 28 03:51 server.py

@@ -1,0 +1,4 @@
+﻿services:
+  attacker:
+    volumes:
+      - ./entregas/lab07/grupo06/evidencia:/loot

@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Mon, 26 Oct 2026 19:48:21 GMT
+Content-Type: application/json
+
+{"id": 1, "user": "admin", "rol": "admin", "nota_privada": "Nota del admin: FLAG{idor_broken_access}"}

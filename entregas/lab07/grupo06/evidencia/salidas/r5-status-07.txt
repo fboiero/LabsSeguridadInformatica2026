@@ -1,0 +1,13 @@
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 07                     │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ·  R1     SQLi - bypass de autenticacion
+   ·  R2     SQLi - extraccion de datos con UNION
+   ·  R3     Inyeccion de comandos (RCE)
+   ·  R4     Path traversal / LFI
+   ✓  R5     IDOR - control de acceso roto
+
+  ██████░░░░░░░░░░░░░░░░░░░░░░░░  1/5 (20%)
+

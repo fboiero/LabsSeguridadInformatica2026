@@ -1,0 +1,17 @@
+
+  ┌───────────────────────────────────────────────────────┐
+  │  CONSOLA DEL ATACANTE · CyberLab UTN FRVM              │
+  │                                                        │
+  │  Tools listas:  nmap  ncat  curl  whois  dig  python3  │
+  │  Guardá evidencia en /loot (se comparte con tu repo).  │
+  │  El target del lab activo se llama:  phantomcorp       │
+  │                                                        │
+  │  Probá para arrancar:   nmap -Pn phantomcorp           │
+  └───────────────────────────────────────────────────────┘
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 23 Oct 2026 22:27:55 GMT
+Content-Type: text/plain; charset=utf-8
+
+Resultados:
+  Router industrial - $1200

@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 23 Oct 2026 23:42:46 GMT
+Content-Type: text/plain; charset=utf-8
+
+FLAG{path_traversal_lfi}
