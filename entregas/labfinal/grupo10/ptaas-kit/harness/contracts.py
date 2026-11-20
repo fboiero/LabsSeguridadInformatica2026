@@ -134,6 +134,24 @@ class AuditLog:
         self.entries.append(body)
         return body
 
+    @staticmethod
+    def verify_entries(entries: list[dict]) -> bool:
+        """Verifica la integridad completa de la cadena SHA-256 (alteraciones y borrados)."""
+        prev = "GENESIS"
+        for entry in entries:
+            body = {k: v for k, v in entry.items() if k != "hash"}
+            if body.get("prev") != prev:
+                return False
+            expected = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+            if expected != entry.get("hash"):
+                return False
+            prev = entry["hash"]
+        return True
+
+    def verify_chain(self) -> bool:
+        """Verifica que la bitácora en memoria no haya sufrido alteraciones ni borrados."""
+        return self.verify_entries(self.entries)
+
 
 class KillSwitch:
     engaged: bool = False
@@ -144,7 +162,15 @@ class Harness:
                  tools: dict[str, ToolAdapter], killswitch: KillSwitch):
         self.guard, self.audit, self.tools, self.killswitch = guard, audit, tools, killswitch
 
-    def invoke(self, agent: str, action: Action, target: str, token: ScopeToken) -> dict:
+    def invoke(
+        self,
+        agent: str,
+        action: Action,
+        target: str,
+        token: ScopeToken,
+        *,
+        record_evidence: bool = False,
+    ) -> dict:
         if self.killswitch.engaged:
             self.audit.record(agent, action, target, token, Result.ABORTED)
             raise KillSwitchEngaged()
@@ -162,5 +188,6 @@ class Harness:
             self.audit.record(agent, action, target, token, Result.BLOCKED)
             raise ScopeViolation(f"adaptador {adapter.name} no habilitado en {token.phase}")
         out = adapter.run(action, target, token)
-        self.audit.record(agent, action, target, token, Result.OK)
+        evidence_payload = json.dumps(out, sort_keys=True, ensure_ascii=True) if record_evidence else None
+        self.audit.record(agent, action, target, token, Result.OK, evidence=evidence_payload)
         return out
