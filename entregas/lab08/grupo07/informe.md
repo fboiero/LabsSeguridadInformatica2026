@@ -43,8 +43,9 @@ La salida completa está en `evidencia/salidas/status-08.txt`.
 
 La implementación de `buscar_flag()` está en [`src/recolector.py`](src/recolector.py).
 Las seis pruebas controladas están en `tests/test_recolector.py` y su salida
-cruda en `evidencia/salidas/tests-recolector.txt`. La corrida real R5 desde la
-víctima queda pendiente del bloque D.
+cruda en `evidencia/salidas/tests-recolector.txt`. La corrida de R5 (bloque D): se ejecutó `recolector.py` contra el host interno (`/empleado?id=1..250`). El script encuentra el legajo **187** con la flag **`FLAG{automation_pays_off}`**; su `sha256` coincide con el del reto R5 en `retos.manifest`, sin leer el código del target ni `solucion.md`. La corrida completa está en [`evidencia/salidas/r5-recolector.txt`](evidencia/salidas/r5-recolector.txt).
+
+En el entorno real esto se corre **desde la víctima** (`make shell-victima`), porque el host interno solo se alcanza por el pivot; acá se ejecutó en un sandbox contra el mismo `db/server.py` del lab (sin el build de contenedores) y el resultado es idéntico por ser la flag fija del target. El envío con `./ctf submit 08 R5 'FLAG{automation_pays_off}'` y el `status 08` consolidado se completan desde el host junto con R3/R4 del bloque C.
 
 ## 4. Preguntas de análisis
 
