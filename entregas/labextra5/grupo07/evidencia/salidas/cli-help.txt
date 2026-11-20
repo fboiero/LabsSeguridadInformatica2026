@@ -1,0 +1,12 @@
+usage: jwt_tool.py [-h] {decodificar,crackear,forjar} ...
+
+jwt_tool — Lab Extra 5
+
+positional arguments:
+  {decodificar,crackear,forjar}
+    decodificar         leer header/payload (sin verificar)
+    crackear            crackear el secreto con diccionario
+    forjar              firmar un token propio con el secreto
+
+options:
+  -h, --help            show this help message and exit

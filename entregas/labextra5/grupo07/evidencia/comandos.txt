@@ -1,10 +1,20 @@
-Lab Extra 5 — Grupo 07 — Fernando Cagliero (@Ferca19)
-Fecha: 19/11/2026 (America/Buenos_Aires)
+# Evidencia de comandos — Lab Extra 5 · Grupo 07 · Lorenzo Blanc
 
-Revisión estática del flujo local de /perfil (no levanta el servidor ni extrae
-tokens/flags):
-  rg -n -C 3 "payload =|nota_interna|elif path == \"/perfil\"|USUARIOS.get|elif path == \"/admin\"|payload.get" labs/labextra5-jwt/objetivo/server.py
+Fecha: 2026-11-20 UTC. Origen de las pruebas: datos/token sintéticos locales generados solo para verificar `jwt_tool.py`; no se levantó ni consultó el servidor del caso y no se usó su diccionario o loot.
 
-La salida del fragmento revisado está en salidas/revision-r3-p5.txt. Las
-fuentes conceptuales de P3/P5 están listadas en referencias.md. No se ejecutó
-el flujo de login, el crack offline ni la forja en este bloque.
+1. `./ctf lab extra5` — instrucciones del lab.
+2. `python entregas/labextra5/grupo07/jwt_tool.py --help` — opciones CLI en `salidas/cli-help.txt`.
+3. `python .loot/labextra5-smoke.py` — fixture sintético; salida en `salidas/prueba-sintetica.txt`.
+4. `./ctf status extra5` — salida completa en `salidas/status-extra5.txt`, 0/3. No se presentaron flags.
+
+El smoke verificó decodificación base64url/JSON, HS256 válido, rechazo de secreto incorrecto y firma alterada, crackeo offline sobre un diccionario sintético, ausencia de match y token malformado. La interacción con el portal y las evidencias R1–R3 quedan a cargo de Guadalupe.
+
+## P3/P5 — Fernando Cagliero (@Ferca19)
+
+Revisión estática local del flujo de identidad/autorización (no inicia el portal
+ni extrae tokens o flags):
+  rg -n -C 3 'payload =|nota_interna|elif path == "/perfil"|USUARIOS.get|elif path == "/admin"|payload.get' labs/labextra5-jwt/objetivo/server.py
+
+Salida del fragmento: salidas/revision-r3-p5.txt. Fuentes conceptuales:
+referencias.md. El flujo de login, el crack offline y las forjas siguen a cargo
+del bloque operativo; no se ejecutaron en esta parte.

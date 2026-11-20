@@ -1,103 +1,54 @@
 # Entregable — Lab Extra 5: JWT inseguro
 
-**Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero
-(@Ferca19), Guadalupe Gómez (@guadagomezgg8) y Lautaro Mariño
-(@lautaromarino0) · **Fecha:** 19/11/2026 (America/Buenos_Aires)
+**Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0), Fernando Cagliero (@Ferca19)
 
-## Declaración de uso de IA
+**Estado parcial:** Lorenzo implementó y verificó las cuatro funciones de jwt_tool.py con datos sintéticos. Fernando agregó P3/P5 y la revisión estática del flujo de /perfil. R1–R3, control de sanidad y estado del portal siguen asignados a Guadalupe; P1/P2/P4, a Lautaro. No se levantó el portal, no se presentaron flags y el CTF capturado sigue en 0/3.
 
-Fernando Cagliero (@Ferca19) usó OpenAI Codex para inspeccionar el flujo local
-de `/perfil`, contrastar P3/P5 con el caso del laboratorio y redactar estas
-respuestas. Las conclusiones se apoyan en el código adjunto como referencia y
-en RFC 7519, RFC 8725 y OWASP API Security. No se presenta evidencia de login,
-cracking, forja, respuestas HTTP ni flags que no se hayan ejecutado/capturado
-en este bloque.
+**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para revisar el diseño del código y preparar pruebas sintéticas. Verifiqué el resultado con assertions locales para firma, alteración, diccionario sintético, errores de formato y CLI. No utilicé IA para afirmar aceptación del servidor ni para inventar hallazgos del caso. Fernando Cagliero (@Ferca19) usó OpenAI Codex para revisar el flujo local de /perfil, contrastar P3/P5 con RFC 7519, RFC 8725 y OWASP API Security, y redactar su análisis. No se afirmaron pruebas del portal ni flags; las conclusiones se basan en el código del caso y las fuentes listadas.
+
+---
 
 ## 1. Anatomía del token real
 
-Pendiente del bloque que ejecutó el login. No se incluye token ni payload sin
-una salida observada.
+Pendiente: asignada a Guadalupe. No se solicitó un token del portal en este aporte.
 
 ## 2. Crack offline del secreto
 
-Pendiente del bloque que ejecutó el crack. No se declara secreto, cantidad de
-candidatos ni duración sin evidencia local.
+La implementación de `firma_es_valida()` calcula HMAC-SHA256 sobre los segmentos codificados exactos `header.payload` y compara la firma decodificada usando `hmac.compare_digest`. Con un token y un candidato, la validación ocurre localmente; no hace una solicitud al servidor. La prueba sintética confirmó un secreto correcto, un secreto incorrecto y una firma alterada. No se probó el secreto del caso ni se reporta cantidad/tiempo de candidatos reales; eso corresponde a Guadalupe.
 
 ## 3. Las dos forjas
 
-Las forjas y respuestas operativas R2/R3 quedan pendientes de integración con
-el bloque que ejecutó el cliente del laboratorio.
-
 ### R2 — Escalada vertical (role=admin)
 
-Pendiente de evidencia del token y respuesta HTTP.
+Pendiente: ejecución y evidencia asignadas a Guadalupe. `forjar()` está implementada, pero aún no se afirma que el portal acepte un token de esta copia.
 
 ### R3 — Suplantación horizontal (sub=maria)
 
-Pendiente de evidencia del token y respuesta HTTP.
+Pendiente: ejecución y evidencia asignadas a Guadalupe.
 
 ## 4. Control de sanidad
 
-Pendiente de las respuestas capturadas para el token original y la firma
-alterada.
+Pendiente: asignado a Guadalupe. Las pruebas sintéticas comprueban firma incorrecta en la función local, pero no sustituyen los requisitos del servidor: token regular de Diego rechazado en `/admin` y token forjado modificado rechazado con 401.
 
 ## 5. Preguntas P1–P5
 
-**P1:** pendiente del bloque asignado.
+- **P1 — Integridad vs. confidencialidad:** pendiente, asignada a Lautaro.
+- **P2 — Crack offline vs. login online:** pendiente, asignada a Lautaro.
+- **P3 — IDOR/BOLA en el claim y autorización.** El identificador del objeto no necesita estar en la URL: este servidor toma `payload["sub"]` del JWT en `/perfil` y lo usa directamente para buscar el registro y devolver sus datos. La identidad/objeto solicitado viaja en el claim. Como el secreto débil permite fabricar una firma aceptada con `sub=maria`, el servidor no vuelve a comprobar que esa identidad corresponde al principal autenticado ni que tenga autorización para ese objeto. Cambiar el identificador dentro del token produce la misma falla de autorización a nivel de objeto que manipular un `?id=`. La defensa es validar la firma, el emisor, la audiencia y el sujeto; derivar el principal de una identidad confiable y comprobar autorización por objeto en cada solicitud. OWASP clasifica esta falla como BOLA/API1; RFC 8725 recomienda validar claims de sujeto y audiencia.
 
-**P2:** pendiente del bloque asignado.
+Fuentes: [OWASP API1:2023 — Broken Object Level Authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/) y [RFC 8725 §§3.8–3.9](https://www.rfc-editor.org/rfc/rfc8725.html).
+- **P4 — `alg:none`:** pendiente; Lautaro debe medir el comportamiento de este servidor.
+- **P5 — Defensas priorizadas.**
 
-**P3 — por qué R3 es IDOR/BOLA aunque no haya `?id=`.** El parámetro que elige
-el objeto no tiene que estar en la URL: en este servidor `/perfil` toma
-`payload["sub"]` del JWT y lo usa directamente para buscar el registro y
-devolver sus datos. Por eso la identidad/objeto solicitado viaja en el claim.
-Como el secreto débil permite a un cliente fabricar una firma aceptada para
-`sub=maria`, el servidor no vuelve a comprobar que esa identidad corresponde
-al principal autenticado ni que ese principal esté autorizado para ese objeto.
-Cambiar el identificador de objeto en el token produce el acceso horizontal,
-la misma falla de autorización a nivel de objeto que un `?id=` manipulable.
-La defensa es validar firma, emisor, audiencia y sujeto, derivar el principal
-de una identidad confiable y comprobar autorización por objeto en el servidor
-en cada solicitud. OWASP describe este tipo de fallo como BOLA/API1; RFC 8725
-recomienda validar los claims de sujeto y audiencia.
+1. **Contener la exposición ahora:** rotar la clave comprometida y retirar de confianza la versión anterior; revocar los JWT/sesiones que dependan de ella para impedir las forjas R2/R3.
+2. **Usar una clave impredecible:** para HS256, generar una clave aleatoria de al menos 256 bits con CSPRNG, guardarla en un gestor de secretos y no derivarla de una contraseña humana. Esto bloquea el diccionario offline R2. RFC 8725 §3.5 exige entropía suficiente.
+3. **Fijar el algoritmo en el servidor:** permitir solo el algoritmo configurado, rechazar `none` y evitar confusión entre algoritmos o tipos de clave. No confiar en el valor `alg` del header para decidir cómo verificar; esto bloquea la clase de ataque P4. (RFC 8725 §3.1.)
+4. **Minimizar los claims:** quitar `nota_interna` y cualquier dato sensible. Un JWT firmado no cifra su payload; Base64URL se puede decodificar. Esto evita la filtración R1, aunque no impide por sí solo falsificaciones.
+5. **Autorizar cada objeto y función:** resolver el principal desde identidad validada y comprobar acceso al registro; verificar el rol administrativo en el servidor. Esto limita suplantación horizontal R3 y escalada R2.
+6. **Reducir la ventana y habilitar revocación:** `exp` breve limita cuánto dura un token robado/forjado, pero no lo invalida de inmediato. Mantener revocación por sesión/versión o lista de tokens invalidados permite cortar acceso antes de `exp`.
 
-**P4:** pendiente del bloque asignado. En este aporte no se probó `alg:none`.
-
-**P5 — defensas priorizadas.**
-
-1. **Secreto de alta entropía.** Para HS256 usar una clave aleatoria de al
-   menos 256 bits, generada por CSPRNG y guardada en un gestor de secretos; no
-   una palabra o contraseña humana. Esto hace inviable el diccionario offline
-   de R2. RFC 8725 §3.5 exige entropía suficiente para claves simétricas.
-2. **Algoritmo permitido fijado por configuración.** La biblioteca debe aceptar
-   solo el algoritmo previsto por el servidor y rechazar `none` y confusión
-   entre algoritmos/tipos de clave. No se debe elegir la verificación según el
-   valor no confiable del header `alg`. Esto bloquea la clase de bypass de P4.
-   (RFC 8725 §3.1.)
-3. **Rotar ante sospecha de exposición y revocar los tokens emitidos con la
-   clave anterior.** La rotación por sí sola no invalida JWT ya firmados si el
-   servidor todavía confía en la clave vieja: retirar esa versión, versionar
-   claves (`kid`) y revocar sesiones/tokens cierra el uso de las forjas R2/R3.
-4. **Claims mínimos y sin datos sensibles.** Eliminar `nota_interna` y guardar
-   datos privados solo en el servidor; el payload de un JWT firmado se puede
-   leer porque Base64URL no cifra. Esto evita la filtración R1, aunque no impide
-   por sí solo la falsificación.
-5. **Autorización por objeto y rol en cada endpoint.** Resolver el sujeto desde
-   identidad confiable y verificar que tenga acceso al registro; no conceder
-   `/admin` por un rol que el código no haya validado y autorizado. Esto limita
-   R2 y R3 incluso si aparece otro fallo de token.
-6. **Expiración breve y mecanismo de revocación.** Reducen la ventana de uso
-   de un token robado/forjado; la expiración no ofrece revocación inmediata,
-   así que mantener una versión de sesión, lista de revocados u otro control
-   server-side permite cortar el acceso antes de `exp`.
-
-Las recomendaciones de claves, algoritmo y validación se contrastaron con
-[RFC 8725, JWT Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725.html);
-la visibilidad del payload con [RFC 7519 §12](https://www.rfc-editor.org/rfc/rfc7519.html#section-12),
-y el control de acceso por objeto con [OWASP API1:2023 — Broken Object Level
-Authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/).
+Fuentes: [RFC 8725 — JWT Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725.html), [RFC 7519 §12 — privacidad del JWT](https://www.rfc-editor.org/rfc/rfc7519.html#section-12), y [OWASP API1:2023 — BOLA](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/).
 
 ## 6. Evidencia de progreso
 
-No se adjunta `ctf status extra5` ni se declaran flags: quedan pendientes de
-la corrida de integración grupal.
+`evidencia/salidas/` conserva ayuda CLI, pruebas sintéticas de Lorenzo y estado CTF 0/3. La revisión estática de Fernando sobre `server.py` está en `evidencia/salidas/revision-r3-p5.txt`; las referencias están en `evidencia/referencias.md`. No se ejecutó el portal ni se capturaron R1–R3 en este bloque.

@@ -1,8 +1,10 @@
-# Integrantes — Lab Extra 5 — Grupo 07
+# Integrantes — Lab Extra 5 · Grupo 07
 
-| Integrante | Legajo | Usuario | Aporte de este bloque | Estado |
-|---|---:|---|---|---|
-| Lorenzo Blanc | 15034 | @LoloBlanc | Por completar por el autor. | Pendiente |
-| Fernando Cagliero | 15136 | @Ferca19 | P3 y P5: análisis de control a nivel de objeto y plan de defensa. | Documentado en `informe.md`; fuentes adjuntas. |
-| Guadalupe Gómez | 15397 | @guadagomezgg8 | Por completar por la autora. | Pendiente |
-| Lautaro Mariño | 15163 | @lautaromarino0 | Por completar por el autor. | Pendiente |
+| Nombre | Legajo | GitHub | Bloque |
+|---|---:|---|---|
+| Lorenzo Blanc | 15034 | @LoloBlanc | Herramienta: cuatro funciones, pruebas sintéticas |
+| Guadalupe Gómez | 15397 | @guadagomezgg8 | R1–R3, control de sanidad, evidencia y status |
+| Lautaro Mariño | 15163 | @lautaromarino0 | P1/P2/P4, prueba `alg:none` |
+| Fernando Cagliero | 15136 | @Ferca19 | P3/P5, armado, validación global y PR |
+
+La rama conserva el bloque de herramienta/pruebas sintéticas de Lorenzo y agrega el análisis P3/P5 de Fernando. Los bloques operativos de Guadalupe y las preguntas de Lautaro siguen pendientes.
