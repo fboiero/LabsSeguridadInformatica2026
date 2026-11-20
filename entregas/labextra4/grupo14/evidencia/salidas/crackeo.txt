@@ -1,0 +1,6 @@
+  [+] operador (md5) -> riverplate
+  [+] analista (sha256) -> matecocido
+  [+] admin (sha256) -> phantom2026
+  [-] root (pbkdf2) no cayó
+
+3/4 contraseñas recuperadas

@@ -1,0 +1,4 @@
+  md5      ~ 560,614 intentos/segundo
+  sha256   ~ 920,590 intentos/segundo
+  sha256   ~ 881,881 intentos/segundo
+  pbkdf2   ~ 30 intentos/segundo
