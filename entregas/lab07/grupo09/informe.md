@@ -1,7 +1,12 @@
 # Informe — Laboratorio 07 · Explotación
 
 **Grupo:** 09
-**Integrantes:** FranMossello — FranMossello
+**Integrantes:**
+- Santiago Cocchi (legajo 15271) — @santicocchi
+- Franco Ferraro (legajo 14973) — @francovalentin08
+- Francisco Mossello (legajo 15339) — @FranMossello
+- Tomas Spat (legajo 15055) — @TomiSpat
+- Santiago Torres (legajo 15059) — @santy500
 **Fecha:** 2026-11-20
 
 ---
