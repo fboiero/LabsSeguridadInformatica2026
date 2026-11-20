@@ -9,17 +9,17 @@
 | **Grupo** | 14 |
 | **Caso asignado (Parte A)** | 2 — Target (brecha de datos de tarjetas, 2013) |
 | **Tema del mini-research** | 4 — Criptografía post-cuántica |
-| **Fecha de entrega** | *(completar)* |
+| **Fecha de entrega** | 20/11/2026 |
 
 ### Integrantes
 
 | Nombre y apellido | Legajo | Usuario de GitHub |
 |---|---|---|
-| Valentina Chiapero | *(completar)* | @valechiapero |
-| Fede Peron | *(completar)* | @fedeeperon |
-| Laureano Gomez Redondo | *(completar)* | @Laureano-GR |
-| Martín Cesano | *(completar)* | @*(completar)* |
-| *(completar)* | *(completar)* | @martingaidoo |
+| Valentina Chiapero | 15153 | @valechiapero |
+| Fede Peron | 15045 | @fedeeperon |
+| Laureano Gomez Redondo | 14981 | @Laureano-GR |
+| Martín Cesano | 15341 | @MartinCesano |
+| Martin Gaido | 15188 | @martingaidoo |
 
 ---
 
@@ -373,7 +373,7 @@ Todo el grupo trabajó en conjunto, repartiéndose las tareas. Con acuerdo del d
 | Fede Peron | Fork del repositorio, configuración de colaboradores y co-autoría del lab. |
 | Laureano Gomez Redondo | Inicialización del directorio de entrega del lab 01 y co-autoría del lab. |
 | Martín Cesano | Copia de la plantilla del informe y co-autoría del lab. |
-| *(completar)* (@martingaidoo) | Co-autoría del lab. |
+| Martin Gaido | Co-autoría del lab. |
 
 ---
 
