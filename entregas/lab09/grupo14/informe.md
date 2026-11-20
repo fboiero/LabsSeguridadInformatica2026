@@ -1,6 +1,6 @@
 # Informe — Laboratorio 09 · Agentes de pentest
 
-**Grupo:** 14 · **Integrantes:** ver `INTEGRANTES.md` (COMPLETAR) · **Fecha:** 19/11/2026
+**Grupo:** 14 · **Integrantes:** Fede Peron (@fedeeperon), Laureano Gomez Redondo (@Laureano-GR), Martín Cesano (@martincesano), Martín Gaido (@martingaidoo), Valentina Chiapero (@valechiapero) · **Fecha:** 19/11/2026
 **Proveedor usado:** mock (offline, sin API key)
 
 > **Estado de la entrega.** El equipo que preparó esta entrega no tiene Docker, por lo
