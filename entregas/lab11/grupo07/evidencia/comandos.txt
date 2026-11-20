@@ -1,0 +1,24 @@
+Lab 11 — bloque de Lorenzo — Grupo 07
+Fecha local: 2026-11-19 (America/Buenos_Aires)
+
+Copia binaria y verificación de custodia (desde la raíz del repo):
+  git -c core.autocrlf=false archive upstream/main labs/lab11-forensia/caso | tar -x -C .loot/lab11-grupo07/pristine
+  git hash-object --no-filters .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/evidencia.sha256
+  git hash-object --no-filters .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/logs/auth.log
+  cd .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso
+  sha256sum -c evidencia.sha256
+
+Ocho archivos dieron OK; logs/auth.log dio FAILED. Los blobs se compararon con Git sin filtros en salidas/comparacion-blobs-git.txt. La copia queda bajo .loot, ignorada por Git; no se modificaron archivos del caso.
+
+Referencias R3/R4 consultadas (desde la raíz; todos los paths son de la copia limpia):
+  rg -n 'find / -perm|system-check|FLAG\{dfir_privesc|history -c' .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/memoria/bash_history.txt
+  rg -n 'system-check|nc 45' .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/memoria/pslist.txt .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/memoria/lsof.txt .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/disco/listado.txt
+  rg -n '45\.13\.37\.7|clientes.tar.gz|curl -s -F' .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/memoria/bash_history.txt .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/memoria/netstat.txt .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/memoria/lsof.txt
+  rg -n '05/Sep/2026:02:18:33|05/Sep/2026:02:19:02|05/Sep/2026:02:19:48|05/Sep/2026:02:23:15' .loot/lab11-grupo07/pristine/labs/lab11-forensia/caso/logs/access.log
+
+Flags observadas y enviadas desde la raíz del repo con Git Bash:
+  ./ctf submit 11 R3 'FLAG{dfir_privesc_suid}'
+  ./ctf submit 11 R4 'FLAG{dfir_c2_exfil}'
+  ./ctf status 11
+
+No se ejecutó el webshell ni se hicieron conexiones al IOC/C2. La salida del hash check está en salidas/verificacion-custodia.txt; las referencias R3/R4 en salidas/referencias-r3-r4.txt.
