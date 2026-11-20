@@ -25,3 +25,18 @@ Las flags observadas se enviaron desde la raíz del repositorio mediante Git Bas
   ./ctf status 08
 
 Las salidas completas están en salidas/r1-r2-recon-loot.txt y salidas/status-08.txt.
+
+Lab 08 — aporte A, Fernando Cagliero — 19/11/2026 (UTC-03:00)
+Origen: PowerShell en Windows, raíz del repositorio LabsSeguridadInformatica2026.
+Alcance: pruebas controladas locales; no se accedió al objetivo real.
+
+1. Ejecutar las pruebas unitarias:
+   $env:PYTHONIOENCODING = 'utf-8'
+   python -m unittest discover -s entregas/lab08/grupo07/tests -v
+
+2. Salida cruda guardada en:
+   evidencia/salidas/tests-recolector.txt
+
+Las pruebas de error usan un servidor HTTP local; los casos de búsqueda usan
+respuestas controladas. La ejecución real de R5 desde la víctima queda a cargo
+del bloque D y no está representada en esta evidencia.

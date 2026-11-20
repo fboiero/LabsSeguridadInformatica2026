@@ -6,6 +6,13 @@
 
 ## 0. Declaración de uso de IA
 
+Fernando Cagliero (@Ferca19) usó OpenAI Codex para implementar `buscar_flag()`,
+preparar pruebas controladas y redactar su borrador de P4. Verificó el código
+con seis pruebas locales de biblioteca estándar: rangos inclusivos, ausencia
+de flag, resultado vacío/error, 404, timeout y corte en el primer hallazgo.
+La ejecución real del recolector contra la víctima queda a cargo del bloque D;
+no se afirma una salida R5 que no se haya observado.
+
 Se usó OpenAI Codex como asistente con acceso a la terminal local para preparar y ejecutar la enumeración del contenedor víctima, capturar los resultados, investigar fuentes sobre gestión de secretos y redactar el bloque asignado. La IA ejecutó los comandos registrados. No se leyó el código del objetivo para obtener flags. El objetivo compiló desde una copia temporal con solo los finales de línea normalizados a LF, porque el checkout de Windows convertía `setup.sh` a CRLF y el shebang fallaba; las fuentes originales y la configuración de red no se modificaron. Lorenzo debe revisar y poder explicar la evidencia antes de la entrega final.
 
 ## 1. Flags capturadas
@@ -34,7 +41,10 @@ La salida completa está en `evidencia/salidas/status-08.txt`.
 
 ## 3. Automatización
 
-Pendiente — implementación y operación a cargo de Fernando.
+La implementación de `buscar_flag()` está en [`src/recolector.py`](src/recolector.py).
+Las seis pruebas controladas están en `tests/test_recolector.py` y su salida
+cruda en `evidencia/salidas/tests-recolector.txt`. La corrida real R5 desde la
+víctima queda pendiente del bloque D.
 
 ## 4. Preguntas de análisis
 
@@ -44,10 +54,19 @@ Pendiente — implementación y operación a cargo de Fernando.
 
 **P3 — cómo evitar secretos en `.env` y `.bash_history`:** el `.env` observado guarda credenciales y un secreto en `/var/www`, accesible desde la cuenta `operador`; poner variables en un archivo con nombre oculto no lo protege. El archivo debe quedar fuera del webroot y con acceso restringido, pero los permisos por sí solos no sustituyen una gestión de secretos: en despliegue conviene inyectarlos desde un gestor central, con identidad de workload, privilegio mínimo, vigencia limitada, auditoría y rotación/revocación si se exponen. Para el shell, no se deben pasar contraseñas como argumentos ni pegarlas en comandos que puedan quedar en el historial o en logs; se usan entradas secretas del cliente, descriptores de archivo o mecanismos de credenciales del gestor. `HISTCONTROL`/`HISTIGNORE` sirven como higiene de historial, pero no son un control de seguridad equivalente. En la evidencia de esta sesión, `.bash_history` contiene comandos de inspección, no el valor de la contraseña. [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) · [GNU Bash Reference Manual — Bash Variables](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html).
 
-**P4 — decisiones del script:** pendiente — bloque de Fernando.
+**P4 — decisiones del script:** la persona elige el rango mediante `--desde` y
+`--hasta`; ambos extremos se incluyen y el programa no descubre por sí solo el
+alcance. La lógica distingue las filas normales (`nombre` y `area`) de campos
+adicionales y reconoce un valor con formato `FLAG{...}`, sin codificar un
+legajo ni una flag concretos. Un 404, una respuesta vacía o un error de
+consulta no son hallazgos: se continúa con el siguiente ID; los errores no
+HTTP se informan por `stderr`. Al primer valor que cumple el formato, devuelve
+ese ID y termina para evitar solicitudes innecesarias. El programa automatiza
+estas reglas, pero una persona define el alcance, el indicador de hallazgo y
+qué hacer ante fallos.
 
 **P5 — defensas SUID y pivoting:** pendiente — bloque de Lautaro.
 
 ## 5. Bitácora de comandos
 
-Los comandos completos están en `evidencia/comandos.txt`; las salidas crudas de identidad, host, R1 y R2 están en `evidencia/salidas/r1-r2-recon-loot.txt`. Las flags se enviaron desde el host con `./ctf submit 08`; el estado resultante se adjunta.
+Los comandos completos están en `evidencia/comandos.txt`; las salidas crudas de identidad, host, R1 y R2 están en `evidencia/salidas/r1-r2-recon-loot.txt`. Las flags se enviaron desde el host con `./ctf submit 08`; el estado resultante se adjunta. Las pruebas controladas del recolector se ejecutaron por separado y están identificadas como locales en la bitácora.
