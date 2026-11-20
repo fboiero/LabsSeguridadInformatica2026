@@ -1,0 +1,18 @@
+# Lab 11 — Parte B (Lautaro). Analisis de timeline y correlacion.
+# Trabajo sobre COPIAS de caso/ (nunca sobre la evidencia original).
+
+cd labs/lab11-forensia/caso
+
+# cadena de custodia (confirma que solo auth.log fue alterado)
+shasum -a 256 -c evidencia.sha256        # (o sha256sum -c)   -> logs/auth.log: FAILED
+
+# reconstruir la cronologia del access.log (UTC)
+grep -nE '185.220.101.42' logs/access.log      # actividad del atacante, en orden
+# fase de entrada: recon 02:14, SQLi 02:17:22, /backup/rrhh.conf 02:17:41, RCE cmd=id 02:18:10
+# impacto: marcador 02:18:33, webshell 02:19:02, privesc 02:21, exfil 02:23:15
+
+# correlacion clave: mismo tamanio (48210 B) liga lectura de la DB y el tar exfiltrado
+grep -n 48210 logs/access.log disco/listado.txt
+
+# cruces de memoria
+cat memoria/netstat.txt memoria/pslist.txt memoria/lsof.txt memoria/bash_history.txt
