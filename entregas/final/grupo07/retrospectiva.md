@@ -85,7 +85,8 @@ presentación, guion y demo. Codex ejecutó comprobaciones técnicas y redactó 
 de los archivos existentes. Los números y ejemplos se contrastaron con evidencias;
 las decisiones de prueba automatizada no se declaran aprobaciones personales.
 
-Las ilustraciones de portada y del edificio de la presentación se generaron con
-IA. El video es una reproducción visual de resultados capturados y no una
+Las ilustraciones de portada, del edificio y de los tres escudos del cierre se
+generaron con IA. El prompt del cierre se incluye junto a su imagen en
+`presentacion/`. El video es una reproducción visual de resultados capturados y no una
 grabación de ejecución en vivo. La asistencia de IA fue amplia y no demuestra por
 sí sola comprensión individual; el equipo debe poder explicar el alcance entregado.
