@@ -1,0 +1,20 @@
+# Lab 09 — Parte A (Lautaro Mariño). Comandos y procedencia.
+# Entorno: sandbox Linux efímero SIN Docker. Target oficial del lab corrido
+# directo (= CMD del Dockerfile), host phantomcorp -> 127.0.0.1 en /etc/hosts.
+# No se leyó el código del target para obtener flags: salen de las respuestas
+# del servicio en ejecución. No se subieron API keys (proveedor: mock).
+
+# 1) levantar el target del lab tal cual
+python3 labs/lab09-agentes/entorno/phantomcorp/server.py &
+
+# 2) pruebas del loop SIN red (clientes-doble, sin tocar phantomcorp)
+python3 entregas/lab09/grupo07/evidencia/pruebas_esqueleto.py
+#   -> evidencia/salidas/pruebas-esqueleto.txt
+
+# 3) corrida del agente propio en modo mock contra phantomcorp
+cd entregas/lab09/grupo07/src
+LLM_PROVIDER=mock python3 agente_esqueleto.py
+#   -> evidencia/salidas/transcript-esqueleto-mock.txt
+#   5 flags: R1 recon, R2 ruta oculta, R3 api debug, R5 vault (capstone), R4 guardrail
+
+# contexto (fecha/zona, versiones, entorno): evidencia/salidas/contexto.txt

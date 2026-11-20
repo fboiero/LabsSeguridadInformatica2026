@@ -1,0 +1,21 @@
+=== pruebas del loop de agente_esqueleto.py (MAX_PASOS=12) ===
+
+1) accion 'final' corta el loop sin ejecutar tools
+  [ok  ] imprime el texto de cierre del LLM
+  [ok  ] no ejecuta ninguna tool
+
+2) realimentacion: el POST al vault depende de haber recibido el token
+  [ok  ] el resultado vuelve atado al id de la accion (id correcto)
+  [ok  ] el cliente recibio el token por `resultados`
+  [ok  ] se encadeno token -> vault y apareci el flag capstone
+
+3) un error de tool se realimenta y el loop sigue sin romperse
+  [ok  ] el string de error llego por `resultados`
+  [ok  ] el loop continuo hasta el 'final'
+
+4) un cliente que nunca termina corta en MAX_PASOS (guardrail)
+  [ok  ] se ejecutaron exactamente 12 tools
+  [ok  ] informa el corte por limite de pasos
+
+
+RESULTADO: todas las pruebas pasaron.
