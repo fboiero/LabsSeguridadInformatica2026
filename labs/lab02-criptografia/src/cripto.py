@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (C) 2026 Fernando Boiero — CyberLab UTN FRVM
 """
-cripto.py — Laboratorio 02. CLI con cuatro subcomandos. Solo biblioteca estándar.
+crypto.py — Laboratorio 02. CLI con cuatro subcomandos. Solo biblioteca estándar.
 
 Cada subcomando tiene un bloque TODO que hoy lanza NotImplementedError. Tu trabajo
 es completarlos. NO modifiques la firma de las funciones ni la interfaz de la CLI.
@@ -24,7 +24,7 @@ def xor_cifrar(datos: bytes, clave: bytes) -> bytes:
 
 
 # ---------------------------------------------------------------------------
-# B.1 — romper XOR de clave de 1 byte por análisis de frecuencia. TODO
+# B.1 — romper XOR de clave de 1 byte por análisis de frecuencia.
 # ---------------------------------------------------------------------------
 def romper_xor_1byte(cifrado: bytes) -> tuple[int, bytes]:
     """Prueba las 256 claves posibles de 1 byte y devuelve (clave, texto_claro)
@@ -35,8 +35,27 @@ def romper_xor_1byte(cifrado: bytes) -> tuple[int, bytes]:
     caracteres frecuentes (letras comunes + espacio) y quedate con el mejor.
     Esto demuestra por qué un cifrado clásico de clave corta NO protege nada.
     """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá romper_xor_1byte()")
+    # Caracteres frecuentes en español/inglés: espacio, vocales, consonantes comunes, dígitos, puntuación básica
+    frecuentes_str = " etaoinshrdluETAOISHRDLUaeiouAEIOUáéíóúÁÉÍÓÚñÑ0123456789.,;:!?()[]{}-_\"'"
+    caracteres_frecuentes = set(frecuentes_str.encode('latin-1'))
+    
+    mejor_clave = 0
+    mejor_puntaje = -1
+    mejor_texto = b""
+    
+    for clave in range(256):
+        # Descifrar con esta clave de 1 byte
+        texto_claro = xor_cifrar(cifrado, bytes([clave]))
+        
+        # Puntuar: cuántos bytes están en el conjunto de caracteres frecuentes
+        puntaje = sum(1 for b in texto_claro if b in caracteres_frecuentes)
+        
+        if puntaje > mejor_puntaje:
+            mejor_puntaje = puntaje
+            mejor_clave = clave
+            mejor_texto = texto_claro
+    
+    return mejor_clave, mejor_texto
 
 
 # ---------------------------------------------------------------------------
@@ -46,20 +65,17 @@ def mac_ingenuo(clave: bytes, msg: bytes) -> str:
     """Devuelve sha256(clave || msg) en hex. Es lo que MUCHA gente hace...
     y es vulnerable a length-extension. Lo implementás para después romperlo
     conceptualmente en el informe."""
-    # TODO: implementá esto (una línea).
-    raise NotImplementedError("Completá mac_ingenuo()")
+    return hashlib.sha256(clave + msg).hexdigest()
 
 def mac_hmac(clave: bytes, msg: bytes) -> str:
     """Devuelve el HMAC-SHA256 en hex. Esta es la forma CORRECTA."""
-    # TODO: implementá esto usando el módulo hmac.
-    raise NotImplementedError("Completá mac_hmac()")
+    return hmac.new(clave, msg, hashlib.sha256).hexdigest()
 
 def verificar_mac(esperado: str, recibido: str) -> bool:
     """Compara dos MAC en hex. DEBE ser en tiempo constante para no filtrar
     información por el tiempo de comparación.
     Pista: hmac.compare_digest."""
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá verificar_mac()")
+    return hmac.compare_digest(esperado, recibido)
 
 
 def main() -> int:
