@@ -91,6 +91,8 @@ class Guard:
 
     @staticmethod
     def _in_scope(target: str, token: ScopeToken) -> bool:
+        if any(char.isspace() for char in target):
+            return False
         try:
             ip = ipaddress.ip_address(target)
             return any(ip in ipaddress.ip_network(c) for c in token.allowed_cidrs)
