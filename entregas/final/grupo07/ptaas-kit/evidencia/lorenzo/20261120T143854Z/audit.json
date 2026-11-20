@@ -1,0 +1,24 @@
+[
+  {
+    "ts": 1795185534.4160566,
+    "engagement": "eng-lab-001",
+    "agent": "orchestrator",
+    "action": "token.issue",
+    "target": "eng-lab-001",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "GENESIS",
+    "hash": "ced56f439e8c87004be80f813cac933b3e9a96ba0ddf8f986c606afee61055fc"
+  },
+  {
+    "ts": 1795185544.6849349,
+    "engagement": "eng-lab-001",
+    "agent": "live-lorenzo",
+    "action": "httpx.probe",
+    "target": "dvwa.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "ced56f439e8c87004be80f813cac933b3e9a96ba0ddf8f986c606afee61055fc",
+    "hash": "e140e0c9fc687d1db55d5a91aef24acca55b3e84269ed053f8c50ea042fc9b1e"
+  }
+]

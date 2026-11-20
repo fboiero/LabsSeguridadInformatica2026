@@ -1,0 +1,19 @@
+{
+  "httpx.probe": {
+    "tool": "httpx",
+    "target": "dvwa.lab.test",
+    "assets": [
+      {
+        "host": "dvwa.lab.test",
+        "status_code": 302,
+        "title": null,
+        "technologies": [
+          "Apache HTTP Server:2.4.25",
+          "Debian",
+          "PHP"
+        ]
+      }
+    ],
+    "format": "jsonl"
+  }
+}

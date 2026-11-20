@@ -1,0 +1,10 @@
+{
+  "nuclei.safe_templates": {
+    "tool": "nuclei",
+    "target": "dvwa.lab.test",
+    "format": "jsonl",
+    "lines": [
+      "{\"template-id\":\"grupo07-robots-txt\",\"template-path\":\"/work/templates/allowlist/robots-txt.yaml\",\"template-encoded\":\"aWQ6IGdydXBvMDctcm9ib3RzLXR4dA0KaW5mbzoNCiAgbmFtZTogUHVibGljIHJvYm90cy50eHQgZmlsZQ0KICBhdXRob3I6IEdydXBvIDA3DQogIHNldmVyaXR5OiBpbmZvDQogIGRlc2NyaXB0aW9uOiBEZXRlY3RzIHdoZXRoZXIgYSBwdWJsaWMgcm9ib3RzLnR4dCByZXNvdXJjZSBpcyBhdmFpbGFibGUuDQogIHRhZ3M6IGV4cG9zdXJlLGhlYWRlcnMNCmh0dHA6DQogIC0gbWV0aG9kOiBHRVQNCiAgICBwYXRoOg0KICAgICAgLSAie3tCYXNlVVJMfX0vcm9ib3RzLnR4dCINCiAgICBtYXRjaGVyczoNCiAgICAgIC0gdHlwZTogc3RhdHVzDQogICAgICAgIHN0YXR1czoNCiAgICAgICAgICAtIDIwMA0K\",\"info\":{\"name\":\"Public robots.txt file\",\"author\":[\"grupo 07\"],\"tags\":[\"exposure\",\"headers\"],\"description\":\"Detects whether a public robots.txt resource is available.\",\"severity\":\"info\"},\"type\":\"http\",\"host\":\"dvwa.lab.test\",\"port\":\"80\",\"scheme\":\"http\",\"url\":\"http://dvwa.lab.test\",\"matched-at\":\"http://dvwa.lab.test/robots.txt\",\"request\":\"GET /robots.txt HTTP/1.1\\r\\nHost: dvwa.lab.test\\r\\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0\\r\\nAccept: */*\\r\\nAccept-Language: en\\r\\nAccept-Encoding: gzip\\r\\n\\r\\n\",\"response\":\"HTTP/1.1 200 OK\\r\\nContent-Length: 26\\r\\nAccept-Ranges: bytes\\r\\nContent-Type: text/plain\\r\\nDate: Fri, 20 Nov 2026 14:42:17 GMT\\r\\nEtag: \\\"1a-5780ba3955700\\\"\\r\\nLast-Modified: Fri, 12 Oct 2018 17:44:28 GMT\\r\\nServer: Apache/2.4.25 (Debian)\\r\\n\\r\\nUser-agent: *\\r\\nDisallow: /\",\"ip\":\"10.99.0.2\",\"timestamp\":\"2026-11-20T14:42:17.739062577Z\",\"curl-command\":\"curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0' 'http://dvwa.lab.test/robots.txt'\",\"matcher-status\":true}"
+    ]
+  }
+}

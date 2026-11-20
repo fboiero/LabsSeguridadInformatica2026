@@ -1,0 +1,71 @@
+[
+    {
+        "Name": "lab_lab",
+        "Id": "b5d73c942420f44d89145139450b450d5798bf15a74db86adc888107e3ad652e",
+        "Created": "2026-11-20T14:27:02.905051665Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "10.99.0.0/28",
+                    "Gateway": "10.99.0.1"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {
+            "com.docker.network.enable_ipv4": "true",
+            "com.docker.network.enable_ipv6": "false"
+        },
+        "Labels": {
+            "com.docker.compose.config-hash": "b291df5156ac836acf1ffc105b6a3dddaa2f448405356b62498a695e19e65f3d",
+            "com.docker.compose.network": "lab",
+            "com.docker.compose.project": "lab",
+            "com.docker.compose.version": "5.1.4"
+        },
+        "Containers": {
+            "7e5a5d93083e0ff230a21fc84301d5a8d411991177112668bf8efb4706bd44cb": {
+                "Name": "lab-juiceshop-1",
+                "EndpointID": "17e3b69541af7d737211ca5ccd30e5e3698985510e7603ce450dd85a7d593148",
+                "MacAddress": "e6:b6:68:31:a7:03",
+                "IPv4Address": "10.99.0.3/28",
+                "IPv6Address": ""
+            },
+            "8c3cfe86dc88020a3e8a35f616c206fe7727035934f617b9a31e7516fea5630d": {
+                "Name": "lab-dvwa-1",
+                "EndpointID": "d0b404435b92c88235e40cdd0c7db3c6cfe87f49b545addd75dd36924814fa07",
+                "MacAddress": "7e:20:ad:6e:f2:32",
+                "IPv4Address": "10.99.0.2/28",
+                "IPv6Address": ""
+            },
+            "b90aef51cb509ef93cf6b33a85f300492e5befe0f80e21e1c2d8d15c4aabc8b9": {
+                "Name": "lab-runner-1",
+                "EndpointID": "4d6355e2719eb126891f135989333833a08c6348a129e1a5814865e054cbfca5",
+                "MacAddress": "56:b4:cb:ec:f2:74",
+                "IPv4Address": "10.99.0.4/28",
+                "IPv6Address": ""
+            }
+        },
+        "Status": {
+            "IPAM": {
+                "Subnets": {
+                    "10.99.0.0/28": {
+                        "IPsInUse": 6,
+                        "DynamicIPsAvailable": 10
+                    }
+                }
+            }
+        }
+    }
+]

@@ -12,9 +12,9 @@
 - [x] 2.4 Correlador que produce `CandidateFinding` con evidencia
 
 ## Implementación — análisis
-- [ ] 3.1 Adaptador `zap.baseline_scan` (fixtures listas; corrida real pendiente)
+- [x] 3.1 Adaptador `zap.baseline_scan` (fixtures y corrida real en DVWA: evidencia/lorenzo/20261120T144633Z/)
 - [x] 3.2 Curar y revisar ≥ 5 templates GET en `templates/allowlist/` y completar `MANIFEST.md`
-- [ ] 3.3 Corrida de `nuclei.safe_templates` contra el lab (pendiente laboratorio)
+- [x] 3.3 Corrida de `nuclei.safe_templates` contra DVWA en Docker interno (evidencia/lorenzo/20261120T144215Z/)
 - [x] 3.4 Orquestación del loop B con `decide_detection`
 
 ## Verificación
