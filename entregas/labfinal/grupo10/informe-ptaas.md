@@ -13,7 +13,7 @@
 
 ## 0. Declaración de uso de IA
 
-Se utilizó Claude, a través de Claude Code, como asistente. Se usó para redactar un primer borrador de este informe a partir de los commits, las revisiones de seguridad y la evidencia ya registrada en el repositorio por los turnos 1 a 3. El grupo revisó el borrador y contrastó cada dato con los archivos de origen (openspec/reviews/, openspec/changes/guard-turno-1/tasks.md y evidencia/ptaas/). La retrospectiva y las conclusiones las escribió el grupo. Los demás integrantes utilizaron ChatGpt y Gemini. 
+Se utilizó Claude, a través de Claude Code, como asistente. Se usó para redactar un primer borrador de este informe a partir de los commits, las revisiones de seguridad y la evidencia ya registrada en el repositorio por los turnos 1 a 3. El grupo revisó el borrador y contrastó cada dato con los archivos de origen (openspec/reviews/, openspec/changes/guard-turno-1/tasks.md y evidencia/ptaas/).La retrospectiva fue redactada con asistencia de Claude a partir de los errores detectados durante el turno 4, y el grupo la revisó.
 ## 1. Resumen
 
 Partimos del kit de la cátedra (`labs/labfinal-practico-integrador/ptaas-kit`, base
