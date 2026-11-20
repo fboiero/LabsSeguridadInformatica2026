@@ -50,7 +50,7 @@ declarada del Reviewer, sin autenticación criptográfica.
 Las aprobaciones en `evidencia/fernando/` son de pruebas automatizadas, identificadas
 como tales; no equivalen a la revisión cruzada ni a la aprobación académica final.
 
-## Resultados de este corte
+## Resultados del primer corte (antes de integrar 004/005)
 - 131 tests aprobados: 103 recibidos + 28 incorporados.
 - 15/15 golden: verifican casos y rúbrica, no razonamiento de un LLM vivo.
 - Ruff pasa para los seis módulos nuevos. Mypy general tiene 46 errores heredados
@@ -79,3 +79,22 @@ usa fixtures, y la exportación a DefectDojo se genera como JSON local.”
 ## Referencias del formato
 - CVSS v4: https://www.first.org/cvss/v4.0/specification-document
 - Generic Findings Import: https://docs.defectdojo.com/supported_tools/parsers/generic_findings_import/
+
+## Actualización tras recibir los cambios de Lorenzo
+Se incorporó origin/final-grupo07@2e55625. El comando ahora llama a ReconLoop,
+Correlator y DetectionLoop de 004/005, usando sus adaptadores con runners de fixtures.
+La correlación devuelve 0 CVE porque la fixture HTTPX no trae versión exacta;
+no se inventa una coincidencia. El candidato CSP de 006 es una semilla manual de
+la demo y queda identificado como tal: las alertas genéricas de 005 no lo confirman.
+El loop B termina inconcluso y el loop C puede comprobarlo en DVWA con gate explícito.
+
+Resultados actualizados: 152 tests, 20/20 evals golden y 65/90 tasks (72,2 %).
+006 sigue 13/15 y 007 12/15: no se marca como recorrido enteramente real al usar
+fixtures en A/B. Solo 002 continúa sin recibir. Ya no corresponde decir que faltan
+los códigos de 004/005; faltan sus corridas reales y las revisiones humanas.
+Comandos de demo: se conservan los anteriores, ahora conectados con 004/005.
+
+Frase simple para exponer: “Ahora el comando ejecuta los loops de Lorenzo y
+continúa con mi validación e informe. La primera parte usa datos de ejemplo;
+la comprobación de CSP se probó realmente en DVWA. Si no hay una coincidencia
+exacta o evidencia suficiente, lo muestra como desconocido o inconcluso.”

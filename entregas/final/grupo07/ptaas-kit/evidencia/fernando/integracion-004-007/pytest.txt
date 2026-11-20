@@ -1,0 +1,6 @@
+Comando: D:\USUARIO\Desktop\Seguridad-Informatica\LabsSeguridadInformatica2026\entregas\final\grupo07\ptaas-kit\.venv\Scripts\python.exe -m pytest -q
+Exit: 0
+........................................................................ [ 47%]
+........................................................................ [ 94%]
+........                                                                 [100%]
+152 passed in 1.32s

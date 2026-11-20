@@ -1,0 +1,3 @@
+Comando: .venv/Scripts/ruff.exe check harness/team_pipeline.py harness/run.py harness/report_bundle.py tests/test_run_integration.py
+Exit: 0
+All checks passed!

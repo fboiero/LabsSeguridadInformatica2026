@@ -20,7 +20,11 @@ SECRET = re.compile(
 
 
 def build_bundle(
-    engagement_id: str, findings: list[Finding], entries: list[dict[str, Any]], mode: str
+    engagement_id: str,
+    findings: list[Finding],
+    entries: list[dict[str, Any]],
+    mode: str,
+    pipeline: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     if mode not in {"fixture", "restricted_http_no_container", "sandbox"}:
         raise ValueError("modo desconocido")
@@ -39,6 +43,10 @@ def build_bundle(
         "",
         "## Hallazgos",
     ]
+    if pipeline:
+        lines += ["## Procedencia por fase"] + [
+            f"- {phase}: {source}" for phase, source in pipeline.items()
+        ]
     exports = []
     seen = set()
     for f in findings:
@@ -99,6 +107,7 @@ def build_bundle(
     body = {
         "engagement_id": engagement_id,
         "mode": mode,
+        "pipeline": pipeline or {},
         "markdown": "\n".join(lines),
         "export": {"findings": exports},
     }

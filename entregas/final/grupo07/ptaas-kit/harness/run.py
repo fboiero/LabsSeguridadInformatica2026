@@ -1,4 +1,4 @@
-"""Demo de integración explícitamente fixture mientras faltan 002/004/005.
+"""Demo integrada de 003–007; 004/005 usan fixtures y 002 está pendiente.
 
 No aprueba por defecto. --approve acepta decisiones explícitas del operador;
 para pruebas automatizadas se identifica al reviewer como prueba, no como revisión humana.
@@ -14,12 +14,12 @@ from typing import Any
 
 from harness.approvals import ApprovalStore
 from harness.contracts import Action, AuditLog, Harness, KillSwitch, Phase, ScopeToken
-from harness.loops import decide_detection, decide_recon
 from harness.policy_loader import phase_allowlist
 from harness.report_bundle import build_bundle, publish_bundle
 from harness.reporting import Finding
 from harness.roe import parse_roe
 from harness.sandbox import DockerSender, FixtureSender
+from harness.team_pipeline import PROVENANCE, run_team_pipeline
 from harness.tokens import EngagementGuard, TokenIssuer
 from harness.validation import ValidationRequest, validate_finding
 
@@ -37,33 +37,29 @@ def verify_entries(entries: list[dict[str, Any]]) -> bool:
     return True
 
 
-class FixtureAdapter:
-    destructive = False
-
-    def __init__(self, name: str, phase: Phase, output: dict[str, Any]):
-        self.name = name
-        self.allowed_phases: tuple[Phase, ...] = (phase,)
-        self.output = output
-
-    def run(self, action: Action, target: str, token: ScopeToken) -> dict[str, Any]:
-        return self.output
-
-
 class BundleAdapter:
     name = "report.render"
     allowed_phases: tuple[Phase, ...] = (Phase.REPORT,)
     destructive = False
 
     def __init__(
-        self, engagement_id: str, findings: list[Finding], audit: AuditLog, mode: str
+        self,
+        engagement_id: str,
+        findings: list[Finding],
+        audit: AuditLog,
+        mode: str,
+        pipeline: dict[str, str] | None = None,
     ) -> None:
         self.engagement_id = engagement_id
         self.findings = findings
         self.audit = audit
         self.mode = mode
+        self.pipeline = pipeline or PROVENANCE
 
     def run(self, action: Action, target: str, token: ScopeToken) -> dict[str, Any]:
-        return build_bundle(self.engagement_id, self.findings, self.audit.entries, self.mode)
+        return build_bundle(
+            self.engagement_id, self.findings, self.audit.entries, self.mode, pipeline=self.pipeline
+        )
 
 
 class ExportAdapter:
@@ -105,27 +101,8 @@ def execute(
         if bundle["engagement_id"] != roe.engagement_id:
             raise ValueError("engagement ajeno")
     else:
-        print(
-            "Recon/análisis FIXTURE, sin LLM vivo. 002/004/005 no integrados. Validación: "
-            + validation_mode
-        )
-        # Adaptadores sintéticos; no se confunden con cambios de Lorenzo ni con
-        # herramientas reales. Todas las llamadas igualmente pasan por Harness.
-        for phase, name in [
-            (Phase.RECON, "httpx.probe"),
-            (Phase.CORRELATE, "cwe.map"),
-            (Phase.ANALYZE, "zap.baseline_scan"),
-        ]:
-            token = issuer.issue(phase)
-            harness.tools[name] = FixtureAdapter(
-                name, phase, {"source": "synthetic_fixture", "asset": target}
-            )
-            action = Action(name, phase)
-            harness.invoke("fixture:" + phase.value, action, target, token)
-            if phase == Phase.RECON:
-                print("Loop A fixture:", decide_recon(1, 0, 5).reason)
-            if phase == Phase.ANALYZE:
-                print("Loop B fixture:", decide_detection([0, 0], 4).reason)
+        print("004/005 integrados con fixtures; sin LLM vivo. Validación: " + validation_mode)
+        pipeline = run_team_pipeline(harness, issuer, target, output)
         request = ValidationRequest(
             "F-CSP-001",
             target,
@@ -150,7 +127,7 @@ def execute(
         )
         finding = Finding(
             request.id,
-            "Ausencia de CSP (candidato fixture; validación " + validation_mode + ")",
+            "Ausencia de CSP (candidato manual; validación " + validation_mode + ")",
             target,
             request.cwe,
             VECTOR,
@@ -159,7 +136,7 @@ def execute(
             tuple(validation["evidence_refs"]),
         )
         harness.tools["report.render"] = BundleAdapter(
-            roe.engagement_id, [finding], audit, validation_mode
+            roe.engagement_id, [finding], audit, validation_mode, pipeline["provenance"]
         )
         bundle = harness.invoke(
             "reporting", Action("report.render", Phase.REPORT), target, issuer.issue(Phase.REPORT)

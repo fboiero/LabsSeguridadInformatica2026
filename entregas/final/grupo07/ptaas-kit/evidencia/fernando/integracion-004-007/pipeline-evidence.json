@@ -1,0 +1,67 @@
+{
+  "provenance": {
+    "recon": "fixtures sintéticas con ReconLoop (004)",
+    "correlation": "snapshots offline con Correlator (005)",
+    "analysis": "fixtures sintéticas con DetectionLoop (005)",
+    "validation_seed": "candidato CSP manual para demo, sin CVE inferida",
+    "audit": "memoria + export JSON; SQLite 002 pendiente",
+    "correlation_result": "0 coincidencias CVE",
+    "analysis_result": "inconclusive"
+  },
+  "recon": {
+    "implementation": "harness.recon_loop.ReconLoop",
+    "iterations": 2,
+    "reason": "grafo estabilizado",
+    "assets": [
+      {
+        "id": "asset-02c25e5bf14731db",
+        "type": "domain",
+        "address": "dvwa.lab.test",
+        "source_tool": "seed",
+        "technologies": [
+          "Apache",
+          "PHP"
+        ]
+      },
+      {
+        "id": "asset-80dc7804c788b55a",
+        "type": "host",
+        "address": "juiceshop.lab.test",
+        "source_tool": "subfinder.enum",
+        "technologies": []
+      }
+    ]
+  },
+  "correlation": {
+    "candidates": [],
+    "reason": "sin match exacto; no se fabrica CVE"
+  },
+  "analysis": {
+    "finding_id": "F-CSP-001",
+    "status": "inconclusive",
+    "rationale": "sin ganancia de información",
+    "evidence_refs": [
+      "manual-demo-seed:CSP:requiere-validación",
+      "nuclei:http-missing-security-headers@http://dvwa.lab.test/",
+      "zap:10021"
+    ],
+    "cvss_v4_score": null,
+    "priority": null
+  },
+  "validation_seed": {
+    "origin": "manual_demo_seed",
+    "candidate": {
+      "id": "F-CSP-001",
+      "asset_id": "asset-02c25e5bf14731db",
+      "cwe": "CWE-693",
+      "cve": null,
+      "epss": null,
+      "attack_technique": null,
+      "evidence_refs": [
+        "manual-demo-seed:CSP:requiere-validación"
+      ],
+      "confidence": "medium",
+      "cvss_v4_score": null
+    }
+  }
+}
