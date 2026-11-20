@@ -1,0 +1,3 @@
+# Mutation check del verificador. 2026-11-20T18:09:19Z UTC == 2026-11-20 15:09 -03
+Mutación: 'if _hash(body) != row[hash]:' -> 'if False and ...' (el verificador deja de comparar el hash).
+Resultado: 2 tests FALLAN (test_alteracion_se_detecta, test_cli_verify) => la mutación queda MATADA por la suite.

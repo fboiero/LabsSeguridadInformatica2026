@@ -1,0 +1,10 @@
+# Change 002 — Bitácora persistente (Lautaro). Comandos y procedencia.
+# 2026-11-20T18:09:19Z UTC == 2026-11-20 15:09 -03 · Python 3.13.18 · entorno virtual del kit.
+
+python -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt
+python -m pytest -q                         # 162 passed (152 base + 10 de 002)
+python -m pytest tests/test_audit_persistence.py -v
+ruff check harness/audit.py tests/test_audit_persistence.py   # all checks passed
+mypy harness                                # audit.py sin errores (los 39 restantes son preexistentes)
+python tools/progress.py                    # exit 0 (verde)
+python -m harness.audit verify <archivo.db> # OK -> 0 ; cadena corrupta -> 1
