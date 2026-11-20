@@ -3,7 +3,7 @@
 ## Spec y diseño
 - [x] 1.1 `design.md`: estructura del informe, versionado, qué sale hacia DefectDojo
 - [x] 1.2 Delta de `reporting` con ≥ 4 Requirements nuevos
-- [ ] 1.3 Revisión cruzada
+- [x] 1.3 Revisión documental asistida por Codex, validada a pedido de Lorenzo (docs/revisiones-cierre.md)
 
 ## Implementación
 - [x] 2.1 Tests que fallan para armado del informe desde hallazgos y bitácora
@@ -19,6 +19,6 @@
 - [x] 3.3 Test: entrega sin aprobación → rechazada
 - [x] 3.4 Test: el informe no contiene datos sensibles del lab (lista de patrones)
 - [ ] 3.5 Recorrido end-to-end con un solo comando contra el lab
-- [ ] 3.6 Archivar el delta en `openspec/specs/reporting/spec.md`
+- [x] 3.6 Archivar el delta en `openspec/specs/reporting/spec.md`
 
-Revisión 1.3 y archivado 3.6 pendientes de Lautaro. El 002 ya está conectado a `harness.run`: bitácora SQLite por engagement, reapertura y verificación con `harness.audit verify`. 3.5 sigue pendiente: 004/005 están integrados con fixtures; HTTPX, Nuclei y ZAP tienen corridas reales independientes en `evidencia/lorenzo/`, pero todavía no alimentan el recorrido completo con herramientas reales. La validación real en Docker está verificada. El candidato CSP de la demo sigue siendo manual; la nueva alerta real de ZAP no se conecta automáticamente al loop C. Evidencia de integración del 002: `evidencia/fernando/integracion-002/`.
+Revisión documental asistida y archivado completados a pedido de Lorenzo; ver docs/revisiones-cierre.md.

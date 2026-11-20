@@ -1,6 +1,6 @@
 # Spec — poc-catalog
 
-Tests: `tests/test_poc_catalog.py`
+Tests: tests/test_poc_catalog.py, tests/test_validation_flow.py
 Datos: `harness/poc/catalog.yaml` · Código: `harness/poc/catalog.py`
 
 ## Requirement: Verificaciones inertes
@@ -55,3 +55,11 @@ La verificación de reflexión DEBE usar un canario único sin marcado ejecutabl
 - GIVEN una respuesta que codifica el canario
 - WHEN se evalúa
 - THEN el resultado es `not_validated`
+
+## Requirement: Selección vinculada
+El id y CWE del catálogo DEBEN coincidir con el hallazgo; nuevos ids requieren change, revisión y aprobación.
+
+### Scenario: El id no existe o el CWE difiere
+- GIVEN el proyecto en modo laboratorio
+- WHEN ocurre el caso descrito
+- THEN el hallazgo queda no validado sin enviar tráfico

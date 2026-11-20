@@ -3,7 +3,7 @@
 ## Spec y diseño
 - [x] 1.1 `design.md`: formato del RoE, validaciones, representación de aprobación
 - [x] 1.2 Delta de `authorization` con ≥ 5 Requirements nuevos (≥ 3 negativos)
-- [ ] 1.3 Revisión cruzada del delta  <!-- pendiente: la hace otro integrante del grupo -->
+- [x] 1.3 Revisión documental asistida por Codex, validada a pedido de Lorenzo (docs/revisiones-cierre.md)
 
 ## Implementación
 - [x] 2.1 Tests que fallan para RoE inválidos (sin alcance, ventana invertida, CIDR amplio, exclusión que anula todo)

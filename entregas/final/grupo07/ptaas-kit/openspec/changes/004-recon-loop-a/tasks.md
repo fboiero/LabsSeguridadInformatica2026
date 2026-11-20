@@ -3,7 +3,7 @@
 ## Spec y diseño
 - [x] 1.1 `design.md`: schemas de salida, versionado del grafo, manejo de errores
 - [x] 1.2 Deltas de `asset-discovery` y `tool-adapters`
-- [ ] 1.3 Revisión cruzada
+- [x] 1.3 Revisión documental asistida por Codex, validada a pedido de Lorenzo (docs/revisiones-cierre.md)
 
 ## Implementación
 - [x] 2.1 Grabar fixtures sintéticas de salida de subfinder y httpx

@@ -3,7 +3,7 @@
 ## Spec y diseño
 - [x] 1.1 `design.md`: snapshots, confianza, contradicciones, política de templates
 - [x] 1.2 Deltas de `correlation` y `vuln-analysis`
-- [ ] 1.3 Revisión cruzada
+- [x] 1.3 Revisión documental asistida por Codex, validada a pedido de Lorenzo (docs/revisiones-cierre.md)
 
 ## Implementación — correlación
 - [x] 2.1 Cliente de snapshot NVD (lectura offline) con tests

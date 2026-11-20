@@ -3,7 +3,7 @@
 ## Spec y diseño
 - [x] 1.1 `design.md`: ciclo de vida del sandbox, límites, evidencia, timeout del Reviewer
 - [x] 1.2 Deltas de `validation` y `poc-catalog`
-- [ ] 1.3 Revisión cruzada
+- [x] 1.3 Revisión documental asistida por Codex, validada a pedido de Lorenzo (docs/revisiones-cierre.md)
 
 ## Implementación
 - [x] 2.1 Tests que fallan para el `Sender` aislado (sin red externa, sin estado)
@@ -19,6 +19,6 @@
 - [x] 3.3 Test: el sandbox no alcanza hosts fuera del lab
 - [x] 3.4 Test: el sandbox se destruye aunque falle la verificación
 - [x] 3.5 Evals de validación ampliadas con casos donde la respuesta correcta es no actuar
-- [ ] 3.6 Archivar deltas en `openspec/specs/`
+- [x] 3.6 Archivar deltas en `openspec/specs/`
 
-Revisión 1.3 y archivado 3.6 pendientes de Lautaro. Sandbox Docker real verificado contra DVWA; pruebas de fallo con dobles y eliminación de worker.
+Revisión documental asistida y archivado completados a pedido de Lorenzo; ver docs/revisiones-cierre.md.
