@@ -1,6 +1,6 @@
 # Laboratorio 09 — Agentes de pentest
 
-**Unidad 9** · <título según programa analítico>
+**Unidad 9** · Inteligencia artificial aplicada a la seguridad ofensiva
 **Modalidad:** grupos de 4 a 5 integrantes
 **Entrega:** fork + Pull Request, en `entregas/lab09/grupoXX/`
 **Entorno:** Docker + una API de LLM (Claude u OpenAI) — o el motor `mock` sin key

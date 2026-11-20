@@ -392,7 +392,7 @@ penalización específica y tiene causales de rechazo automático.
 **Obligatoria**
 
 - Cybrary. *Introduction to IT & Cybersecurity*.
-  https://www.cybrary.it/course/intro-to-cyber-security/
+  https://www.cybrary.it/course/introduction-to-it-and-cybersecurity/
 
 **Referencia técnica para la Parte B**
 
