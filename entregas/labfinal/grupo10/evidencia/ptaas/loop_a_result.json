@@ -1,0 +1,47 @@
+{
+  "engagement_id": "eng-labfinal-grupo10",
+  "phase": "recon",
+  "capabilities_order": [
+    "subfinder.enum",
+    "httpx.probe"
+  ],
+  "stop_reason": "grafo estabilizado",
+  "iterations": 2,
+  "assets": [
+    {
+      "id": "web-dvwa.lab.test",
+      "type": "web_service",
+      "address": "dvwa.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": [
+        "Apache/2.4.25 (Debian)"
+      ]
+    },
+    {
+      "id": "web-juiceshop.lab.test",
+      "type": "web_service",
+      "address": "juiceshop.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": []
+    }
+  ],
+  "out_of_scope": [],
+  "snapshots": [
+    {
+      "iteration": 1,
+      "total_assets": 2,
+      "new_assets": 2,
+      "digest": "2d20604b6da13c32dd3a8e704c522ec60fd810c77ddd27da6fe343b861ac3e25"
+    },
+    {
+      "iteration": 2,
+      "total_assets": 2,
+      "new_assets": 0,
+      "digest": "2d20604b6da13c32dd3a8e704c522ec60fd810c77ddd27da6fe343b861ac3e25"
+    }
+  ],
+  "errors": [],
+  "audit_verified": true,
+  "mode": "lab",
+  "engagement_state": "RECON"
+}

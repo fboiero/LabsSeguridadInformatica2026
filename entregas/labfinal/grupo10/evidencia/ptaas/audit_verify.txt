@@ -1,0 +1,3 @@
+mode=lab
+entries=4
+audit_verify=OK

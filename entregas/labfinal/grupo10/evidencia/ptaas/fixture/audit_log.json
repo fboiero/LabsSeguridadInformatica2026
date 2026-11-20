@@ -1,0 +1,61 @@
+[
+  {
+    "ts": 1795183123.7537186,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "subfinder.enum",
+    "target": "dvwa.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "GENESIS",
+    "evidence_ref": "sha256:85897dd91ac4048deab03e9bca1dda267d73096c110b8a529645ff58c6dd59d6",
+    "hash": "bf9af675ad1b90bdd34735870fc6b95a1a000ffe1381f84600ae2020098bb556"
+  },
+  {
+    "ts": 1795183123.7537186,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "subfinder.enum",
+    "target": "juiceshop.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "bf9af675ad1b90bdd34735870fc6b95a1a000ffe1381f84600ae2020098bb556",
+    "evidence_ref": "sha256:8abb09cd6215caaebf2dd4a5811e1c371b8171de6698daff3e468138ced62650",
+    "hash": "3d7cfa03a6374e9eea642f0d24d76264e86e2dd6d952f791724f07e48cf11fde"
+  },
+  {
+    "ts": 1795183123.7537186,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "httpx.probe",
+    "target": "cdn.tercero.org",
+    "phase": "recon",
+    "result": "BLOCKED",
+    "prev": "3d7cfa03a6374e9eea642f0d24d76264e86e2dd6d952f791724f07e48cf11fde",
+    "hash": "06778474a78c6e37e08a2f791fa99c82272d76bcef6a1233f1736993c754e3a3"
+  },
+  {
+    "ts": 1795183123.7537186,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "httpx.probe",
+    "target": "dvwa.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "06778474a78c6e37e08a2f791fa99c82272d76bcef6a1233f1736993c754e3a3",
+    "evidence_ref": "sha256:79da1595a0c99c007323aedbd65b38aa5fdbeeb0f433b5ae857840c1af1b05f0",
+    "hash": "34067fd0c936fbf063f3e023e30ae6991662a844325b275380347da04be41d5b"
+  },
+  {
+    "ts": 1795183123.7537186,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "httpx.probe",
+    "target": "juiceshop.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "34067fd0c936fbf063f3e023e30ae6991662a844325b275380347da04be41d5b",
+    "evidence_ref": "sha256:81df8abd9ef4738aba13f038e0944b14afb55c8f2d89fca7770cec0e6193f613",
+    "hash": "bd931b18f718686020e08146ef13f1a142d2f380233b4038de33d21d5471f587"
+  }
+]

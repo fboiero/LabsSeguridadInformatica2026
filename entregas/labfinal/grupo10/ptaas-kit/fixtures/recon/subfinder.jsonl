@@ -1,0 +1,3 @@
+{"host": "dvwa.lab.test", "input": "dvwa.lab.test", "source": "lab-dns"}
+{"host": "juiceshop.lab.test", "input": "juiceshop.lab.test", "source": "lab-dns"}
+{"host": "cdn.tercero.org", "input": "dvwa.lab.test", "source": "passive-ref-out-of-scope"}

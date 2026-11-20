@@ -1,0 +1,2 @@
+{"url": "http://dvwa.lab.test", "host": "dvwa.lab.test", "status_code": 200, "tech": ["Apache/2.4", "PHP/7.4"]}
+{"url": "http://juiceshop.lab.test:3000", "host": "juiceshop.lab.test", "status_code": 200, "tech": ["Node.js", "Express", "Angular"]}

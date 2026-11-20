@@ -1,0 +1,50 @@
+[
+  {
+    "ts": 1795183474.008225,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "subfinder.enum",
+    "target": "dvwa.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "GENESIS",
+    "evidence_ref": "sha256:c2502deb727f58accaa8f132cfb70d089976d2b45cce19c7554047af218ee4f5",
+    "hash": "5155050070267a1a84f277ecd19676b8393796fd27a7d5704faaafedd0c9a478"
+  },
+  {
+    "ts": 1795183474.0085993,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "subfinder.enum",
+    "target": "juiceshop.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "5155050070267a1a84f277ecd19676b8393796fd27a7d5704faaafedd0c9a478",
+    "evidence_ref": "sha256:8abb09cd6215caaebf2dd4a5811e1c371b8171de6698daff3e468138ced62650",
+    "hash": "73af1ff297a375671883a1f11a6f4fcb77eba1fdf3a7800179500cbd0cd47e1e"
+  },
+  {
+    "ts": 1795183474.0634704,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "httpx.probe",
+    "target": "dvwa.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "73af1ff297a375671883a1f11a6f4fcb77eba1fdf3a7800179500cbd0cd47e1e",
+    "evidence_ref": "sha256:1094718a11b872339a41529f47f701d7cd46722d20a79909bc23597de73c549f",
+    "hash": "e7a1de0876802f5aea69614ea47ffc1ae2671a5bc2af477dca0d24676570d2a7"
+  },
+  {
+    "ts": 1795183474.1081486,
+    "engagement": "eng-labfinal-grupo10",
+    "agent": "asset_discovery",
+    "action": "httpx.probe",
+    "target": "juiceshop.lab.test",
+    "phase": "recon",
+    "result": "OK",
+    "prev": "e7a1de0876802f5aea69614ea47ffc1ae2671a5bc2af477dca0d24676570d2a7",
+    "evidence_ref": "sha256:56ab30795c27b7be4f0c954579d3be90ba685fe2584620af23d8c9d16e5ef949",
+    "hash": "6791cc37af5491903e0d42505d432a250c32948596d62d9438227cb0266287f6"
+  }
+]
