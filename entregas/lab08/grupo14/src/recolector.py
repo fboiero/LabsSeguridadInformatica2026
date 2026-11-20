@@ -50,7 +50,7 @@ def buscar_flag(base: str, desde: int, hasta: int) -> tuple[int, str] | None:
         (los normales tienen 'nombre' y 'area'). Detectala.
       - Apenas lo encuentres, devolvé (id, flag) y cortá: no sigas de gusto.
     """
-    CLAVES_NORMALES = {"nombre", "area"}
+    CLAVES_NORMALES = {"id", "nombre", "area"}
     for id_ in range(desde, hasta + 1):
         legajo = consultar_legajo(base, id_)
         if legajo is None:
