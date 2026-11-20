@@ -1,0 +1,23 @@
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: /loot/lab06/14-dirb-cms.txt
+START_TIME: Mon Nov  2 00:29:58 2026
+URL_BASE: http://phantomcorp/
+WORDLIST_FILES: /loot/lab06/cms-wordlist.txt
+OPTION: Not Recursive
+OPTION: Silent Mode
+
+-----------------
+
+GENERATED WORDS: 819
+
+---- Scanning URL: http://phantomcorp/ ----
++ http://phantomcorp/phantomcms/VERSION (CODE:200|SIZE:132)
+
+-----------------
+END_TIME: Mon Nov  2 00:29:59 2026
+DOWNLOADED: 819 - FOUND: 1

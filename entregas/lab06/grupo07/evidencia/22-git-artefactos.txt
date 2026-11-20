@@ -1,0 +1,103 @@
+=== GET /.git/
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/config
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/plain; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+[core]
+	repositoryformatversion = 0
+	bare = false
+[remote "origin"]
+	url = https://git.internal.phantomcorp/intranet.git
+# Un .git expuesto filtra codigo, historia y a veces secretos.
+# FLAG{git_repo_exposed}
+
+=== GET /.git/HEAD
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/index
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/logs/HEAD
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/refs/heads/main
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/refs/heads/master
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/packed-refs
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/description
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/COMMIT_EDITMSG
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.git/ORIG_HEAD
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /.gitignore
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>

@@ -1,0 +1,23 @@
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: /loot/lab06/12-dirb-archivos.txt
+START_TIME: Mon Nov  2 00:29:26 2026
+URL_BASE: http://phantomcorp/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+OPTION: Not Recursive
+OPTION: Silent Mode
+EXTENSIONS_LIST: (.txt,.html) | (.txt)(.html) [NUM = 2]
+
+-----------------
+
+GENERATED WORDS: 4612
+
+---- Scanning URL: http://phantomcorp/ ----
+
+-----------------
+END_TIME: Mon Nov  2 00:29:41 2026
+DOWNLOADED: 9224 - FOUND: 0

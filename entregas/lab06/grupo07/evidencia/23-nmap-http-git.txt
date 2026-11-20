@@ -1,0 +1,9 @@
+# Nmap 7.94SVN scan initiated Tue Nov  3 01:30:14 2026 as: nmap -Pn -p80 --script http-git -oN 23-nmap-http-git.txt phantomcorp
+Nmap scan report for phantomcorp (127.0.0.1)
+Host is up (0.00013s latency).
+rDNS record for 127.0.0.1: localhost
+
+PORT   STATE SERVICE
+80/tcp open  http
+
+# Nmap done at Tue Nov  3 01:30:14 2026 -- 1 IP address (1 host up) scanned in 0.15 seconds

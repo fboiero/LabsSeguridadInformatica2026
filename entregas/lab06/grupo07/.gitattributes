@@ -1,0 +1,3 @@
+# Conservar los bytes de las capturas originales y ejecutar scripts en Linux.
+evidencia/*.txt -text
+evidencia/*.sh text eol=lf

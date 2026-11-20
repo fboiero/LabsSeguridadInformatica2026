@@ -1,0 +1,55 @@
+=== GET /backup/
+HTTP/1.0 200 OK
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<!doctype html><html><body><h1>Index of /backup</h1>
+<pre>
+respaldo-db-2024.sql.gz
+config.old
+notas-infra.txt   ->  FLAG{dir_enumeration_backup}
+</pre>
+<p>Este directorio no deberia estar accesible. Enumeracion de directorios 101.</p>
+</body></html>
+=== GET /backup/respaldo-db-2024.sql.gz
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /backup/config.old
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /backup/notas-infra.txt
+HTTP/1.0 404 Not Found
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>404 Not Found</h1>
+=== GET /admin
+HTTP/1.0 403 Forbidden
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>403 Forbidden</h1><p>Panel admin. Necesitas credenciales.</p>
+=== GET /admin/
+HTTP/1.0 403 Forbidden
+Server: PhantomServer/3.7 
+Date: Tue, 03 Nov 2026 01:30:03 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS/3.7
+
+<h1>403 Forbidden</h1><p>Panel admin. Necesitas credenciales.</p>

@@ -1,0 +1,6 @@
+PING phantomcorp (172.20.0.2) 56(84) bytes of data.
+64 bytes from cyberlab-phantomcorp.cyberlab_labnet (172.20.0.2): icmp_seq=1 ttl=64 time=1.98 ms
+
+--- phantomcorp ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.980/1.980/1.980/0.000 ms
