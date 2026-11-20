@@ -38,6 +38,15 @@ Corte del 20/11/2026. Trabajo sobre `final-grupo07`, solo dentro de la entrega.
   test; cablear la ruta de archivo por engagement en el `run` de punta a punta se
   coordina con Fernando (dueño de 006/007) para no pisar su integración.
 
+### Actualización de integración de Fernando
+La conexión a `harness.run` ya está implementada. El comando guarda una base
+SQLite por engagement, verifica al reabrir, cierra la conexión al terminar o
+fallar y conserva `audit.json`. Se repitieron las pruebas: 166 tests (162 del
+corte de Lautaro y 4 de integración), 20/20 evals y 80/90 tareas (88,9 %).
+La validación sandbox real contra DVWA y el verificador sobre archivo sano y
+copia alterada quedaron registrados en `evidencia/fernando/integracion-002/`.
+La revisión humana 1.3 sigue pendiente; esta comprobación asistida no la sustituye.
+
 ## Declaración de uso de IA (Lautaro Mariño, @lautaromarino0)
 Se utilizó **Claude (Anthropic)** como asistente. **Qué:** ayudó a diseñar el
 esquema SQLite y la política de integridad (`design.md`), a redactar el delta de

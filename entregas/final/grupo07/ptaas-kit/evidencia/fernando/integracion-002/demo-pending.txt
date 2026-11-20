@@ -1,0 +1,9 @@
+004/005 integrados con fixtures; sin LLM vivo. Validación: fixture
+Loop A (004, fixtures): grafo estabilizado
+Correlación (005, offline): 0 coincidencias CVE
+Loop B (005, fixtures): inconclusive — sin ganancia de información
+Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.
+Loop C: PENDING_HITL
+Entrega: PENDING_HITL
+Cadena SQLite y audit.json: OK
+Bitácora SQLite: .demo-output-002-pending\audit-68e223eab0423b8c836cc6b1c3eb605c751f835d22fd00fad3fd7af9de41d933.db

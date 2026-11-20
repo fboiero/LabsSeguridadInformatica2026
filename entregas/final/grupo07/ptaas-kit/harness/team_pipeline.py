@@ -26,7 +26,7 @@ PROVENANCE = {
     "correlation": "snapshots offline con Correlator (005)",
     "analysis": "fixtures sintéticas con DetectionLoop (005)",
     "validation_seed": "candidato CSP manual para demo, sin CVE inferida",
-    "audit": "memoria + export JSON; SQLite 002 pendiente",
+    "audit": "SQLite persistente (002) + export JSON; verificable con harness.audit verify",
 }
 
 

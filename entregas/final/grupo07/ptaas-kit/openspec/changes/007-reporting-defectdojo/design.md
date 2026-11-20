@@ -47,3 +47,13 @@ siendo manual y no se atribuye a las alertas genéricas de 005. Resultado de B i
 C permite validación posterior explícita. La procedencia y resultados por fase forman
 parte del hash del reporte; evidencia adicional en pipeline-evidence.json y asset-graph.json.
 Tests de integración verifican la llamada a los módulos del equipo y ausencia de red/binarios.
+
+## Integración de persistencia 002 recibida
+El comando usa SqliteAuditLog de Lautaro. La ruta dentro de output contiene el
+SHA-256 del engagement_id, evitando usar IDs como segmentos de ruta. La reapertura
+conserva registros y valida su cadena antes de cualquier acción; se rechaza un
+archivo que contenga registros de otro engagement. La conexión se cierra en finally.
+Se conserva audit.json y se informa la ruta SQLite para verificación independiente
+con `python -m harness.audit verify`. Una ejecución por proceso/archivo: se mantiene
+el alcance de concurrencia de 002 (hilos de una instancia), sin prometer escritores
+multi-proceso. No cambian contratos públicos, fixtures ni aprobaciones.

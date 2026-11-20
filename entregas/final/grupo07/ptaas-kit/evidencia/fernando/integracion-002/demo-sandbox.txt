@@ -1,0 +1,5 @@
+004/005 integrados con fixtures; sin LLM vivo. Validación: sandbox
+Loop A (004, fixtures): grafo estabilizado
+Correlación (005, offline): 0 coincidencias CVE
+Loop B (005, fixtures): inconclusive — sin ganancia de información
+Validación: candidato manual CSP; no se atribuye a una alerta de ZAP/Nuclei.

@@ -1,4 +1,4 @@
-"""Demo integrada de 003–007; 004/005 usan fixtures y 002 está pendiente.
+"""Demo integrada de 002–007; 004/005 usan fixtures y audit usa SQLite.
 
 No aprueba por defecto. --approve acepta decisiones explícitas del operador;
 para pruebas automatizadas se identifica al reviewer como prueba, no como revisión humana.
@@ -13,11 +13,12 @@ from pathlib import Path
 from typing import Any
 
 from harness.approvals import ApprovalStore
+from harness.audit import AuditChainCorrupted, SqliteAuditLog, verify_file
 from harness.contracts import Action, AuditLog, Harness, KillSwitch, Phase, ScopeToken
 from harness.policy_loader import phase_allowlist
 from harness.report_bundle import build_bundle, publish_bundle
 from harness.reporting import Finding
-from harness.roe import parse_roe
+from harness.roe import RoE, parse_roe
 from harness.sandbox import DockerSender, FixtureSender
 from harness.team_pipeline import PROVENANCE, run_team_pipeline
 from harness.tokens import EngagementGuard, TokenIssuer
@@ -89,7 +90,35 @@ def execute(
     network: str = "lab_lab",
 ) -> dict[str, Any]:
     roe = parse_roe(roe_path)
-    audit = AuditLog()
+    output.mkdir(parents=True, exist_ok=True)
+    engagement_key = hashlib.sha256(roe.engagement_id.encode()).hexdigest()
+    db_path = output / ("audit-" + engagement_key + ".db")
+    if db_path.exists() and not verify_file(str(db_path)):
+        raise AuditChainCorrupted("bitácora SQLite alterada")
+    audit = SqliteAuditLog(str(db_path))
+    try:
+        if any(e["engagement"] != roe.engagement_id for e in audit.entries):
+            raise ValueError("bitácora de otro engagement")
+        return _execute_with_audit(
+            roe, output, approvals, audit, approve, reviewer, reason,
+            delivery_bundle, validation_mode, network,
+        )
+    finally:
+        audit.close()
+
+
+def _execute_with_audit(
+    roe: RoE,
+    output: Path,
+    approvals: ApprovalStore,
+    audit: SqliteAuditLog,
+    approve: tuple[str, ...],
+    reviewer: str,
+    reason: str,
+    delivery_bundle: Path | None,
+    validation_mode: str,
+    network: str,
+) -> dict[str, Any]:
     ks = KillSwitch()
     issuer = TokenIssuer(roe, audit, killswitch=ks)
     guard = EngagementGuard(roe.engagement_id, phase_allowlist())
@@ -153,13 +182,17 @@ def execute(
         guard.approve(action.name, target)
     delivery = harness.invoke("reporting", action, target, issuer.issue(Phase.REPORT))
     print("Entrega:", delivery["status"])
-    if not verify_entries(audit.entries):
+    if not audit.verify() or not verify_entries(audit.entries):
         raise ValueError("bitácora alterada")
     (output / "audit.json").write_text(
         json.dumps(audit.entries, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print("Cadena audit.json: OK (memoria + export; SQLite 002 pendiente)")
-    return {"bundle": bundle, "delivery": delivery, "audit": audit.entries}
+    print("Cadena SQLite y audit.json: OK")
+    print("Bitácora SQLite:", audit.db_path)
+    return {
+        "bundle": bundle, "delivery": delivery, "audit": audit.entries,
+        "audit_path": audit.db_path,
+    }
 
 
 def main() -> int:
@@ -192,7 +225,7 @@ def main() -> int:
             args.network,
         )
         approvals.save(args.approvals)
-    except (ValueError, PermissionError, RuntimeError) as exc:
+    except (ValueError, PermissionError, RuntimeError, AuditChainCorrupted) as exc:
         print(type(exc).__name__ + ": " + str(exc))
         return 1
     return 0
