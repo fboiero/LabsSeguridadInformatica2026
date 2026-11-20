@@ -1,0 +1,21 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D1 resuelto: Banner neutralizado (info leak de version)
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto D2 resuelto: Endpoint de debug apagado en produccion
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB extra3                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  D1     Banner neutralizado (info leak de version)
+   ✓  D2     Endpoint de debug apagado en produccion
+   ·  D3     Rutas sensibles blindadas (backup + robots)
+   ·  D4     Login parametrizado (SQLi bloqueado)
+   ·  D5     Path traversal bloqueado en /descargar
+
+  ████████████░░░░░░░░░░░░░░░░░░  2/5 (40%)
+

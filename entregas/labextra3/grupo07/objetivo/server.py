@@ -26,7 +26,7 @@ import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
-VERSION = "PhantomServer/2.4.1-debug"   # D1: banner que canta todo
+VERSION = ""                       # D1: banner neutro
 
 DB = "/tmp/phantom_hardening.db"
 DESCARGAS = "/tmp/phantom_descargas"    # raíz "pública" de /descargar
@@ -61,10 +61,6 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/backup":
             # D3: y la ruta sensible responde sin autenticación
             self._txt(200, "dump_pre_migracion: usuarios=1 OK — BORRAR ESTE ENDPOINT")
-        elif path == "/api/status":
-            # D2: endpoint de debug en producción
-            self._json(200, '{"debug": true, "env": "produccion", '
-                            '"db": "' + DB + '", "pid": ' + str(os.getpid()) + '}')
         elif path == "/login":
             # D4: los datos se enlazan como parámetros, nunca como SQL.
             user = params.get("user", [""])[0]
