@@ -13,12 +13,7 @@
 
 ## 0. Declaración de uso de IA
 
-<!-- Completar por el grupo. Ver CONTRIBUTING.md § "Declaración de uso de IA":
-     herramienta, para qué se usó, qué partes se originaron o modificaron con ella
-     y cómo se verificó. -->
-
----
-
+Se utilizó Claude, a través de Claude Code, como asistente. Se usó para redactar un primer borrador de este informe a partir de los commits, las revisiones de seguridad y la evidencia ya registrada en el repositorio por los turnos 1 a 3. El grupo revisó el borrador y contrastó cada dato con los archivos de origen (openspec/reviews/, openspec/changes/guard-turno-1/tasks.md y evidencia/ptaas/). La retrospectiva y las conclusiones las escribió el grupo. Los demás integrantes utilizaron ChatGpt y Gemini. 
 ## 1. Resumen
 
 Partimos del kit de la cátedra (`labs/labfinal-practico-integrador/ptaas-kit`, base
@@ -203,26 +198,33 @@ probarlo solos.
 - **Referencia `sha256` no es cifrado** (hallazgo H2 del turno 2).
 - **Herramientas reales parciales.** El loop A usó el runner stdlib dentro del lab; ZAP y
   Nuclei no tienen corrida archivada en esta carpeta.
-- **Versión de Python.** El CI del kit usa 3.12. La verificación local de este informe se
-  hizo con Python 3.10.5 y también dio 113/113. `ptaas-app/` necesita Python 3.11 o
-  posterior (usa `typing.Self`), así que sus tests no se corrieron en esa verificación.
+- **Versión de Python.** El CI del kit usa 3.12. Las dos carpetas se verificaron en un
+  contenedor `python:3.12-slim`: `ptaas-kit/` con 113 tests y evals 10/10, y `ptaas-app/`
+  con 183 tests, evals 21/21 y la demo de defensa. `ptaas-app/` no corre en 3.10
+  porque usa `typing.Self`.
 
 ---
 
 ## 7. Retrospectiva del trabajo con IA
 
 La guía del kit pide al menos tres casos en que la IA se equivocó y cómo se detectó.
+Los tres son del turno 4 y quedaron registrados en la historia de la rama.
 
 | # | Qué propuso la IA | Cómo lo detectamos | Qué se corrigió |
 |---|---|---|---|
-| 1 | <!-- completar: turno 2 --> | Revisión de seguridad del turno 2: controles con test pero sin cablear (H1) | Se cablearon en el turno 3 |
-| 2 | <!-- completar: turno 1 --> | Test adversarial A9 y mutación de `is_allowed` | Corrección del guard |
-| 3 | <!-- completar --> | <!-- completar --> | <!-- completar --> |
+| 1 | En la tabla del red team describió A1 como "mayúsculas, punto final **o espacios**" y A3 como "IPv6 **e IPv4 mapeada a IPv6**". Copió las ideas de `desafios-extension.md` en vez de lo que prueban nuestros tests. | Contrastamos la tabla con los nombres de los tests en `tests/authorization/test_guard_boundaries.py` (`test_a1_dns_case_and_root_dot`, `test_a3_ipv6_outside_authorized_prefix`). | Se reescribieron las filas A1 a A3 según lo que verifica cada test. |
+| 2 | En "Cómo reproducir" propuso `python tools/run_loop_a.py --mode fixture` sin `--output`. | Leímos `tools/run_loop_a.py`: sin `--output`, escribe en `evidencia/ptaas/` y pisa la evidencia de la corrida real contra el lab. | Se agregó `--output` a un directorio temporal y una advertencia en el informe. |
+| 3 | Para dejar la rama al día propuso mergear el `main` del fork, como dice el paso 3 del `CONTRIBUTING.md`. Ese `main` estaba divergido de `upstream/main` y el merge dio un conflicto en `labs/labfinal-practico-integrador/start.sh`. | El conflicto apareció en un archivo de `labs/`, que el grupo nunca modifica. Comparamos `main` con `upstream/main` y vimos que le faltaban commits de la cátedra. | Se abortó el merge y se mergeó `upstream/main` directo, sin conflictos. |
 
 **Qué funcionó:** trabajar spec → test que falla → código; los tests adversariales y la
-mutación manual mostraron qué tests detectaban roturas reales.
+mutación manual mostraron qué tests detectaban roturas reales. Simular en local las
+reglas del CI de la cátedra antes de pushear detectó que la aplicación estaba en
+`entregas/final/grupo10/`, una ruta que el CI rechaza; se movió a `ptaas-app/`.
 
-**Qué no funcionó:** <!-- completar por el grupo -->
+**Qué no funcionó:** el orden de los turnos cambió durante el día y quedaron dos
+carpetas de PTaaS con alcances distintos (`ptaas-kit/` y `ptaas-app/`), con
+documentación que se superpone. Además, la máquina del turno 4 solo tenía Python 3.10:
+hubo que usar Docker para verificar con la 3.12 del CI.
 
 ---
 
