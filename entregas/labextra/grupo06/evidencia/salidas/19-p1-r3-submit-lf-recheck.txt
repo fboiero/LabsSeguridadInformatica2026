@@ -1,0 +1,8 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R1 resuelto: El server fetchea por vos: panel interno en localhost
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: Exfiltrar datos sensibles a traves del SSRF

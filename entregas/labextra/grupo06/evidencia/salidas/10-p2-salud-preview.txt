@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.13.5
+Date: Wed, 28 Oct 2026 18:27:22 GMT
+Content-Type: text/html; charset=utf-8
+
+<h3>Previsualizacion de http://phantomcorp-intra/salud</h3><hr>{"estado": "ok", "servicio": "intranet-phantomcorp"}
