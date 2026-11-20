@@ -1,20 +1,22 @@
 # Informe — Laboratorio 09 · Agentes de pentest
 
-**Grupo:** 07 · **Fecha del aporte C:** 19/11/2026 (America/Argentina/Buenos_Aires).
+**Grupo:** 07 · **Fecha de corte:** 19/11/2026 (America/Argentina/Buenos_Aires).
 **Autor de la auditoría:** Lorenzo Blanc — @LoloBlanc — legajo 15034.
 **Proveedor usado:** mock, sin API key.
 
-Este archivo contiene el aporte C del reparto. Se audita una corrida complementaria de la referencia autorizada, capturada durante este aporte. No es el transcript de Fernando ni una ejecución del esqueleto de Lautaro. Al integrar sus corridas habrá que revisar diferencias y auditar el esqueleto propio.
+Este informe integra los aportes B de Fernando y C de Lorenzo. La corrida auditada por Lorenzo es complementaria a las capturas operativas de Fernando y no es el transcript de su aporte ni una ejecución del esqueleto de Lautaro. Al incorporar las corridas restantes habrá que revisar diferencias y auditar el esqueleto propio.
 
 ## 0. Declaración de uso de IA
 
 Para el aporte de Lorenzo se utilizó Codex para inspeccionar los módulos autorizados, ejecutar la referencia en Docker, preparar pruebas aisladas y redactar la auditoría. Afecta esta sección, la sección 3 y los archivos de evidencia de C. El asistente contrastó el análisis con el código, el transcript, los resultados completos de las tools y las pruebas sin red. Lorenzo debe revisar y comprender el aporte para su defensa; no se afirma que ya haya realizado esa revisión personal.
 
-El motor `mock` del laboratorio emitió las acciones de la corrida: sigue un plan determinista y no llama a una API de razonamiento. Las declaraciones de Fernando, Lautaro y Guadalupe quedan a cargo de cada uno.
+El motor `mock` del laboratorio emitió las acciones de la corrida auditada por Lorenzo: sigue un plan determinista y no llama a una API de razonamiento.
+
+Para el bloque B, Fernando usó OpenAI Codex para redactar P1 y P3 y preparar comprobaciones locales. Contrastó las respuestas con la consigna y el contrato de los adaptadores de `llm.py`. La prueba de P1 usa `ClienteOpenAI` con respuestas fijas e interceptadas en el transporte; no ejecutó el proveedor ni el agente de pentest. La declaración afecta sus respuestas y comprobaciones, cuya salida se adjunta para revisión. [Bitácora de Fernando](evidencia/comandos-fernando.txt).
 
 ## 1. Flags capturadas
 
-Pendiente del bloque B: salida completa de `./ctf status 09` y sus capturas. Las cinco flags presentes en la corrida complementaria de C no prueban que hayan sido enviadas al CTF ni que R5 se haya obtenido con el agente propio. C no envió flags.
+El checkout local de Fernando registró **0/5 flags** al 19/11/2026; esta captura no representa un estado consolidado del grupo. Siguen pendientes las corridas oficiales y sus transcripts. Las cinco flags de la corrida complementaria de C no prueban que se hayan enviado al CTF ni que R5 se haya obtenido con el agente propio. C no envió flags. [Estado local de Fernando](evidencia/salidas/status-09-fernando.txt).
 
 ## 2. Tu agente
 
@@ -108,11 +110,15 @@ evidencia. El resto de archivos del aporte pasa el control de espacios.
 
 ## 4. Preguntas de análisis
 
-**P1 — el loop de tool-use:** pendiente de Fernando.
+**P1 — el loop de tool-use.** El programa anfitrión presenta al cliente un conjunto de herramientas. El cliente puede devolver una acción `tool` con nombre, argumentos e identificador; el anfitrión valida y, si está permitida, ejecuta la herramienta. Después devuelve la salida asociada a ese identificador. El cliente recibe la observación y puede proponer otra herramienta o responder `final`. Esa respuesta cierra el ciclo, mientras que el presupuesto de pasos limita su duración. [Consigna](../../../labs/lab09-agentes/README.md) · [Contrato del cliente](../../../labs/lab09-agentes/src/llm.py).
+
+En la prueba local, el adaptador devolvió `normalizar_nombre` con el texto `"  Ana  "` y el identificador `local-01`; la operación de ejemplo devolvió `ana`. El adaptador asoció el resultado a un mensaje de rol `tool` con el mismo `tool_call_id`, y luego normalizó la respuesta simulada a `final`. [Salida de la prueba local](evidencia/salidas/pruebas-locales-fernando.txt).
 
 **P2 — LLM vs. script fijo:** pendiente de Guadalupe.
 
-**P3 — ventaja del diseño agnóstico:** pendiente de Fernando.
+**P3 — ventaja del diseño agnóstico.** El programa usa el contrato común `crear_cliente(system, tools)` y `cliente.paso(resultados)`: envía resultados con `id` y `output`, y recibe acciones `tool` o `final`. Cada adaptador traduce ese contrato al formato de su proveedor. Por ejemplo, Claude vincula el resultado mediante `tool_use_id` en un bloque `tool_result`, mientras que OpenAI usa `tool_call_id` en un mensaje de rol `tool`.
+
+Así, cambiar `LLM_PROVIDER` permite usar los adaptadores disponibles sin reescribir la gestión de acciones ni los controles de las herramientas. El modo `mock` permite probar el intercambio con un plan fijo y sin credenciales. Los proveedores reales pueden elegir acciones distintas según los resultados, por lo que sus decisiones todavía requieren evaluación. [Implementación de adaptadores](../../../labs/lab09-agentes/src/llm.py) · [Configuración y modo mock](../../../labs/lab09-agentes/README.md).
 
 **P4 — dos riesgos y su guardrail:** pendiente de Guadalupe.
 
