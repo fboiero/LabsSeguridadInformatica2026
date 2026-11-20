@@ -1,7 +1,7 @@
-diff --git "a/labs\\labextra3-hardening\\objetivo\\server.py" "b/entregas\\labextra3\\grupo07\\objetivo\\server.py"
+diff --git a/labs/labextra3-hardening/objetivo/server.py b/entregas/labextra3/grupo07/objetivo/server.py
 index 46b81c5..f5799bf 100644
---- "a/labs\\labextra3-hardening\\objetivo\\server.py"
-+++ "b/entregas\\labextra3\\grupo07\\objetivo\\server.py"
+--- a/labs/labextra3-hardening/objetivo/server.py
++++ b/entregas/labextra3/grupo07/objetivo/server.py
 @@ -26,7 +26,7 @@ import sqlite3
  from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
  from urllib.parse import urlparse, parse_qs
