@@ -75,6 +75,7 @@ class CatalogAdapter:
             "detail": evidence.detail,
             "parameters": evidence.parameters,
             "http_status": evidence.http_status,
+            "observed_entries": list(evidence.observed),
         }
 
 

@@ -68,6 +68,9 @@ def run_header_review(check: str, receipt: Path, sandbox_state: Path | None = No
         reference = (' · Informe de referencia #1: listado observado en esta respuesta'
                      if hit and record['http_status'] == 200 else
                      ' · Informe de referencia #1: evidencia insuficiente')
+    entries = [name for name in record.get('observed_entries', []) if isinstance(name, str)]
+    if entries:
+        reference += ' · Entradas visibles en el índice: ' + ', '.join(entries[:20]) + '. No se descargó ningún archivo.'
     return f"GET {path} · HTTP {record['http_status']} · {ROOT_CHECKS[check]}: {detail}{reference} · {receipt.name}"
 
 

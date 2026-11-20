@@ -58,6 +58,21 @@ def test_new_evaluators(catalog, poc_id, body):
     assert run_parametrized(catalog, poc_id, params, True, lambda *_: ResponseRecord(200, {}, body)).status == "validated"
 
 
+def test_ftp_evidence_lists_observed_names_without_following_links(catalog):
+    seen = []
+    links = ''.join(f'<a href="/ftp/public-{i}.txt">file</a>' for i in range(25))
+    body = '<title>Index of /ftp</title><a href="https://example.test/ftp/external.txt">external</a>' + links
+
+    def sender(poc_id, params):
+        seen.append(params['path'])
+        return ResponseRecord(200, {}, body)
+
+    params = {"base_url": "http://juice-shop.lab.test:3000", "path": "/ftp"}
+    evidence = run_parametrized(catalog, "POC-FTP-001", params, True, sender)
+    assert evidence.observed == tuple(f'public-{i}.txt' for i in range(20))
+    assert seen == ['/ftp']
+
+
 def test_protected_admin_route_is_not_a_finding(catalog):
     params = {"base_url": "http://juice-shop.lab.test:3000", "path": "/api/Users"}
     assert run_parametrized(catalog, "POC-ADMINAUTHZ-001", params, True,

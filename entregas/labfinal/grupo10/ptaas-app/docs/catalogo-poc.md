@@ -24,6 +24,9 @@ Estas comprobaciones evidencian controles o debilidades observables; no deben
 presentarse como explotación confirmada. Ampliar el catálogo exige otro change,
 revisión de seguridad y aprobación humana.
 
+`POC-FTP-001` enumera hasta 20 nombres de archivo que el índice de `/ftp` ya
+expone, y aclara que no se descargó ningún archivo.
+
 ## Corrida real acreditada
 
 El `Sender` se ejecutó mediante `Harness.invoke` dentro de un contenedor

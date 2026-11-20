@@ -52,6 +52,7 @@ class Evidence:
     detail: str
     parameters: dict[str, str]
     http_status: int
+    observed: tuple[str, ...] = ()
 
 
 def validate_entries(entries: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -137,6 +138,22 @@ def _evaluate(name: str, record: ResponseRecord) -> tuple[bool, str]:
     raise InvalidCatalog("unknown_evaluator")
 
 
+def ftp_index_entries(body: str, limit: int = 20) -> tuple[str, ...]:
+    """Nombres que el propio índice de /ftp ya expone. No descarga ni abre archivos."""
+    names: list[str] = []
+    for href in re.findall(r'href=["\']?([^"\'>\s]+)', body, re.IGNORECASE):
+        candidate = href.split("?")[0].rstrip("/")
+        if not candidate.startswith("/ftp/"):
+            continue
+        name = candidate.rsplit("/", 1)[-1]
+        if not name or name in names:
+            continue
+        names.append(name)
+        if len(names) >= limit:
+            break
+    return tuple(names)
+
+
 def new_canary() -> str:
     return f"ptaas{secrets.token_hex(4)}\"'<>"
 
@@ -155,4 +172,5 @@ def run_parametrized(catalog: dict[str, dict[str, Any]], poc_id: str, params: di
     if entry["evaluator"] == "input_reflected_unencoded": sent["canary"] = new_canary()
     record = sender(poc_id, sent)
     valid, detail = _evaluate(entry["evaluator"], record)
-    return Evidence(poc_id, entry["version"], "validated" if valid else "not_validated", detail, params, record.status)
+    observed = ftp_index_entries(record.body) if valid and entry["evaluator"] == "ftp_directory_listing" else ()
+    return Evidence(poc_id, entry["version"], "validated" if valid else "not_validated", detail, params, record.status, observed)
