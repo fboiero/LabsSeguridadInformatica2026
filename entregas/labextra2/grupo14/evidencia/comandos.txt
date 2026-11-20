@@ -1,0 +1,20 @@
+# Comandos usados — Lab Extra 2 (forense git)
+cd labs/labextra2-git-forense/caso/repo-delata
+
+# Panorama
+git log --oneline --all --graph
+git branch -a
+git reflog
+
+# R1 — secreto en commit viejo
+git log -p -- config.py
+git show eafb81c   # fix: sacar credenciales (ups) -> muestra el token que borró
+
+# R2 — commit perdido por reset --hard
+git reflog                 # aparece HEAD@{5} commit bc9d0db (notas del cluster)
+git fsck --lost-found      # también lo lista como dangling commit
+git show bc9d0db
+
+# R3 — rama abandonada
+git branch -a              # feature/pasarela-pagos
+git show feature/pasarela-pagos   # (0abdf95) .env.pasarela con el secreto

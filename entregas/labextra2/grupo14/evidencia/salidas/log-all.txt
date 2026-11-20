@@ -1,0 +1,6 @@
+* fa714bd docs: estado del proyecto
+* eafb81c fix: sacar credenciales del codigo (ups)
+| * 0abdf95 wip: pasarela de pagos (falta todo)
+|/  
+* 9333f2b hotfix: deploy roto en produccion (config temporal)
+* de33a75 inicial: deploy-tool con token por variable de entorno
