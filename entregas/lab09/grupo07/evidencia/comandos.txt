@@ -1,0 +1,62 @@
+Aporte C — Lorenzo Blanc — 19/11/2026, America/Argentina/Buenos_Aires (UTC-03:00)
+Repo: LabsSeguridadInformatica2026; base auditada upstream/main@a1abb79.
+Objetivo operativo: contenedor phantomcorp del lab09. Proveedor: mock sin key.
+
+Inspección y preparación (PowerShell, desde la raíz del repo):
+git status --short --branch
+git remote -v
+git branch -a
+git config user.name
+git config user.email
+git fetch origin
+git fetch upstream
+docker ps --format "{{.Names}} {{.Image}}"
+
+La main local tenía divergencias. Los intentos siguientes fallaron por no permitir fast-forward:
+git switch main
+git merge --ff-only origin/main
+git merge --ff-only upstream/main
+git switch -c lab09-grupo07
+La rama recién creada aún no tenía aportes. Se corrigió su base sin tocar main ni el trabajo previo del lab07:
+git switch -C lab09-grupo07 upstream/main
+
+docker inspect cyberlab-phantomcorp --format '{{json .Config.Labels}}'
+El entorno activo era lab07. Se bajó con sus archivos Compose, sin borrar volúmenes ni .loot:
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml down
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab09-agentes/entorno/target.compose.yml up -d --build
+
+Se crearon los scripts de evidencia de C dentro de entregas/lab09/grupo07/evidencia/.
+Captura complementaria de la referencia (comando efectivamente ejecutado):
+docker exec cyberlab-attacker bash -lc 'mkdir -p /loot/lab09-c; date -Is > /loot/lab09-c/contexto.txt; python3 --version >> /loot/lab09-c/contexto.txt; cd /repo; LLM_PROVIDER=mock python3 entregas/lab09/grupo07/evidencia/capturar_referencia.py /loot/lab09-c/resultados-tools.jsonl > /loot/lab09-c/transcript-referencia.txt 2>&1'
+Pruebas aisladas sin procesos ni requests, sobre módulos autorizados:
+docker exec cyberlab-attacker bash -lc 'cd /repo; PYTHONDONTWRITEBYTECODE=1 python3 entregas/lab09/grupo07/evidencia/pruebas_auditoria.py > /loot/lab09-c/pruebas-auditoria.txt 2>&1'
+Copia literal de originales crudos desde .loot, sin editar contenidos:
+Copy-Item .loot/lab09-c/* entregas/lab09/grupo07/evidencia/salidas/
+
+Procedencia de los cuatro archivos:
+- contexto.txt: fecha UTC y versión Python de cyberlab-attacker.
+- transcript-referencia.txt: stdout/stderr de agente_pentest.main(), con el registrador de tools de C.
+- resultados-tools.jsonl: un registro por tool, con argumentos y retorno completo; el token que contiene es ficticio del lab.
+- pruebas-auditoria.txt: stdout/stderr de unittest, seis pruebas.
+
+No se ejecutó el esqueleto de A ni se enviaron flags al CTF.
+No se ejecutaron Claude/OpenAI ni se usaron keys. No se leyó el código del target.
+Las fixtures de parser y redirección no se enviaron a ninguna tool.
+El entorno queda activo en lab09 para continuar; para restaurar lab07 deben usarse sus archivos Compose.
+
+Verificaciones finales (PowerShell):
+Get-ChildItem entregas/lab09/grupo07/evidencia/salidas | ForEach-Object { $original = Get-FileHash -LiteralPath (Join-Path '.loot/lab09-c' $_.Name); $copia = Get-FileHash -LiteralPath $_.FullName; [PSCustomObject]@{Archivo=$_.Name; CopiaIdentica=($original.Hash -eq $copia.Hash)} }
+Resultado: las cuatro capturas iniciales coincidieron byte a byte con sus originales.
+
+Intento de validador sobre checkout Windows; falló por CRLF, se conserva sin editar:
+docker exec cyberlab-attacker bash -c 'cd /repo; PYTHONPYCACHEPREFIX=/tmp/lab09-c-pycache bash bin/validar-repo.sh > /loot/lab09-c/validar-repo.txt 2>&1'
+Copy-Item .loot/lab09-c/validar-repo.txt entregas/lab09/grupo07/evidencia/salidas/validar-repo.txt
+Validador sin modificaciones sobre la base exportada por Git (LF originales):
+docker exec cyberlab-attacker bash -c 'set -o pipefail; mkdir -p /tmp/lab09-c-validacion; git -c safe.directory=/repo -C /repo archive HEAD | tar -x -C /tmp/lab09-c-validacion; cd /tmp/lab09-c-validacion; bash bin/validar-repo.sh > /loot/lab09-c/validar-repo-exportado.txt 2>&1'
+Copy-Item .loot/lab09-c/validar-repo-exportado.txt entregas/lab09/grupo07/evidencia/salidas/
+Resultado: seis chequeos OK sobre la base oficial. No sustituye las pruebas del aporte.
+
+git diff --cached --check
+El chequeo general señala espacios del transcript original; se preservaron.
+git diff --cached --check -- . ':(exclude)entregas/lab09/grupo07/evidencia/salidas/**'
+La carpeta salidas usa -text en .gitattributes para preservar los bytes en Git.
