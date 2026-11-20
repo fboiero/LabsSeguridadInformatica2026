@@ -35,7 +35,11 @@ implementaciones son intercambiables y el verificador sirve para ambas.
   convención): `BEFORE UPDATE` y `BEFORE DELETE` hacen `RAISE(ABORT, …)`. Además
   la clase no expone ningún método de modificación/borrado (criterio de
   aceptación 3). Un atacante que use otra herramienta y borre/edite una fila
-  **rompe la cadena** y el verificador lo detecta igual.
+  **rompe la cadena** si altera el contenido o borra una fila intermedia. Borrar
+  únicamente el final puede dejar un prefijo válido: sin un conteo o hash final
+  protegido externamente no se detecta ese truncado. Esta precisión se comprobó
+  durante el cierre de Fernando con Codex, sin modificar la bitácora original;
+  ver `evidencia/fernando/cierre-pr/limite-bitacora-002.json`.
 - **GENESIS por engagement:** el primer registro de cada archivo lleva
   `prev="GENESIS"`. Como hay un archivo por engagement, cada cadena arranca
   limpia y los engagements quedan aislados por construcción.

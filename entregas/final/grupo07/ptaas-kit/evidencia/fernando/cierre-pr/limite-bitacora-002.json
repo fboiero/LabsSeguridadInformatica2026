@@ -1,0 +1,10 @@
+{
+  "source": "evidencia/lorenzo/integracion-real-approved/audit.db",
+  "scope": "copia temporal del laboratorio; original intacto",
+  "records_before": 20,
+  "records_after": 19,
+  "original_verifies": true,
+  "truncated_copy_verifies": true,
+  "finding": "La cadena sin ancla externa no detecta truncado final. Se corrige la afirmacion documental; no se cambia el verificador.",
+  "performed_by": "Fernando con Codex en el cierre; no atribuido a Lautaro"
+}
