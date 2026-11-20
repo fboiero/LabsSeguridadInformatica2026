@@ -1,8 +1,10 @@
-# Integrantes — Lab Extra 4 — Grupo 07
+# Integrantes — Lab Extra 4 · Grupo 07
 
-| Integrante | Legajo | Usuario | Aporte de este bloque | Estado |
-|---|---:|---|---|---|
-| Lorenzo Blanc | 15034 | @LoloBlanc | Por completar por el autor. | Pendiente |
-| Fernando Cagliero | 15136 | @Ferca19 | P1 y P4: mediciones y cálculos de velocidad. | Documentado en `informe.md`; scripts y salidas adjuntos. |
-| Guadalupe Gómez | 15397 | @guadagomezgg8 | Por completar por la autora. | Pendiente |
-| Lautaro Mariño | 15163 | @lautaromarino0 | Por completar por el autor. | Pendiente |
+| Nombre | Legajo | GitHub | Bloque |
+|---|---:|---|---|
+| Lorenzo Blanc | 15034 | @LoloBlanc | P2/P3/P5, conclusión, integración y PR |
+| Guadalupe Gómez | 15397 | @guadagomezgg8 | `cracker.py` y pruebas |
+| Lautaro Mariño | 15163 | @lautaromarino0 | R1–R3, loot y evidencia |
+| Fernando Cagliero | 15136 | @Ferca19 | P1/P4, mediciones y cálculos |
+
+La rama conserva el aporte de Lorenzo y agrega los commits locales de Fernando para P1/P4, con scripts y salidas. Guadalupe y Lautaro deben incorporar sus bloques y declaraciones; no se ha unido aquí ningún resultado de cracking.
