@@ -4,7 +4,9 @@
 
 **Estado parcial:** la captura remota de Lorenzo registra R3 resuelto (1/3) antes del bloque de Fernando. La captura local de Fernando, posterior a R1, registra R1 resuelto y R2/R3 pendientes (1/3). Son estados de ejecuciones locales distintas; no se presenta un estado combinado posterior a la integración.
 
-**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para organizar evidencia que yo capturé, redactar esta sección y consultar la documentación oficial enlazada en `research.md`. Verifiqué cada resultado con las salidas crudas del contenedor del laboratorio, el estado local del CTF y las páginas oficiales citadas. No usé IA para inventar ejecuciones ni para atribuirme los bloques pendientes. Fernando Cagliero (@Ferca19) usó OpenAI Codex para ejecutar y documentar R1 en el entorno local, organizar las salidas y redactar P1/P5. Contrastó el análisis de metadata con documentación oficial de AWS y OWASP. Las declaraciones de Guadalupe y Lautaro quedan pendientes de cada autor.
+**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para organizar evidencia que yo capturé, redactar esta sección y consultar la documentación oficial enlazada en `research.md`. Verifiqué cada resultado con las salidas crudas del contenedor del laboratorio, el estado local del CTF y las páginas oficiales citadas. No usé IA para inventar ejecuciones ni para atribuirme los bloques pendientes. Fernando Cagliero (@Ferca19) usó OpenAI Codex para ejecutar y documentar R1 en el entorno local, organizar las salidas y redactar P1/P5. Contrastó el análisis de metadata con documentación oficial de AWS y OWASP. La declaración de Lautaro queda pendiente de su autor.
+
+**Declaración de uso de IA — Guadalupe (@guadagomezgg8):** bloque R2 y P3. Usé **Claude (Anthropic)** para (a) reproducir el entorno (web + intranet en loopback, equivalentes a los contenedores segmentados) y ejecutar el SSRF `GET /preview?url=` contra la raíz de la intranet, con la salida en `evidencia/salidas/r2-intranet.txt`, y (b) redactar R2, P3 y esta declaración. No se leyó el generador ni `solucion.md`: la flag de R2 salió de la respuesta HTTP que devolvió el server y se validó su `sha256` contra `retos.manifest`. Reviso y puedo explicar cada paso.
 
 ---
 
@@ -20,7 +22,13 @@ La respuesta fue HTTP 200 OK y mostró el panel interno que se describe como acc
 
 ### R2 — Intranet en la red interna
 
-Pendiente: asignado a Guadalupe. El resultado de R3 y sus datos ficticios ya fue compartido como insumo para su P3.
+La consola atacante no resuelve `phantomcorp-intra` (sin ruta directa: `curl --max-time 3 phantomcorp-intra/` da timeout). Pero el server sí está en `internalnet`, así que le pedí la intranet a través de `/preview`:
+
+```bash
+curl -sS -G --max-time 5 --data-urlencode 'url=http://phantomcorp-intra/' http://phantomcorp/preview
+```
+
+La respuesta (HTTP 200) devolvió la home de la intranet —«Intranet PhantomCorp · USO INTERNO»— con el host marcado como `FLAG{ssrf_intranet_descubierta}` y enlaces a `/backups/clientes.json` y `/salud`. La segmentación de red no impidió llegar: el fetch salió desde el server de la DMZ, que sí tiene esa ruta. El nombre interno sigue el patrón `phantomcorp-*` ya visto en otros labs. `sha256` verificado contra `retos.manifest`. Salida: [r2-intranet.txt](evidencia/salidas/r2-intranet.txt). La petición la hizo el server, no el atacante.
 
 ### R3 — Exfiltración del backup
 
@@ -51,7 +59,11 @@ Esto funciona como oráculo de escaneo porque un usuario puede observar resultad
 
 ### P3 — Hallazgo profesional
 
-Pendiente: asignado a Guadalupe. R3 y el inventario ficticio recuperado quedan como evidencia de apoyo para que describa el activo, vector e impacto.
+- **Activo:** backup temporal de clientes (`/backups/clientes.json` en la intranet), con razón social y CUIT de clientes —datos ficticios del lab— rotulado «backup temporal pre-migración, NO debería ser accesible».
+- **Vector:** SSRF en la herramienta `/preview` del portal público (`phantomcorp`, DMZ). El endpoint fetchea cualquier URL sin allowlist ni bloqueo de destinos internos; un atacante sin ruta a `internalnet` usa al server como proxy y lee la intranet.
+- **Impacto:** cruzó el perímetro información de negocio/PII (identificación fiscal de clientes) que no debería alcanzarse desde afuera, más la confirmación de que la intranet «inaccesible» es alcanzable vía el server (pivote a la red interna). Severidad alta: exposición de datos de terceros + acceso a la red interna.
+- **Límites:** se demostró la lectura a través del server; no se probó exfiltración hacia un tercero externo ni persistencia. Datos ficticios.
+- **Remediación (resumen; ver P4):** allowlist de destinos en `/preview`, bloqueo de loopback e IPs/hostnames internos, y borrar el backup que no debía existir.
 
 ### P4 — Mitigaciones
 
