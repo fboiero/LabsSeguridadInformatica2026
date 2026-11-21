@@ -56,5 +56,19 @@ base persistente real. No se usaron credenciales del portal ni datos reales.
 | JSON del exportador `runtime.delivery.validate`, generado con el paquete sintético de `tests/test_delivery.py` | `201` | `2` | 0, como se esperaba |
 
 Esto verifica la compatibilidad del **archivo exportado** con esa versión de
-DefectDojo. No prueba el publicador automático `runtime.defectdojo.publish`, la
-autenticación por token ni una instancia de la cátedra.
+DefectDojo. Es una prueba distinta de la publicación por HTTP.
+
+## Publicador por API: prueba HTTP local
+
+`runtime.defectdojo.publish` requiere la URL, el token, el ID numérico del
+engagement (`DEFECTDOJO_ENGAGEMENT_ID` o `engagement_id`) y el hash aprobado
+del informe. Usa HTTPS, salvo HTTP sobre loopback, y no sigue redirecciones.
+Envía `Generic Findings Import` como multipart. Si el informe tiene entradas,
+se importan como `Info`, inactivas y no verificadas: el publicador no calcula
+severidad a partir del vector CVSS. No solicita cerrar hallazgos previos.
+
+En la misma instancia local se ejecutó el publicador por HTTP con un token
+temporal y un informe de prueba sin hallazgos: respondió `201`, creó el test
+local `3` en el engagement `1` y se verificaron cero hallazgos persistidos.
+Se retiraron la cuenta de prueba y su token. No se publicó el recibo real de
+Juice Shop ni se contactó una instancia de la cátedra.

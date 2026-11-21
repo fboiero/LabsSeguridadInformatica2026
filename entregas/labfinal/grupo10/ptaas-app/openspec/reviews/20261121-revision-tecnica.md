@@ -31,3 +31,10 @@ Carolina informó que otro integrante revisó el change 002. Esta nota registra
 su confirmación; no atribuye una firma, un commit revisado ni un dictamen sin
 datos adicionales. La tarea 4.6 también exige resolver posibles hallazgos.
 El archivado formal y la aceptación docente se registran por separado.
+
+## Seguimiento técnico
+
+Se atendió el hallazgo sobre DefectDojo: el publicador envía multipart y se
+validó por HTTP con un token temporal contra la instancia local. El [registro
+de la prueba](../../docs/entrega-defensiva.md#publicador-por-api-prueba-http-local)
+no implica que se haya publicado el informe de entrega.
