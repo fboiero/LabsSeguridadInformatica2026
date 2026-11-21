@@ -27,7 +27,7 @@ R5  Encontrar la intrusion en el ruido                    pendiente
 Progreso: 1/5 (20%)
 ```
 
-R2 se obtuvo por la respuesta directa del detector; no se enviaron flags de los otros retos. La salida completa está en `evidencia/salidas/status-10.txt`.
+La captura anterior es el estado histórico de Lorenzo: en ese momento tenía R2 y aún no había enviado las flags de los demás bloques. El cierre de integración, contrastado contra las capturas originales de los operadores, registró las cinco flags y obtuvo **5/5** en una exportación limpia; ver `evidencia/salidas/status-10-consolidado.txt` y `evidencia/salidas/cierre-integracion.txt`. Se conserva la captura histórica en `evidencia/salidas/status-10.txt` sin presentarla como el estado actual.
 
 **Cierre de integración — 20/11/2026:** las cinco flags observadas en las salidas de los operadores se enviaron al verificador oficial desde una exportación limpia de la base con esta entrega. El estado consolidado es **5/5**; ver [captura](evidencia/salidas/status-10-consolidado.txt) y [registro de cierre](evidencia/salidas/cierre-integracion.txt). Esta comprobación valida los marcadores documentados y no constituye una nueva ejecución de los ataques.
 
