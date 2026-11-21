@@ -1,0 +1,486 @@
+\documentclass[10pt,a4paper]{article}
+
+% --- PAQUETES FUNDAMENTALES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=1.8cm,top=2.2cm,bottom=2.2cm,headheight=15pt]{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\graphicspath{{capturas/}{./}}
+
+% --- MACRO PARA INSERCIÓN ROBUSTA DE IMÁGENES ---
+\newcommand{\insertimg}[2][width=\linewidth]{%
+    \IfFileExists{capturas/#2}{%
+        \includegraphics[#1]{capturas/#2}%
+    }{%
+        \IfFileExists{#2}{%
+            \includegraphics[#1]{#2}%
+        }{}%
+    }%
+}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+% --- COLORES CORPORATIVOS / ACADÉMICOS ---
+\definecolor{brandblue}{HTML}{0A2540}
+\definecolor{accentblue}{HTML}{2563EB}
+\definecolor{lightbg}{HTML}{F8FAFC}
+\definecolor{darkslate}{HTML}{1E293B}
+\definecolor{mutedgray}{HTML}{64748B}
+\definecolor{bordergray}{HTML}{CBD5E1}
+\definecolor{passgreen}{HTML}{15803D}
+\definecolor{passbg}{HTML}{DCFCE7}
+\definecolor{warnamber}{HTML}{B45309}
+\definecolor{warnbg}{HTML}{FEF3C7}
+\definecolor{blockred}{HTML}{B91C1C}
+\definecolor{blockbg}{HTML}{FEE2E2}
+
+% --- CONFIGURACIÓN DE HIPERVÍNCULOS ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accentblue,
+    urlcolor=accentblue,
+    citecolor=brandblue,
+    pdftitle={Informe Final PTaaS - Grupo 06},
+    pdfauthor={Grupo 06 - Seguridad Informática 2026}
+}
+
+% --- ENCABEZADOS Y PIES DE PÁGINA ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{mutedgray}\textbf{Seguridad Informática 2026} · Práctico Final PTaaS}
+\fancyhead[R]{\small\color{mutedgray}Grupo 06 · Rama \texttt{labfinal-ptaas-grupo06}}
+\fancyfoot[L]{\footnotesize\color{mutedgray}UTN Facultad Regional Villa María · Seguridad Informática 2026}
+\fancyfoot[R]{\footnotesize\color{mutedgray}Página \thepage\ de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\color{bordergray}\hrule height 0.5pt width\headwidth}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\footrule}{\color{bordergray}\hrule height 0.5pt width\headwidth}
+
+% --- FORMATO DE TÍTULOS ---
+\titleformat{\section}
+  {\color{brandblue}\normalfont\Large\bfseries}
+  {\thesection.}{0.8em}{}[\color{bordergray}\titlerule]
+\titleformat{\subsection}
+  {\color{accentblue}\normalfont\large\bfseries}
+  {\thesubsection.}{0.6em}{}
+\titleformat{\subsubsection}
+  {\color{darkslate}\normalfont\normalsize\bfseries}
+  {\thesubsubsection.}{0.5em}{}
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{3pt}
+
+% --- CAJAS ESTILIZADAS (tcolorbox) ---
+\newtcolorbox{calloutbox}[1][]{
+  enhanced,
+  breakable,
+  colback=lightbg,
+  colframe=accentblue,
+  arc=3pt,
+  boxrule=0pt,
+  leftrule=3.5pt,
+  top=6pt,bottom=6pt,left=10pt,right=10pt,
+  fonttitle=\bfseries\color{brandblue},
+  #1
+}
+
+\newtcolorbox{warningbox}[1][]{
+  enhanced,
+  breakable,
+  colback=warnbg,
+  colframe=warnamber,
+  arc=3pt,
+  boxrule=0pt,
+  leftrule=3.5pt,
+  top=6pt,bottom=6pt,left=10pt,right=10pt,
+  fonttitle=\bfseries\color{warnamber},
+  #1
+}
+
+% --- CONFIGURACIÓN DE LISTADOS DE CÓDIGO ---
+\lstdefinestyle{terminalcode}{
+  basicstyle=\fontsize{7.5pt}{9pt}\ttfamily\color{lightbg},
+  backgroundcolor=\color{darkslate},
+  frame=none,
+  breaklines=true,
+  breakatwhitespace=false,
+  keepspaces=true,
+  tabsize=2,
+  showstringspaces=false,
+  columns=fullflexible
+}
+
+\lstdefinestyle{bashcommands}{
+  basicstyle=\fontsize{7.5pt}{9.5pt}\ttfamily\color{darkslate},
+  backgroundcolor=\color{lightbg},
+  frame=single,
+  rulecolor=\color{bordergray},
+  breaklines=true,
+  tabsize=2,
+  showstringspaces=false
+}
+
+% --- COMANDOS AUXILIARES ---
+\newcommand{\badgepass}[1]{\colorbox{passbg}{\textcolor{passgreen}{\textbf{\scriptsize #1}}}}
+\newcommand{\badgewarn}[1]{\colorbox{warnbg}{\textcolor{warnamber}{\textbf{\scriptsize #1}}}}
+\newcommand{\badgeblock}[1]{\colorbox{blockbg}{\textcolor{blockred}{\textbf{\scriptsize #1}}}}
+
+\begin{document}
+
+% ==============================================================================
+% PORTADA FORMAL ACADÉMICA
+% ==============================================================================
+\begin{titlepage}
+    \noindent
+    \begin{minipage}[c]{0.58\linewidth}
+        \colorbox{lightbg}{\textcolor{accentblue}{\textbf{\small SEGURIDAD INFORMÁTICA 2026 · PRÁCTICO FINAL INTEGRADOR}}}
+    \end{minipage}%
+    \begin{minipage}[c]{0.42\linewidth}
+        \flushright
+        \insertimg[height=1.25cm]{logo-utn.png}
+    \end{minipage}
+
+    \vspace{1.2cm}
+    \begin{flushleft}
+
+        {\fontsize{26pt}{30pt}\selectfont \textbf{\color{brandblue} PTaaS: Pentest as a Service con Control Humano en Cada Paso}} \\[0.5cm]
+        {\large\color{mutedgray} Construcción de una plataforma de auditoría gobernada por agentes de IA, autorización determinista, bitácora SQLite inmutable y validación inerte en sandbox.}
+        
+        \vspace{1.2cm}
+        \hrule height 2pt \color{accentblue}
+        \vspace{1.5cm}
+
+        \begin{tabularx}{\linewidth}{ll}
+            \textbf{\color{darkslate} Grupo:} & Grupo 06 \\[6pt]
+            \textbf{\color{darkslate} Integrantes:} & Martín Beccereca \\
+                                                    & Belén Benito \\
+                                                    & Alejo De Miguel \\
+                                                    & Tomás Giudici \\
+                                                    & Carolina Suppo \\[8pt]
+            \textbf{\color{darkslate} Repositorio:} & \href{https://github.com/AlejoDM/LabsSeguridadInformatica2026}{AlejoDM/LabsSeguridadInformatica2026} (rama \texttt{labfinal-ptaas-grupo06}) \\[6pt]
+            \textbf{\color{darkslate} Entorno:} & Laboratorio Docker aislado (DVWA y OWASP Juice Shop) \\[6pt]
+            \textbf{\color{darkslate} Fecha de Entrega:} & Noviembre 2026 \\[6pt]
+            \textbf{\color{darkslate} Estado de la Suite:} & \badgepass{483 PASSED} (485 tests, 2 skipped condicionados a Docker) \\
+            \textbf{\color{darkslate} OpenSpec:} & \badgepass{10/10 CHANGES 100\%} · 221 Scenarios cubiertos \\
+        \end{tabularx}
+
+        \vfill
+        \begin{center}
+            \small\color{mutedgray}
+            Universidad Tecnológica Nacional · Facultad Regional Villa María (UTN FRVM) \\[3pt]
+            Cátedra de Seguridad Informática · Docente: Ing. Fernando Boiero
+        \end{center}
+    \end{flushleft}
+\end{titlepage}
+
+% ==============================================================================
+% 1. RESUMEN EJECUTIVO Y REQUISITOS
+% ==============================================================================
+\section{Resumen Ejecutivo y Cumplimiento de la Consigna}
+
+PhantomCorp y la cátedra asignaron una auditoría de seguridad integral basada en una premisa estricta: \textbf{``El agente propone, pero el harness dispone''}. En lugar de llevar a cabo un CTF manual tradicional o delegar decisiones críticas en la probabilidad de modelos de lenguaje, el \textbf{Grupo 06 construyó la plataforma tecnológica que gobierna el pentest}. 
+
+El diseño descarta el uso de LLMs para decisiones de seguridad: el alcance, las reglas de engagement (RoE), la bitácora forense y los gates de validación están regidos por \textbf{código determinista que falla cerrado}. Ninguna acción de red toca un activo sin un token temporal de alcance vigente emitido por una persona.
+
+\begin{calloutbox}
+\textbf{Axiomas de Seguridad del Sistema:}
+\begin{enumerate}[noitemsep,topsep=2pt]
+    \item \textbf{Sin RoE firmado y vigente no hay fase activa:} Toda acción sin token válido es bloqueada y registrada.
+    \item \textbf{Scope Guard determinista:} Evalúa pertenencia de red y dominios sin usar modelos de lenguaje probabilísticos.
+    \item \textbf{Bitácora SQLite inmutable:} Registro append-only encadenado por hashes SHA-256 con triggers y ancla externa.
+    \item \textbf{Sin armas nuevas:} La fase de validación utiliza exclusivamente verificaciones inertes y parametrizadas de un catálogo curado, ejecutadas en contenedores Docker de un solo uso sin salida a Internet.
+\end{enumerate}
+\end{calloutbox}
+
+\subsection{Cumplimiento de los Requisitos y la Consigna}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{p{4.2cm} c X}
+\toprule
+\textbf{Área / Componente de la Consigna} & \textbf{Estado} & \textbf{Evidencia Verificable en el Repositorio} \\
+\midrule
+\textbf{1. Harness e invariantes} & \badgepass{Implementado} & Invariantes I1--I8 testeadas (\texttt{matriz-invariantes.md}); bitácora SQLite con triggers; \texttt{audit verify} detecta manipulación y truncado; Red Team A1--A10 y B1--B4 con historial de commits rojo/verde. \\
+\midrule
+\textbf{2. Swarm y loops agénticos} & \badgepass{Implementado} & 3 loops conectados con topes y no-progreso; 4 gates HITL interactivos; orquestación determinista por pipeline (Change 009) documentada como decisión de arquitectura segura. \\
+\midrule
+\textbf{3. Specs OpenSpec y tests} & \badgepass{Implementado} & \texttt{progress.py} al 100\% en 10 changes; 221 Scenarios testeados; 44 pruebas de mutación (M1--M44) en \texttt{mutaciones.md}; caso real M33 donde la mutación reveló un test débil que fue corregido. \\
+\midrule
+\textbf{4. Herramientas y adaptadores} & \badgepass{Implementado} & Corridas reales contra DVWA y Juice Shop; adaptadores propios desarrollados (\texttt{subfinder}, \texttt{httpx}, \texttt{zap.baseline}, \texttt{sandbox}); 5 templates Nuclei curados en \texttt{MANIFEST.md} con doble firma humana. \\
+\midrule
+\textbf{5. Informe, evals y demo} & \badgepass{Implementado} & Ejecución con un comando (\texttt{python -m harness.pipeline run}); 32 evaluaciones golden aprobadas (32/32); informe generado desde la bitácora exportado formalmente a DefectDojo. \\
+\midrule
+\textbf{6. Ética y gobernanza} & \badgepass{Implementado} & Retrospectiva con más de 20 errores de IA registrados por los integrantes (\texttt{ia-errores.md}); propuesta de 7 controles de gobernanza (Change 010) respaldada en ISO/IEC 29147, 30111 y NIST SP 800-115. \\
+\midrule
+\textbf{Balance General} & \badgepass{100\% Cumplido} & Totalidad de los hitos técnicos, invariantes, catálogo inerte y evidencias implementadas conforme a la consigna. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \insertimg[width=0.92\linewidth]{captura-01-progress.png}
+    \caption{Avance de especificaciones con \texttt{python tools/progress.py}: 100\% de tareas completadas en los 10 changes de OpenSpec y cobertura total de los 221 Scenarios.}
+    \label{fig:progress}
+    \vspace{6pt}
+    \insertimg[width=0.92\linewidth]{captura-02-tests.png}
+    \caption{Suite de pruebas automatizadas (\texttt{python -m pytest -q}): 483 tests aprobados y 2 omitidos condicionados al entorno Docker real.}
+    \label{fig:tests}
+\end{figure}
+
+% ==============================================================================
+% 2. ARQUITECTURA Y GATES HUMANOS
+% ==============================================================================
+\section{Arquitectura del Sistema y Gates Humanos (HITL)}
+
+La plataforma implementa un desacoplamiento estricto entre los agentes que razonan y los componentes que ejecutan. La compuerta central, \texttt{Harness.invoke}, funciona como un proxy de seguridad ineludible:
+
+\begin{lstlisting}[style=terminalcode]
+[RoE Firmado] ---> [Emisor de Tokens: TTL corto, ventana UTC, acotado a fase y CIDR]
+                           |
+                           v  (ScopeToken)
+[Orquestador / Swarm] ---> [Harness.invoke: PUNTO UNICO DE CONTROL DETERMINISTA]
+                           |-- Kill Switch global: congela la ejecucion si esta activo.
+                           |-- ScopeToken: valida vigencia temporal y correspondencia de fase.
+                           |-- Scope Guard: chequeo de CIDR y dominios (sin comodines).
+                           |-- Revalidacion DNS: previene rebote hacia IPs publicas fuera de lab.
+                           |-- Gate Humano (HITL): espera token de aprobacion firmado por CLI.
+                           v
+            +--------------+--------------+
+            |                             |
+            v                             v
+   [Adaptadores de Red]          [Sandbox Efimero]
+   - subfinder / httpx           - Contenedor Docker de un solo uso
+   - ZAP Baseline Scanner        - Red interna sin gateway hacia Internet
+   - Nuclei (Allowlist)          - Solo ejecuta PoCs inertes del catalogo
+            |                             |
+            +--------------+--------------+
+                           v
+             [Bitacora SQLite Append-Only] (SHA-256 encadenado + Ancla Externa)
+                           v
+             [Informe Forense] ---> [Gate Entrega (Hash)] ---> [Exportacion DefectDojo]
+\end{lstlisting}
+
+\subsection{Los Cuatro Gates Humanos Obligatorios (Human-in-the-Loop)}
+El sistema nunca delega en la inteligencia artificial decisiones de impacto o entrega. Se implementaron cuatro barreras obligatorias mediante la CLI \texttt{harness.validation\_cli}:
+\begin{enumerate}[leftmargin=*,noitemsep]
+    \item \textbf{Primera Acción Activa:} Antes de enviar el primer paquete de red hacia el objetivo (sondeo \texttt{httpx}).
+    \item \textbf{Análisis Activo:} Previo al inicio de los escaneos automatizados de ZAP baseline o Nuclei.
+    \item \textbf{Validación por Hallazgo:} Antes de instanciar el contenedor efímero para validar un hallazgo. \textbf{Está criptográficamente ligado al hash de los parámetros}: si el agente cambia un solo parámetro de prueba, la aprobación se anula.
+    \item \textbf{Entrega del Informe:} Antes de remitir el documento y exportar a DefectDojo. \textbf{Ligado al hash SHA-256 exacto del informe}. Cualquier modificación posterior revoca la autorización.
+\end{enumerate}
+
+% ==============================================================================
+% 3. INVARIANTES Y BITÁCORA INMUTABLE
+% ==============================================================================
+\section{Invariantes del Harness y Verificación Forense de la Bitácora}
+
+El sistema implementa formalmente las 8 invariantes de seguridad del marco teórico (I1 a I8). La invariante I3 exige que la bitácora no solo registre cada evento (\texttt{OK}, \texttt{BLOCKED}, \texttt{PENDING\_HITL}, \texttt{ABORTED}), sino que sea resistente a manipulaciones forenses en disco.
+
+\subsection{Verificación de Integridad de la Bitácora y Evidencia del Engagement}
+La bitácora reside en SQLite utilizando transacciones \texttt{BEGIN IMMEDIATE}, restricción \texttt{UNIQUE(prev)} y triggers a nivel de base de datos que impiden cualquier \texttt{UPDATE} o \texttt{DELETE}.
+
+Para verificar la integridad criptográfica de la corrida real, el subcomando oficial \texttt{pipeline verify} examina la cadena de hashes de los archivos generados:
+
+\begin{figure}[htbp]
+    \centering
+    \insertimg[width=0.92\linewidth]{captura-04-bitacora.png}
+    \caption{Verificación oficial de la bitácora criptográfica y de la evidencia del engagement con \texttt{python -m harness.pipeline verify}: integridad validada de \texttt{harness-audit.json} y \texttt{evidence.json}.}
+    \label{fig:audit-verify}
+\end{figure}
+
+El verificador de SQLite (\texttt{python -m harness.audit verify}) comprueba adicionalmente que:
+\begin{itemize}[noitemsep]
+    \item Si se intenta un \texttt{UPDATE} directo, los triggers abortan la transacción.
+    \item Si se altera físicamente un registro, el verificador detecta el fallo exacto (\textit{"hash no coincide con el contenido"}).
+    \item Si se borra el último registro para ocultar una acción, el \textbf{Ancla Externa} (hash final y conteo) hace fallar la comprobación.
+\end{itemize}
+
+% ==============================================================================
+% 4. RED TEAM Y PRUEBAS DE MUTACIÓN
+% ==============================================================================
+\section{Red Team del Guard y Pruebas de Mutación}
+
+Para verificar que los controles son efectivos y no meras declaraciones formales, se implementaron 14 vectores de ataque adversariales y 44 pruebas de mutación.
+
+\subsection{Vectores Adversariales del Red Team (A1--A10 y B1--B4)}
+Cada vector se escribió primero como un test en rojo y luego se implementó su mitigación, preservando la historia en commits separados:
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{c p{5cm} X c}
+\toprule
+\textbf{\#} & \textbf{Vector Adversarial Evaluado} & \textbf{Mitigación Implementada en el Harness} & \textbf{Commits (Rojo $\rightarrow$ Verde)} \\
+\midrule
+\textbf{A1} & Hostname con mayúsculas/puntos (\texttt{DVWA.lab.test.}) & Normalización canónica (\texttt{strip().lower().rstrip(".")}). & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{A2} & Sufijo engañoso (\texttt{evil-dvwa.lab.test}) & Validación estricta por componente de dominio, sin subcadenas. & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{A3} & IPv6 e IPv4 mapeadas (\texttt{::ffff:10.99.0.4}) & Normalización mediante \texttt{ipaddress} antes de contrastar CIDR. & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{A4} & Host legítimo que resuelve a IP externa & Resolver DNS inyectado en runtime que falla cerrado ante IPs WAN. & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{A5} & Redirecciones HTTP hacia host fuera de alcance & Clase \texttt{RedirectPolicy} valida host y esquema en cada salto. & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{A6} & Token reutilizado en otra fase o engagement & Guard liga el token al \texttt{engagement\_id} y restringe fase. & \texttt{9a76691} $\rightarrow$ \texttt{937a234} \\
+\textbf{A7} & Ventana horaria con desfases de zona horaria & Conversión forzada a instantes UTC y rechazo de ventanas invertidas. & \texttt{9a76691} $\rightarrow$ \texttt{937a234} \\
+\textbf{A8} & CIDRs amplios (\texttt{/8} o \texttt{0.0.0.0/0}) & Prefijo mínimo forzado (/24 en IPv4, /64 en IPv6) acotado a lab. & \texttt{9a76691} $\rightarrow$ \texttt{937a234} \\
+\textbf{A9} & Inyección de argumentos en parámetros CLI & Validador \texttt{validate\_parameters} aplicado antes de armar \texttt{argv}. & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{A10} & Escritura concurrente para bifurcar bitácora & Lock de memoria y transacción \texttt{BEGIN IMMEDIATE} en SQLite. & \texttt{98e85f4} $\rightarrow$ \texttt{1b9392e} \\
+\textbf{B1--B3} & Alteración de host por \texttt{path} (\texttt{//ext/}) o traversal & \texttt{\_check\_target\_params} exige path absoluto simple y bloquea \texttt{..}. & \texttt{cfdd3a0} $\rightarrow$ \texttt{77bc330} \\
+\textbf{B4} & PoC aprobado por un agente sintético & Rechazo de firmas de aprobación con nombres de agentes (\texttt{AGENT\_APPROVERS}). & \texttt{cfdd3a0} $\rightarrow$ \texttt{77bc330} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \insertimg[width=0.92\linewidth]{captura-05-redteam.png}
+    \caption{Batería adversarial de pruebas del Red Team (\texttt{python -m pytest tests/test\_redteam\_guard.py -q}): 41 tests pasando en verde comprobando la mitigación efectiva de los vectores A1 a A10.}
+    \label{fig:redteam}
+\end{figure}
+
+\subsection{Pruebas de Mutación (M1--M44) y el Caso de M33}
+Se ejecutaron 44 pruebas de mutación rompiendo deliberadamente controles en el código fuente para verificar que la suite de tests detecta las fallas (\texttt{entrega/mutaciones.md}).
+\begin{calloutbox}
+\textbf{Caso de Estudio M33 (Detección de un Test Débil):}
+Al aplicar la mutación M33 (desactivar el filtro de alertas informativas de riesgo 0 en ZAP), la suite de tests original pasó completa en verde: \textbf{la mutación sobrevivió}. Al investigar la causa, se descubrió que el test existente utilizaba una alerta que ya era descartada por otra regla por carecer de código CWE, por lo que el control de riesgo 0 nunca se evaluaba verdaderamente. Se reescribió el test utilizando la alerta ZAP 10027 (riesgo 0 con CWE-615 válido). Al re-aplicar M33, el test falló de inmediato como correspondía. Este caso ilustra cómo el análisis de mutaciones perfeccionó la calidad de la batería de pruebas.
+\end{calloutbox}
+
+% ==============================================================================
+% 5. CORRIDA REAL Y HALLAZGOS
+% ==============================================================================
+\section{Corrida Real contra el Laboratorio y Hallazgos}
+
+La auditoría final (\textbf{Corrida de integración final}, 19/11/2026, archivada en la carpeta \texttt{P5-recorrido-04}) se ejecutó de extremo a extremo mediante el comando unificado \texttt{python -m harness.pipeline run} contra \texttt{dvwa.lab.test} y \texttt{juiceshop.lab.test} en una red interna Docker. 
+
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabularx}{\linewidth}{p{3.5cm} p{2.6cm} X c p{3.2cm}}
+\toprule
+\textbf{Identificador} & \textbf{Activo} & \textbf{Debilidad Detectada} & \textbf{CWE} & \textbf{Estado de Validación} \\
+\midrule
+DVWA-ZAP-10010 & dvwa.lab.test & Cookie sin flag HttpOnly & CWE-1004 & \badgepass{Validado en Sandbox} \newline {\scriptsize(POC-COOKIE-001)} \\
+\addlinespace[3pt]
+DVWA-ZAP-10054 & dvwa.lab.test & Cookie sin atributo SameSite & CWE-1275 & \badgepass{Validado en Sandbox} \newline {\scriptsize(POC-COOKIE-001)} \\
+\addlinespace[3pt]
+DVWA-ZAP-10020 & dvwa.lab.test & Falta protección Anti-Clickjacking & CWE-1021 & \badgepass{Validado en Sandbox} \newline {\scriptsize(POC-HDR-001)} \\
+\addlinespace[3pt]
+DVWA-ZAP-10038 & dvwa.lab.test & Falta Content-Security-Policy (CSP) & CWE-693 & \badgepass{Validado en Sandbox} \newline {\scriptsize(POC-CSP-001)} \\
+\addlinespace[3pt]
+JUICESHOP-ZAP-10038 & juiceshop.lab.test & Falta Content-Security-Policy (CSP) & CWE-693 & \badgepass{Validado en Sandbox} \newline {\scriptsize(POC-CSP-001)} \\
+\addlinespace[3pt]
+DVWA-ZAP-10009 & dvwa.lab.test & Fuga de versión en banner HTML & CWE-497 & \badgewarn{Observado por ZAP} \newline {\scriptsize(Sin PoC inerte)} \\
+\addlinespace[3pt]
+DVWA-ZAP-10036 & dvwa.lab.test & Fuga de versión en encabezado Server & CWE-497 & \badgewarn{Observado por ZAP} \newline {\scriptsize(Sin PoC inerte)} \\
+\addlinespace[3pt]
+DVWA-ZAP-10021 & dvwa.lab.test & Falta encabezado X-Content-Type-Options & CWE-693 & \badgewarn{Observado por ZAP} \newline {\scriptsize(Sin PoC inerte)} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{warningbox}
+\textbf{El Gate Humano que Frenó un Error Crítico (Caso Corrida 03):}
+En la corrida 03 previa, la IA generó una versión del informe donde unificó erróneamente dos alertas distintas (10009 y 10036, ambas CWE-497) y asignó una verificación ficticia inexistente (\texttt{NINGUNA vNone}). Ningún test automatizado atrapó este defecto. El analista Martín Beccereca, al inspeccionar el borrador en el \textbf{Gate de Entrega}, identificó el error y \textbf{rechazó la entrega}. Se escribió el test de regresión, se aplicó la corrección con la mutación M35 y recién la corrida 04, totalmente saneada, fue autorizada y exportada.
+\end{warningbox}
+
+\begin{figure}[htbp]
+    \centering
+    \insertimg[width=0.92\linewidth]{captura-06-defectdojo.png}
+    \caption{Confirmación formal de importación y clasificación de los hallazgos validados en la plataforma DefectDojo (\texttt{defectdojo.json}).}
+    \label{fig:defectdojo}
+\end{figure}
+
+% ==============================================================================
+% 6. RETROSPECTIVA DE IA Y GOBERNANZA
+% ==============================================================================
+\section{Retrospectiva del Trabajo con IA y Gobernanza Internacional}
+
+La suite de evaluaciones ejecutada con \texttt{python evals/run\_evals.py --mode golden} arrojó \textbf{32/32 casos aprobados}, garantizando que el sistema clasifica correctamente las evidencias, mapea CWEs sin alucinaciones y respeta las condiciones de parada.
+
+\begin{figure}[htbp]
+    \centering
+    \insertimg[width=0.88\linewidth]{captura-03-evals.png}
+    \caption{Ejecución de evaluaciones golden (\texttt{python evals/run\_evals.py --mode golden}): 32/32 casos aprobados en correlación, análisis de vulnerabilidades, orquestación y validación.}
+    \label{fig:evals}
+\end{figure}
+
+\subsection{Registro Crítico de Errores de IA por Integrante}
+Todos los integrantes del equipo documentaron las fallas introducidas por los modelos generativos durante el desarrollo (\texttt{ia-errores.md}):
+\begin{itemize}[noitemsep]
+    \item \textbf{Alejo De Miguel (Claude Code / Haiku 5.5):} Commiteó el contrato de bitácora sin exponer previamente la firma a revisión de pares. Se corrigió formalizando la interfaz en \texttt{design.md} antes de continuar.
+    \item \textbf{Belén Benito (opencode / DeepSeek V4.1):} Escribió el test A1 con un target incompatible con su token y dejó \texttt{is\_live()} inclusivo en \texttt{window\_end}. Se corrigió adoptando intervalos semiabiertos $[start, end)$.
+    \item \textbf{Tomás Giudici (Codex / GPT-6):} El adaptador \texttt{httpx} interpretaba stdout vacío como resultado exitoso (\texttt{OK}). Se forzó el estado \texttt{ERROR} ante falta de respuesta HTTP demostrable.
+    \item \textbf{Carolina Suppo (ChatGPT / GPT-6):} Las llamadas a Docker en Windows leían caracteres con codificación local ANSI (\texttt{cp1252}), rompiendo con \texttt{UnicodeDecodeError}. Se forzó decodificación UTF-8 con reemplazo seguro de caracteres.
+    \item \textbf{Martín Beccereca (Claude Code / Opus 5.5):} Generó un test de alertas informativas que pasaba por una regla no relacionada. Se detectó mediante la mutación M33 y se reescribió el test con una alerta representativa.
+\end{itemize}
+
+\subsection{Gobernanza y Estándares de la Industria (Change 010)}
+El grupo diseñó el \textbf{Change 010} incorporando siete controles formales fundamentados en normas internacionales:
+\begin{enumerate}[noitemsep]
+    \item \textbf{ISO/IEC 29147 (Vulnerability Disclosure):} Procedimiento estructurado de divulgación y plantilla formal completada con un hallazgo real para el contacto del laboratorio (\texttt{docs/plantilla-divulgacion-29147.md}).
+    \item \textbf{ISO/IEC 30111 (Vulnerability Handling):} Trazabilidad completa del hallazgo desde su confirmación en sandbox hasta su retest y verificación de remediación.
+    \item \textbf{NIST SP 800-115:} Preservación de cadenas de custodia de evidencia, contención de daños y destrucción certificada de contenedores efímeros.
+\end{enumerate}
+
+% ==============================================================================
+% 7. COMANDOS DE VERIFICACIÓN
+% ==============================================================================
+\section{Comandos de Ejecución y Verificación de la Evidencia}
+
+A continuación se detalla la secuencia real de comandos ejecutados en el entorno de pruebas para construir el contenedor, inspeccionar la red aislada, verificar la contención de egreso del Sandbox y orquestar el pipeline con sus aprobaciones:
+
+\begin{lstlisting}[style=bashcommands]
+# 1. Despliegue y comprobacion de red aislada del laboratorio
+docker build -t ptaas-p3-runner:20261113 tools/p3_lab
+docker compose -p ptaas-p3 -f lab/docker-compose.yml -f tools/p3_lab/compose.override.yaml up -d
+docker network inspect ptaas-p3_lab
+docker exec ptaas-p3-runner-1 cat /proc/net/route
+docker exec ptaas-p3-runner-1 python -c "import urllib.request as u; print(u.urlopen('http://dvwa.lab.test/login.php').status)"
+
+# 2. Comprobacion de contencion de egreso del Sandbox (bloqueo WAN vs acceso al lab)
+python -c "from harness.sandbox import DockerRuntime; print(DockerRuntime().probe_egress('ptaas-p3_lab', ('1.1.1.1', 80)))"       # False (bloqueado)
+python -c "from harness.sandbox import DockerRuntime; print(DockerRuntime().probe_egress('ptaas-p3_lab', ('dvwa.lab.test', 80)))" # True (en lab)
+
+# 3. Recorridos de pipeline con RoE y fixtures
+python -m harness.pipeline run --roe roe-p5.yaml --approvals entrega/evidencia/salidas/P5-recorrido-01-approvals.json --output entrega/evidencia/salidas/P5-recorrido-01 --analysis-fixture lab/analysis-fixture.json
+python -m harness.pipeline run --roe roe-p5.yaml --approvals entrega/evidencia/salidas/P5-recorrido-02-approvals.json --output entrega/evidencia/salidas/P5-recorrido-02 --analysis-fixture lab/analysis-fixture.json
+
+# 4. Aprobacion de gates humanos por CLI (primera accion activa y validacion inerte)
+python -m harness.validation_cli --store entrega/evidencia/salidas/P5-recorrido-02-approvals.json approve-gate lab-p5-20261118-01 first_active_action --reviewer "Martin Beccereca" --reason "RoE firmado, alcance del lab"
+
+$S = "entrega/evidencia/salidas/P5-recorrido-02-approvals.json"
+python -m harness.validation_cli --store $S approve DVWA-COOKIE --reviewer "Martin Beccereca" --reason "Verificacion inerte del catalogo sobre DVWA, en alcance"
+python -m harness.validation_cli --store $S approve DVWA-CSP --reviewer "Martin Beccereca" --reason "Verificacion inerte del catalogo sobre DVWA, en alcance"
+python -m harness.validation_cli --store $S approve JUICE-HDR --reviewer "Martin Beccereca" --reason "Verificacion inerte del catalogo sobre Juice Shop, en alcance"
+
+# 5. Ejecucion de la suite de tests del Sandbox con Docker real
+$env:PTAAS_SANDBOX_DOCKER = "1"; python -m pytest tests/test_sandbox_loop_c.py -k real -q
+\end{lstlisting}
+
+\begin{figure}[htbp]
+    \centering
+    \insertimg[width=0.92\linewidth]{captura-05-sandbox.png}
+    \caption{Prueba de contención y aislamiento de red del Sandbox efímero: comprobación de bloqueo estricto hacia Internet (\texttt{1.1.1.1: False}) y conectividad permitida únicamente dentro del laboratorio (\texttt{dvwa.lab.test: True}).}
+    \label{fig:sandbox-egress}
+\end{figure}
+
+\vspace{0.6cm}
+\begin{center}
+    \textbf{\color{brandblue} ``Automatizar el pentest era la parte fácil. Lo difícil fue garantizar que no se pueda descontrolar.''} \\[4pt]
+    \small\color{mutedgray} Grupo 06 · Seguridad Informática 2026 · UTN Facultad Regional Villa María
+\end{center}
+
+\end{document}
