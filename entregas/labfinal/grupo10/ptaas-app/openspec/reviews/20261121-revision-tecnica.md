@@ -27,10 +27,13 @@ por realizados en esta revisión.
 
 ## Seguimiento de revisión humana
 
-Carolina informó que otro integrante revisó el change 002. Esta nota registra
-su confirmación; no atribuye una firma, un commit revisado ni un dictamen sin
-datos adicionales. La tarea 4.6 también exige resolver posibles hallazgos.
-El archivado formal y la aceptación docente se registran por separado.
+Carolina informó que Juan revisó el change `002` y no dejó observaciones. No
+se informó qué commit revisó. El `b142597` indicado arriba corresponde solo
+a la revisión asistida por IA, no a la de Juan.
+
+Carolina también informó que el grupo revisó el change `003`. Este registro
+no acredita por separado una aprobación formal de cierre, un acuerdo con la
+cátedra ni la integración y el archivado por PR.
 
 ## Seguimiento técnico
 

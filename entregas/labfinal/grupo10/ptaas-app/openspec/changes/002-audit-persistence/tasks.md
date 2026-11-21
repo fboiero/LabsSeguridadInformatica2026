@@ -42,9 +42,9 @@ No implican que la revisión independiente o el práctico completo estén termin
 - [x] 4.3 Probar y documentar que truncamiento final sin ancla no se detecta.
 - [x] 4.4 Suite y evals en verde; tabla Scenario → test real.
 - [x] 4.5 Mutación controlada: quitar el registro previo hace fallar un test.
-- [ ] 4.6 Revisión de seguridad y revisión de otro integrante; resolver hallazgos.
+- [x] 4.6 Revisión de seguridad y revisión de otro integrante. Carolina informó que Juan revisó el cambio y no dejó observaciones.
+- [ ] Registrar el commit o enlace de la versión que revisó Juan.
 - [ ] 4.7 Archivar los deltas al integrar por PR, no antes.
 
-La [nota de revisión](../../reviews/20261121-revision-tecnica.md) registra que
-Carolina informó la revisión de otro integrante. La tarea 4.6 sigue abierta
-hasta registrar qué versión revisó y si hubo observaciones o se resolvieron.
+La [nota de revisión](../../reviews/20261121-revision-tecnica.md) distingue la
+revisión de Juan, informada por Carolina, de la revisión asistida por IA.
