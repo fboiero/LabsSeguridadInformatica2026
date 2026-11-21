@@ -1,0 +1,28 @@
+Corrida roja reproducida en un worktree aislado sobre el commit de pruebas
+`9a76691`, contra el código previo a estas correcciones (baseline `86bb425`).
+Fecha: 2026-11-13. Las fallas son de comportamiento, no de importación ni de
+recolección.
+
+```text
+python -m pytest tests/test_roe_tokens.py -q -k "entrada_no_textual or exclusiones_combinadas or exacto_de_window_end or fase_desconocida or lista_vacia or hash_de_aprobacion"
+6 failed, 25 deselected
+```
+
+Fallos que confirmaron los defectos:
+- Contacto no textual: `AttributeError` en vez de `RoEValidationError`.
+- Exclusiones combinadas: no rechazó el alcance totalmente vacío.
+- Expiración exacta: `is_live()` devolvió `True` en `window_end`.
+- Fase desconocida: `issue()` lanzó `ValueError` sin registrar el rechazo.
+- Fases autorizadas vacías: el parser las interpretó como autorización por defecto.
+- Hash de aprobación: cambiar exclusiones/fases no cambiaba `approval_hash`.
+
+Segunda prueba roja, también sobre `9a76691`:
+
+```text
+python -m pytest tests/test_roe_tokens.py -q -k issue_sin_bitacora
+1 failed, 30 deselected
+```
+
+`issue()` devolvió un token sin sink de auditoría. Tras las correcciones,
+`tests/test_roe_tokens.py` quedó en 31 passed y la suite completa en 162 passed;
+la salida verde está en `p2-pytest.txt`.

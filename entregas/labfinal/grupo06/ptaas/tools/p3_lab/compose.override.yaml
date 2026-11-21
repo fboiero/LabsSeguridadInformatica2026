@@ -1,0 +1,11 @@
+# Complemento de ejecución P3; no modifica lab/docker-compose.yml de P5.
+services:
+  runner:
+    image: ptaas-p3-runner:20261113
+    environment:
+      PTAAS_LAB_ISOLATED: "1"
+networks:
+  lab:
+    ipam:
+      config:
+        - subnet: 10.99.0.0/24

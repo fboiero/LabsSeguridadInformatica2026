@@ -1,0 +1,132 @@
+MUTACIÓN EN MEMORIA: rate
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_shared_budget_across_adapter_instances _________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py:261: in test_shared_budget_across_adapter_instances
+    assert emitted[-1] >= 1.19  # policy=5 limita incluso un perfil más rápido
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   assert 0.0 >= 1.19
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py::test_shared_budget_across_adapter_instances
+1 failed in 0.41s
+RESULTADO: detectada
+MUTACIÓN EN MEMORIA: cvss
+FFFFFFF                                                                  [100%]
+================================== FAILURES ===================================
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/AV:N] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/ZZ:X] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:BAD] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+_ test_invalid_vector[CVSS:3.1/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/MSI:X/MSI:S] _
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:23: in test_invalid_vector
+    with pytest.raises(ValueError, match='CVSS'):
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/AV:N]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/ZZ:X]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:BAD]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:3.1/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/MSI:X/MSI:S]
+7 failed in 0.22s
+RESULTADO: detectada
+MUTACIÓN EN MEMORIA: epss
+FFFFFF                                                                   [100%]
+================================== FAILURES ===================================
+___________________________ test_invalid_epss[-0.1] ___________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:34: in test_invalid_epss
+    with pytest.raises(ValueError, match='EPSS'):
+E   Failed: DID NOT RAISE ValueError
+___________________________ test_invalid_epss[1.1] ____________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:34: in test_invalid_epss
+    with pytest.raises(ValueError, match='EPSS'):
+E   Failed: DID NOT RAISE ValueError
+___________________________ test_invalid_epss[nan] ____________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:34: in test_invalid_epss
+    with pytest.raises(ValueError, match='EPSS'):
+E   Failed: DID NOT RAISE ValueError
+___________________________ test_invalid_epss[inf] ____________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:34: in test_invalid_epss
+    with pytest.raises(ValueError, match='EPSS'):
+E   Failed: DID NOT RAISE ValueError
+___________________________ test_invalid_epss[True] ___________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:34: in test_invalid_epss
+    with pytest.raises(ValueError, match='EPSS'):
+E   Failed: DID NOT RAISE ValueError
+___________________________ test_invalid_epss[0.5] ____________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\harness\reporting_p3.py:85: in render_report
+    ordered_findings = sorted(findings, key=lambda f: (f.epss is None, -(f.epss or 0), f.id))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\harness\reporting_p3.py:85: in <lambda>
+    ordered_findings = sorted(findings, key=lambda f: (f.epss is None, -(f.epss or 0), f.id))
+                                                                       ^^^^^^^^^^^^^^
+E   TypeError: bad operand type for unary -: 'str'
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_epss[-0.1]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_epss[1.1]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_epss[nan]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_epss[inf]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_epss[True]
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_reporting_p3.py::test_invalid_epss[0.5]
+6 failed in 0.24s
+RESULTADO: detectada
+MUTACIÓN EN MEMORIA: hitl
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_schema_hitl_is_preserved_on_resume ___________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py:335: in test_schema_hitl_is_preserved_on_resume
+    assert not calls and g.status == 'PENDING_HITL'
+E   AssertionError: assert (not [('subfinder.enum', 'dvwa.lab.test'), ('httpx.probe', 'dvwa.lab.test'), ('subfinder.enum', 'dvwa.lab.test'), ('httpx.probe', 'dvwa.lab.test')])
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py::test_schema_hitl_is_preserved_on_resume
+1 failed in 0.29s
+RESULTADO: detectada
+MUTACIÓN EN MEMORIA: scope
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_excluded_never_reaches_adapter_or_dns __________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py:74: in test_excluded_never_reaches_adapter_or_dns
+    assert 'external.invalid' in g.excluded
+E   AssertionError: assert 'external.invalid' in []
+E    +  where [] = AssetGraph(engagement_id='p3-test', assets={'5ca1237552dbad3adabf0b27': {'id': '5ca1237552dbad3adabf0b27', 'type': 'ho...=['dvwa.lab.test'], revision=2, iteration=1, status='BLOCKED', stop_reason='autorización rechazada', schema_failures=0).excluded
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py::test_excluded_never_reaches_adapter_or_dns
+1 failed in 0.27s
+RESULTADO: detectada
+MUTACIÓN EN MEMORIA: cap
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________________ test_cap_survives_reload ___________________________
+..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py:108: in test_cap_survives_reload
+    assert calls == []
+E   AssertionError: assert [('subfinder....wa.lab.test')] == []
+E     
+E     Left contains 2 more items, first extra item: ('subfinder.enum', 'dvwa.lab.test')
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\Desktop\Facultad\Seguridad Laboratorios\LabsSeguridadInformatica2026\entregas\labfinal\grupo06\ptaas\tests\test_recon_loop_a.py::test_cap_survives_reload
+1 failed in 0.33s
+RESULTADO: detectada

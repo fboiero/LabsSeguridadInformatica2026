@@ -1,0 +1,46 @@
+{"ok": true, "reason": ""}
+{"ok": false, "reason": "hash no coincide con el contenido"}
+{"ok": false, "reason": "conteo o anclaje final diferente"}
+........................................................................ [ 29%]
+........................................................................ [ 58%]
+........................................................................ [ 88%]
+.............................                                            [100%]
+245 passed in 9.38s
+PASS corr-001-sin-cve-no-inventa
+PASS corr-002-candidato-con-evidencia
+PASS corr-003-dato-ausente-es-null
+PASS orch-001-plan-basico
+PASS orch-002-alcance-ambiguo
+PASS val-001-solo-catalogo
+PASS val-002-sin-poc-en-catalogo
+PASS val-003-sin-aprobacion
+PASS vuln-001-resultado-explicito
+PASS vuln-002-sin-evidencia-inconcluso
+
+10/10 casos aprobados
+== Tasks por change ==
+001-mvp-vertical-slice                     ██████████████░░░░░░ 15/22 (68%)
+002-audit-persistence                      ███░░░░░░░░░░░░░░░░░ 2/14 (14%)
+003-roe-and-tokens                         ███████████████████░ 13/14 (93%)
+004-recon-loop-a                           █████████████████░░░ 13/15 (87%)
+005-correlation-analysis-loop-b            ░░░░░░░░░░░░░░░░░░░░ 0/17 (0%)
+006-sandbox-validation-loop-c              ░░░░░░░░░░░░░░░░░░░░ 0/15 (0%)
+007-reporting-defectdojo                   █████░░░░░░░░░░░░░░░ 4/15 (27%)
+
+== Specs (Scenarios y archivos de test declarados) ==
+agent-contracts          6 Scenarios  tests: tests/test_schemas.py, tests/test_evals.py
+asset-discovery          6 Scenarios  tests: tests/test_engagement_and_loops.py, tests/test_recon_loop_a.py
+audit-log                4 Scenarios  tests: tests/test_audit_and_policy.py, tests/test_authorization.py
+authorization           23 Scenarios  tests: tests/test_authorization.py, tests/test_roe_tokens.py, tests/test_redteam_guard.py
+correlation              5 Scenarios  tests: tests/test_schemas.py
+engagement-lifecycle     5 Scenarios  tests: tests/test_engagement_and_loops.py
+poc-catalog              7 Scenarios  tests: tests/test_poc_catalog.py
+reporting                2 Scenarios  tests: tests/test_reporting.py, tests/test_reporting_gates.py
+tool-adapters            6 Scenarios  tests: tests/test_adapters.py, tests/test_audit_and_policy.py, tests/test_recon_loop_a.py
+validation               3 Scenarios  tests: tests/test_poc_catalog.py, tests/test_authorization.py
+vuln-analysis            6 Scenarios  tests: tests/test_schemas.py, tests/test_engagement_and_loops.py, tests/test_authorization.py
+TOTAL                   73 Scenarios
+
+== Tests recolectados: 245 ==
+
+Recordá: tests verdes (`python -m pytest -q`) y evals (`python evals/run_evals.py --mode golden`).

@@ -1,0 +1,20 @@
+{
+  "engagement_id": "lab-p5-20261119-01",
+  "status": "ABORTED",
+  "message": "",
+  "stages": {
+    "recon": "real",
+    "analysis": "real",
+    "validation": "real"
+  },
+  "started_at": "2026-11-20T01:04:47.506696+00:00",
+  "finished_at": "2026-11-20T01:12:40.943743+00:00",
+  "report_hash": null,
+  "files_sha256": {
+    "evidence.json": "bc6bb813d0801dbf39af8d8b4904e3bff411344d68e875dcfd6367a831c443a7",
+    "graph.json": "76b45d4bbc20e54df6558e15d4e6578ba2cb08bf03e4ced8a575eecb9851aaf0",
+    "harness-audit.json": "29ced2ca9dd466b5df0f404cbecf837ba757b1f65b872bb966c1bfb84e5d6fa1",
+    "report.json": "288a0557e62de03951ad2607b2780d7749b6ed29a51f14ba29ba4785346f09f4",
+    "report.md": "8f7991642fc14445d1d8f4a6ea3896a4222f91d5b98eacb43ebdf8bb597e990f"
+  }
+}

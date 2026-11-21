@@ -1,0 +1,39 @@
+{
+  "count": 3,
+  "head": "7841a4a623461a1a3bdcf0684913816323fd6113d491695e2be653f6a892e372",
+  "entries": [
+    {
+      "ts": 1795139144.8751667,
+      "engagement": "lab-p5-20261119-01",
+      "agent": "orchestrator",
+      "action": "scope.issue_token",
+      "target": "analyze",
+      "phase": "analyze",
+      "result": "OK",
+      "prev": "GENESIS",
+      "hash": "c1d16bc91c0d8debc3b621533541e92a303dab839e78807d6d784198aabee7f6"
+    },
+    {
+      "ts": 1795139148.7798672,
+      "engagement": "lab-p5-20261119-01",
+      "agent": "analysis",
+      "action": "nuclei.safe_templates",
+      "target": "dvwa.lab.test",
+      "phase": "analyze",
+      "result": "OK",
+      "prev": "c1d16bc91c0d8debc3b621533541e92a303dab839e78807d6d784198aabee7f6",
+      "hash": "6e6583d013e725bc7803413132881cf4766b68aa8928b241b029756e2622740b"
+    },
+    {
+      "ts": 1795139151.3289065,
+      "engagement": "lab-p5-20261119-01",
+      "agent": "analysis",
+      "action": "nuclei.safe_templates",
+      "target": "juiceshop.lab.test",
+      "phase": "analyze",
+      "result": "OK",
+      "prev": "6e6583d013e725bc7803413132881cf4766b68aa8928b241b029756e2622740b",
+      "hash": "7841a4a623461a1a3bdcf0684913816323fd6113d491695e2be653f6a892e372"
+    }
+  ]
+}

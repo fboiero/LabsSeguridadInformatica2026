@@ -1,0 +1,17 @@
+# P5-recorrido-03 — informe NO entregado (frenado en el gate de entrega)
+
+Corrida real del 2026-11-19 con análisis real (ZAP) y validación real.
+El manifiesto dice ABORTED sin mensaje porque el operador (P5) cortó el proceso
+con Ctrl+C mientras el recorrido esperaba la aprobación de la entrega.
+
+Motivo: al revisar report.md antes de aprobar (gate humano de entrega), P5
+detectó dos errores del informe:
+  1. DVWA-ZAP-10009 y DVWA-ZAP-10036 (ambas CWE-497, sin verificación en el
+     catálogo) aparecían unificadas en un solo hallazgo ("Unificado con").
+  2. Las alertas sin verificación mostraban "Verificación: NINGUNA vNone".
+
+Corrección: test en rojo de98ef2, código 70884f5 (mutación M35, fila en
+ia-errores.md). La corrida corregida es P5-recorrido-04 (DELIVERED).
+
+Se conserva como evidencia de que el gate de entrega cumple su función: un
+informe con errores no salió del sistema.

@@ -1,0 +1,22 @@
+# Plantilla de RoE para el recorrido de un comando (change 007 · 3.5).
+# Copiala a un archivo propio, completala A MANO y no la commitees con datos personales.
+# El parser (harness/roe.py) rechaza el RoE si falta un campo, si la ventana está
+# vencida o invertida, o si el alcance sale del laboratorio.
+#
+#   - engagement_id: uno nuevo por corrida (también un --approvals y un --output nuevos).
+#   - approver / approval_ref: la persona que autoriza y dónde quedó registrada la autorización.
+#   - window: debe incluir el momento de la corrida (ISO 8601 con zona horaria).
+engagement_id: "lab-p5-20261119-01"
+approver: "Martin Beccereca (P5, Reviewer del grupo 06)"
+approval_ref: "Acta de autorización, Villa María, 18/11/2026"
+signed_at: "2026-11-18T09:00:00-03:00"
+window:
+  start: "2026-11-19T09:00:00-03:00"
+  end: "2026-11-19T23:00:00-03:00"
+scope:
+  cidrs: ["10.99.0.0/24"]
+  domains: ["dvwa.lab.test", "juiceshop.lab.test"]
+exclusions: {}
+emergency_contacts:
+  - "Responsable del laboratorio (grupo 06)"
+authorized_phases: ["recon", "analyze", "validate"]

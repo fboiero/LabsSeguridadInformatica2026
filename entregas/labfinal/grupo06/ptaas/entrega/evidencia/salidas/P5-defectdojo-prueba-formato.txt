@@ -1,0 +1,39 @@
+# Prueba de formato en DefectDojo (instancia local) — 2026-11-18 · Ejecutó: P5 (persona)
+
+Qué se importó: los 4 hallazgos de la corrida real P5-recorrido-02, convertidos con
+harness.defectdojo_export.to_findings. El informe de esa corrida es DEMO (análisis
+simulado), así que el recorrido no lo exporta: el archivo se generó aparte,
+reconstruyendo el informe desde su bitácora exportada (evidence.json verificada) y
+comprobando que el report_hash coincide (02cc4153e9c1...). A cada hallazgo se le
+agregó "[DEMO]" al título y las etiquetas "demo" y "prueba-de-formato".
+No es una entrega ni un resultado de pentest.
+
+Archivo: P5-defectdojo-prueba-formato.json (sha256 e8e46998d092fff9fcf6c0347c78dba7d308836f244aa4f0f55227f9a928d3dc)
+Instancia: DefectDojo local (docker compose), http://localhost:8080, interfaz en español.
+Activo: "PTaaS grupo 06 — PRUEBA DE FORMATO (DEMO)"
+Compromiso: "lab-p5-20261118-01 — prueba de formato"
+Tipo de escaneo: Generic Findings Import
+
+## Importación
+Mensaje: "Generic Findings Import processed a total of 4 findings."
+Resultado: Critical 0, High 0, Medium 0, Low 0, Info 4, Total 4.
+  - Falta de protección contra clickjacking (DVWA) · CWE 1021 · Active, Verified
+  - Ausencia de Content-Security-Policy (DVWA)     · CWE 693  · Active, Verified
+  - Cookie de sesión sin flags (DVWA)              · CWE 614  · Active, Verified
+  - Falta de protección contra clickjacking (Juice) · CWE 1021 · Active
+Etiquetas importadas: ptaas, severity-unknown, validated / not-validated, demo, prueba-de-formato.
+EPSS figura N.A. en las columnas propias de DefectDojo (enriquecimiento por CVE; los
+hallazgos no tienen CVE). El EPSS del informe va en la descripción.
+
+Intento previo descartado: una primera importación usó por error el parser
+"2ms Scan" (primero de la lista) y creó un test con 0 hallazgos; se eliminó.
+
+## Re-importación del mismo archivo (deduplicación)
+Mensaje: "No findings were added/updated/closed/reactivated as the report is empty
+or the findings in Defect Dojo are identical to those in the uploaded report."
+Resultado: Total 4 (sin duplicados). Reimportaciones: 2. La deduplicación usa
+unique_id_from_tool (identificador estable del informe, design.md decisión 6).
+
+## Captura
+P5-defectdojo-import.png: estado del test después de la re-importación
+("Reimportaciones: 2", "Importar historial (2)"): siguen 4 hallazgos, sin duplicados.

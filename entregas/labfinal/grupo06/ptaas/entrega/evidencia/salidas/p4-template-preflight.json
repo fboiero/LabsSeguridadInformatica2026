@@ -1,0 +1,45 @@
+{
+  "change": "005-correlation-analysis-loop-b",
+  "evaluado_en_utc": "2026-11-19T22:51:03.069022+00:00",
+  "tipo": "revision_estatica_sin_red_sin_ejecucion",
+  "aprobacion_humana": "PENDIENTE",
+  "escaneo_real": "NO_REALIZADO",
+  "templates": [
+    {
+      "archivo": "p4-login-form-visible.yaml",
+      "sha256": "c755b285d7af33267df97c0304bf885ef092080e71f8d73d19caca0f491d4be7",
+      "metodo": "GET",
+      "ruta": "{{BaseURL}}/login.php",
+      "estado": "APTO_PARA_REVISION_HUMANA_NO_APROBADO"
+    },
+    {
+      "archivo": "p4-security-header-csp.yaml",
+      "sha256": "d3edb3b8ffef3f328336e870de669fa32a84fb2e3fe6acde9f087551e0f0dba3",
+      "metodo": "GET",
+      "ruta": "{{BaseURL}}/",
+      "estado": "APTO_PARA_REVISION_HUMANA_NO_APROBADO"
+    },
+    {
+      "archivo": "p4-security-header-x-content-type-options.yaml",
+      "sha256": "af938535c8839f62076632844a2dd07cbdcc7248a485622418f622edf5a8f29d",
+      "metodo": "GET",
+      "ruta": "{{BaseURL}}/",
+      "estado": "APTO_PARA_REVISION_HUMANA_NO_APROBADO"
+    },
+    {
+      "archivo": "p4-security-header-x-frame-options.yaml",
+      "sha256": "31e02c05b0506a7d4bc265afae94cf461e00d422251930d4f3a029ad9a273993",
+      "metodo": "GET",
+      "ruta": "{{BaseURL}}/",
+      "estado": "APTO_PARA_REVISION_HUMANA_NO_APROBADO"
+    },
+    {
+      "archivo": "p4-server-header-present.yaml",
+      "sha256": "ab17ff8ea112cc96deb025162061095022121077b349a8c9b350f66de0a86b84",
+      "metodo": "GET",
+      "ruta": "{{BaseURL}}/",
+      "estado": "APTO_PARA_REVISION_HUMANA_NO_APROBADO"
+    }
+  ],
+  "cantidad": 5
+}

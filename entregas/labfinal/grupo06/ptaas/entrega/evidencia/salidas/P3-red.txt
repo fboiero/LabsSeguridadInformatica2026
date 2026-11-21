@@ -1,0 +1,986 @@
+[Rutas locales anonimizadas; resultados conservados.]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                    [100%]
+================================== FAILURES ===================================
+_________________________ test_order_and_fixed_point __________________________
+tests\test_recon_loop_a.py:56: in test_order_and_fixed_point
+    h, g, calls = setup_loop()
+                  ^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+_________________ test_excluded_never_reaches_adapter_or_dns __________________
+tests\test_recon_loop_a.py:67: in test_excluded_never_reaches_adapter_or_dns
+    h, g, calls = setup_loop({'status': 'OK', 'assets': [asset(), asset('external.invalid')]})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+_______________________ test_gate_does_not_self_approve _______________________
+tests\test_recon_loop_a.py:78: in test_gate_does_not_self_approve
+    h, g, calls = setup_loop(approved=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+_____________________ test_stop_between_actions[expired] ______________________
+tests\test_recon_loop_a.py:87: in test_stop_between_actions
+    h, g, calls = setup_loop()
+                  ^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+_______________________ test_stop_between_actions[kill] _______________________
+tests\test_recon_loop_a.py:87: in test_stop_between_actions
+    h, g, calls = setup_loop()
+                  ^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+__________________________ test_cap_survives_reload ___________________________
+tests\test_recon_loop_a.py:102: in test_cap_survives_reload
+    h, g, calls = setup_loop()
+                  ^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+____________________ test_five_iterations_with_new_assets _____________________
+tests\test_recon_loop_a.py:118: in test_five_iterations_with_new_assets
+    h, g, calls = setup_loop(passive)
+                  ^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+____________________ test_invalid_passive_twice_escalates _____________________
+tests\test_recon_loop_a.py:127: in test_invalid_passive_twice_escalates
+    h, g, calls = setup_loop({'status': 'ERROR', 'error': 'schema', 'assets': []})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+____________________ test_graph_merge_and_atomic_rejection ____________________
+tests\test_recon_loop_a.py:136: in test_graph_merge_and_atomic_rejection
+    cls = api('asset_graph').AssetGraph
+          ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+________ test_adapter_argv_and_schema[subfinder_adapter-SubfinderEnum] ________
+tests\test_recon_loop_a.py:160: in test_adapter_argv_and_schema
+    mod = api('adapters.' + module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.subfinder_adapter'
+___________ test_adapter_argv_and_schema[httpx_adapter-HttpxProbe] ____________
+tests\test_recon_loop_a.py:160: in test_adapter_argv_and_schema
+    mod = api('adapters.' + module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+________________ test_reject_target_before_runner[; rm -rf /] _________________
+tests\test_recon_loop_a.py:177: in test_reject_target_before_runner
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+_______________ test_reject_target_before_runner[10.99.0.2 -A] ________________
+tests\test_recon_loop_a.py:177: in test_reject_target_before_runner
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+_______________ test_reject_target_before_runner[evil.invalid] ________________
+tests\test_recon_loop_a.py:177: in test_reject_target_before_runner
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+__________________ test_reject_target_before_runner[-proxy] ___________________
+tests\test_recon_loop_a.py:177: in test_reject_target_before_runner
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+______ test_reject_target_before_runner[http://user:pass@dvwa.lab.test] _______
+tests\test_recon_loop_a.py:177: in test_reject_target_before_runner
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+____________________ test_partial_json_discarded[{broken] _____________________
+tests\test_recon_loop_a.py:188: in test_partial_json_discarded
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+__ test_partial_json_discarded[{"url":"http://dvwa.lab.test","tech":"PHP"}] ___
+tests\test_recon_loop_a.py:188: in test_partial_json_discarded
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+____ test_partial_json_discarded[{"url":"http://dvwa.lab.test"}\n{broken] _____
+tests\test_recon_loop_a.py:188: in test_partial_json_discarded
+    cls = api('adapters.httpx_adapter').HttpxProbe
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+_____________ test_execution_error_is_not_empty_success[missing] ______________
+tests\test_recon_loop_a.py:204: in test_execution_error_is_not_empty_success
+    obj = api('adapters.httpx_adapter').HttpxProbe(runner=runner, profile={'rate_limit_rps': 5, 'timeout_s': 10})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+_____________ test_execution_error_is_not_empty_success[timeout] ______________
+tests\test_recon_loop_a.py:204: in test_execution_error_is_not_empty_success
+    obj = api('adapters.httpx_adapter').HttpxProbe(runner=runner, profile={'rate_limit_rps': 5, 'timeout_s': 10})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+_______________ test_execution_error_is_not_empty_success[exit] _______________
+tests\test_recon_loop_a.py:204: in test_execution_error_is_not_empty_success
+    obj = api('adapters.httpx_adapter').HttpxProbe(runner=runner, profile={'rate_limit_rps': 5, 'timeout_s': 10})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+___________________________ test_invalid_profile[0] ___________________________
+tests\test_recon_loop_a.py:212: in test_invalid_profile
+    api('adapters.httpx_adapter').HttpxProbe(profile={'rate_limit_rps': rate, 'timeout_s': 10})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+__________________________ test_invalid_profile[-1] ___________________________
+tests\test_recon_loop_a.py:212: in test_invalid_profile
+    api('adapters.httpx_adapter').HttpxProbe(profile={'rate_limit_rps': rate, 'timeout_s': 10})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+__________________________ test_invalid_profile[nan] __________________________
+tests\test_recon_loop_a.py:212: in test_invalid_profile
+    api('adapters.httpx_adapter').HttpxProbe(profile={'rate_limit_rps': rate, 'timeout_s': 10})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+__________________________ test_invalid_profile[inf] __________________________
+tests\test_recon_loop_a.py:212: in test_invalid_profile
+    api('adapters.httpx_adapter').HttpxProbe(profile={'rate_limit_rps': rate, 'timeout_s': 10})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+_________________________ test_invalid_profile[True] __________________________
+tests\test_recon_loop_a.py:212: in test_invalid_profile
+    api('adapters.httpx_adapter').HttpxProbe(profile={'rate_limit_rps': rate, 'timeout_s': 10})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+___________________________ test_shared_rate_limit ____________________________
+tests\test_recon_loop_a.py:217: in test_shared_rate_limit
+    limiter = api('adapters.recon_common').RateLimiter(clock=lambda: now[0], sleep=lambda dt: now.__setitem__(0, now[0] + dt))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.recon_common'
+____________________ test_redirect_external_never_followed ____________________
+tests\test_recon_loop_a.py:228: in test_redirect_external_never_followed
+    obj = api('adapters.httpx_adapter').HttpxProbe(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.httpx_adapter'
+______________ test_real_passive_is_closed_without_local_source _______________
+tests\test_recon_loop_a.py:237: in test_real_passive_is_closed_without_local_source
+    obj = api('adapters.subfinder_adapter').SubfinderEnum(profile={'rate_limit_rps': 5, 'timeout_s': 10})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.adapters.subfinder_adapter'
+_________________________ test_wrong_phase_never_runs _________________________
+tests\test_recon_loop_a.py:244: in test_wrong_phase_never_runs
+    h, g, calls = setup_loop()
+                  ^^^^^^^^^^^^
+tests\test_recon_loop_a.py:51: in setup_loop
+    graph = api('asset_graph').AssetGraph('p3-test')
+            ^^^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.asset_graph'
+____________________________ test_valid_vectors[] _____________________________
+tests\test_reporting_p3.py:17: in test_valid_vectors
+    assert module().validate_cvss4(VECTOR + suffix) == VECTOR + suffix
+           ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+__________________________ test_valid_vectors[/E:P] ___________________________
+tests\test_reporting_p3.py:17: in test_valid_vectors
+    assert module().validate_cvss4(VECTOR + suffix) == VECTOR + suffix
+           ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+________ test_valid_vectors[/MSI:S/MSA:S/S:P/AU:Y/R:U/V:C/RE:H/U:Red] _________
+tests\test_reporting_p3.py:17: in test_valid_vectors
+    assert module().validate_cvss4(VECTOR + suffix) == VECTOR + suffix
+           ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/AV:N] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/ZZ:X] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:BAD] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:3.1/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+_ test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/MSI:X/MSI:S] _
+tests\test_reporting_p3.py:24: in test_invalid_vector
+    module().validate_cvss4(vector)
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+__________________ test_epss_alongside_vector[None-unknown] ___________________
+tests\test_reporting_p3.py:28: in test_epss_alongside_vector
+    report = module().render_report('eng', [finding(epss)])
+             ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+______________________ test_epss_alongside_vector[0-0%] _______________________
+tests\test_reporting_p3.py:28: in test_epss_alongside_vector
+    report = module().render_report('eng', [finding(epss)])
+             ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+____________________ test_epss_alongside_vector[0.25-25%] _____________________
+tests\test_reporting_p3.py:28: in test_epss_alongside_vector
+    report = module().render_report('eng', [finding(epss)])
+             ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________________ test_invalid_epss[-0.1] ___________________________
+tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________________ test_invalid_epss[1.1] ____________________________
+tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________________ test_invalid_epss[nan] ____________________________
+tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________________ test_invalid_epss[inf] ____________________________
+tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________________ test_invalid_epss[True] ___________________________
+tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________________ test_invalid_epss[0.5] ____________________________
+tests\test_reporting_p3.py:35: in test_invalid_epss
+    module().render_report('eng', [finding(epss)])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+______________________ test_ptes_structure_and_evidence _______________________
+tests\test_reporting_p3.py:38: in test_ptes_structure_and_evidence
+    report = module().render_report('eng', [finding()], scope={'assets': ['dvwa.lab.test']})
+             ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________ test_empty_report_does_not_claim_safety ___________________
+tests\test_reporting_p3.py:47: in test_empty_report_does_not_claim_safety
+    md = module().render_report('eng', [])['markdown']
+         ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+___________________ test_existing_required_fields_preserved ___________________
+tests\test_reporting_p3.py:53: in test_existing_required_fields_preserved
+    module().render_report('eng', [replace(finding(), cwe='')])
+    ^^^^^^^^
+tests\test_reporting_p3.py:9: in module
+    return importlib.import_module('harness.reporting_p3')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.reporting_p3'
+=========================== short test summary info ===========================
+FAILED tests/test_recon_loop_a.py::test_order_and_fixed_point - ModuleNotFoun...
+FAILED tests/test_recon_loop_a.py::test_excluded_never_reaches_adapter_or_dns
+FAILED tests/test_recon_loop_a.py::test_gate_does_not_self_approve - ModuleNo...
+FAILED tests/test_recon_loop_a.py::test_stop_between_actions[expired] - Modul...
+FAILED tests/test_recon_loop_a.py::test_stop_between_actions[kill] - ModuleNo...
+FAILED tests/test_recon_loop_a.py::test_cap_survives_reload - ModuleNotFoundE...
+FAILED tests/test_recon_loop_a.py::test_five_iterations_with_new_assets - Mod...
+FAILED tests/test_recon_loop_a.py::test_invalid_passive_twice_escalates - Mod...
+FAILED tests/test_recon_loop_a.py::test_graph_merge_and_atomic_rejection - Mo...
+FAILED tests/test_recon_loop_a.py::test_adapter_argv_and_schema[subfinder_adapter-SubfinderEnum]
+FAILED tests/test_recon_loop_a.py::test_adapter_argv_and_schema[httpx_adapter-HttpxProbe]
+FAILED tests/test_recon_loop_a.py::test_reject_target_before_runner[; rm -rf /]
+FAILED tests/test_recon_loop_a.py::test_reject_target_before_runner[10.99.0.2 -A]
+FAILED tests/test_recon_loop_a.py::test_reject_target_before_runner[evil.invalid]
+FAILED tests/test_recon_loop_a.py::test_reject_target_before_runner[-proxy]
+FAILED tests/test_recon_loop_a.py::test_reject_target_before_runner[http://user:pass@dvwa.lab.test]
+FAILED tests/test_recon_loop_a.py::test_partial_json_discarded[{broken] - Mod...
+FAILED tests/test_recon_loop_a.py::test_partial_json_discarded[{"url":"http://dvwa.lab.test","tech":"PHP"}]
+FAILED tests/test_recon_loop_a.py::test_partial_json_discarded[{"url":"http://dvwa.lab.test"}\n{broken]
+FAILED tests/test_recon_loop_a.py::test_execution_error_is_not_empty_success[missing]
+FAILED tests/test_recon_loop_a.py::test_execution_error_is_not_empty_success[timeout]
+FAILED tests/test_recon_loop_a.py::test_execution_error_is_not_empty_success[exit]
+FAILED tests/test_recon_loop_a.py::test_invalid_profile[0] - ModuleNotFoundEr...
+FAILED tests/test_recon_loop_a.py::test_invalid_profile[-1] - ModuleNotFoundE...
+FAILED tests/test_recon_loop_a.py::test_invalid_profile[nan] - ModuleNotFound...
+FAILED tests/test_recon_loop_a.py::test_invalid_profile[inf] - ModuleNotFound...
+FAILED tests/test_recon_loop_a.py::test_invalid_profile[True] - ModuleNotFoun...
+FAILED tests/test_recon_loop_a.py::test_shared_rate_limit - ModuleNotFoundErr...
+FAILED tests/test_recon_loop_a.py::test_redirect_external_never_followed - Mo...
+FAILED tests/test_recon_loop_a.py::test_real_passive_is_closed_without_local_source
+FAILED tests/test_recon_loop_a.py::test_wrong_phase_never_runs - ModuleNotFou...
+FAILED tests/test_reporting_p3.py::test_valid_vectors[] - ModuleNotFoundError...
+FAILED tests/test_reporting_p3.py::test_valid_vectors[/E:P] - ModuleNotFoundE...
+FAILED tests/test_reporting_p3.py::test_valid_vectors[/MSI:S/MSA:S/S:P/AU:Y/R:U/V:C/RE:H/U:Red]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/AV:N]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/ZZ:X]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:BAD]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:3.1/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/]
+FAILED tests/test_reporting_p3.py::test_invalid_vector[CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/MSI:X/MSI:S]
+FAILED tests/test_reporting_p3.py::test_epss_alongside_vector[None-unknown]
+FAILED tests/test_reporting_p3.py::test_epss_alongside_vector[0-0%] - ModuleN...
+FAILED tests/test_reporting_p3.py::test_epss_alongside_vector[0.25-25%] - Mod...
+FAILED tests/test_reporting_p3.py::test_invalid_epss[-0.1] - ModuleNotFoundEr...
+FAILED tests/test_reporting_p3.py::test_invalid_epss[1.1] - ModuleNotFoundErr...
+FAILED tests/test_reporting_p3.py::test_invalid_epss[nan] - ModuleNotFoundErr...
+FAILED tests/test_reporting_p3.py::test_invalid_epss[inf] - ModuleNotFoundErr...
+FAILED tests/test_reporting_p3.py::test_invalid_epss[True] - ModuleNotFoundEr...
+FAILED tests/test_reporting_p3.py::test_invalid_epss[0.5] - ModuleNotFoundErr...
+FAILED tests/test_reporting_p3.py::test_ptes_structure_and_evidence - ModuleN...
+FAILED tests/test_reporting_p3.py::test_empty_report_does_not_claim_safety - ...
+FAILED tests/test_reporting_p3.py::test_existing_required_fields_preserved - ...
+53 failed in 1.81s

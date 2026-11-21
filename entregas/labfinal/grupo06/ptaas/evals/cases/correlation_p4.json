@@ -1,0 +1,219 @@
+[
+  {
+    "id": "corr-p4-004-fuente-nvd-ausente",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-4",
+          "technologies": [
+            "AplicacionDesconocida 0.0"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "fuente-nvd-ausente"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  },
+  {
+    "id": "corr-p4-005-version-ambigua",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-5",
+          "technologies": [
+            "DemoServer unknown"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "version-ambigua"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  },
+  {
+    "id": "corr-p4-006-producto-diferente",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-6",
+          "technologies": [
+            "DemoServer 2"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "producto-diferente"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  },
+  {
+    "id": "corr-p4-007-solo-epss-sin-nvd",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-7",
+          "technologies": [
+            "DemoServer 2"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "solo-epss-sin-nvd"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  },
+  {
+    "id": "corr-p4-008-nvd-obsoleto",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-8",
+          "technologies": [
+            "DemoServer 2"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "nvd-obsoleto"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  },
+  {
+    "id": "corr-p4-009-evidencia-de-activo-ausente",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-9",
+          "technologies": [
+            "DemoServer 2"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "evidencia-de-activo-ausente"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  },
+  {
+    "id": "corr-p4-010-sin-datos-en-feeds",
+    "agent": "correlation",
+    "input": {
+      "assets": [
+        {
+          "id": "p4-10",
+          "technologies": [
+            "NoVersion"
+          ]
+        }
+      ],
+      "feeds": {
+        "cve": [],
+        "epss": []
+      },
+      "scenario": "sin-datos-en-feeds"
+    },
+    "required_keys": [
+      "candidates"
+    ],
+    "required_values": {
+      "candidates": []
+    },
+    "max_items": {
+      "candidates": 0
+    },
+    "golden_output": {
+      "candidates": []
+    }
+  }
+]

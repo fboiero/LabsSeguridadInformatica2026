@@ -1,0 +1,3 @@
+{"host": "API.DVWA.LAB.TEST.", "input": "dvwa.lab.test", "source": "synthetic-test"}
+{"host": "api.dvwa.lab.test", "input": "dvwa.lab.test", "source": "synthetic-test"}
+{"host": "admin.dvwa.lab.test", "input": "dvwa.lab.test", "source": "synthetic-test"}

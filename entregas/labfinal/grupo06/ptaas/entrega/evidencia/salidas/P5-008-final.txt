@@ -1,0 +1,18 @@
+## pytest (host, Python 3.11)
+448 passed, 1 skipped in 17.61s
+## evals golden
+32/32 casos aprobados
+## verify P5-recorrido-04
+{"file": "harness-audit.json", "ok": true, "reason": ""}
+{"file": "evidence.json", "ok": true, "reason": ""}
+## progress
+== Tasks por change ==
+001-mvp-vertical-slice                     ██████████████░░░░░░ 15/22 (68%)
+002-audit-persistence                      ███░░░░░░░░░░░░░░░░░ 2/14 (14%)
+003-roe-and-tokens                         ███████████████████░ 13/14 (93%)
+004-recon-loop-a                           ████████████████████ 15/15 (100%)
+005-correlation-analysis-loop-b            ███████████████░░░░░ 13/17 (76%)
+006-sandbox-validation-loop-c              ███████████████████░ 14/15 (93%)
+007-reporting-defectdojo                   ███████████████████░ 14/15 (93%)
+008-analisis-real-en-recorrido             ████████████████████ 9/9 (100%)
+

@@ -1,0 +1,37 @@
+## Línea base (sin mutación)
+líneas mutadas: 0
+20 passed in 0.63s
+
+## M36: los triggers ya no rechazan UPDATE ni DELETE
+líneas mutadas: 2
+FAILED tests/test_audit_persistence.py::test_update_directo_es_rechazado_por_la_base
+FAILED tests/test_audit_persistence.py::test_delete_directo_es_rechazado_por_la_base
+2 failed, 18 passed in 0.83s
+
+## M37: el verify de SQLite no recorre la cadena
+líneas mutadas: 1
+FAILED tests/test_audit_persistence.py::test_cadena_corrupta_al_abrir_no_acepta_registros
+FAILED tests/test_audit_persistence.py::test_cli_verify_detecta_alteracion - ...
+2 failed, 18 passed in 0.81s
+
+## M38: append con BEGIN diferido en lugar de BEGIN IMMEDIATE (UNIQUE(prev) se mantuvo: el sed no coincidió)
+líneas mutadas: 1
+FAILED tests/test_audit_persistence.py::test_escrituras_concurrentes_no_bifurcan_la_cadena
+1 failed, 19 passed in 0.66s
+
+## M39: se aceptan eventos de otro engagement
+líneas mutadas: 1
+FAILED tests/test_audit_persistence.py::test_archivo_de_otro_engagement_rechaza_el_evento
+1 failed, 19 passed in 0.78s
+
+## M40: una bitácora corrupta sigue aceptando registros
+líneas mutadas: 1
+FAILED tests/test_audit_persistence.py::test_cadena_corrupta_al_abrir_no_acepta_registros
+1 failed, 19 passed in 0.66s
+
+## M41: el ancla no se compara
+líneas mutadas: 1
+FAILED tests/test_audit_persistence.py::test_ancla_detecta_borrado_del_ultimo_registro
+FAILED tests/test_audit_persistence.py::test_cli_verify_con_ancla - assert 0 ...
+2 failed, 18 passed in 0.62s
+

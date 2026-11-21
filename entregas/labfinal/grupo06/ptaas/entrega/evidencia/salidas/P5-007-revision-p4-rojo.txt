@@ -1,0 +1,4 @@
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_en_el_motivo_de_la_bitacora_se_rechaza[error: Authorization: Bearer abc.def]
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_en_el_motivo_de_la_bitacora_se_rechaza[respuesta con eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnb
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_en_el_motivo_de_la_bitacora_se_rechaza[Set-Cookie: PHPSESSID=abc123]
+3 failed, 49 deselected in 0.29s

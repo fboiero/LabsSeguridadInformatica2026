@@ -1,0 +1,71 @@
+[Rutas locales anonimizadas; resultados conservados.]
+..............................................FFFFFFF                    [100%]
+================================== FAILURES ===================================
+_________________ test_native_subfinder_excludes_all_sources __________________
+tests\test_recon_loop_a.py:379: in test_native_subfinder_excludes_all_sources
+    runner = mod.OfflineSubfinderRunner(executor=executor)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'harness.adapters.subfinder_adapter' has no attribute 'OfflineSubfinderRunner'
+_______________ test_native_subfinder_unknown_catalog_closed[] ________________
+tests\test_recon_loop_a.py:398: in test_native_subfinder_unknown_catalog_closed
+    mod.OfflineSubfinderRunner(executor=executor)(mod.build_argv('dvwa.lab.test', {'rate_limit_rps': 5, 'timeout_s': 10}), 10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'harness.adapters.subfinder_adapter' has no attribute 'OfflineSubfinderRunner'
+_____ test_native_subfinder_unknown_catalog_closed[unrecognized output!] ______
+tests\test_recon_loop_a.py:398: in test_native_subfinder_unknown_catalog_closed
+    mod.OfflineSubfinderRunner(executor=executor)(mod.build_argv('dvwa.lab.test', {'rate_limit_rps': 5, 'timeout_s': 10}), 10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'harness.adapters.subfinder_adapter' has no attribute 'OfflineSubfinderRunner'
+_________ test_native_subfinder_unknown_catalog_closed[crtsh\n[bad]] __________
+tests\test_recon_loop_a.py:398: in test_native_subfinder_unknown_catalog_closed
+    mod.OfflineSubfinderRunner(executor=executor)(mod.build_argv('dvwa.lab.test', {'rate_limit_rps': 5, 'timeout_s': 10}), 10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'harness.adapters.subfinder_adapter' has no attribute 'OfflineSubfinderRunner'
+___________________ test_real_audit_export_uses_p1_verifier ___________________
+tests\test_recon_loop_a.py:403: in test_real_audit_export_uses_p1_verifier
+    mod = api('recon_lab')
+          ^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.recon_lab'
+________________ test_lab_approval_missing_or_expired_rejected ________________
+tests\test_recon_loop_a.py:423: in test_lab_approval_missing_or_expired_rejected
+    mod = api('recon_lab')
+          ^^^^^^^^^^^^^^^^
+tests\test_recon_loop_a.py:15: in api
+    return importlib.import_module('harness.' + module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<PERFIL_LOCAL>\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'harness.recon_lab'
+____________________ test_capture_does_not_bypass_pinning _____________________
+tests\test_recon_loop_a.py:437: in test_capture_does_not_bypass_pinning
+    obj = mod.HttpxProbe(capture=lambda *args: captures.append(args))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: HttpxProbe.__init__() got an unexpected keyword argument 'capture'
+=========================== short test summary info ===========================
+FAILED tests/test_recon_loop_a.py::test_native_subfinder_excludes_all_sources
+FAILED tests/test_recon_loop_a.py::test_native_subfinder_unknown_catalog_closed[]
+FAILED tests/test_recon_loop_a.py::test_native_subfinder_unknown_catalog_closed[unrecognized output!]
+FAILED tests/test_recon_loop_a.py::test_native_subfinder_unknown_catalog_closed[crtsh\n[bad]]
+FAILED tests/test_recon_loop_a.py::test_real_audit_export_uses_p1_verifier - ...
+FAILED tests/test_recon_loop_a.py::test_lab_approval_missing_or_expired_rejected
+FAILED tests/test_recon_loop_a.py::test_capture_does_not_bypass_pinning - Typ...
+7 failed, 46 passed in 3.71s

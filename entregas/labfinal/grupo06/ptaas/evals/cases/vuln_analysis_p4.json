@@ -1,0 +1,250 @@
+[
+  {
+    "id": "vuln-p4-003-sin-evidencia",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-3",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "sin-evidencia"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-3",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-004-evidencia-contradictoria",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-4",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "evidencia-contradictoria"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-4",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-005-zap-sin-hallazgos",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-5",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "zap-sin-hallazgos"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-5",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-006-nuclei-sin-hallazgos",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-6",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "nuclei-sin-hallazgos"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-6",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-007-salida-no-interpretable",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-7",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "salida-no-interpretable"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-7",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-008-evidencia-fuera-alcance",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-8",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "evidencia-fuera-alcance"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-8",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-009-candidato-sin-refs",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-9",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "candidato-sin-refs"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-9",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  },
+  {
+    "id": "vuln-p4-010-datos-feed-faltantes",
+    "agent": "vuln_analysis",
+    "input": {
+      "candidate": {
+        "id": "p4-10",
+        "cwe": "unknown"
+      },
+      "tool_output": {
+        "zap": [],
+        "nuclei": []
+      },
+      "scenario": "datos-feed-faltantes"
+    },
+    "required_keys": [
+      "status",
+      "rationale"
+    ],
+    "required_values": {
+      "status": "inconclusive"
+    },
+    "forbidden_substrings": [
+      "\"status\": \"confirmed\"",
+      "\"status\": \"validated\""
+    ],
+    "golden_output": {
+      "finding_id": "p4-10",
+      "status": "inconclusive",
+      "rationale": "Sin evidencia suficiente para confirmar el hallazgo; requiere revisión."
+    }
+  }
+]

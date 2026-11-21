@@ -1,0 +1,333 @@
+{
+  "count": 18,
+  "head": "7ba2a18246b4cf2c17f8f466363cc4e54da88929d86f2ba1e27a835848e2d9c9",
+  "entries": [
+    {
+      "seq": 1,
+      "prev": "GENESIS",
+      "hash": "df8737239bc94159eb1397c8367c664c009afabfb78d138ffaf16006d8485925",
+      "data": {
+        "event": "pipeline.start",
+        "engagement": "lab-p5-20261118-01",
+        "stages": {
+          "recon": "real",
+          "analysis": "fixture",
+          "validation": "real"
+        },
+        "roe_approval_hash": "88750583fa1f08d0609ffb5e032c6978174121746e0d7e5d991ee535249aa0c5"
+      }
+    },
+    {
+      "seq": 2,
+      "prev": "df8737239bc94159eb1397c8367c664c009afabfb78d138ffaf16006d8485925",
+      "hash": "5dc127274c37b257bbb5623a4be3f91c42cadd72aefb849fbdf945224d282e15",
+      "data": {
+        "event": "hitl.decision.observed",
+        "engagement": "lab-p5-20261118-01",
+        "gate": "first_active_action",
+        "reviewer": "Martin Beccereca",
+        "reason": "RoE firmado, alcance del lab",
+        "decided_at": 1795043114.3896587
+      }
+    },
+    {
+      "seq": 3,
+      "prev": "5dc127274c37b257bbb5623a4be3f91c42cadd72aefb849fbdf945224d282e15",
+      "hash": "039b99eb372a4af4a10d61d76b684354f0e1e3404eec555f8a864b9a0c79a3a9",
+      "data": {
+        "event": "stage.recon",
+        "engagement": "lab-p5-20261118-01",
+        "status": "STOPPED",
+        "reason": "grafo estabilizado",
+        "assets": [
+          "dvwa.lab.test",
+          "juiceshop.lab.test"
+        ]
+      }
+    },
+    {
+      "seq": 4,
+      "prev": "039b99eb372a4af4a10d61d76b684354f0e1e3404eec555f8a864b9a0c79a3a9",
+      "hash": "2da04e58c6ea8b63a774ab5d82b80d60ec67226dc90525dfe49e431b02714d48",
+      "data": {
+        "event": "stage.analysis",
+        "engagement": "lab-p5-20261118-01",
+        "provenance": "fixture",
+        "findings": [
+          "DVWA-HDR",
+          "DVWA-CSP",
+          "DVWA-COOKIE",
+          "JUICE-HDR"
+        ]
+      }
+    },
+    {
+      "seq": 5,
+      "prev": "2da04e58c6ea8b63a774ab5d82b80d60ec67226dc90525dfe49e431b02714d48",
+      "hash": "22630a5b701c41e96e2eae9818a7d3eec055e7eb93c1bc4b3230a2e73cde8897",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-HDR",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-HDR-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/login.php"
+        },
+        "http_status": 200,
+        "body_sha256": "60fb90f5617fa73bc2e92e81b0a3ddaf8aaedd04969c39d8ef633775ac2e2c3a",
+        "body_len": 1523,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 6,
+      "prev": "22630a5b701c41e96e2eae9818a7d3eec055e7eb93c1bc4b3230a2e73cde8897",
+      "hash": "d6def8590a9dd90332944bd0e639d29e94af47c044f5bbabf264b92b3e7f84f7",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-HDR",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-HDR-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/login.php"
+        },
+        "http_status": 200,
+        "body_sha256": "ce64e5744d4df38dab19b4574f27c867623a609a51857cca33d9ba275ec487e9",
+        "body_len": 1523,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 7,
+      "prev": "d6def8590a9dd90332944bd0e639d29e94af47c044f5bbabf264b92b3e7f84f7",
+      "hash": "8a92fba6e02e21222db8ae189e187e4a420b75892d3956406cb33a91c486b246",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-HDR",
+        "poc_id": "POC-HDR-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 8,
+      "prev": "8a92fba6e02e21222db8ae189e187e4a420b75892d3956406cb33a91c486b246",
+      "hash": "430df5cfc2983937c110475117d9563506721fba421c58050f7e607a81a7b947",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-CSP",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-CSP-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/login.php"
+        },
+        "http_status": 200,
+        "body_sha256": "3b340b5dbef21a72dacd5e9cca99379c4741654bfa1f34bc681c196288e4dbc5",
+        "body_len": 1523,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 9,
+      "prev": "430df5cfc2983937c110475117d9563506721fba421c58050f7e607a81a7b947",
+      "hash": "3825baa6082971fd0679c5ed4f024e2ec7e6423530628a3d20725e042e3a90e0",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-CSP",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-CSP-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/login.php"
+        },
+        "http_status": 200,
+        "body_sha256": "f461539aa6d0ac536b7f513b7796cd3be75572faa527075fc6eaf7faaef1ab57",
+        "body_len": 1523,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 10,
+      "prev": "3825baa6082971fd0679c5ed4f024e2ec7e6423530628a3d20725e042e3a90e0",
+      "hash": "b8c7dd320a0f194798cebdec0a8bc220b2d9c68cfb6b2732e33fe1295e3de4e7",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-CSP",
+        "poc_id": "POC-CSP-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 11,
+      "prev": "b8c7dd320a0f194798cebdec0a8bc220b2d9c68cfb6b2732e33fe1295e3de4e7",
+      "hash": "4b30445db3172e4ce07dda1f1888d34ee0fc236f8ef2497ed23c3a6841203768",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-COOKIE",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-COOKIE-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/login.php"
+        },
+        "http_status": 200,
+        "body_sha256": "99098c264d3ca8e5590cbee0ba00f8e9def3c23e6dbe1b95c308cc236031c2ad",
+        "body_len": 1523,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 12,
+      "prev": "4b30445db3172e4ce07dda1f1888d34ee0fc236f8ef2497ed23c3a6841203768",
+      "hash": "14cfb4f592e2ca207cbc0fa631d3b619f9c8bef589554f23e2e1f9e1dea1c8a4",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-COOKIE",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-COOKIE-001",
+        "params": {
+          "base_url": "http://dvwa.lab.test",
+          "path": "/login.php"
+        },
+        "http_status": 200,
+        "body_sha256": "7c45dea81f4b61fe3f383c9c73a31e9364532494a5c22a5020bd61e2b77f78cc",
+        "body_len": 1523,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 13,
+      "prev": "14cfb4f592e2ca207cbc0fa631d3b619f9c8bef589554f23e2e1f9e1dea1c8a4",
+      "hash": "ad26500927bc4c912e8fba3e95cea4f59a05409f004c5a607034605f36db2cac",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "DVWA-COOKIE",
+        "poc_id": "POC-COOKIE-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "39cc372542af648d53decd93166ec7fa28ebfb403401012ddb9b8c062777c6e3",
+        "status": "validated",
+        "reason": "confirmado en todos los intentos",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 14,
+      "prev": "ad26500927bc4c912e8fba3e95cea4f59a05409f004c5a607034605f36db2cac",
+      "hash": "a312bab15133e54f6cbe0bd4567c7b1e920e9ec11e0e6f27afc027a5624e897c",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "JUICE-HDR",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 1,
+        "poc_id": "POC-HDR-001",
+        "params": {
+          "base_url": "http://juiceshop.lab.test:3000",
+          "path": "/"
+        },
+        "http_status": 200,
+        "body_sha256": "7a077ea089234d5fb7e9f5775a384573ec97da96d8c74aaf230984fc723fe48b",
+        "body_len": 9984,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 15,
+      "prev": "a312bab15133e54f6cbe0bd4567c7b1e920e9ec11e0e6f27afc027a5624e897c",
+      "hash": "02028632e3fe4ff7bcd97c4ad770a68dcd6cecdf779c6456c4ac977f14b1d36a",
+      "data": {
+        "event": "sandbox.response",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "JUICE-HDR",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "attempt": 2,
+        "poc_id": "POC-HDR-001",
+        "params": {
+          "base_url": "http://juiceshop.lab.test:3000",
+          "path": "/"
+        },
+        "http_status": 200,
+        "body_sha256": "7a077ea089234d5fb7e9f5775a384573ec97da96d8c74aaf230984fc723fe48b",
+        "body_len": 9984,
+        "truncated": false
+      }
+    },
+    {
+      "seq": 16,
+      "prev": "02028632e3fe4ff7bcd97c4ad770a68dcd6cecdf779c6456c4ac977f14b1d36a",
+      "hash": "7b8f1c008e5df51018f81ec8f9b3151be504ab54533f2718108ab1c20fd319c6",
+      "data": {
+        "event": "validation.result",
+        "engagement": "lab-p5-20261118-01",
+        "finding_id": "JUICE-HDR",
+        "poc_id": "POC-HDR-001",
+        "poc_version": "1.0.0",
+        "catalog_version": "0.1.0",
+        "params_hash": "a9d3a3c1d5e1c0e17f65e72baa95b15d3f5ba0451f1df85ac15b68e3c5891a4d",
+        "status": "not_validated",
+        "reason": "no se observó la debilidad",
+        "attempts": 2
+      }
+    },
+    {
+      "seq": 17,
+      "prev": "7b8f1c008e5df51018f81ec8f9b3151be504ab54533f2718108ab1c20fd319c6",
+      "hash": "6579bd773cf7af0ffc70c6f71bc59fbaceda71578a088231d2d63c3a2991e5df",
+      "data": {
+        "event": "report.delivery",
+        "engagement": "lab-p5-20261118-01",
+        "report_hash": "02cc4153e9c155769cd84d20576d9b74685ca8db5b253578364e6320cf0ec1fe",
+        "version": 1,
+        "result": "BLOCKED",
+        "reason": "informe DEMO"
+      }
+    },
+    {
+      "seq": 18,
+      "prev": "6579bd773cf7af0ffc70c6f71bc59fbaceda71578a088231d2d63c3a2991e5df",
+      "hash": "7ba2a18246b4cf2c17f8f466363cc4e54da88929d86f2ba1e27a835848e2d9c9",
+      "data": {
+        "event": "pipeline.end",
+        "engagement": "lab-p5-20261118-01",
+        "status": "DEMO",
+        "message": "el informe contiene etapas simuladas: no se entrega"
+      }
+    }
+  ]
+}

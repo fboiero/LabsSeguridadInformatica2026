@@ -1,0 +1,29 @@
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E   ModuleNotFoundError: No module named 'harness.zap_analysis'
+E       assert (2 == 0)
+FAILED tests/test_analisis_real.py::test_tabla_sin_aprobacion_se_rechaza - Mo...
+FAILED tests/test_analisis_real.py::test_tabla_aprobada_por_agente_se_rechaza
+FAILED tests/test_analisis_real.py::test_vector_invalido_se_rechaza_indicando_el_plugin
+FAILED tests/test_analisis_real.py::test_tabla_real_del_repo_tiene_vectores_validos
+FAILED tests/test_analisis_real.py::test_alerta_mapeada_genera_hallazgo_con_datos_de_zap
+FAILED tests/test_analisis_real.py::test_alerta_sin_mapeo_se_descarta_con_el_plugin
+FAILED tests/test_analisis_real.py::test_alerta_informativa_no_genera_hallazgo
+FAILED tests/test_analisis_real.py::test_alerta_mapeada_sin_verificacion_del_catalogo
+FAILED tests/test_analisis_real.py::test_instancia_fuera_del_objetivo_se_rechaza
+FAILED tests/test_analisis_real.py::test_sin_aprobacion_del_analisis_activo_no_corre_zap
+FAILED tests/test_analisis_real.py::test_roe_sin_fase_de_analisis_no_corre_zap
+FAILED tests/test_analisis_real.py::test_reporte_de_zap_fuera_del_objetivo_aborta
+FAILED tests/test_analisis_real.py::test_recorrido_con_analisis_real_entrega_y_exporta
+FAILED tests/test_analisis_real.py::test_cli_acepta_el_gate_de_analisis_activo
+14 failed in 0.60s

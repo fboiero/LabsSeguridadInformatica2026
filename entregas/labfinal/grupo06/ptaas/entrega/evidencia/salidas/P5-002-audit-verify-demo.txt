@@ -1,0 +1,34 @@
+# Demostración de python -m harness.audit verify (change 002) — 2026-11-19
+# Archivo de prueba creado con la API; las alteraciones se hacen con sqlite3, por fuera de la API.
+
+## Caso: integro
+$ python -m harness.audit verify <archivo>
+{"ok": true, "motivo": "", "indice": null, "count": 4, "head": "95d7b047b606bba9d1b721f35316d58e5299870419f0d73021ca991f4c0c64ec", "engagement": "eng-demo"}
+exit 0
+
+## Caso: update_bloqueado
+$ UPDATE directo -> rechazado por la base: bitácora append-only: UPDATE prohibido
+$ python -m harness.audit verify <archivo>
+{"ok": true, "motivo": "", "indice": null, "count": 4, "head": "95d7b047b606bba9d1b721f35316d58e5299870419f0d73021ca991f4c0c64ec", "engagement": "eng-demo"}
+exit 0
+
+## Caso: alterado
+$ (se quitan los triggers y se cambia result de la fila 2 a BLOCKED)
+$ python -m harness.audit verify <archivo>
+{"ok": false, "motivo": "hash no coincide con el contenido", "indice": 1, "count": 4, "head": "95d7b047b606bba9d1b721f35316d58e5299870419f0d73021ca991f4c0c64ec", "engagement": "eng-demo"}
+exit 1
+
+## Caso: borrado_intermedio
+$ (se quitan los triggers y se borra la fila 2)
+$ python -m harness.audit verify <archivo>
+{"ok": false, "motivo": "eslabón roto: prev no coincide", "indice": 1, "count": 3, "head": "95d7b047b606bba9d1b721f35316d58e5299870419f0d73021ca991f4c0c64ec", "engagement": "eng-demo"}
+exit 1
+
+## Caso: borrado_ultimo
+$ (se quitan los triggers y se borra la última fila)
+$ python -m harness.audit verify <archivo>
+{"ok": true, "motivo": "", "indice": null, "count": 3, "head": "ad7ca4a55cf12e78d0c05624d9d5e12d35beb92ac8f9cd5b780a9be3ddda071f", "engagement": "eng-demo"}
+exit 0
+$ python -m harness.audit verify <archivo> --anchor-count 4 --anchor-head <head original>
+{"ok": false, "motivo": "el ancla no coincide: falta o sobra el final de la cadena", "indice": null, "count": 3, "head": "ad7ca4a55cf12e78d0c05624d9d5e12d35beb92ac8f9cd5b780a9be3ddda071f", "engagement": "eng-demo"}
+exit 1

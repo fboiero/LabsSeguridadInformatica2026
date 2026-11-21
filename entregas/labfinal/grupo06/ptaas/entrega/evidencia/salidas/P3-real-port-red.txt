@@ -1,0 +1,9 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_juiceshop_uses_its_fixed_lab_port ____________________
+tests\test_recon_loop_a.py:450: in test_juiceshop_uses_its_fixed_lab_port
+    assert 'http://10.99.0.3:3000' in calls[0]
+E   AssertionError: assert 'http://10.99.0.3:3000' in ['httpx', '-u', 'http://10.99.0.3', '-json', '-silent', '-duc', ...]
+=========================== short test summary info ===========================
+FAILED tests/test_recon_loop_a.py::test_juiceshop_uses_its_fixed_lab_port - A...
+1 failed in 0.36s

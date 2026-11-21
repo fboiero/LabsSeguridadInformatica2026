@@ -1,0 +1,13 @@
+{
+  "deliveries": {},
+  "findings": {},
+  "gates": {
+    "lab-p5-20261119-01:active_analysis": {
+      "engagement_id": "lab-p5-20261119-01",
+      "gate": "active_analysis",
+      "reason": "Nuclei con los 5 templates aprobados, sobre los activos del lab",
+      "reviewer": "Martin Beccereca",
+      "ts": 1795139139.3910165
+    }
+  }
+}

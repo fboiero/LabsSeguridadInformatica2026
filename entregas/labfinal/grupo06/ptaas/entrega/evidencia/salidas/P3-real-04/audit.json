@@ -1,0 +1,182 @@
+{
+  "count": 16,
+  "head": "bd1c5a3d371715203a5b5a15faeb6a6da5c0c9491e780066348f756968742a12",
+  "entries": [
+    {
+      "ts": 1794586759.8974826,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "scope-guard",
+      "action": "scope.issue_token",
+      "target": "recon",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "GENESIS",
+      "hash": "aa85813ac203257820dfd692a4de00a623dedf2d749eb9ed084526f84fe58735"
+    },
+    {
+      "ts": 1794586759.9964507,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.iteration",
+      "target": "1",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "aa85813ac203257820dfd692a4de00a623dedf2d749eb9ed084526f84fe58735",
+      "hash": "f852c372c583401fc2a715b75a1ea5a9782dd741f44b8e2df9660289ebff256c"
+    },
+    {
+      "ts": 1794586760.2778232,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "f852c372c583401fc2a715b75a1ea5a9782dd741f44b8e2df9660289ebff256c",
+      "hash": "6e791a3c37c5356ae78768ea22ee7b276cf129aa9100be72fb99f3690cbc2d9c"
+    },
+    {
+      "ts": 1794586760.2779016,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "6e791a3c37c5356ae78768ea22ee7b276cf129aa9100be72fb99f3690cbc2d9c",
+      "hash": "8fa228fa14d0f7a84677e8f2e7aa997182533c2b6d3b2e22d9c0a6b2fb17ed96"
+    },
+    {
+      "ts": 1794586760.5427082,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "8fa228fa14d0f7a84677e8f2e7aa997182533c2b6d3b2e22d9c0a6b2fb17ed96",
+      "hash": "8301d46333076d138959713857ec61b435ce8c914ab8ef855abcab8a05b2996a"
+    },
+    {
+      "ts": 1794586760.5428941,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "8301d46333076d138959713857ec61b435ce8c914ab8ef855abcab8a05b2996a",
+      "hash": "58e431623c159567c99a2ab79e26f430b992951e1d760ffd3063fd3c48c4d9ea"
+    },
+    {
+      "ts": 1794586761.7229087,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "58e431623c159567c99a2ab79e26f430b992951e1d760ffd3063fd3c48c4d9ea",
+      "hash": "8e134df59062582de4e1312429d75d9cc855a3be624b7186a5df49f9fe53a6d9"
+    },
+    {
+      "ts": 1794586763.0317292,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "8e134df59062582de4e1312429d75d9cc855a3be624b7186a5df49f9fe53a6d9",
+      "hash": "0924b233f1aafcd923bb5acb41a9bdefaf926f64958cb1767d10213b47c8e4ce"
+    },
+    {
+      "ts": 1794586763.1320064,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.iteration",
+      "target": "2",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "0924b233f1aafcd923bb5acb41a9bdefaf926f64958cb1767d10213b47c8e4ce",
+      "hash": "91e607e1e8d207b2092a46436ae32e07694d9ff8afcc74a35341d520dd3c46f3"
+    },
+    {
+      "ts": 1794586763.4575944,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "91e607e1e8d207b2092a46436ae32e07694d9ff8afcc74a35341d520dd3c46f3",
+      "hash": "6aac08bb2e500a6cf3fcc172e057bff521d38db727013cf2bcc9dc1293f729c1"
+    },
+    {
+      "ts": 1794586763.4578218,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "6aac08bb2e500a6cf3fcc172e057bff521d38db727013cf2bcc9dc1293f729c1",
+      "hash": "fba62ea3c984109e96465a75ab0329984a4fecd18b0898149055762138eddad4"
+    },
+    {
+      "ts": 1794586763.8619618,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "fba62ea3c984109e96465a75ab0329984a4fecd18b0898149055762138eddad4",
+      "hash": "25f738e060b7a125430876b601a71c6ffceb9d42cf6219145392cd8982b9e868"
+    },
+    {
+      "ts": 1794586763.8620703,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "25f738e060b7a125430876b601a71c6ffceb9d42cf6219145392cd8982b9e868",
+      "hash": "f9aa2da5400d0e5b0eb417f2ae09c257b99927ede62321c6be6d596a119908e7"
+    },
+    {
+      "ts": 1794586764.965296,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "f9aa2da5400d0e5b0eb417f2ae09c257b99927ede62321c6be6d596a119908e7",
+      "hash": "c326e51c4fd2aecd06696dad46bb5d87add592757008293abd3c2ac84fc65557"
+    },
+    {
+      "ts": 1794586765.9835584,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "c326e51c4fd2aecd06696dad46bb5d87add592757008293abd3c2ac84fc65557",
+      "hash": "78a13fca3b7f63b93cc8c5a5e3800659cadd43f55d4b1f777cdc7689012c1778"
+    },
+    {
+      "ts": 1794586765.9837568,
+      "engagement": "p3-real-20261113T161919Z",
+      "agent": "recon",
+      "action": "recon.loop.grafo estabilizado",
+      "target": "2",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "78a13fca3b7f63b93cc8c5a5e3800659cadd43f55d4b1f777cdc7689012c1778",
+      "hash": "bd1c5a3d371715203a5b5a15faeb6a6da5c0c9491e780066348f756968742a12"
+    }
+  ]
+}

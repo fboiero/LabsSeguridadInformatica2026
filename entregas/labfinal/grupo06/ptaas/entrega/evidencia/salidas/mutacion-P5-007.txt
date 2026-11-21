@@ -1,0 +1,45 @@
+## Línea base (sin mutación)
+líneas mutadas: harness/report_builder.py:0 harness/defectdojo_export.py:0 
+38 passed in 1.38s
+
+## M18: se acepta 'validated' declarado sin respaldo en la bitácora
+líneas mutadas: harness/report_builder.py:1 harness/defectdojo_export.py:0 
+FAILED tests/test_reporting_e2e.py::test_validado_declarado_sin_respaldo_falla - Failed: DID NOT RAISE ReportError
+FAILED tests/test_reporting_e2e.py::test_validado_declarado_con_resultado_negativo_en_bitacora_falla - Failed: DID NOT RAISE ReportError
+2 failed, 36 passed in 1.52s
+
+## M19: no se verifica la cadena de la bitácora
+líneas mutadas: harness/report_builder.py:1 harness/defectdojo_export.py:0 
+FAILED tests/test_reporting_e2e.py::test_bitacora_alterada_no_genera_informe - Failed: DID NOT RAISE ReportError
+1 failed, 37 passed in 1.38s
+
+## M20: se aceptan referencias que no existen en la bitácora
+líneas mutadas: harness/report_builder.py:1 harness/defectdojo_export.py:0 
+FAILED tests/test_reporting_e2e.py::test_referencia_inexistente_falla - Failed: DID NOT RAISE ReportError
+1 failed, 37 passed in 1.60s
+
+## M21: la aprobación de entrega no se liga al hash del informe
+líneas mutadas: harness/report_builder.py:1 harness/defectdojo_export.py:0 
+FAILED tests/test_reporting_e2e.py::test_aprobacion_de_otra_version_se_rechaza - Failed: DID NOT RAISE DeliveryNotApproved
+1 failed, 37 passed in 1.38s
+
+## M22: un informe DEMO se puede entregar y exportar
+líneas mutadas: harness/report_builder.py:1 harness/defectdojo_export.py:1 
+FAILED tests/test_reporting_e2e.py::test_informe_demo_no_se_entrega_ni_exporta - Failed: DID NOT RAISE DemoReport
+1 failed, 37 passed in 1.42s
+
+## M23: no se buscan datos sensibles
+líneas mutadas: harness/report_builder.py:1 harness/defectdojo_export.py:0 
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[title-Cookie PHPSESSID=abc123 sin HttpOnly-cookie de sesi\xf3
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[remediation-Rotar eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnbm
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[remediation-Authorization: Bearer abc.def-Authorization] - Fa
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[remediation-Cambiar password=admin123-contrase\xf1a] - Failed
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[title------BEGIN RSA PRIVATE KEY----- expuesta-clave privada]
+FAILED tests/test_reporting_e2e.py::test_dato_sensible_falla_indicando_patron_y_hallazgo[title-Reflejo de ptaas1a2b3c4d en la respuesta-canario] - Fai
+6 failed, 32 passed in 1.63s
+
+## M24: se exporta un informe no entregado
+líneas mutadas: harness/report_builder.py:0 harness/defectdojo_export.py:1 
+FAILED tests/test_reporting_e2e.py::test_exportar_un_informe_no_entregado_se_rechaza - Failed: DID NOT RAISE DeliveryNotApproved
+1 failed, 37 passed in 2.03s
+

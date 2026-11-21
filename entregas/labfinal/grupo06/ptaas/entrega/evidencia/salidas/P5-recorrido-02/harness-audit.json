@@ -1,0 +1,281 @@
+{
+  "count": 25,
+  "head": "d3bed0be17140ea39acfe2f9f689cd5a0da4d5708af990cd1f95a8219da6c31d",
+  "entries": [
+    {
+      "ts": 1795043115.9767542,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "orchestrator",
+      "action": "scope.issue_token",
+      "target": "recon",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "GENESIS",
+      "hash": "e3d7deafce19d25eb6aec8153607ab61edbaab08f14852de93f42342d68653c9"
+    },
+    {
+      "ts": 1795043115.9958005,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.iteration",
+      "target": "1",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "e3d7deafce19d25eb6aec8153607ab61edbaab08f14852de93f42342d68653c9",
+      "hash": "079e925441b512a916dd835613eae9478bfa337148aba948f0126794c64d2046"
+    },
+    {
+      "ts": 1795043120.30601,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "079e925441b512a916dd835613eae9478bfa337148aba948f0126794c64d2046",
+      "hash": "14d92f33b14d313b3f3f3d8ec04e480c1a3a1c3efb32cc5fd2afc7ede12f2e1d"
+    },
+    {
+      "ts": 1795043120.30601,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "14d92f33b14d313b3f3f3d8ec04e480c1a3a1c3efb32cc5fd2afc7ede12f2e1d",
+      "hash": "422ac50797e715192719abff845a0a1428fd72ae03b4196b50b7c9fcfe762a7b"
+    },
+    {
+      "ts": 1795043121.8351488,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "422ac50797e715192719abff845a0a1428fd72ae03b4196b50b7c9fcfe762a7b",
+      "hash": "f7ba146bc51dcd056488acd4eb7d0b2929cda2c07c38976c71032de3498e88f5"
+    },
+    {
+      "ts": 1795043121.8351488,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "f7ba146bc51dcd056488acd4eb7d0b2929cda2c07c38976c71032de3498e88f5",
+      "hash": "928b82fc813842421e8708b2b0aee819c97bea73506fedc52bede9403096c49e"
+    },
+    {
+      "ts": 1795043129.543656,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "928b82fc813842421e8708b2b0aee819c97bea73506fedc52bede9403096c49e",
+      "hash": "837a5c3a64c702320abcc18e9533fb56252e9439e26efaa4d09ec274b3a9fcfc"
+    },
+    {
+      "ts": 1795043133.6188147,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "837a5c3a64c702320abcc18e9533fb56252e9439e26efaa4d09ec274b3a9fcfc",
+      "hash": "30bc21e82efb390bd1f8fd16e67b770f1323a27ca5ebc3a18cd32d184a8fae93"
+    },
+    {
+      "ts": 1795043133.6275096,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.iteration",
+      "target": "2",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "30bc21e82efb390bd1f8fd16e67b770f1323a27ca5ebc3a18cd32d184a8fae93",
+      "hash": "871fb6efe7600bc0810e696cd07cdba8a84b691718d340e611e6430ed411a190"
+    },
+    {
+      "ts": 1795043134.8111193,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "871fb6efe7600bc0810e696cd07cdba8a84b691718d340e611e6430ed411a190",
+      "hash": "75ccda880945115b31803d4afd25a7b3f1a80ed1e8d907c23002c7b4e92d7760"
+    },
+    {
+      "ts": 1795043134.8111193,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "75ccda880945115b31803d4afd25a7b3f1a80ed1e8d907c23002c7b4e92d7760",
+      "hash": "69de35d1c2558eb139da9dd6bf9e41528bb94b6cdf07f40f4471ca1b67703b6e"
+    },
+    {
+      "ts": 1795043135.7973895,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "subfinder.enum",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "69de35d1c2558eb139da9dd6bf9e41528bb94b6cdf07f40f4471ca1b67703b6e",
+      "hash": "d69910db5be1e64192b48e9bcbae66fc03364f8bf8ff0a7ae0698cf40f8ab3da"
+    },
+    {
+      "ts": 1795043135.7973895,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.passive_unavailable",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "BLOCKED",
+      "prev": "d69910db5be1e64192b48e9bcbae66fc03364f8bf8ff0a7ae0698cf40f8ab3da",
+      "hash": "4707cbe1a3e7d87618d10ca79915f5e76efe7b34a04478adca2c732074883f30"
+    },
+    {
+      "ts": 1795043137.14685,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "dvwa.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "4707cbe1a3e7d87618d10ca79915f5e76efe7b34a04478adca2c732074883f30",
+      "hash": "08b10b2146e58074038566b3e24b32ae63353d2d900dbe511f8a8e2945967aef"
+    },
+    {
+      "ts": 1795043138.499284,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "httpx.probe",
+      "target": "juiceshop.lab.test",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "08b10b2146e58074038566b3e24b32ae63353d2d900dbe511f8a8e2945967aef",
+      "hash": "77aba58d369453ddaa365e16f6042b5c6f7fbb5d0b09dd7fb26c810eda873e13"
+    },
+    {
+      "ts": 1795043138.499284,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "recon",
+      "action": "recon.loop.grafo estabilizado",
+      "target": "2",
+      "phase": "recon",
+      "result": "OK",
+      "prev": "77aba58d369453ddaa365e16f6042b5c6f7fbb5d0b09dd7fb26c810eda873e13",
+      "hash": "1f25d22ade8109c2617dbf784a60aa5c94bf804e12db1fda34b95492707b7def"
+    },
+    {
+      "ts": 1795043248.605074,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "orchestrator",
+      "action": "scope.issue_token",
+      "target": "validate",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "1f25d22ade8109c2617dbf784a60aa5c94bf804e12db1fda34b95492707b7def",
+      "hash": "c4a2694201b7a4663c4a2d56815dd053ba62e6afa84432f4270a4b51930c8a31"
+    },
+    {
+      "ts": 1795043252.8271627,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "dvwa.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "c4a2694201b7a4663c4a2d56815dd053ba62e6afa84432f4270a4b51930c8a31",
+      "hash": "a030075726de5d7390e0c7788599277da53c291bb9710bc6d116140251614fac"
+    },
+    {
+      "ts": 1795043254.6034286,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "dvwa.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "a030075726de5d7390e0c7788599277da53c291bb9710bc6d116140251614fac",
+      "hash": "519731efee9e6a08e1243f424ea415f510ac7039e38f55cf5d718ab26d9e7af4"
+    },
+    {
+      "ts": 1795043257.649067,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "dvwa.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "519731efee9e6a08e1243f424ea415f510ac7039e38f55cf5d718ab26d9e7af4",
+      "hash": "2a0f37e537de5aa918fba9bd457c4821b4a341c98ca68185c0b808150242e22f"
+    },
+    {
+      "ts": 1795043259.93364,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "dvwa.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "2a0f37e537de5aa918fba9bd457c4821b4a341c98ca68185c0b808150242e22f",
+      "hash": "7a6c53732f5eb63bb26b86397b4042462c741984a715cf8aa68fa772a5ef4435"
+    },
+    {
+      "ts": 1795043262.1033633,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "dvwa.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "7a6c53732f5eb63bb26b86397b4042462c741984a715cf8aa68fa772a5ef4435",
+      "hash": "716d4761fe1cb63be346eebf39a9a558489753ba4b02fe3a6a1afae6d4e52921"
+    },
+    {
+      "ts": 1795043263.647077,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "dvwa.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "716d4761fe1cb63be346eebf39a9a558489753ba4b02fe3a6a1afae6d4e52921",
+      "hash": "36d17a437f9671a36107f7d92c0d526887b61d3d9688919c7bd0ad042276ce03"
+    },
+    {
+      "ts": 1795043266.296163,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "juiceshop.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "36d17a437f9671a36107f7d92c0d526887b61d3d9688919c7bd0ad042276ce03",
+      "hash": "4ca701e1dfdae927986ac6dcc2efdc17e60399627f68263e35ef49a46f143869"
+    },
+    {
+      "ts": 1795043268.471267,
+      "engagement": "lab-p5-20261118-01",
+      "agent": "validation-agent",
+      "action": "poc_catalog.run_parametrized",
+      "target": "juiceshop.lab.test",
+      "phase": "validate",
+      "result": "OK",
+      "prev": "4ca701e1dfdae927986ac6dcc2efdc17e60399627f68263e35ef49a46f143869",
+      "hash": "d3bed0be17140ea39acfe2f9f689cd5a0da4d5708af990cd1f95a8219da6c31d"
+    }
+  ]
+}
