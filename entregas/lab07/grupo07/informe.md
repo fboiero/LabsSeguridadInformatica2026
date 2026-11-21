@@ -80,7 +80,7 @@ En el login, la aplicación puede buscar el usuario con `WHERE nombre = ?` y ver
 
 ## 4. Bitácora de comandos
 
-Las capturas de Lorenzo proceden del atacante del Compose contra `phantomcorp` local; Lautaro y Guadalupe documentan sus sesiones de caja negra sobre el target local en sus archivos de evidencia. El registro de comandos reproducibles está en `evidencia/comandos.txt`; las respuestas HTTP completas están en `evidencia/salidas/r1-r2-http.txt`. Las flags observadas se enviaron desde el host mediante `./ctf submit 07 R1 ...` y `./ctf submit 07 R2 ...`; el estado resultante (2/5) está adjunto.
+Las capturas de Lorenzo proceden del atacante del Compose contra `phantomcorp` local; Lautaro y Guadalupe documentan sus sesiones de caja negra sobre el target local en sus archivos de evidencia. El registro de comandos reproducibles está en `evidencia/comandos.txt`; las respuestas HTTP están en `evidencia/salidas/r1-r2-http.txt`, `r3-r4-http.txt` y `r5-idor.txt`. La captura `status-07.txt` conserva el estado histórico parcial de Lorenzo (2/5). En el cierre de integración se enviaron las cinco flags observadas desde las salidas de los operadores y se verificó el estado consolidado 5/5; ver `status-07-consolidado.txt` y `cierre-integracion.txt`.
 
 
 ## 5. Mini-research y revisión de integración
