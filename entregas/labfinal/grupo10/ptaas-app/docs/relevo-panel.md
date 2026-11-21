@@ -66,17 +66,6 @@ Un control pendiente no es un hallazgo. El resumen generado es un borrador. Si
 cerrás la pestaña entre turnos, abrí la sesión desde el historial y pulsá
 «Continuar revisión documental».
 
-### Comprobaciones activas
-
-La casilla **Comprobaciones activas** es opt-in y solo para el laboratorio
-efímero. Registra una intención de la persona que opera, no una aprobación
-docente. Mientras las propuestas estén en `pending_teacher_review`, no aparecen
-como ejecutables y el sender las rechaza antes de enviar tráfico. Tras una
-aprobación docente explícita, cada intento seguirá exigiendo aprobación, incluso
-con catálogo automático. Las propuestas que necesitan navegador, multipart o ya
-están cubiertas quedan declaradas y no envían tráfico. El botón **Profundizar**
-solo encola comprobaciones activas aprobadas.
-
 ### Consulta opcional de Correlación
 
 Durante la interpretación de resultados, Correlación puede pedir contexto a la

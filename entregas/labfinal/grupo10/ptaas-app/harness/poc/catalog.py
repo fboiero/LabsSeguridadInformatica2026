@@ -172,5 +172,5 @@ def run_parametrized(catalog: dict[str, dict[str, Any]], poc_id: str, params: di
     if entry["evaluator"] == "input_reflected_unencoded": sent["canary"] = new_canary()
     record = sender(poc_id, sent)
     valid, detail = _evaluate(entry["evaluator"], record)
-    observed = ftp_index_entries(record.body) if entry["evaluator"] == "ftp_directory_listing" else ()
+    observed = ftp_index_entries(record.body) if valid and entry["evaluator"] == "ftp_directory_listing" else ()
     return Evidence(poc_id, entry["version"], "validated" if valid else "not_validated", detail, params, record.status, observed)

@@ -1,0 +1,11 @@
+{
+  "findings": [
+    {
+      "title": "[SINTETICO] PTaaS Grupo 10 - prueba de importacion",
+      "severity": "Info",
+      "description": "Registro ficticio para verificar la importacion de archivos JSON. No representa una vulnerabilidad ni un activo real.",
+      "active": false,
+      "verified": false
+    }
+  ]
+}

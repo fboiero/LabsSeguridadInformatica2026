@@ -24,24 +24,10 @@ Estas comprobaciones evidencian controles o debilidades observables; no deben
 presentarse como explotación confirmada. Ampliar el catálogo exige otro change,
 revisión de seguridad y aprobación humana.
 
-## Comprobaciones activas (opt-in)
-
-`harness/poc/active.yaml` deriva las propuestas del catálogo de propuestas. Ninguna
-registra aprobación docente: todas conservan `review_status: pending_teacher_review`.
-Solo `PROPOSAL-AUTH-SQLI-001` y `PROPOSAL-SQLI-SEARCH-001` tienen un adaptador
-preparado, con carga fija y una sola petición: el primero evaluaría si se emitió un
-token y el segundo si la respuesta expone una firma de error del motor SQL. Como
-ambos siguen pendientes de revisión docente, el código los mantiene bloqueados y
-no envía tráfico aunque la persona marque la opción de activas. Ninguno extrae
-datos ni reutiliza sesiones. Las demás quedan declaradas sin adaptador (navegador,
-multipart o cubiertas por una comprobación inerte).
-
-La casilla **Comprobaciones activas** puede registrar la intención de la persona
-que opera, pero no sustituye la aprobación docente. Mientras el estado sea
-`pending_teacher_review`, las comprobaciones no aparecen como ejecutables y el
-sender rechaza la ejecución antes de enviar tráfico. Una futura aprobación deberá
-cambiar explícitamente el estado a `teacher_approved`; luego cada intento seguirá
-exigiendo aprobación humana.
+Las comprobaciones no inertes se conservan solo como propuestas en
+[`proposals.yaml`](../harness/poc/proposals.yaml), en estado
+`pending_teacher_review`. No tienen adaptador ni se pueden ejecutar desde
+Relevo, el CLI o los scripts de sandbox. No se registra aprobación docente.
 
 `POC-FTP-001` enumera hasta 20 nombres de archivo que el índice de `/ftp` ya
 expone, y aclara que no se descargó ningún archivo.

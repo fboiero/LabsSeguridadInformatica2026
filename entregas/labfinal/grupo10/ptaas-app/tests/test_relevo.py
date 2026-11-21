@@ -437,34 +437,3 @@ def test_retry_review_preserves_coverage(tmp_path):
     assert resumed['state'] == 'DOCUMENT_REVIEW'
     assert resumed['coverage'][0]['estado'] == 'Con resultado'
     assert 'no se repiten consultas' in resumed['events'][-1]['message']
-
-def test_active_check_is_blocked_without_session_authorization(tmp_path):
-    store = Store(tmp_path / 'active-blocked.db')
-    session = store.start_live('juice', auto=True)['id']
-    with pytest.raises(ValueError):
-        store.decide_check(session, 'PROPOSAL-AUTH-SQLI-001', 'approve')
-    with sqlite3.connect(store.path) as db:
-        db.execute("INSERT INTO coverage_reviews(session_id,snapshot,observation) VALUES(?,?,?)", (session, '[]', ''))
-        db.execute("UPDATE fresh_reviews SET action='PROPOSAL-AUTH-SQLI-001', path='/rest/user/login' WHERE session_id=?", (session,))
-        db.execute("UPDATE sessions SET state='AWAITING_CHECK' WHERE id=?", (session,))
-    with pytest.raises(ValueError):
-        store.decide_check(session, 'PROPOSAL-AUTH-SQLI-001', 'approve')
-
-
-def test_pending_active_checks_are_not_offered_even_in_active_session(tmp_path):
-    store = Store(tmp_path / 'active-auto.db')
-    session = store.start_live('juice', auto=True, active=True)['id']
-    with pytest.raises(ValueError, match='no quedan comprobaciones activas'):
-        store.queue_active(session)
-    assert store.get(session)['active'] is True
-    assert any('autorización de sesión' == e['kind'] for e in store.get(session)['events'])
-
-def test_queue_active_requires_authorization_and_uses_fixed_path(tmp_path):
-    store = Store(tmp_path / 'queue.db')
-    blocked = store.start_live('juice')['id']
-    with pytest.raises(ValueError):
-        store.queue_active(blocked)
-
-    session = store.start_live('juice', active=True)['id']
-    with pytest.raises(ValueError, match='no quedan comprobaciones activas'):
-        store.queue_active(session)

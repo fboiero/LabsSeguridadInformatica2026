@@ -89,6 +89,7 @@ validation-luna|Validación request aceptado|tests/test_validation_model.py::tes
 autonomous-catalog-session|El agente elige el siguiente control disponible|tests/test_relevo.py::test_coverage_handoff
 autonomous-catalog-session|Una sesión conserva su sandbox|tests/test_relevo.py::test_session_sandbox_path_is_stable
 teacher-proposals|Propuestas docentes visibles pero no ejecutables|tests/test_proposals.py::test_teacher_proposals_are_disabled
+teacher-proposals|Una propuesta pendiente no llega al sandbox|tests/test_proposals.py::test_pending_proposals_cannot_reach_sandbox
 dynamic-catalog-paths|El agente propone una ruta nueva del dominio autorizado|tests/test_relevo.py::test_agent_can_propose_new_path
 dynamic-catalog-paths|Una ruta fuera del dominio se rechaza|tests/test_relevo.py::test_agent_cannot_escape_authorized_scope
 dynamic-catalog-paths|El gate muestra la ruta exacta antes de ejecutar|tests/test_relevo.py::test_agent_can_propose_new_path
