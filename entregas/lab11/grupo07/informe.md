@@ -3,7 +3,7 @@
 **Grupo:** 07 · **Investigadores:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero (@Ferca19), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0) · **Fecha:** 2026-11-19 (America/Buenos_Aires)
 **Sistema afectado:** phantomcorp-web (10.0.0.5) · **Tipo:** intrusión + posible exfiltración
 
-> Este borrador incorpora el bloque de Lorenzo (R3/R4, alcance/respuesta y P1/P4) y deja indicados los aportes pendientes de los demás. El estado actual del CTF es 2/5; no representa una entrega grupal terminada.
+> Informe consolidado de los cuatro bloques del reparto. El estado común del CTF es 5/5; la captura reproducible está en `evidencia/salidas/status-11-consolidado.txt`.
 
 ## 0. Declaración de uso de IA
 
@@ -118,4 +118,4 @@ Los labs de agentes y defensa refuerzan esa distinción. Un transcript permite s
 
 ## 8. Estado de flags (anexo de avance)
 
-Las capturas locales corresponden a checkouts distintos: la de Lorenzo registra **2/5**, con R3/R4 resueltos; la de Fernando registra **2/5**, con R1/R2 aceptados localmente. No hay una captura consolidada desde un mismo checkout que permita afirmar **4/5**. R5 sigue pendiente en ambas. Ver [estado de Lorenzo](evidencia/salidas/status-11.txt) y [estado de Fernando](evidencia/salidas/fernando-status-11.txt); el grupo debe verificar el estado común antes de cerrar.
+Las capturas anteriores corresponden a checkouts distintos y cada una registra 2/5. Después de integrar los cuatro aportes, se ejecutó `./ctf status 11` desde el checkout consolidado de `lab11-grupo07`; el resultado confirma **5/5**. Ver [estado consolidado](evidencia/salidas/status-11-consolidado.txt), además de las capturas históricas de Lorenzo y Fernando.

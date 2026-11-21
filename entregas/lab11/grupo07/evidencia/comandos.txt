@@ -22,3 +22,8 @@ Flags observadas y enviadas desde la raíz del repo con Git Bash:
   ./ctf status 11
 
 No se ejecutó el webshell ni se hicieron conexiones al IOC/C2. La salida del hash check está en salidas/verificacion-custodia.txt; las referencias R3/R4 en salidas/referencias-r3-r4.txt.
+
+Consolidación final — 21/11/2026, America/Argentina/Buenos_Aires:
+En el checkout común de lab11-grupo07 se ejecutó:
+./ctf status 11
+La salida íntegra quedó guardada en evidencia/salidas/status-11-consolidado.txt y muestra R1–R5 aceptadas, 5/5. Las capturas previas de Fernando y Lorenzo se conservan como evidencia histórica de sus checkouts separados.
