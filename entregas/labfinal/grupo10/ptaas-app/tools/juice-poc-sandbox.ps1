@@ -3,6 +3,7 @@ param(
     [Parameter(Mandatory=$true)][string]$Path,
     [string]$ParamName,
     [switch]$ApprovePoc,
+    [switch]$Active,
     [Parameter(Mandatory=$true)][string]$Output
 )
 $ErrorActionPreference = 'Stop'
@@ -35,6 +36,7 @@ try {
         '--workdir','/app',$runner,'python','-B','/app/runtime/poc_sender.py','--poc-id',$PocId,'--base-url','http://juice-shop.lab.test:3000','--path',$Path)
     if ($ParamName) { $arguments += @('--param-name',$ParamName) }
     if ($ApprovePoc) { $arguments += '--approve' }
+    if ($Active) { $arguments += '--active' }
     $json = docker @arguments
     if ($LASTEXITCODE -ne 0) { throw 'Sender bloqueado o falló' }
     $result = ($json -join "`n") | ConvertFrom-Json

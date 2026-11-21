@@ -437,3 +437,62 @@ def test_retry_review_preserves_coverage(tmp_path):
     assert resumed['state'] == 'DOCUMENT_REVIEW'
     assert resumed['coverage'][0]['estado'] == 'Con resultado'
     assert 'no se repiten consultas' in resumed['events'][-1]['message']
+
+def test_active_check_is_blocked_without_session_authorization(tmp_path):
+    store = Store(tmp_path / 'active-blocked.db')
+    session = store.start_live('juice', auto=True)['id']
+    with pytest.raises(ValueError):
+        store.decide_check(session, 'PROPOSAL-AUTH-SQLI-001', 'approve')
+    with sqlite3.connect(store.path) as db:
+        db.execute("INSERT INTO coverage_reviews(session_id,snapshot,observation) VALUES(?,?,?)", (session, '[]', ''))
+        db.execute("UPDATE fresh_reviews SET action='PROPOSAL-AUTH-SQLI-001', path='/rest/user/login' WHERE session_id=?", (session,))
+        db.execute("UPDATE sessions SET state='AWAITING_CHECK' WHERE id=?", (session,))
+    with pytest.raises(ValueError):
+        store.decide_check(session, 'PROPOSAL-AUTH-SQLI-001', 'approve')
+
+
+def test_active_check_needs_per_attempt_gate_even_in_auto_mode(tmp_path, monkeypatch):
+    calls = []
+
+    def review(check, receipt, *args):
+        calls.append((check, args[-1] if args else None))
+        return 'POST /rest/user/login · HTTP 200 · sesión emitida · pendiente de docente'
+
+    monkeypatch.setattr('runtime.relevo.run_header_review', review)
+
+    class Model:
+        name = 'test'
+
+        def __init__(self):
+            self.validation_calls = 0
+
+        def generate(self, prompt):
+            req = json.loads(prompt)
+            if req['agent'] == 'asset_discovery':
+                return json.dumps({'pregunta': '¿Se puede omitir el login?'})
+            self.validation_calls += 1
+            return json.dumps({'accion': 'PROPOSAL-AUTH-SQLI-001', 'motivo': 'Probar el login del laboratorio'})
+
+    store = Store(tmp_path / 'active-auto.db')
+    session = store.start_live('juice', auto=True, active=True)['id']
+    store.advance(session, Model())
+    gate = store.advance(session, Model())
+    assert gate['state'] == 'AWAITING_CHECK' and gate['check'] == 'PROPOSAL-AUTH-SQLI-001'
+    assert calls == []
+    done = store.decide_check(session, gate['check'], 'approve')
+    assert calls == [('PROPOSAL-AUTH-SQLI-001', True)]
+    assert any('activa: requiere aprobación por intento' in e['message'] for e in done['events'])
+    assert any('pendiente de docente' in e['message'] for e in done['events'])
+    assert any('autorización de sesión' == e['kind'] for e in done['events'])
+
+def test_queue_active_requires_authorization_and_uses_fixed_path(tmp_path):
+    store = Store(tmp_path / 'queue.db')
+    blocked = store.start_live('juice')['id']
+    with pytest.raises(ValueError):
+        store.queue_active(blocked)
+
+    session = store.start_live('juice', active=True)['id']
+    queued = store.queue_active(session)
+    assert queued['state'] == 'AWAITING_CHECK'
+    assert queued['check'] in {'PROPOSAL-AUTH-SQLI-001', 'PROPOSAL-SQLI-SEARCH-001'}
+    assert any('aprobación por intento' in e['message'] for e in queued['events'])

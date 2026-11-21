@@ -1,0 +1,88 @@
+version: "0.1.0"
+review_status: pending_teacher_review
+authorization: operator_session
+notes: >
+  Comprobaciones derivadas de las propuestas del catálogo. No registran aprobación
+  docente: el estado es pending_teacher_review y cada sesión exige que la persona
+  que opera habilite las comprobaciones activas de forma explícita.
+entries:
+  - id: PROPOSAL-AUTH-SQLI-001
+    version: "1.0.0"
+    title: "Bypass de autenticación SQLi en login"
+    cwe: CWE-89
+    kind: active_check
+    method: POST
+    path: /rest/user/login
+    payload: login_sqli_bypass
+    evaluator: auth_bypass_token_issued
+    lab_targets: [juice-shop]
+    lab_only: true
+    review_status: pending_teacher_review
+    implementable: true
+    reason: "Un único POST con carga fija. Solo se evalúa si se emitió un token; no se extraen datos."
+  - id: PROPOSAL-SQLI-SEARCH-001
+    version: "1.0.0"
+    title: "Error de motor SQL en búsqueda de productos"
+    cwe: CWE-89
+    kind: active_check
+    method: GET
+    path: /rest/products/search
+    payload: search_sqli_error
+    evaluator: sql_error_disclosed
+    lab_targets: [juice-shop]
+    lab_only: true
+    review_status: pending_teacher_review
+    implementable: true
+    reason: "Una única consulta con comilla simple. Solo se evalúa la firma de error del motor; no se extraen datos."
+  - id: PROPOSAL-DOM-XSS-001
+    version: "1.0.0"
+    title: "XSS DOM en búsqueda"
+    cwe: CWE-79
+    kind: active_check
+    method: GET
+    evaluator: dom_execution_requires_browser
+    lab_targets: [juice-shop]
+    lab_only: true
+    review_status: pending_teacher_review
+    implementable: false
+    requires: browser_harness
+    reason: "La ejecución DOM necesita un navegador instrumentado; el sender HTTP no puede acreditarla."
+  - id: PROPOSAL-UPLOAD-001
+    version: "1.0.0"
+    title: "Validación de límites y tipo de archivo"
+    cwe: CWE-434
+    kind: active_check
+    method: POST
+    evaluator: upload_requires_fixture
+    lab_targets: [juice-shop]
+    lab_only: true
+    review_status: pending_teacher_review
+    implementable: false
+    requires: multipart_fixture
+    reason: "Requiere adaptador multipart y fixtures versionados; no se ejecuta desde el catálogo actual."
+  - id: PROPOSAL-ADMIN-AUTHZ-001
+    version: "1.0.0"
+    title: "Autorización de rutas administrativas"
+    cwe: CWE-862
+    kind: active_check
+    method: GET
+    evaluator: covered_by_inert_check
+    covered_by: POC-ADMINAUTHZ-001
+    lab_targets: [juice-shop]
+    lab_only: true
+    review_status: pending_teacher_review
+    implementable: false
+    reason: "La comprobación de solo lectura equivalente ya está catalogada."
+  - id: PROPOSAL-CAPTCHA-001
+    version: "1.0.0"
+    title: "Exposición de solución CAPTCHA"
+    cwe: CWE-804
+    kind: active_check
+    method: GET
+    evaluator: covered_by_inert_check
+    covered_by: POC-CAPTCHA-001
+    lab_targets: [juice-shop]
+    lab_only: true
+    review_status: pending_teacher_review
+    implementable: false
+    reason: "La comprobación de solo lectura equivalente ya está catalogada."

@@ -66,6 +66,17 @@ Un control pendiente no es un hallazgo. El resumen generado es un borrador. Si
 cerrás la pestaña entre turnos, abrí la sesión desde el historial y pulsá
 «Continuar revisión documental».
 
+### Comprobaciones activas
+
+La casilla **Comprobaciones activas** es opt-in y solo para el laboratorio
+efímero. Registra una autorización de la persona que opera; el estado de revisión
+docente sigue pendiente y cada intento exige aprobación, incluso con catálogo
+automático. Hoy se ejecutan el bypass de login y la detección de error SQL en
+búsqueda, ambos con carga fija; las propuestas que necesitan navegador, multipart
+o ya están cubiertas quedan visibles como declaradas y no envían tráfico. El botón
+**Profundizar** encola la próxima comprobación activa ejecutable sin depender de que
+el modelo la proponga, y mantiene la aprobación por intento.
+
 ### Consulta opcional de Correlación
 
 Durante la interpretación de resultados, Correlación puede pedir contexto a la

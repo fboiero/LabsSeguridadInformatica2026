@@ -4,6 +4,7 @@ param(
     [string]$PocId,
     [string]$Path,
     [switch]$ApprovePoc,
+    [switch]$Active,
     [string]$Output
 )
 $ErrorActionPreference = 'Stop'
@@ -57,6 +58,7 @@ $args = @('run','--rm','--pull','never','-i','--network',$state.network,'--read-
     '--workdir','/app',$runner,'python','-B','/app/runtime/poc_sender.py','--poc-id',$PocId,
     '--base-url','http://juice-shop.lab.test:3000','--path',$Path)
 if ($ApprovePoc) { $args += '--approve' }
+if ($Active) { $args += '--active' }
 $json = docker @args
 if ($LASTEXITCODE -ne 0) { throw 'Sender bloqueado o falló' }
 $json | Set-Content -LiteralPath $Output -Encoding utf8

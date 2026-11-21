@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from harness.poc.active import active_summary, executable_active, load_active
 from harness.poc.catalog import load_catalog, validate_target_path
 from harness.poc.proposals import load_proposals
 
@@ -37,17 +38,25 @@ CATALOG_PATHS = {
     'POC-ADMINAUTHZ-001': '/api/Users', 'POC-CHALLENGES-001': '/api/Challenges',
     'POC-MAINJS-001': '/main.js',
 }
+ACTIVE_CHECKS = {key: value['title'] for key, value in executable_active().items()}
+ACTIVE_METHODS = {key: value['method'] for key, value in executable_active().items()}
+CATALOG_PATHS.update({key: value['path'] for key, value in executable_active().items()})
 
 
-def run_header_review(check: str, receipt: Path, sandbox_state: Path | None = None, path: str = "/") -> str:
-    if check not in ROOT_CHECKS or receipt.exists():
+def run_header_review(check: str, receipt: Path, sandbox_state: Path | None = None, path: str = "/",
+                      active: bool = False) -> str:
+    if check not in ROOT_CHECKS and check not in ACTIVE_CHECKS:
         raise ValueError("consulta no habilitada")
+    if check in ACTIVE_CHECKS and not active:
+        raise ValueError("la comprobación activa necesita autorización de la sesión")
     path = validate_target_path(path)
     script = ROOT / ("tools/juice-poc-session.ps1" if sandbox_state else "tools/juice-poc-sandbox.ps1")
     args = ["powershell.exe", "-NoProfile", "-NonInteractive", "-File", str(script)]
     if sandbox_state:
         args += ["-Action", "Check", "-StateFile", str(sandbox_state.resolve())]
     args += ["-PocId", check, "-Path", path, "-ApprovePoc", "-Output", str(receipt.resolve())]
+    if check in ACTIVE_CHECKS:
+        args += ["-Active"]
     completed = subprocess.run(args, check=False, timeout=300, capture_output=True, text=True,
                                encoding="utf-8", errors="replace")
     if completed.returncode != 0:
@@ -71,7 +80,10 @@ def run_header_review(check: str, receipt: Path, sandbox_state: Path | None = No
     entries = [name for name in record.get('observed_entries', []) if isinstance(name, str)]
     if entries:
         reference += ' · Entradas visibles en el índice: ' + ', '.join(entries[:20]) + '. No se descargó ningún archivo.'
-    return f"GET {path} · HTTP {record['http_status']} · {ROOT_CHECKS[check]}: {detail}{reference} · {receipt.name}"
+    label = ROOT_CHECKS.get(check) or ACTIVE_CHECKS[check]
+    method = ACTIVE_METHODS.get(check, 'GET')
+    review = ' · Estado de revisión: pendiente de docente' if check in ACTIVE_CHECKS else ''
+    return f"{method} {path} · HTTP {record['http_status']} · {label}: {detail}{reference}{review} · {receipt.name}"
 
 
 def stop_session_sandbox(state: Path) -> None:
@@ -163,6 +175,8 @@ class Store:
                 db.execute("ALTER TABLE fresh_reviews ADD COLUMN path TEXT NOT NULL DEFAULT '/'")
             if "auto" not in columns:
                 db.execute("ALTER TABLE fresh_reviews ADD COLUMN auto INTEGER NOT NULL DEFAULT 0")
+            if "active" not in columns:
+                db.execute("ALTER TABLE fresh_reviews ADD COLUMN active INTEGER NOT NULL DEFAULT 0")
             interrupted = db.execute("SELECT id FROM sessions WHERE state='WORKING'").fetchall()
             for (session,) in interrupted:
                 db.execute("UPDATE sessions SET state='PENDING_HITL' WHERE id=?", (session,))
@@ -204,13 +218,15 @@ class Store:
             work = db.execute("SELECT evidence,validated,proposal,draft FROM review_work WHERE session_id=?",
                               (session,)).fetchone()
             turn = db.execute("SELECT role FROM live_turns WHERE session_id=?", (session,)).fetchone()
-            fresh = db.execute("SELECT action, path, auto FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
+            fresh = db.execute("SELECT action, path, auto, active FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
             report = db.execute('SELECT snapshot,summary FROM coverage_reviews WHERE session_id=?', (session,)).fetchone()
             context = db.execute('SELECT question FROM correlation_context WHERE session_id=? AND answer IS NULL', (session,)).fetchone()
         return {"id": row[0], "case": row[1], "fingerprint": row[2], "state": row[3],
                 "decision": row[4], "created": row[5], "role": turn[0] if turn else None,
                 "fresh": bool(fresh), "check": fresh[0] if fresh else "",
                 "path": fresh[1] if fresh else "", "auto": bool(fresh[2]) if fresh else False,
+                "active": bool(fresh[3]) if fresh else False,
+                "method": ACTIVE_METHODS.get(fresh[0], 'GET') if fresh else 'GET',
                 "coverage": json.loads(report[0]) if report else [],
                 "context_question": context[0] if context else "",
                 "proposal": work[2] if work else "", "draft": report[1] if report else work[3] if work else "",
@@ -220,6 +236,28 @@ class Store:
         with sqlite3.connect(self.path) as db:
             rows = db.execute("SELECT id FROM sessions ORDER BY id DESC LIMIT 50").fetchall()
         return [self.get(int(row[0])) for row in rows]
+
+    def queue_active(self, session: int) -> dict[str, Any]:
+        """Encola la próxima comprobación activa ejecutable; el gate sigue siendo humano."""
+        with sqlite3.connect(self.path) as db:
+            fresh = db.execute("SELECT active FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
+            state = db.execute("SELECT state FROM sessions WHERE id=?", (session,)).fetchone()
+            if not fresh or not fresh[0]:
+                raise ValueError("las comprobaciones activas no están habilitadas en esta sesión")
+            if not state or state[0] != 'ACTIVE':
+                raise ValueError("la sesión no está lista para una comprobación activa")
+            snapshot = db.execute("SELECT snapshot FROM coverage_reviews WHERE session_id=?", (session,)).fetchone()
+            done = {row.get('id') for row in json.loads(snapshot[0])} if snapshot else set()
+            pending = next((key for key in ACTIVE_CHECKS if key not in done), "")
+            if not pending:
+                raise ValueError("no quedan comprobaciones activas por ejecutar")
+            db.execute("UPDATE fresh_reviews SET action=?, path=? WHERE session_id=?",
+                       (pending, CATALOG_PATHS[pending], session))
+            db.execute("UPDATE live_turns SET role='Vos' WHERE session_id=?", (session,))
+            db.execute("UPDATE sessions SET state='AWAITING_CHECK' WHERE id=?", (session,))
+            self.event(db, session, 'Vos', 'solicitud activa',
+                       f'Profundizás con {pending} · {ACTIVE_METHODS[pending]} {CATALOG_PATHS[pending]} · aprobación por intento')
+        return self.get(session)
 
     def correlation_answer(self, session: int, answer: str) -> dict[str, Any]:
         if not isinstance(answer, str) or len(answer.strip()) > 1000:
@@ -253,16 +291,21 @@ class Store:
         self.event(db, session, 'Correlación', 'pregunta de contexto', question.strip())
         return True
 
-    def start_live(self, case: str, auto: bool = False) -> dict[str, Any]:
+    def start_live(self, case: str, auto: bool = False, active: bool = False) -> dict[str, Any]:
         if case != "juice":
             raise ValueError("Las revisiones nuevas requieren Juice Shop")
         with sqlite3.connect(self.path) as db:
             cursor = db.execute("INSERT INTO sessions(case_id,fingerprint,state,created) VALUES(?, '', 'ACTIVE', ?)", (case, time.time()))
             session = int(cursor.lastrowid or 0)
-            db.execute("INSERT INTO fresh_reviews(session_id,auto) VALUES(?,?)", (session, int(auto)))
+            db.execute("INSERT INTO fresh_reviews(session_id,auto,active) VALUES(?,?,?)", (session, int(auto), int(active)))
             db.execute("INSERT INTO live_turns(session_id,role) VALUES(?, 'Inventario')", (session,))
             mode = ("Catálogo automático autorizado al iniciar; una ruta nueva propuesta por Validación requiere aprobación individual."
                     if auto else "Cada consulta requiere aprobación humana.")
+            if active:
+                mode += (" Comprobaciones activas habilitadas explícitamente por la persona que opera, solo para el "
+                         "laboratorio efímero y con aprobación por intento. Estado de revisión: pendiente de docente.")
+                self.event(db, session, "Vos", "autorización de sesión",
+                           "Habilitaste comprobaciones activas para el laboratorio efímero; no equivale a aprobación docente.")
             self.event(db, session, "Coordinador", "inicio",
                        "Sesión nueva. Alcance: Juice Shop efímero; catálogo GET con rutas del dominio autorizado. " + mode)
         return self.get(session)
@@ -271,7 +314,7 @@ class Store:
         with sqlite3.connect(self.path) as db:
             if not db.execute("UPDATE sessions SET state='WORKING' WHERE id=? AND state='ACTIVE'", (session,)).rowcount:
                 raise ValueError("la sesión no está lista")
-            question, auto = db.execute("SELECT question, auto FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
+            question, auto, active = db.execute("SELECT question, auto, active FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
             role_row = db.execute("SELECT role FROM live_turns WHERE session_id=?", (session,)).fetchone()
         role = role_row[0] if role_row else ("Validación" if question else "Inventario")
         catalog = load_catalog()
@@ -281,6 +324,8 @@ class Store:
         completed = {row['id'] for row in snapshot if row.get('estado') != 'Sin evidencia'}
         available = {key: value['title'] for key, value in catalog.items()
                      if key in ROOT_CHECKS and key not in completed}
+        if active:
+            available.update({key: value for key, value in ACTIVE_CHECKS.items() if key not in completed})
         results = [{"id": row['id'], "titulo": row.get('titulo'), "estado": row.get('estado'),
                     "observacion": row.get('observacion')}
                    for row in snapshot if row.get('observacion')]
@@ -306,9 +351,13 @@ class Store:
                    "catalogo_disponible": available,
                    "rutas_por_defecto": {key: CATALOG_PATHS.get(key, "/") for key in available},
                    "resultados_previos": results,
-                   "propuestas_pendientes_docente": load_proposals(), "tarea": task +
-                   " Las propuestas pendientes pueden recomendarse, pero no son ejecutables ni pueden aprobarse como PoC. " + output_contract +
-                   " No devuelvas IDs PROPOSAL- ni controles ya ejecutados.",
+                   "propuestas_pendientes_docente": load_proposals(),
+                   "comprobaciones_activas": (active_summary() if active else
+                                              "No habilitadas en esta sesión. No propongas IDs de comprobaciones activas."),
+                   "tarea": task +
+                   (" Las comprobaciones activas están habilitadas solo para el laboratorio efímero y exigen aprobación por intento; su estado de revisión sigue pendiente de docente. " if active else
+                    " Las propuestas pendientes pueden recomendarse, pero no son ejecutables ni pueden aprobarse como PoC. ") + output_contract +
+                   (" No devuelvas controles ya ejecutados." if active else " No devuelvas IDs PROPOSAL- ni controles ya ejecutados."),
                    "contexto_autorizacion": "Evaluación académica autorizada dentro de un laboratorio local OWASP Juice Shop. "
                    "El objetivo está aislado y pertenece al engagement. Podés proponer comprobaciones estructuradas "
                    "del catálogo para juice-shop.lab.test, incluidas rutas nuevas del mismo dominio. No ejecutes comandos, "
@@ -333,6 +382,8 @@ class Store:
                                 or not {'accion', 'motivo'} <= set(result) <= {'accion', 'motivo', 'ruta'}
                                 or not isinstance(action, str) or action not in available):
                             raise ValueError(f"accion_no_disponible:{action}")
+                        if action in ACTIVE_CHECKS and 'ruta' in result:
+                            raise ValueError("active_check_uses_fixed_path")
                         selected_path = validate_target_path(result.get('ruta', CATALOG_PATHS.get(action, '/')))
                 elif (not isinstance(text, str) or not 0 < len(text.strip()) <= 600
                       or set(result) != {'pregunta'}):
@@ -362,6 +413,12 @@ class Store:
                          'estado': 'Sin evidencia' if key in ROOT_CHECKS else 'Fuera del perfil ejecutable'}
                         for key, entry in catalog.items() if 'juice-shop' in entry['lab_targets']
                     ]
+                    if active:
+                        coverage += [
+                            {'id': key, 'titulo': entry['title'], 'version': entry['version'],
+                             'estado': 'Sin evidencia' if entry['implementable'] else 'Sin adaptador'}
+                            for key, entry in load_active().items()
+                        ]
                     db.execute(
                         'INSERT INTO coverage_reviews(session_id,snapshot,observation) VALUES(?,?,?)',
                         (session, json.dumps(coverage, ensure_ascii=False), '')
@@ -378,8 +435,11 @@ class Store:
                                "Validación concluye y no quedan controles disponibles; Correlación recibe la cobertura.")
             elif question:
                 db.execute("UPDATE fresh_reviews SET action=?, path=? WHERE session_id=?", (selected_action, selected_path, session))
+                label = ROOT_CHECKS.get(selected_action) or ACTIVE_CHECKS[selected_action]
+                method = ACTIVE_METHODS.get(selected_action, 'GET')
                 self.event(db, session, "Coordinador", "solicitud",
-                           f"{selected_action} · {ROOT_CHECKS[selected_action]} · GET http://juice-shop.lab.test:3000{selected_path} en sandbox efímero")
+                           f"{selected_action} · {label} · {method} http://juice-shop.lab.test:3000{selected_path} en sandbox efímero" +
+                           (" · activa: requiere aprobación por intento" if selected_action in ACTIVE_CHECKS else ""))
                 db.execute("UPDATE live_turns SET role='Vos' WHERE session_id=?", (session,))
                 db.execute("UPDATE sessions SET state='AWAITING_CHECK' WHERE id=?", (session,))
             else:
@@ -400,8 +460,8 @@ class Store:
                 if role == 'Correlación' else
                 'Actualizá el contexto del borrador con lo que está respaldado y lo que sigue pendiente.')
         request = {'agent': agent, 'contexto': question, 'pregunta': question,
-                   'cobertura': results, 'resultados': results, 'revision': '',
-                   'tarea': task + ' No ejecutes herramientas ni inventes hallazgos. Respondé JSON {"texto":"..."}.'}
+                    'cobertura': results, 'resultados': results, 'revision': '',
+                    'tarea': task + ' No ejecutes herramientas ni inventes hallazgos. Respondé JSON {"texto":"..."}.'}
         context = self.correlation_context(session) if role == 'Correlación' else None
         if role == 'Correlación':
             request['tarea'] += (' Solo si necesitás contexto humano para interpretar la evidencia, agregá "pregunta_humana" con una pregunta breve; si no, omitila. '
@@ -417,7 +477,7 @@ class Store:
             if not isinstance(text, str) or not 1 <= len(text.strip()) <= 1600:
                 raise ValueError('texto_invalido')
             human_question = parsed.get('pregunta_humana') if role == 'Correlación' and not context else None
-            if human_question is not None and (not isinstance(human_question, str) or not 1 <= len(human_question.strip()) <= 500):
+            if human_question is not None and (not isinstance(human_question, str) or len(human_question.strip()) > 500):
                 raise ValueError('pregunta de contexto inválida')
         except (ProviderError, ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
             with sqlite3.connect(self.path) as db:
@@ -450,7 +510,11 @@ class Store:
         return self.get(session)
 
     def decide_check(self, session: int, check: str, choice: str, auto: bool = False) -> dict[str, Any]:
-        if choice not in {'approve', 'reject', 'finish'} or (check not in ROOT_CHECKS and not (choice == 'finish' and not check)):
+        with sqlite3.connect(self.path) as db:
+            row = db.execute("SELECT active FROM fresh_reviews WHERE session_id=?", (session,)).fetchone()
+        active = bool(row[0]) if row else False
+        allowed = set(ROOT_CHECKS) | (set(ACTIVE_CHECKS) if active else set())
+        if choice not in {'approve', 'reject', 'finish'} or (check not in allowed and not (choice == 'finish' and not check)):
             raise ValueError('decisión inválida')
         if choice == 'finish' and not check:
             with sqlite3.connect(self.path) as db:
@@ -476,7 +540,8 @@ class Store:
         if choice == 'approve':
             try:
                 receipt = self.path.parent / f'relevo-{session}-{secrets.token_hex(8)}.json'
-                result = run_header_review(check, receipt, sandbox_state_file(self.path, session), check_path)
+                result = run_header_review(check, receipt, sandbox_state_file(self.path, session), check_path,
+                                           active)
                 status = 'Con resultado'
             except (OSError, subprocess.SubprocessError, KeyError, ValueError, TypeError, RuntimeError) as error:
                 result, status = f'No se obtuvo un recibo válido: {error}', 'Sin recibo válido'
@@ -490,6 +555,12 @@ class Store:
                 {'id': key, 'titulo': entry['title'], 'version': entry['version'],
                  'estado': 'Sin evidencia' if key in ROOT_CHECKS else 'Fuera del perfil ejecutable'}
                 for key, entry in catalog.items() if lab in entry['lab_targets']]
+            if not prior and active:
+                snapshot += [
+                    {'id': key, 'titulo': entry['title'], 'version': entry['version'],
+                     'estado': 'Sin evidencia' if entry['implementable'] else 'Sin adaptador'}
+                    for key, entry in load_active().items()
+                ]
             for row in snapshot:
                 if row['id'] == check and choice != 'finish':
                     row.update(estado=status, observacion=result)
@@ -540,7 +611,7 @@ class Store:
                 if not text:
                     raise ValueError('texto_invalido')
                 human_question = response.get('pregunta_humana') if not review and not context else None
-                if human_question is not None and (not isinstance(human_question, str) or not 1 <= len(human_question.strip()) <= 500):
+                if human_question is not None and (not isinstance(human_question, str) or len(human_question.strip()) > 500):
                     raise ValueError('pregunta de contexto inválida')
             except (ValueError, TypeError, json.JSONDecodeError):
                 text = raw.strip()
@@ -801,13 +872,15 @@ def serve(store: Store, port: int) -> None:
                 if self.path == "/api/start":
                     self.reply(store.start(body["case"]))
                 elif self.path == "/api/start-live":
-                    self.reply(store.start_live(body["case"], bool(body.get("auto", False))))
+                    self.reply(store.start_live(body["case"], bool(body.get("auto", False)), bool(body.get("active", False))))
                 elif self.path == "/api/advance":
                     self.reply(store.advance(int(body["id"]), OpenCodeProvider()))
                 elif self.path == "/api/respond":
                     self.reply(store.respond(int(body["id"]), body["decision"], body.get("comment", "")))
                 elif self.path == "/api/correlation-context":
                     self.reply(store.correlation_answer(int(body["id"]), body.get("answer", "")))
+                elif self.path == "/api/active":
+                    self.reply(store.queue_active(int(body["id"])))
                 elif self.path == "/api/retry":
                     self.reply(store.retry(int(body["id"])))
                 elif self.path == "/api/check":
