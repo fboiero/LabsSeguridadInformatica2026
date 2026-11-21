@@ -27,13 +27,16 @@ por realizados en esta revisión.
 
 ## Seguimiento de revisión humana
 
-Carolina informó que Juan revisó el change `002` y no dejó observaciones. No
-se informó qué commit revisó. El `b142597` indicado arriba corresponde solo
-a la revisión asistida por IA, no a la de Juan.
+Juan Pablo Saby (`@JuanSaby`) revisó de forma independiente el change `002`
+(`harness/audit.py`, `tests/audit_log/`, `tests/tool_adapters/test_audit_fail_closed.py`)
+sobre la versión del commit `0e820ac` (`0e820acf0851cf7e8880fd50e6f43a18885e99a5`,
+rama `labfinal-grupo10`) y confirmó que no quedaron observaciones pendientes. El
+`b142597` indicado en el encabezado corresponde a la revisión previa asistida por IA.
 
-Carolina también informó que el grupo revisó el change `003`. Este registro
-no acredita por separado una aprobación formal de cierre, un acuerdo con la
-cátedra ni la integración y el archivado por PR.
+Juan Pablo Saby y el grupo también confirmaron la revisión independiente y el
+cierre técnico del change `003` (`harness/roe.py`, `tests/test_roe.py`) sobre
+el commit `0e820ac` sin observaciones. El archivado formal de `002` y `003` y
+la aceptación docente quedan sujetos a la integración de la Pull Request.
 
 ## Seguimiento técnico
 

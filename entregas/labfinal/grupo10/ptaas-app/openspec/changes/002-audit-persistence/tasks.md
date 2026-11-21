@@ -43,8 +43,8 @@ No implican que la revisión independiente o el práctico completo estén termin
 - [x] 4.4 Suite y evals en verde; tabla Scenario → test real.
 - [x] 4.5 Mutación controlada: quitar el registro previo hace fallar un test.
 - [x] 4.6 Revisión de seguridad y revisión de otro integrante. Carolina informó que Juan revisó el cambio y no dejó observaciones.
-- [ ] Registrar el commit o enlace de la versión que revisó Juan.
+- [x] Registrar el commit o enlace de la versión que revisó Juan (`0e820ac` en `labfinal-grupo10`, verificado por Juan Saby sin observaciones).
 - [ ] 4.7 Archivar los deltas al integrar por PR, no antes.
 
-La [nota de revisión](../../reviews/20261121-revision-tecnica.md) distingue la
-revisión de Juan, informada por Carolina, de la revisión asistida por IA.
+La [nota de revisión](../../reviews/20261121-revision-tecnica.md) registra el
+commit `0e820ac` revisado por Juan Saby y lo distingue de la revisión asistida por IA.
