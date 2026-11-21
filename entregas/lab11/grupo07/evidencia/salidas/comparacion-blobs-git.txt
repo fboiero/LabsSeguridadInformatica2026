@@ -1,0 +1,18 @@
+
+=== Comparacion de blob Git con la extraccion binaria limpia ===
+labs/lab11-forensia/caso/evidencia.sha256
+  blob: 30b7ae3d623d86b250be9088ef1d8ed063e2c5e0
+  copy: 30b7ae3d623d86b250be9088ef1d8ed063e2c5e0
+
+labs/lab11-forensia/caso/logs/access.log
+  blob: 59d74184d3be22a7376112949bc061c44a65ffaa
+  copy: 59d74184d3be22a7376112949bc061c44a65ffaa
+
+labs/lab11-forensia/caso/logs/auth.log
+  blob: d9a57e6d10b179c6a86271bac0d8f5f9bf8dafae
+  copy: d9a57e6d10b179c6a86271bac0d8f5f9bf8dafae
+
+labs/lab11-forensia/caso/memoria/bash_history.txt
+  blob: e63e31dca31c873f38a10479adccfcbd840cacfe
+  copy: e63e31dca31c873f38a10479adccfcbd840cacfe
+

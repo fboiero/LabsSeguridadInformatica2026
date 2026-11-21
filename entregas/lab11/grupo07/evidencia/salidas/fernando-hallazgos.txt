@@ -1,0 +1,26 @@
+SHA-256 de las fuentes usadas, verificados contra el manifiesto:
+e3c7b593f63fca934e875b1d3c8734c66594944821d519ed6b871841caa3d2a7  logs/access.log
+aef65fa07a1a5e36222a735c04a5ceb2f9415d930750327906525c7c63bdf3f5  disco/listado.txt
+38f7251c9fe2f554a2a9808fea0b154f1f4e88f7b47c1e4afbd589055a22fc42  disco/var/www/uploads/shell.php.evidencia.txt
+f8371142870a03c9db04c5e5416ec9feee4135754a38b66c1c3158209a9a32b1  disco/etc/passwd.snippet
+a34f5f20f14f804697f18349bd0147adf84155666a55b2fcecb1050ced0c8b73  memoria/pslist.txt
+373b417f1c85510832382ddf8a082614bce8db0f0ba30078c567d4d039fa90f7  memoria/netstat.txt
+
+R1: marcador de la solicitud de entrada
+logs/access.log:19 | 185.220.101.42 [05/Sep/2026:02:18:33 +0000] GET /api/reporte HTTP 200 | parámetro cmd decodificado
+R1 marcador: FLAG{dfir_vector_sqli}
+
+R2: marcador hallado al leer el extracto de disco
+disco/var/www/uploads/shell.php.evidencia.txt:7 | comentario del artefacto
+R2 marcador: FLAG{dfir_webshell_hallado}
+
+Referencias de IOCs y de la correlación de P3:
+logs/access.log:20 | 185.220.101.42 [05/Sep/2026:02:19:02 +0000] GET /api/reporte HTTP 200 | solicitud de descarga y escritura de shell.php
+logs/access.log:21 | 185.220.101.42 [05/Sep/2026:02:19:48 +0000] GET /uploads/shell.php HTTP 200
+disco/listado.txt:4 | 2026-09-05 02:19  431    /var/www/uploads/shell.php
+disco/listado.txt:6 | 2026-09-05 02:22  62     /etc/cron.d/phantom-maint         (persistencia)
+disco/etc/passwd.snippet:4 | phantom-svc:x:0:0:service::/root:/bin/bash
+memoria/netstat.txt:4 | tcp   10.0.0.5:41022        45.13.37.7:4444     ESTABLISHED  1490  nc        <- C2 saliente
+memoria/netstat.txt:5 | tcp   10.0.0.5:41108        45.13.37.7:80       TIME_WAIT    1201  wget      <- descarga del webshell
+memoria/pslist.txt:1 | # volatility3 linux.pslist  (extracto)   captura: 2026-09-05 02:30 UTC
+memoria/pslist.txt:6 | PID 1201; padre 812; usuario www-data; descarga del artefacto

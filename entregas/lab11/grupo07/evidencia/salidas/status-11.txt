@@ -1,0 +1,21 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: Escalada de privilegios (SUID) en memoria
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R4 resuelto: Conexion C2 y exfiltracion de datos
+
+  ╭────────────────────────────────────────────────────────────╮
+  │                     PROGRESO · LAB 11                      │
+  ╰────────────────────────────────────────────────────────────╯
+
+   ·  R1     Vector de entrada (SQLi -> RCE) en los logs
+   ·  R2     El webshell dropeado en el disco
+   ✓  R3     Escalada de privilegios (SUID) en memoria
+   ✓  R4     Conexion C2 y exfiltracion de datos
+   ·  R5     Cadena de custodia: evidencia alterada
+
+  ████████████░░░░░░░░░░░░░░░░░░  2/5 (40%)
+
