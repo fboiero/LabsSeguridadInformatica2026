@@ -1,0 +1,34 @@
+Lab 10 — bloque de Lorenzo — Grupo 07
+Fecha local: 2026-11-19 (America/Buenos_Aires)
+
+Captura inicial antes de tráfico de prueba (01:53:56Z):
+  curl -sS -i http://phantomcorp/soc
+  curl -sS -i http://phantomcorp/soc/reglas
+
+Prueba benigna y prueba de scanner desde cyberlab-attacker:
+  curl -sS -i -A 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36' http://phantomcorp/
+  curl -sS -i -A 'sqlmap' http://phantomcorp/
+
+Comparación de evasión: misma ruta con UA de navegador:
+  curl -sS -i -A 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36' http://phantomcorp/
+
+Captura final del SOC (01:54:17Z):
+  curl -sS -i http://phantomcorp/soc
+
+Entrega de R2 y status (desde raíz del repo, Git Bash):
+  ./ctf submit 10 R2 'FLAG{detection_triggered}'
+  ./ctf status 10
+
+El detector respondió 403 con alerta para UA sqlmap y 200 para las otras dos requests. Aunque la respuesta afirma que fue logueada, el /soc final no agregó una entrada propia; el informe distingue ambas observaciones.
+
+
+# Integración de Fernando — 20/11/2026 (America/Buenos_Aires)
+# R3/R4 y sus requests: ver comandos-lautaro.txt y las salidas originales.
+# La evidencia de Guadalupe identifica sus requests en su propia captura.
+# Flags tomadas exclusivamente de salidas crudas de los operadores del grupo.
+# Validación consolidada: bash ./ctf submit 10 R1 <flag-observada> (repetir R2–R5).
+# bash ./ctf status 10
+# bash bin/validar-repo.sh
+# En Windows se usó git archive upstream/main para ejecutar scripts con LF,
+# copiando esta entrega a la exportación temporal y usando Python 3.12.
+# No se repitieron ataques; no se cambió el entorno Docker.
