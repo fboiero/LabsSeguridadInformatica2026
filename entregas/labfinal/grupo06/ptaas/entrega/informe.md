@@ -143,8 +143,8 @@ inertes del catálogo, generó el informe desde la bitácora y lo exportó a Def
 tras la aprobación registrada de su hash. Los hallazgos son debilidades de
 configuración (encabezados de seguridad y cookies), no vulnerabilidades explotadas.
 
-Estado verificable: 483 tests en verde (2 omitidos sin Docker, corridos aparte con
-Docker real), 221 Scenarios en 11 specs, los 9 changes al 100 %, 44 mutaciones
+Estado verificable: 483 tests en verde (485 recolectados, 2 omitidos sin
+Docker real, corridos aparte con Docker), 221 Scenarios en 11 specs, los 10 changes al 100 %, 44 mutaciones
 registradas, matriz de invariantes I1–I8 y red team A1–A10 y B1–B4 con historia de
 commits.
 
@@ -265,7 +265,7 @@ y `entrega/retrospectiva.md`. Casos representativos: tests que fallaban por un
 fixture y no por el control (P2, P5), un token válido en el instante exacto de
 expiración (P2), un test débil revelado por una mutación (P5, M33) y un informe con
 hallazgos unificados por error que frenó el gate de entrega (P5).
-**Pendiente:** filas de P1 y P4.
+Los 5 integrantes registraron sus experiencias y lecciones aprendidas en los documentos citados.
 
 **Controles adicionales propuestos (change 010):** siete controles de gobernanza
 justificados con ISO/IEC 29147 (divulgación coordinada), ISO/IEC 30111 (ciclo del

@@ -26,8 +26,7 @@ token, fases vacías, exclusiones combinadas, contactos inválidos, fases
 desconocidas y el hash de aprobación. La evidencia local registra **162 tests
 aprobados**, **10/10 evals golden** y `ruff` limpio en los archivos P2 revisados.
 Las comprobaciones se ejecutaron con `python -X utf8` por la codificación de la
-consola Windows. `progress.py` informa 003 en **13/14**: sigue pendiente la
-revisión cruzada humana 1.3. La spec de autorización contiene **23 Scenarios**.
+consola Windows. `progress.py` informa 003 en **14/14 (100%)** tras la revisión cruzada 1.3 aprobada por P5 (19/11). La spec de autorización contiene **23 Scenarios**.
 
 El chequeo focal `mypy --strict --follow-imports=skip` pasó para `roe.py` y
 `tokens.py`. Al seguir imports, mypy informa errores en las interfaces de
