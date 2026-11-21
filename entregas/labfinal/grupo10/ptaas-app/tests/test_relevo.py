@@ -451,39 +451,13 @@ def test_active_check_is_blocked_without_session_authorization(tmp_path):
         store.decide_check(session, 'PROPOSAL-AUTH-SQLI-001', 'approve')
 
 
-def test_active_check_needs_per_attempt_gate_even_in_auto_mode(tmp_path, monkeypatch):
-    calls = []
-
-    def review(check, receipt, *args):
-        calls.append((check, args[-1] if args else None))
-        return 'POST /rest/user/login · HTTP 200 · sesión emitida · pendiente de docente'
-
-    monkeypatch.setattr('runtime.relevo.run_header_review', review)
-
-    class Model:
-        name = 'test'
-
-        def __init__(self):
-            self.validation_calls = 0
-
-        def generate(self, prompt):
-            req = json.loads(prompt)
-            if req['agent'] == 'asset_discovery':
-                return json.dumps({'pregunta': '¿Se puede omitir el login?'})
-            self.validation_calls += 1
-            return json.dumps({'accion': 'PROPOSAL-AUTH-SQLI-001', 'motivo': 'Probar el login del laboratorio'})
-
+def test_pending_active_checks_are_not_offered_even_in_active_session(tmp_path):
     store = Store(tmp_path / 'active-auto.db')
     session = store.start_live('juice', auto=True, active=True)['id']
-    store.advance(session, Model())
-    gate = store.advance(session, Model())
-    assert gate['state'] == 'AWAITING_CHECK' and gate['check'] == 'PROPOSAL-AUTH-SQLI-001'
-    assert calls == []
-    done = store.decide_check(session, gate['check'], 'approve')
-    assert calls == [('PROPOSAL-AUTH-SQLI-001', True)]
-    assert any('activa: requiere aprobación por intento' in e['message'] for e in done['events'])
-    assert any('pendiente de docente' in e['message'] for e in done['events'])
-    assert any('autorización de sesión' == e['kind'] for e in done['events'])
+    with pytest.raises(ValueError, match='no quedan comprobaciones activas'):
+        store.queue_active(session)
+    assert store.get(session)['active'] is True
+    assert any('autorización de sesión' == e['kind'] for e in store.get(session)['events'])
 
 def test_queue_active_requires_authorization_and_uses_fixed_path(tmp_path):
     store = Store(tmp_path / 'queue.db')
@@ -492,7 +466,5 @@ def test_queue_active_requires_authorization_and_uses_fixed_path(tmp_path):
         store.queue_active(blocked)
 
     session = store.start_live('juice', active=True)['id']
-    queued = store.queue_active(session)
-    assert queued['state'] == 'AWAITING_CHECK'
-    assert queued['check'] in {'PROPOSAL-AUTH-SQLI-001', 'PROPOSAL-SQLI-SEARCH-001'}
-    assert any('aprobación por intento' in e['message'] for e in queued['events'])
+    with pytest.raises(ValueError, match='no quedan comprobaciones activas'):
+        store.queue_active(session)

@@ -69,13 +69,13 @@ cerrás la pestaña entre turnos, abrí la sesión desde el historial y pulsá
 ### Comprobaciones activas
 
 La casilla **Comprobaciones activas** es opt-in y solo para el laboratorio
-efímero. Registra una autorización de la persona que opera; el estado de revisión
-docente sigue pendiente y cada intento exige aprobación, incluso con catálogo
-automático. Hoy se ejecutan el bypass de login y la detección de error SQL en
-búsqueda, ambos con carga fija; las propuestas que necesitan navegador, multipart
-o ya están cubiertas quedan visibles como declaradas y no envían tráfico. El botón
-**Profundizar** encola la próxima comprobación activa ejecutable sin depender de que
-el modelo la proponga, y mantiene la aprobación por intento.
+efímero. Registra una intención de la persona que opera, no una aprobación
+docente. Mientras las propuestas estén en `pending_teacher_review`, no aparecen
+como ejecutables y el sender las rechaza antes de enviar tráfico. Tras una
+aprobación docente explícita, cada intento seguirá exigiendo aprobación, incluso
+con catálogo automático. Las propuestas que necesitan navegador, multipart o ya
+están cubiertas quedan declaradas y no envían tráfico. El botón **Profundizar**
+solo encola comprobaciones activas aprobadas.
 
 ### Consulta opcional de Correlación
 

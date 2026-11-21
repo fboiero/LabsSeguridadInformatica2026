@@ -13,7 +13,7 @@ def test_active_catalog_stays_pending_and_lab_only():
     entries = load_active()
     assert entries["PROPOSAL-AUTH-SQLI-001"]["review_status"] == "pending_teacher_review"
     assert all(entry["lab_only"] and entry["lab_targets"] == ["juice-shop"] for entry in entries.values())
-    assert set(executable_active()) == {"PROPOSAL-AUTH-SQLI-001", "PROPOSAL-SQLI-SEARCH-001"}
+    assert executable_active() == {}
 
 
 def test_active_requires_explicit_session_authorization():
@@ -21,6 +21,15 @@ def test_active_requires_explicit_session_authorization():
     sent = []
     with pytest.raises(ActiveCheckNotAuthorized):
         run_active(active, "PROPOSAL-AUTH-SQLI-001", "http://juice-shop.lab.test:3000", False,
+                   lambda *_: sent.append(1) or ResponseRecord(200, {}, "{}"))
+    assert sent == []
+
+
+def test_pending_teacher_review_blocks_traffic_even_with_operator_authorization():
+    active = load_active()
+    sent = []
+    with pytest.raises(ActiveCheckNotAuthorized, match="teacher_review_required"):
+        run_active(active, "PROPOSAL-AUTH-SQLI-001", "http://juice-shop.lab.test:3000", True,
                    lambda *_: sent.append(1) or ResponseRecord(200, {}, "{}"))
     assert sent == []
 
@@ -33,7 +42,8 @@ def test_non_implementable_active_proposal_never_runs():
 
 
 def test_sqli_evaluator_only_checks_token_issuance():
-    active = load_active()
+    active = {key: dict(value, review_status="teacher_approved")
+              for key, value in load_active().items() if value["implementable"]}
 
     def sender(poc_id, params, payload, method):
         assert poc_id == "PROPOSAL-AUTH-SQLI-001" and params == {"path": "/rest/user/login"}
@@ -42,7 +52,7 @@ def test_sqli_evaluator_only_checks_token_issuance():
         return ResponseRecord(200, {}, '{"authentication":{"token":"abcdef0123456789"}}')
 
     hit = run_active(active, "PROPOSAL-AUTH-SQLI-001", "http://juice-shop.lab.test:3000", True, sender)
-    assert hit.status == "validated" and hit.review_status == "pending_teacher_review"
+    assert hit.status == "validated" and hit.review_status == "teacher_approved"
 
     def rejected(poc_id, params, payload, method):
         return ResponseRecord(401, {}, '{"error":"Invalid email or password"}')
@@ -52,7 +62,8 @@ def test_sqli_evaluator_only_checks_token_issuance():
 
 
 def test_sqli_search_evaluator_uses_query_payload():
-    active = load_active()
+    active = {key: dict(value, review_status="teacher_approved")
+              for key, value in load_active().items() if value["implementable"]}
 
     def sender(poc_id, params, payload, method):
         assert poc_id == "PROPOSAL-SQLI-SEARCH-001"
@@ -78,31 +89,13 @@ def test_ftp_index_entries_are_described_without_downloading():
     assert ftp_index_entries(body) == ("acquisitions.md", "package.json.bak")
     assert ftp_index_entries("") == ()
 
-def test_run_header_review_passes_active_switch_and_validates_receipt(tmp_path, monkeypatch):
-    import json
-    import subprocess
-
+def test_run_header_review_blocks_pending_active_check(tmp_path, monkeypatch):
     from runtime import relevo
 
-    seen = {}
-
-    def fake_run(args, **kwargs):
-        seen["args"] = args
-        receipt = args[args.index("-Output") + 1]
-        with open(receipt, "w", encoding="utf-8") as handle:
-            json.dump({"poc_id": "PROPOSAL-AUTH-SQLI-001", "status": "validated",
-                       "detail": "sesión emitida sin credenciales válidas del laboratorio",
-                       "parameters": {"path": "/rest/user/login"}, "http_status": 200,
-                       "review_status": "pending_teacher_review",
-                       "target_removed": True, "network_removed": True,
-                       "observed_entries": []}, handle)
-        return subprocess.CompletedProcess(args, 0, "", "")
-
-    monkeypatch.setattr(relevo.subprocess, "run", fake_run)
-    text = relevo.run_header_review("PROPOSAL-AUTH-SQLI-001", tmp_path / "r.json", None,
-                                    "/rest/user/login", True)
-    assert "-Active" in seen["args"]
-    assert "POST /rest/user/login" in text and "pendiente de docente" in text
+    monkeypatch.setattr(relevo.subprocess, "run", lambda *_args, **_kwargs: pytest.fail("no debe enviar tráfico"))
+    with pytest.raises(ValueError, match="consulta no habilitada"):
+        relevo.run_header_review("PROPOSAL-AUTH-SQLI-001", tmp_path / "r.json", None,
+                                 "/rest/user/login", True)
 
 
 def test_run_header_review_blocks_active_without_authorization(tmp_path):

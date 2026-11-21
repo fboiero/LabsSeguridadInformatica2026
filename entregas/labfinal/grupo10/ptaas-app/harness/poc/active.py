@@ -1,8 +1,8 @@
 """Comprobaciones activas derivadas de las propuestas, acotadas al laboratorio.
 
-No registran aprobación docente. Cada ejecución exige que la persona que opera
-habilite las comprobaciones activas en esa sesión, y el recibo conserva el
-estado `pending_teacher_review`.
+Las entradas pendientes se conservan como propuestas declaradas y no son
+ejecutables. Una ejecución requiere una aprobación docente explícita y la
+autorización de la persona que opera en esa sesión.
 """
 from __future__ import annotations
 
@@ -58,8 +58,8 @@ def validate_active_entries(entries: list[dict[str, Any]]) -> dict[str, dict[str
             raise InvalidActiveCatalog("active_requires_lab_only")
         if not set(entry["lab_targets"]) <= {"juice-shop"}:
             raise InvalidActiveCatalog("active_target_not_allowed")
-        if entry["review_status"] != "pending_teacher_review":
-            # Sin una revisión registrada no se puede afirmar otra cosa.
+        if entry["review_status"] not in {"pending_teacher_review", "teacher_approved"}:
+            # El estado debe ser cerrado y no puede inventar una aprobación.
             raise InvalidActiveCatalog("review_status_must_stay_pending")
         if entry["id"] in result:
             raise InvalidActiveCatalog("duplicate_active_entry")
@@ -76,7 +76,7 @@ def validate_active_entries(entries: list[dict[str, Any]]) -> dict[str, dict[str
 
 def load_active(path: Path = _PATH) -> dict[str, dict[str, Any]]:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if data.get("review_status") != "pending_teacher_review":
+    if data.get("review_status") not in {"pending_teacher_review", "teacher_approved"}:
         raise InvalidActiveCatalog("catalog_review_status")
     if data.get("authorization") != "operator_session":
         raise InvalidActiveCatalog("authorization_must_be_operator_session")
@@ -87,7 +87,8 @@ def load_active(path: Path = _PATH) -> dict[str, dict[str, Any]]:
 
 
 def executable_active(path: Path = _PATH) -> dict[str, dict[str, Any]]:
-    return {key: value for key, value in load_active(path).items() if value["implementable"]}
+    return {key: value for key, value in load_active(path).items()
+            if value["implementable"] and value["review_status"] == "teacher_approved"}
 
 
 def _evaluate(name: str, record: ResponseRecord) -> tuple[bool, str]:
@@ -111,6 +112,8 @@ def run_active(active: dict[str, dict[str, Any]], poc_id: str, base_url: str, au
         raise NotInCatalog(poc_id)
     if not entry["implementable"]:
         raise ParameterError("active_check_not_implementable")
+    if entry["review_status"] != "teacher_approved":
+        raise ActiveCheckNotAuthorized("teacher_review_required")
     if not authorized:
         raise ActiveCheckNotAuthorized(poc_id)
     if entry["method"] not in {"GET", "POST"}:
@@ -127,8 +130,12 @@ def run_active(active: dict[str, dict[str, Any]], poc_id: str, base_url: str, au
 def active_summary(path: Path = _PATH) -> str:
     """Texto corto para el prompt: qué se puede ejecutar y qué solo se declara."""
     entries = load_active(path)
-    runnable = [entry["title"] for entry in entries.values() if entry["implementable"]]
+    runnable = [entry["title"] for entry in entries.values()
+                if entry["implementable"] and entry["review_status"] == "teacher_approved"]
+    pending = [entry["title"] for entry in entries.values()
+               if entry["implementable"] and entry["review_status"] == "pending_teacher_review"]
     declared = [f"{entry['title']} ({entry.get('requires', entry.get('covered_by', 'sin adaptador'))})"
                 for entry in entries.values() if not entry["implementable"]]
-    return ("Activas ejecutables en el laboratorio: " + "; ".join(runnable) +
+    return ("Activas aprobadas y ejecutables en el laboratorio: " + "; ".join(runnable) +
+            ". Activas pendientes de revisión docente: " + "; ".join(pending) +
             ". Declaradas pero sin adaptador: " + "; ".join(declared) + ".")
