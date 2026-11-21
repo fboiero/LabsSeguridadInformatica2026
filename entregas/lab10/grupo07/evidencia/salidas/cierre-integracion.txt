@@ -1,0 +1,35 @@
+Cierre de integración: 20/11/2026 (America/Buenos_Aires)
+Base: a1abb79449a68f3cae29d1e9d43a4ac4a4f53960
+Flags extraídas de capturas originales y contrastadas por SHA-256; no se operó el target nuevamente.
+
+$ bash ./ctf submit 10 R1 <flag-del-operador>
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R1 resuelto: Acceso a la vista del SOC
+
+$ bash ./ctf submit 10 R2 <flag-del-operador>
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: Disparar una deteccion (te vieron)
+
+$ bash ./ctf submit 10 R3 <flag-del-operador>
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: Conocer el ruleset del IDS
+
+$ bash ./ctf submit 10 R4 <flag-del-operador>
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R4 resuelto: Evadir una firma de deteccion
+
+$ bash ./ctf submit 10 R5 <flag-del-operador>
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R5 resuelto: Encontrar la intrusion en el ruido
+
+Estado consolidado: 5/5. Validador general: seis chequeos OK en exportación limpia con la entrega integrada.

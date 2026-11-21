@@ -1,0 +1,14 @@
+== 1. Python compila ==
+  ✓ todos los .py compilan
+== 2. Shell con sintaxis válida ==
+  ✓ todos los scripts shell OK
+== 3. Manifiestos de retos bien formados ==
+  ✓ todos los retos.manifest OK
+== 4. Sin soluciones en el repo (H1) ==
+  ✓ no hay solucion.md versionados
+== 5. Sin flags REALES en claro en documentación pública ==
+  ✓ ninguna flag real en claro en documentación pública
+== 6. Links internos entre .md ==
+  ✓ links internos OK
+
+VALIDACIÓN: todo OK.
