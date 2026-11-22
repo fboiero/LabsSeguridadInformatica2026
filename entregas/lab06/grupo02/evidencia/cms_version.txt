@@ -1,0 +1,3 @@
+PhantomCMS 3.7 (build 2024-11)
+Archivo default del CMS. Si llegaste aca por fingerprinting, bien.
+FLAG{tech_fingerprint_phantomcms}

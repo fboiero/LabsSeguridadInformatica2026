@@ -1,0 +1,15 @@
+<!doctype html><html><body><h1>Index of /backup</h1>
+<pre>
+respaldo-db-2024.sql.gz
+config.old
+notas-infra.txt   ->  FLAG{dir_enumeration_backup}
+</pre>
+<p>Este directorio no deberia estar accesible. Enumeracion de directorios 101.</p>
+</body></html><!doctype html><html><body><h1>Index of /backup</h1>
+<pre>
+respaldo-db-2024.sql.gz
+config.old
+notas-infra.txt   ->  FLAG{dir_enumeration_backup}
+</pre>
+<p>Este directorio no deberia estar accesible. Enumeracion de directorios 101.</p>
+</body></html>
