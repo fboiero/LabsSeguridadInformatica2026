@@ -13,7 +13,8 @@
 
 ## 0. Declaración de uso de IA
 
-Se utilizó Claude, a través de Claude Code, como asistente. Se usó para redactar un primer borrador de este informe a partir de los commits, las revisiones de seguridad y la evidencia ya registrada en el repositorio por los turnos 1 a 3. El grupo revisó el borrador y contrastó cada dato con los archivos de origen (openspec/reviews/, openspec/changes/guard-turno-1/tasks.md y evidencia/ptaas/).La retrospectiva fue redactada con asistencia de Claude a partir de los errores detectados durante el turno 4, y el grupo la revisó.
+Se utilizó Claude, a través de Claude Code, como asistente. Se usó para redactar un primer borrador de este informe a partir de los commits, las revisiones de seguridad y la evidencia ya registrada en el repositorio por los turnos 1 a 3. El grupo revisó el borrador y contrastó cada dato con los archivos de origen (openspec/reviews/, openspec/changes/guard-turno-1/tasks.md y evidencia/ptaas/). La retrospectiva fue redactada con asistencia de Claude a partir de los errores detectados durante el turno 4, y el grupo la revisó. Los demás integrantes utilizaron ChatGpt y Gemini. En `ptaas-app/` se usó OpenCode con modelos GPT para diagnóstico, especificaciones, tests, código y documentación, y como proveedor de los agentes de runtime; el detalle está en `ptaas-app/README.md`, sección "Uso de IA y aprobaciones".
+
 ## 1. Resumen
 
 Partimos del kit de la cátedra (`labs/labfinal-practico-integrador/ptaas-kit`, base
@@ -200,7 +201,7 @@ probarlo solos.
   Nuclei no tienen corrida archivada en esta carpeta.
 - **Versión de Python.** El CI del kit usa 3.12. Las dos carpetas se verificaron en un
   contenedor `python:3.12-slim`: `ptaas-kit/` con 113 tests y evals 10/10, y `ptaas-app/`
-  con 183 tests, evals 21/21 y la demo de defensa. `ptaas-app/` no corre en 3.10
+  con 193 tests, evals 21/21 y la demo de defensa. `ptaas-app/` no corre en 3.10
   porque usa `typing.Self`.
 
 ---
