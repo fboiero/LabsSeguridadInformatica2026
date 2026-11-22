@@ -1,0 +1,29 @@
+{
+  "assets": [
+    {
+      "id": "web-dvwa.lab.test",
+      "type": "web_service",
+      "address": "dvwa.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": [
+        "Apache/2.4",
+        "PHP/7.4"
+      ]
+    },
+    {
+      "id": "web-juiceshop.lab.test",
+      "type": "web_service",
+      "address": "juiceshop.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": [
+        "Node.js",
+        "Express",
+        "Angular"
+      ]
+    }
+  ],
+  "out_of_scope": [
+    "cdn.tercero.org"
+  ],
+  "digest": "1516f6e2014af9aa404836b183525274dfa4a0421643cc436e708b26c1597115"
+}

@@ -1,0 +1,54 @@
+{
+  "engagement_id": "eng-labfinal-grupo10",
+  "phase": "recon",
+  "capabilities_order": [
+    "subfinder.enum",
+    "httpx.probe"
+  ],
+  "stop_reason": "grafo estabilizado",
+  "iterations": 2,
+  "assets": [
+    {
+      "id": "web-dvwa.lab.test",
+      "type": "web_service",
+      "address": "dvwa.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": [
+        "Apache/2.4",
+        "PHP/7.4"
+      ]
+    },
+    {
+      "id": "web-juiceshop.lab.test",
+      "type": "web_service",
+      "address": "juiceshop.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": [
+        "Node.js",
+        "Express",
+        "Angular"
+      ]
+    }
+  ],
+  "out_of_scope": [
+    "cdn.tercero.org"
+  ],
+  "snapshots": [
+    {
+      "iteration": 1,
+      "total_assets": 2,
+      "new_assets": 2,
+      "digest": "1516f6e2014af9aa404836b183525274dfa4a0421643cc436e708b26c1597115"
+    },
+    {
+      "iteration": 2,
+      "total_assets": 2,
+      "new_assets": 0,
+      "digest": "1516f6e2014af9aa404836b183525274dfa4a0421643cc436e708b26c1597115"
+    }
+  ],
+  "errors": [],
+  "audit_verified": true,
+  "mode": "fixture",
+  "engagement_state": "RECON"
+}

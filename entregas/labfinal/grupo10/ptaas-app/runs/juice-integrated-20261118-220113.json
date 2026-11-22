@@ -1,0 +1,130 @@
+{
+    "state":  "INTEGRATED_COMPLETE",
+    "loops":  {
+                  "A_B":  {
+                              "state":  "A_B_COMPLETE",
+                              "scans":  {
+                                            "state":  "SCANS_COMPLETE_WITH_ERRORS",
+                                            "target":  "juice-shop.lab.test",
+                                            "network":  "internal_only",
+                                            "tools":  [
+                                                          {
+                                                              "tool":  "subfinder.passive",
+                                                              "image":  "projectdiscovery/subfinder@sha256:2f5ddea311db2a8b848e40f1b669fc655d0eb78b74a74ead93d3850e372b12bf",
+                                                              "returncode":  0,
+                                                              "stdout_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                                                              "stdout_lines":  0,
+                                                              "stderr_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                                                              "stderr_excerpt":  "",
+                                                              "target":  "juice-shop.lab.test",
+                                                              "raw_output_persisted":  false
+                                                          },
+                                                          {
+                                                              "tool":  "httpx.probe.official",
+                                                              "image":  "projectdiscovery/httpx@sha256:f8275a7c6aaec187249df9eaf4ad9196f4677adfc6a51a47b4aaa1d4db4f8ffc",
+                                                              "returncode":  0,
+                                                              "stdout_sha256":  "e474e47b01dccd23ffb3d2eb011b322e5c547753d4eb7e48508b63c572904ec0",
+                                                              "stdout_lines":  1,
+                                                              "stderr_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                                                              "stderr_excerpt":  "",
+                                                              "target":  "juice-shop.lab.test",
+                                                              "raw_output_persisted":  false
+                                                          },
+                                                          {
+                                                              "tool":  "nuclei.safe_templates",
+                                                              "image":  "projectdiscovery/nuclei@sha256:582d5546902e67052097cb2d07296c642d50a1afc5e44623cb038845df9a32eb",
+                                                              "returncode":  0,
+                                                              "stdout_sha256":  "42c05f8ef03271b76c917361cfe7d044caaa8191c8a6165036320ab578661bba",
+                                                              "stdout_lines":  2,
+                                                              "stderr_sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                                                              "stderr_excerpt":  "",
+                                                              "target":  "juice-shop.lab.test",
+                                                              "raw_output_persisted":  false
+                                                          },
+                                                          {
+                                                              "tool":  "zap.baseline_scan",
+                                                              "image":  "zaproxy/zap-stable@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af",
+                                                              "returncode":  3,
+                                                              "stdout_sha256":  "95f21a7fd9659eef4e7117b6969df1e2ccdb237b06019cdd4d0ba3965c71e7e5",
+                                                              "stdout_lines":  40,
+                                                              "stderr_sha256":  "e2a4947a8a27ac18f1cbf2eedfc59494c2a6a20cc20ebff97ce35d3e78e73305",
+                                                              "stderr_excerpt":  "2026-11-19 01:01:57,813 Failed to access summary file /tmp/zap_out.json",
+                                                              "target":  "juice-shop.lab.test",
+                                                              "raw_output_persisted":  false
+                                                          }
+                                                      ],
+                                            "audit":  {
+                                                          "engagement":  "juice-shop-integrated",
+                                                          "event_count":  8,
+                                                          "head_hash":  "f43489ee35afc233971fb0031a05e9447e4207b8f54df94d44d7d765b6c38c1a",
+                                                          "external_anchor":  false,
+                                                          "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+                                                      }
+                                        },
+                              "audit":  {
+                                            "engagement":  "juice-shop-integrated",
+                                            "event_count":  8,
+                                            "head_hash":  "f43489ee35afc233971fb0031a05e9447e4207b8f54df94d44d7d765b6c38c1a",
+                                            "external_anchor":  false,
+                                            "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+                                        },
+                              "correlation":  {
+                                                  "status":  "unknown",
+                                                  "reason":  "no_lab_cve_evidence",
+                                                  "candidates":  [
+
+                                                                 ],
+                                                  "epss":  null
+                                              }
+                          },
+                  "C":  {
+                            "state":  "validated",
+                            "poc_id":  "POC-CSP-001",
+                            "response_scope":  "juice-shop.lab.test:3000",
+                            "audit":  {
+                                          "engagement":  "juice-shop-poc-sandbox",
+                                          "event_count":  2,
+                                          "head_hash":  "0188b2763cb0e709363e5ea1babb8475c66145f5160d7ddddae69f4674cc7b56",
+                                          "external_anchor":  false,
+                                          "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+                                      },
+                            "network":  "internal_only",
+                            "confirmed_findings":  [
+
+                                                   ],
+                            "version":  "1.0.0",
+                            "status":  "validated",
+                            "detail":  "CSP ausente",
+                            "parameters":  {
+                                               "path":  "/",
+                                               "base_url":  "http://juice-shop.lab.test:3000"
+                                           },
+                            "http_status":  200,
+                            "response_hash":  "e3dbfb01644cb057ebb8cc36fb2440bb5c515f79a9651272da3b0ff1009cfeab"
+                        }
+              },
+    "audit_file":  "juice-integrated-20261118-220113.sqlite",
+    "final_audit":  {
+                        "result":  {
+                                       "status":  "validated",
+                                       "target":  "juice-shop.lab.test",
+                                       "sender_receipt":  "child_sandbox"
+                                   },
+                        "audit":  {
+                                      "engagement":  "juice-shop-integrated",
+                                      "event_count":  10,
+                                      "head_hash":  "d7dd2630d1323774aa7169abd877baa3610c5e4ef19eb55360efb002cc09c03f",
+                                      "external_anchor":  false,
+                                      "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+                                  },
+                        "audit_file_verification":  {
+                                                        "engagement":  "juice-shop-integrated",
+                                                        "event_count":  10,
+                                                        "head_hash":  "d7dd2630d1323774aa7169abd877baa3610c5e4ef19eb55360efb002cc09c03f",
+                                                        "external_anchor":  false,
+                                                        "notice":  "Integridad estructural válida; completitud y autenticidad no verificadas sin anclaje externo"
+                                                    }
+                    },
+    "target_removed":  true,
+    "network_removed":  true
+}

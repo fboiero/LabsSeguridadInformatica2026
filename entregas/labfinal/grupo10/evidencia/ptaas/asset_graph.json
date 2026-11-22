@@ -1,0 +1,22 @@
+{
+  "assets": [
+    {
+      "id": "web-dvwa.lab.test",
+      "type": "web_service",
+      "address": "dvwa.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": [
+        "Apache/2.4.25 (Debian)"
+      ]
+    },
+    {
+      "id": "web-juiceshop.lab.test",
+      "type": "web_service",
+      "address": "juiceshop.lab.test",
+      "source_tool": "httpx.probe",
+      "technologies": []
+    }
+  ],
+  "out_of_scope": [],
+  "digest": "2d20604b6da13c32dd3a8e704c522ec60fd810c77ddd27da6fe343b861ac3e25"
+}
