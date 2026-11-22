@@ -1,0 +1,5 @@
+total 1000 {21: True, 80: True, 8080: True, 31337: True, 31338: False}
+21 send= None -> eof after 0 ms lines: 2
+21 send= b'SYST\r\n' -> eof after 1 ms lines: 2
+31337 send= None -> eof after 0 ms lines: 2
+31337 send= b'help\n' -> eof after 0 ms lines: 2

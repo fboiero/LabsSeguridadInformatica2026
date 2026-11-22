@@ -1,0 +1,3 @@
+uid=0
+### nmap -Pn -p80 -v phantomcorp
+Initiating SYN Stealth Scan at 13:03

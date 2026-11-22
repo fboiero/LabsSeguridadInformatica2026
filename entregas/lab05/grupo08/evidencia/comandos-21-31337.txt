@@ -1,0 +1,9 @@
+### printf SYST/QUIT | ncat -w3 phantomcorp 21
+220 ProFTPD 1.3.5 Server (PhantomCorp FTP) [::ffff:0.0.0.0]
+214 FLAG{banner_grab_proftpd_135}
+Ncat: Connection reset by peer.
+(exit=1)
+### help | ncat -w3 phantomcorp 31337
+PhantomCorp maintenance shell v0.1 -- acceso no autorizado prohibido
+FLAG{high_port_secret_service}
+(exit=0)

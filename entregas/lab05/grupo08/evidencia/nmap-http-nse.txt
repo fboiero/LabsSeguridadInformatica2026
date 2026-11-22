@@ -1,0 +1,19 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-10-30 12:49 UTC
+Nmap scan report for phantomcorp (172.21.0.2)
+Host is up (0.00026s latency).
+rDNS record for 172.21.0.2: cyberlab-phantomcorp.cyberlab_labnet
+
+PORT     STATE SERVICE
+80/tcp   open  http
+| http-methods: 
+|_  Supported Methods: GET HEAD
+| http-robots.txt: 2 disallowed entries 
+|_/admin /panel-interno-9x2f
+|_http-title: PhantomCorp S.A. - Soluciones Logisticas
+8080/tcp open  http-proxy
+| http-methods: 
+|_  Supported Methods: GET
+|_http-title: Site doesn't have a title (text/plain).
+MAC Address: B6:2F:89:56:6A:91 (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 1.44 seconds

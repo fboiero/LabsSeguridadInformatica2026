@@ -1,0 +1,3 @@
+Not shown: 65534 closed tcp ports (reset)
+PORT      STATE SERVICE
+31338/tcp open  unknown
