@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Server: Werkzeug/2.0.1 Python/3.9.2
+Date: Sun, 18 Oct 2026 15:14:02 GMT
+Content-Type: text/plain
+
+phantom-dev-api. Proba /status
