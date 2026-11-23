@@ -1,6 +1,6 @@
 # Research — Lab Extra SSRF · aporte de Lorenzo (opción B)
 
-**Alcance:** mitad de investigación asignada a Lorenzo; la integración final de 1–2 carillas, el cierre comparativo y la selección/armonización de fuentes quedan pendientes de Lautaro. No se hicieron solicitudes a servicios metadata reales.
+**Alcance:** investigación sobre metadata de nube y SSRF (Lorenzo), con integración, cierre comparativo y armonización de fuentes (Lautaro). No se hicieron solicitudes a servicios metadata reales; las afirmaciones se apoyan en la documentación oficial citada.
 
 ## Metadata de instancia: de datos operativos a credenciales
 
@@ -16,9 +16,13 @@ IMDSv2 usa una sesión: el cliente primero hace una solicitud `PUT` para recibir
 
 La relación con la práctica es directa: en R3, `/preview` convirtió al servidor en cliente HTTP hacia un host que el operador no contactó directamente. En R1 se busca el mismo patrón en localhost; en cloud, el destino sería el endpoint link-local de metadata. El principio de riesgo es el mismo —la URL se solicita desde la posición de red del servidor—, pero el activo y la consecuencia cambian: un panel interno en el laboratorio frente a metadatos y posibles credenciales temporales en una instancia real.
 
-## Pregunta de cierre — pendiente de integración
+## Cierre — SSRF frente a inyección de comandos
 
-Propuesta para que Lautaro la integre al research común: SSRF e inyección de comandos comparten que una entrada manipulada hace que el servidor actúe en nombre del atacante; SSRF induce solicitudes de red, mientras que la inyección induce ejecución en el sistema operativo. La peligrosidad depende del contexto: ejecución de comandos puede dar control directo del host, mientras que SSRF puede alcanzar servicios internos o credenciales cloud con permisos amplios. El cierre final debería relacionar esa comparación con los privilegios y límites observados en los labs 07 y SSRF.
+Las dos familias comparten una misma raíz: **una entrada controlada por el usuario hace que el servidor ejecute una operación sensible en nombre del atacante**. Cambia qué operación. En la inyección de comandos (Lab 07, `/herramientas/ping`), el input terminaba en una llamada al sistema operativo y dio **ejecución de comandos como root** en el host: control directo de la máquina. En la SSRF de este lab (`/preview`), el input decide la **URL de una petición saliente**, y el servidor actúa como proxy desde su posición de red: no ejecuta comandos, pero alcanza servicios que el atacante no podía tocar —el panel de localhost, la intranet segmentada, y en la nube el endpoint de metadata con posibles credenciales del rol—.
+
+El radio de impacto difiere según el contexto. La inyección de comandos tiende al control total del host comprometido; la SSRF tiende a la **expansión lateral**: pivotear hacia la red interna y leer datos o credenciales que estaban «protegidos» sólo por no ser alcanzables desde afuera. En el Lab 07 el límite observado fue el host (RCE root, sin pivot probado); en la SSRF, el límite fue la red interna alcanzable vía el server (datos de clientes), sin ejecución en el host.
+
+La defensa también rima: en ambos casos **no se construye la operación peligrosa a partir de entrada no confiable**. En comandos, eso significa no pasar input a un shell y usar APIs que separan programa de argumentos; en SSRF, no dejar que el usuario elija el destino y, si hace falta, acotarlo con una allowlist sobre la IP efectiva y mínimo privilegio de red. En los dos, el principio de **mínimo privilegio** reduce el daño: un proceso sin permisos de root y sin ruta a la red interna o al metadata limita lo que cualquiera de los dos ataques logra, aun cuando la vulnerabilidad exista.
 
 ## Fuentes
 

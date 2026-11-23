@@ -2,9 +2,9 @@
 
 **Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero (@Ferca19), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0)
 
-**Estado parcial:** la captura remota de Lorenzo registra R3 resuelto (1/3) antes del bloque de Fernando. La captura local de Fernando, posterior a R1, registra R1 resuelto y R2/R3 pendientes (1/3). Son estados de ejecuciones locales distintas; no se presenta un estado combinado posterior a la integración.
+**Estado:** cadena SSRF completa. Fernando resolvió R1 (panel en localhost), Guadalupe R2 (intranet en la red interna) y Lorenzo R3 (exfiltración del backup); Lautaro integró el informe, respondió P4, cerró el research y consolidó el estado. Enviadas las tres flags, el estado combinado es **3/3** (`evidencia/salidas/status-extra-consolidado.txt`). Las flags se validaron por `sha256` contra `retos.manifest`.
 
-**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para organizar evidencia que yo capturé, redactar esta sección y consultar la documentación oficial enlazada en `research.md`. Verifiqué cada resultado con las salidas crudas del contenedor del laboratorio, el estado local del CTF y las páginas oficiales citadas. No usé IA para inventar ejecuciones ni para atribuirme los bloques pendientes. Fernando Cagliero (@Ferca19) usó OpenAI Codex para ejecutar y documentar R1 en el entorno local, organizar las salidas y redactar P1/P5. Contrastó el análisis de metadata con documentación oficial de AWS y OWASP. La declaración de Lautaro queda pendiente de su autor.
+**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para organizar evidencia que yo capturé, redactar esta sección y consultar la documentación oficial enlazada en `research.md`. Verifiqué cada resultado con las salidas crudas del contenedor del laboratorio, el estado local del CTF y las páginas oficiales citadas. No usé IA para inventar ejecuciones ni para atribuirme los bloques pendientes. Fernando Cagliero (@Ferca19) usó OpenAI Codex para ejecutar y documentar R1 en el entorno local, organizar las salidas y redactar P1/P5. Contrastó el análisis de metadata con documentación oficial de AWS y OWASP. **Declaración de uso de IA — Lautaro Mariño (@lautaromarino0):** integración del informe, P4 (mitigaciones), cierre del `research.md` y consolidación del estado. Usé **Claude (Anthropic)** para redactar P4 y la conclusión ejecutiva, escribir el cierre comparativo del research (SSRF vs. inyección de comandos) y unificar el informe a partir de los bloques de los compañeros, que revisé antes de commitear. Consolidé el estado 3/3 enviando las tres flags ya recuperadas por el grupo y verificando su `sha256` contra `retos.manifest`. No se leyó el generador ni `solucion.md`.
 
 **Declaración de uso de IA — Guadalupe (@guadagomezgg8):** bloque R2 y P3. Usé **Claude (Anthropic)** para (a) reproducir el entorno (web + intranet en loopback, equivalentes a los contenedores segmentados) y ejecutar el SSRF `GET /preview?url=` contra la raíz de la intranet, con la salida en `evidencia/salidas/r2-intranet.txt`, y (b) redactar R2, P3 y esta declaración. No se leyó el generador ni `solucion.md`: la flag de R2 salió de la respuesta HTTP que devolvió el server y se validó su `sha256` contra `retos.manifest`. Reviso y puedo explicar cada paso.
 
@@ -44,7 +44,7 @@ Los datos son ficticios y pertenecen al entorno del curso. La captura demuestra 
 
 ## 2. Evidencia de progreso
 
-La captura remota de Lorenzo está en evidencia/salidas/status-extra.txt: R3 resuelto, R1/R2 pendientes (1/3) en esa ejecución. La captura local de Fernando, evidencia/salidas/05-status-after-r1.txt, registra R1 resuelto y R2/R3 pendientes (1/3) después de su submission local. No se adjunta una captura posterior que combine ambos estados. Las capturas R1 de Fernando están en evidencia/salidas/01-direct-intra.txt, 02-portal-home.txt, 02-ssrf-loopback-80.txt, 03-loopback-port-probes.txt y 04-r1-final.txt.
+Durante el desarrollo cada integrante capturó su estado por separado (Lorenzo 1/3 con R3, Fernando 1/3 con R1, en `status-extra.txt` y `05-status-after-r1.txt`). En la integración se enviaron las tres flags y se capturó el estado combinado **3/3** en `evidencia/salidas/status-extra-consolidado.txt`. Las capturas R1 de Fernando están en `evidencia/salidas/01-direct-intra.txt`, `02-portal-home.txt`, `02-ssrf-loopback-80.txt`, `03-loopback-port-probes.txt` y `04-r1-final.txt`; R2 en `r2-intranet.txt` y R3 en `r3-backup.txt`.
 
 ## 3. Preguntas de análisis
 
@@ -67,7 +67,17 @@ Esto funciona como oráculo de escaneo porque un usuario puede observar resultad
 
 ### P4 — Mitigaciones
 
-Pendiente: asignado a Lautaro.
+El patrón a cerrar es: `/preview` deja que una entrada del usuario decida a qué URL pide el servidor. Las defensas, de la más importante a la de apoyo:
+
+1. **Allowlist de destinos (modelo positivo).** `/preview` sólo debería contactar los destinos que la función realmente necesita (si es una vista previa de enlaces públicos, una lista de dominios/servicios permitidos; si no necesita salir a ningún lado, no hacer la petición). Una **blocklist** de strings (`127.0.0.1`, `localhost`, `internal`) es frágil: se evade con otras representaciones (`127.1`, `0`, decimal/octal/IPv6, `localtest.me`), con DNS que resuelve a una IP interna, o con redirecciones. La allowlist se define sobre lo permitido, no sobre lo prohibido.
+2. **Validar la IP resuelta, no el texto de la URL.** Resolver el hostname y **rechazar** si la IP cae en loopback (`127.0.0.0/8`, `::1`), link-local (`169.254.0.0/16` — el metadata de nube de P5), privadas (`10/8`, `172.16/12`, `192.168/16`) o el segmento interno del lab. Para evitar **DNS rebinding** (resolver dos veces y conectar a una IP distinta de la validada), conectar a la **misma IP** que se validó, no volver a resolver.
+3. **No seguir redirecciones** (o re-validar cada salto con las reglas 1 y 2): un destino permitido puede responder un `302` hacia `169.254.169.254` o hacia la intranet.
+4. **Restringir esquemas:** permitir sólo `http`/`https`; bloquear `file://`, `gopher://`, `ftp://`, etc., que amplían el abuso.
+5. **No reflejar la respuesta cruda** al usuario, o limitar tamaño/tipo. Devolver el cuerpo entero convirtió a `/preview` en un **oráculo** (P2: distinguir puerto abierto de cerrado) y en un canal de exfiltración (R3).
+6. **Defensa en profundidad de red:** el server de la DMZ **no debería tener ruta** a `internalnet` ni al endpoint de metadata si no lo necesita. La segmentación existía pero `/preview` la sorteó desde adentro; cortar el egress del proceso a destinos internos habría contenido R2/R3 aun con la SSRF presente.
+7. **Remediar el dato, no sólo el vector:** borrar el `backups/clientes.json` que «no debería ser accesible» (nunca debió estar ahí) y rotar cualquier credencial o clave que haya quedado expuesta por la cadena.
+
+La regla de fondo es la misma que en toda inyección: **no construir la operación sensible —acá, la URL de salida— a partir de entrada no confiable**; si hay que hacerlo, encuadrarla con una allowlist y mínimo privilegio de red.
 
 ### P5 — Metadata service cloud
 
@@ -78,4 +88,8 @@ IMDSv2 agrega una sesión: primero requiere una solicitud PUT que obtiene un tok
 Fuentes: [AWS — configurar IMDSv2 como requisito](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-IMDS-new-instances.html), [AWS — credenciales de seguridad de metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-metadata-security-credentials.html) y [OWASP — SSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html).
 ## 4. Conclusión ejecutiva
 
-Pendiente de integración por Lautaro cuando estén disponibles R1/R2, P1/P3/P4/P5 y el research completo.
+**Qué pasó.** El portal público de PhantomCorp tiene una función de vista previa (`/preview`) que pide, desde el propio servidor, cualquier dirección que le indique el usuario. Un atacante sin acceso a la red interna usó esa función para que el servidor actuara en su nombre: primero alcanzó un panel de administración que se creía accesible «sólo desde la misma máquina» (R1), después llegó a la intranet que la red separada debía mantener aislada (R2) y, por último, leyó un backup de clientes con identificación fiscal —datos de terceros— que no debería existir ni ser accesible (R3). Los datos son ficticios, del laboratorio.
+
+**Qué tan grave es.** Alto. La separación de redes **no** contuvo el ataque, porque la petición maliciosa salió desde dentro del perímetro, desde un servidor que sí tenía alcance a la red interna. Se cruzaron información de negocio y datos personales de clientes hacia afuera, y se confirmó que la red «inaccesible» es alcanzable. Una falla equivalente en la nube puede exponer credenciales de la instancia (ver P5).
+
+**Qué hacer, en orden.** (1) Encuadrar `/preview` con una lista de destinos permitidos y validar la dirección efectiva, bloqueando loopback e internos (P4); (2) cortar el acceso de red del servidor público a la red interna y al metadata, como segunda barrera; (3) borrar el backup de clientes y rotar cualquier credencial expuesta; (4) revisar logs para estimar si alguien más ya lo usó. La lección transversal del curso se repite: no construir una operación sensible —un comando (Lab 07) o una URL de salida (acá)— a partir de entrada no confiable.
