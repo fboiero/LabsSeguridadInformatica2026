@@ -1,0 +1,11 @@
+# Verificacion de flags contra retos.manifest — Lab Extra 4 · Grupo 07 · Lautaro Mariño
+# Cada flag sale del loot descifrado; su sha256 coincide con el hash del reto en el manifest.
+
+# manifest: labs/labextra4-cracking/retos.manifest
+R1|MD5 + diccionario (caida instantanea)|e72bbad9867866c30e8f9275675258097e5935ddae9799f87f134df7f401a1d4
+R2|SHA-256 + diccionario|3c1d642061255dadf097fa26ce4f96daa879b0b6e02d9939fe00775492de97c2
+R3|SHA-256 + regla de mangling (no esta literal en el diccionario)|891c8efc2276c36579bffbe3258d7f99292b5009c0e1644dfa7f256bf385edb3
+
+R1  FLAG{crack_diccionario_md5}  sha256=e72bbad9867866c30e8f9275675258097e5935ddae9799f87f134df7f401a1d4
+R2  FLAG{crack_sha256_diccionario}  sha256=3c1d642061255dadf097fa26ce4f96daa879b0b6e02d9939fe00775492de97c2
+R3  FLAG{crack_reglas_mangling}  sha256=891c8efc2276c36579bffbe3258d7f99292b5009c0e1644dfa7f256bf385edb3

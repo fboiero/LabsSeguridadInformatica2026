@@ -2,15 +2,28 @@
 
 **Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0), Fernando Cagliero (@Ferca19)
 
-**Estado parcial:** Lorenzo completó P2/P3/P5 y la conclusión. Fernando completó P1/P4 con mediciones y cálculos. La implementación del cracker y sus pruebas (Guadalupe) está completa; los resultados R1–R3/loot (operación) siguen pendientes, asignados a Lautaro. No se inspeccionaron hashes de usuarios ni se presentaron flags. El estado capturado por Lorenzo sigue siendo 0/3.
+**Estado:** Lorenzo completó P2/P3/P5 y la conclusión. Fernando completó P1/P4 con mediciones y cálculos. Guadalupe implementó el cracker y sus pruebas. Lautaro operó el cracker sobre el volcado: recuperó 3/4 contraseñas (operador, analista y admin; root/PBKDF2 resiste), abrió los tres loot y envió R1–R3. Estado consolidado: **3/3** (`evidencia/salidas/status-extra4.txt`).
 
 **Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para estructurar las respuestas asignadas y consultar las publicaciones oficiales de NIST citadas abajo. Revisé las recomendaciones contra NIST SP 800-63B-4 y SP 800-61 Rev. 3. No usé IA para estimar benchmarks ni inventar resultados de cracking. Fernando Cagliero (@Ferca19) usó OpenAI Codex para preparar/revisar los scripts de medición y proyección, analizar sus resultados y redactar P1/P4. Las salidas adjuntas muestran mediciones CPU y una extrapolación GPU; no son una corrida de cracking ni de 1.000 GPU. No se afirman resultados de cuentas sin evidencia. **Declaración de uso de IA — Guadalupe:** usé Claude (Anthropic), vía Claude Code, para implementar las cuatro funciones del esqueleto `cracker.py` (`hash_de`, `cargar_sombra`, `aplicar_reglas`, `crackear`), sin cambiar firmas ni CLI y solo con biblioteca estándar. Lo verifiqué corriendo el cracker contra el caso del repositorio: recupera 3/4 (operador, analista y, con reglas, admin) y root/pbkdf2 no cae, como espera el lab; además contrasté `hash_de` contra cálculos de referencia de md5, sha256 y pbkdf2. La operación (tabla, loot y status) es la Parte B de Lautaro; no presento flags acá.
+
+**Declaración de uso de IA — Lautaro Mariño (@lautaromarino0):** operé el cracker ya implementado sobre el volcado del caso y documenté la tabla de resultados, el loot y las flags (secciones 1, 3 y 4). Usé **Claude (Anthropic)** como asistente para correr el ataque en un sandbox Linux sin Docker y redactar estas secciones a partir de lo observado, que revisé antes de commitear. Las contraseñas salieron del ataque de diccionario y de reglas sobre cada hash, no de leer `caso/generar_caso.py` ni `solucion.md`; las flags salieron del loot descifrado y su `sha256` se verificó contra `retos.manifest`. No se tocaron los archivos del caso ni el cracker.
 
 ---
 
 ## 1. Tabla de resultados
 
-Pendiente: asignada a Lautaro. Este bloque no ejecutó el cracker, no inspeccionó hashes ni descifró loot. El análisis de root del apartado P4 se limita al tamaño del diccionario y al costo estimado por candidato.
+Operación del cracker sobre el volcado `caso/sombra.txt` (4 usuarios, 3 algoritmos). Corrida en un sandbox Linux sin Docker (el lab es stdlib puro); el comando y la salida cruda están en `evidencia/salidas/crackeo-lautaro.txt`. No se leyó `caso/generar_caso.py` para obtener contraseñas: cada una salió del ataque sobre su hash.
+
+| Usuario | Algoritmo (salt) | Técnica que lo tumbó | Contraseña | Reto |
+|---|---|---|---|---|
+| `operador` | MD5 + salt | Diccionario directo | `riverplate` | R1 |
+| `analista` | SHA-256 + salt | Diccionario directo | `matecocido` | R2 |
+| `admin` | SHA-256 + salt | Diccionario + **regla de mangling** (`phantom` → `phantom2026`) | `phantom2026` | R3 |
+| `root` | PBKDF2, 200.000 iteraciones | — | **no cayó** | — |
+
+Tres de cuatro cuentas cayeron, todas de forma casi instantánea: con las tasas medidas en P1 (del orden de 10⁶ hashes/s en MD5 y SHA-256 sobre esta CPU), 49 candidatos por cuenta —98 con reglas— se agotan en milisegundos. El salt **no** evitó ninguna de esas tres caídas (ver P2): obliga a atacar cuenta por cuenta, pero no encarece probar una palabra de diccionario contra un usuario concreto.
+
+`admin` cumplía la política clásica (largo ≥ 8, mayúsculas/minúsculas/números en la variante del caso) y cayó igual, porque su contraseña es un **patrón predecible** `palabra+año` que la regla de mangling reproduce (ver P3). `root` es el único que resiste, y no por tener una contraseña más rara dentro del diccionario, sino porque su verificador es **PBKDF2-200k**: el diccionario entregado no la contiene y, aunque la contuviera, el costo por intento la volvería inviable a esta escala (ver P4).
 
 ## 2. Medición de velocidad (P1)
 
@@ -26,11 +39,27 @@ PBKDF2 reduce la tasa local unas 5,11 órdenes frente a MD5 y 4,99 frente a SHA-
 
 ## 3. El loot
 
-Pendiente: asignado a Lautaro. Este bloque no inspeccionó archivos `.enc` ni contraseñas recuperadas.
+Cada archivo `caso/loot/<usuario>.enc` se abre con la contraseña crackeada de ese usuario (la función `descifrar_loot()` deriva la clave AES de la password). Con las tres contraseñas recuperadas se abrieron los tres loot; la salida cruda está en `evidencia/salidas/loot-lautaro.txt`. `root` no se crackeó, así que su loot —si existiera— queda cerrado: sin la contraseña no hay clave.
+
+Esto cierra la cadena del lab: **de hash crackeado a datos abiertos**. El loot no agrega una vulnerabilidad nueva; demuestra el **impacto** de que el verificador sea débil. Cada `.enc` contiene una nota marcada `CONFIDENCIAL` con la flag del reto como evidencia:
+
+| Usuario | Contraseña | Contenido del loot | Flag |
+|---|---|---|---|
+| `operador` | `riverplate` | Nota CONFIDENCIAL | `FLAG{crack_diccionario_md5}` |
+| `analista` | `matecocido` | Nota CONFIDENCIAL | `FLAG{crack_sha256_diccionario}` |
+| `admin` | `phantom2026` | Nota CONFIDENCIAL | `FLAG{crack_reglas_mangling}` |
+
+El dato que importa como defensor: el cifrado del loot era correcto (AES), pero su seguridad colgaba enteramente de la contraseña del usuario. Un buen algoritmo de cifrado no compensa una contraseña de diccionario; la única palanca que habría salvado estos datos es que el verificador de la contraseña fuera lento y la contraseña, no adivinable (ver P5).
 
 ## 4. Las flags
 
-`evidencia/salidas/status-extra4.txt` conserva el estado observado: R1–R3 pendientes, 0/3.
+Las tres flags provienen del loot descifrado, no de leer el código del target ni `caso/generar_caso.py`. El `sha256` de cada una coincide con el hash del reto en `labs/labextra4-cracking/retos.manifest` (verificación en `evidencia/salidas/verificacion-flags.txt`):
+
+- **R1** — MD5 + diccionario → `FLAG{crack_diccionario_md5}`
+- **R2** — SHA-256 + diccionario → `FLAG{crack_sha256_diccionario}`
+- **R3** — SHA-256 + regla de mangling → `FLAG{crack_reglas_mangling}`
+
+Enviadas con `./ctf submit extra4 R1|R2|R3 'FLAG{...}'`; el estado consolidado es **3/3**, capturado en `evidencia/salidas/status-extra4.txt`. No hay R4/R5: `root` (PBKDF2) queda sin crackear a propósito, y es la conclusión del lab (ver P4 y P5).
 
 ## 5. Preguntas P1–P5
 
