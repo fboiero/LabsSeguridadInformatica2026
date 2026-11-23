@@ -1,0 +1,24 @@
+# Descifrado del loot — Lab Extra 4 · Grupo 07 · Lautaro Mariño
+# Cada .enc se abre con la contraseña crackeada de su usuario (AES derivado de la password).
+
+$ python entregas/labextra4/grupo07/cracker.py descifrar labs/labextra4-cracking/caso/loot/operador.enc --password riverplate
+Notas de operador — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_diccionario_md5}
+
+
+$ python entregas/labextra4/grupo07/cracker.py descifrar labs/labextra4-cracking/caso/loot/analista.enc --password matecocido
+Notas de analista — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_sha256_diccionario}
+
+
+$ python entregas/labextra4/grupo07/cracker.py descifrar labs/labextra4-cracking/caso/loot/admin.enc --password phantom2026
+Notas de admin — CONFIDENCIAL
+==========================
+Recuperaste esto porque la contraseña era débil.
+Evidencia: FLAG{crack_reglas_mangling}
+
+

@@ -1,0 +1,13 @@
+CPU: AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD
+Python: 3.12.2 | Sistema: Windows-11-10.0.26300-SP0
+Método: 3 repeticiones, mediana de intentos/s; sin E/S ni comparación del cracker.
+Candidatos medidos por repetición: 1000 para MD5/SHA-256; 20 para PBKDF2-200000.
+Diccionario real: 49 entradas no vacías (diccionario.txt).
+Sal para prueba: 73346c372d3031 (solo dato público de laboratorio).
+
+MD5(salt||password): 1157273.46 intentos/s; repeticiones=1165365.34,1142204.45,1157273.46
+  proyección CPU para 49 candidatos: 0.000042 s
+SHA-256(salt||password): 873896.71 intentos/s; repeticiones=1012145.75,873896.71,852951.21
+  proyección CPU para 49 candidatos: 0.000056 s
+PBKDF2-HMAC-SHA256, 200000 iter: 8.89 intentos/s; repeticiones=6.87,8.89,8.92
+  proyección CPU para 49 candidatos: 5.510604 s

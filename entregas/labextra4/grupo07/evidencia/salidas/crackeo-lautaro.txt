@@ -1,0 +1,15 @@
+# Crackeo del volcado — Lab Extra 4 · Grupo 07 · Lautaro Mariño (@lautaromarino0)
+# Entorno: sandbox Linux, Python 3.13.18, sin Docker (lab stdlib puro).
+# Fecha: 2026-11-23T17:34Z
+
+$ python entregas/labextra4/grupo07/cracker.py crackear labs/labextra4-cracking/caso/sombra.txt labs/labextra4-cracking/caso/diccionario.txt --reglas
+  [+] operador (md5) -> riverplate
+  [+] analista (sha256) -> matecocido
+  [+] admin (sha256) -> phantom2026
+  [-] root (pbkdf2): sin resultado en este ataque
+  ✓ operador: riverplate
+  ✓ analista: matecocido
+  ✓ admin: phantom2026
+  ✗ root: no cayó (¿falta una regla? ¿es pbkdf2?)
+
+3/4 contraseñas recuperadas
