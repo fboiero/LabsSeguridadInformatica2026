@@ -1,0 +1,30 @@
+# Research — Lab Extra SSRF · aporte de Lorenzo (opción B)
+
+**Alcance:** investigación sobre metadata de nube y SSRF (Lorenzo), con integración, cierre comparativo y armonización de fuentes (Lautaro). No se hicieron solicitudes a servicios metadata reales; las afirmaciones se apoyan en la documentación oficial citada.
+
+## Metadata de instancia: de datos operativos a credenciales
+
+Un servicio de metadata de nube hace accesible información asociada a la instancia desde el entorno que corre en ella. En EC2 se accede al Instance Metadata Service (IMDS) a través de direcciones link-local como `169.254.169.254`; según la configuración y los endpoints consultados, puede exponer atributos de instancia y datos de identidad/credenciales temporales del rol asociado. AWS documenta tanto IMDSv1 como IMDSv2 y recomienda configurar IMDSv2 como requisito cuando la compatibilidad lo permite ([AWS, “Use the Instance Metadata Service to access instance metadata”](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html)). La capacidad de leer esos datos depende de los permisos de red, la política de metadata y el rol asignado; alcanzar el endpoint no equivale automáticamente a tener permisos ilimitados.
+
+El riesgo de SSRF aparece cuando un backend permite que una entrada controlada por el usuario determine la URL de una petición saliente. Si ese backend puede alcanzar IMDS y además devuelve la respuesta al usuario, un atacante podría intentar obtener credenciales temporales disponibles para la instancia. El paso posterior dependería de los permisos concretos del rol y de la validez de las credenciales: el impacto podría incluir acceso no autorizado a recursos cloud permitidos por ese rol. Por eso conviene conceder al workload el mínimo privilegio y bloquear el camino de red a destinos internos que la función de fetch no necesita.
+
+OWASP recomienda validación estricta de destinos cuando la aplicación solo debería comunicarse con servicios identificados; también recomienda controles de red como defensa complementaria. Una lista de cadenas bloqueadas, por sí sola, es frágil ante cambios de representación, resolución DNS o redirecciones, así que la política debe verificarse sobre la URL analizada y la dirección efectivamente conectada, y reforzarse con salida de red restringida ([OWASP, “Server Side Request Forgery Prevention”](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)).
+
+## Qué cambia IMDSv2
+
+IMDSv2 usa una sesión: el cliente primero hace una solicitud `PUT` para recibir un token y debe presentar ese token en las solicitudes posteriores de metadata. Si la instancia está configurada para exigir IMDSv2, peticiones sin token válido reciben 401. Esto eleva el costo de SSRF simples que solo permiten emitir una solicitud `GET` sin encabezados arbitrarios, y dificulta ciertas clases de proxy abierto. No es una solución universal: una vulnerabilidad que permita controlar método, encabezados o secuencia de solicitudes podría sortear esa limitación; además, controles de red y roles de mínimo privilegio siguen siendo necesarios. AWS documenta que el token es obligatorio cuando el uso de tokens está configurado como `required` y que el límite TTL de respuesta predeterminado de `1` ayuda a limitar ciertos saltos de red.
+
+La relación con la práctica es directa: en R3, `/preview` convirtió al servidor en cliente HTTP hacia un host que el operador no contactó directamente. En R1 se busca el mismo patrón en localhost; en cloud, el destino sería el endpoint link-local de metadata. El principio de riesgo es el mismo —la URL se solicita desde la posición de red del servidor—, pero el activo y la consecuencia cambian: un panel interno en el laboratorio frente a metadatos y posibles credenciales temporales en una instancia real.
+
+## Cierre — SSRF frente a inyección de comandos
+
+Las dos familias comparten una misma raíz: **una entrada controlada por el usuario hace que el servidor ejecute una operación sensible en nombre del atacante**. Cambia qué operación. En la inyección de comandos (Lab 07, `/herramientas/ping`), el input terminaba en una llamada al sistema operativo y dio **ejecución de comandos como root** en el host: control directo de la máquina. En la SSRF de este lab (`/preview`), el input decide la **URL de una petición saliente**, y el servidor actúa como proxy desde su posición de red: no ejecuta comandos, pero alcanza servicios que el atacante no podía tocar —el panel de localhost, la intranet segmentada, y en la nube el endpoint de metadata con posibles credenciales del rol—.
+
+El radio de impacto difiere según el contexto. La inyección de comandos tiende al control total del host comprometido; la SSRF tiende a la **expansión lateral**: pivotear hacia la red interna y leer datos o credenciales que estaban «protegidos» sólo por no ser alcanzables desde afuera. En el Lab 07 el límite observado fue el host (RCE root, sin pivot probado); en la SSRF, el límite fue la red interna alcanzable vía el server (datos de clientes), sin ejecución en el host.
+
+La defensa también rima: en ambos casos **no se construye la operación peligrosa a partir de entrada no confiable**. En comandos, eso significa no pasar input a un shell y usar APIs que separan programa de argumentos; en SSRF, no dejar que el usuario elija el destino y, si hace falta, acotarlo con una allowlist sobre la IP efectiva y mínimo privilegio de red. En los dos, el principio de **mínimo privilegio** reduce el daño: un proceso sin permisos de root y sin ruta a la red interna o al metadata limita lo que cualquiera de los dos ataques logra, aun cuando la vulnerabilidad exista.
+
+## Fuentes
+
+- Amazon Web Services, [Use the Instance Metadata Service to access instance metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html).
+- OWASP Cheat Sheet Series, [Server Side Request Forgery Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html).

