@@ -24,3 +24,23 @@ sus archivos a una carpeta temporal y captura regresiones y el verificador
 oficial. Salida: evidencia/salidas/verificacion-d4-d5.txt (2/5: D4 y D5).
 Esta salida precede a la integración de D1/D2 y no representa una corrida del
 verificador contra el código combinado.
+
+## D3 y P2/P5 — Lautaro Mariño (@lautaromarino0)
+
+Fix de D3 sobre objetivo/server.py (copia combinada del grupo): se elimino el
+endpoint /backup y robots.txt dejo de enumerar rutas internas. Verificacion con
+el atacante del docente sobre la copia parchada, desde la raiz del repo:
+
+  python3 labs/labextra3-hardening/verificar-defensa.py \
+    --dir entregas/labextra3/grupo07/objetivo
+
+Resultado: 5/5 defensas correctas (antes 4/5; D3 era el gap). Salida en
+evidencia/salidas/verificador-5-5-lautaro.txt. No se leyo solucion.md.
+
+Envio de las flags desde el host:
+  ./ctf submit extra3 D1 'FLAG{def_banner_neutralizado}'
+  ./ctf submit extra3 D2 'FLAG{def_debug_apagado}'
+  ./ctf submit extra3 D3 'FLAG{def_rutas_blindadas}'
+  ./ctf submit extra3 D4 'FLAG{def_sqli_parametrizado}'
+  ./ctf submit extra3 D5 'FLAG{def_traversal_bloqueado}'
+  ./ctf status extra3

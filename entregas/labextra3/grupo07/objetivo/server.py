@@ -8,7 +8,7 @@ Esta app tiene CINCO problemas que ya conocés de los labs 05-07:
 
   D1  El header Server canta producto y versión          (banner/info leak)
   D2  /api/status expone debug:true y datos internos     (servicio dev en prod)
-  D3  /robots.txt lista rutas sensibles y /backup responde 200
+  D3  robots sin rutas sensibles y /backup eliminado (404)
   D4  /login es vulnerable a SQLi (bypass con ' OR 1=1 --)
   D5  /descargar?archivo= permite path traversal (../../etc)
 
@@ -56,11 +56,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/":
             self._html(200, "<h1>PhantomCorp</h1><p>Portal de empleados.</p>")
         elif path == "/robots.txt":
-            # D3: el robots delata las rutas sensibles
-            self._txt(200, "User-agent: *\nDisallow: /backup\nDisallow: /api/status\n")
-        elif path == "/backup":
-            # D3: y la ruta sensible responde sin autenticación
-            self._txt(200, "dump_pre_migracion: usuarios=1 OK — BORRAR ESTE ENDPOINT")
+            # D3: robots no enumera rutas sensibles (no es un control de acceso;
+            # listarlas solo las hace descubribles). Sin Disallow de internos.
+            self._txt(200, "User-agent: *\nDisallow:\n")
+        # D3: /backup era un dump de pre-migracion sin auth. Se elimina el
+        # endpoint (no se "oculta"): ahora cae en el 404 generico de abajo.
         elif path == "/login":
             # D4: los datos se enlazan como parámetros, nunca como SQL.
             user = params.get("user", [""])[0]
