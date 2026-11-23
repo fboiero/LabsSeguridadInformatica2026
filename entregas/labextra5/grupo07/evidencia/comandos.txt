@@ -8,3 +8,11 @@ Fecha: 2026-11-20 UTC. Origen de las pruebas: datos/token sintéticos locales ge
 4. `./ctf status extra5` — salida completa en `salidas/status-extra5.txt`, 0/3. No se presentaron flags.
 
 El smoke verificó decodificación base64url/JSON, HS256 válido, rechazo de secreto incorrecto y firma alterada, crackeo offline sobre un diccionario sintético, ausencia de match y token malformado. La interacción con el portal y las evidencias R1–R3 quedan a cargo de Guadalupe.
+
+## P1/P2/P4 (prueba alg:none) — Lautaro Mariño (@lautaromarino0)
+# Desde la raiz del repo. Levanta el portal, forja alg:none y contrasta con HS256+mate123.
+  python3 entregas/labextra5/grupo07/evidencia/prueba_alg_none.py
+# Salida: evidencia/salidas/alg-none-lautaro.txt
+# Resultado: alg:none -> 401 en /admin y /perfil (rechazado). El server ignora el
+# header alg y siempre verifica HMAC-SHA256; no es vulnerable a alg:none. P1/P2 son
+# analisis (integridad vs confidencialidad; crack offline vs fuerza bruta online).

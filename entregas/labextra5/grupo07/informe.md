@@ -2,11 +2,13 @@
 
 **Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0), Fernando Cagliero (@Ferca19)
 
-**Estado parcial:** Lorenzo implementó y verificó las cuatro funciones de `jwt_tool.py` con datos sintéticos. Guadalupe completó R1–R3, el control de sanidad y el status (CTF 3/3). P1/P2/P4 son de Lautaro; P3/P5 e integración, de Fernando. Las flags se recuperaron operando el portal local y se validaron por `sha256` contra `retos.manifest`.
+**Estado parcial:** Lorenzo implementó y verificó las cuatro funciones de `jwt_tool.py` con datos sintéticos. Guadalupe completó R1–R3, el control de sanidad y el status (CTF 3/3). P1/P2/P4 (y la prueba de `alg:none`) las respondió Lautaro; P3/P5 e integración, de Fernando. Las flags se recuperaron operando el portal local y se validaron por `sha256` contra `retos.manifest`.
 
-**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para revisar el diseño del código y preparar pruebas sintéticas. Verifiqué el resultado con assertions locales para firma, alteración, diccionario sintético, errores de formato y CLI. No utilicé IA para afirmar aceptación del servidor ni para inventar hallazgos del caso. Declaraciones de Lautaro y Fernando: pendientes.
+**Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para revisar el diseño del código y preparar pruebas sintéticas. Verifiqué el resultado con assertions locales para firma, alteración, diccionario sintético, errores de formato y CLI. No utilicé IA para afirmar aceptación del servidor ni para inventar hallazgos del caso. Declaración de Fernando: pendiente.
 
 **Declaración de uso de IA — Guadalupe (@guadagomezgg8):** bloque R1–R3, control de sanidad y status. Usé **Claude (Anthropic)** para (a) levantar el portal local (`objetivo/server.py`), pedir un token con las credenciales demo, y operar con `jwt_tool.py` la decodificación (R1), el crack offline + forja de `role=admin` (R2) y la forja de `sub=maria` (R3), más las pruebas de sanidad, con salidas en `evidencia/salidas/r1-r3-jwt.txt` y `status-extra5.txt`, y (b) redactar estos bloques y esta declaración. No se leyó el generador ni `solucion.md`: las flags salieron del payload del token y de las respuestas HTTP, y se validaron por `sha256` contra `retos.manifest`. Reviso y puedo explicar cada paso.
+
+**Declaración de uso de IA — Lautaro Mariño (@lautaromarino0):** preguntas P1, P2 y P4. Usé **Claude (Anthropic)** para redactar P1/P2 a partir del análisis del caso y para escribir y correr `evidencia/prueba_alg_none.py`, que levanta el portal y prueba la forja con `alg:none`; revisé el código y la salida antes de commitear. La medición de P4 sale de las respuestas HTTP del propio server (`evidencia/salidas/alg-none-lautaro.txt`), no de leer `objetivo/server.py` para deducir la respuesta ni de `solucion.md`.
 
 ---
 
@@ -67,11 +69,43 @@ Es decir: el server valida firma y autoriza por `role` correctamente. El problem
 
 ## 5. Preguntas P1–P5
 
-- **P1 — Integridad vs. confidencialidad:** pendiente, asignada a Lautaro.
-- **P2 — Crack offline vs. login online:** pendiente, asignada a Lautaro.
-- **P3 — IDOR en el claim y autorización:** pendiente, asignada a Fernando.
-- **P4 — `alg:none`:** pendiente; Lautaro debe medir el comportamiento de este servidor.
-- **P5 — Defensas priorizadas:** pendiente, asignada a Fernando.
+### P1 — Integridad vs. confidencialidad
+
+Un JWT firmado da **integridad y autenticidad**, no **confidencialidad**. La firma HMAC garantiza que el payload no se modificó y que lo emitió quien tiene el secreto: si cambiás un claim sin el secreto, la firma deja de validar. Lo que la firma **no** hace es ocultar el contenido: el payload es `base64url`, una codificación reversible sin clave, no un cifrado. Cualquiera que tenga el token lo lee entero.
+
+El equipo de PhantomCorp confundió las dos propiedades: tenían **integridad** (el token está firmado) y creían tener además **confidencialidad** ("está firmado, no se puede tocar" → asumieron "ni leer"). Por eso metieron `nota_interna` con una flag en el payload: viaja en claro en cada request (R1). La integridad tampoco les sirvió de mucho, porque el secreto era de diccionario (`mate123`) y, una vez crackeado, el atacante firma tokens válidos a gusto (R2/R3): con un secreto débil, la propiedad de integridad se evapora. Regla: nunca pongas en un JWT algo que no quieras que el portador lea; si tiene que ser secreto, va cifrado o directamente no va en el token.
+
+### P2 — Crack offline vs. login online
+
+El crack del secreto es **offline**: con un solo token capturado, el atacante prueba candidatos del diccionario calculando `HMAC-SHA256(candidato, header.payload)` y comparándolo con la firma del token, **en su propia máquina**. El portal no participa: no recibe ninguna petición, no ve los intentos, no los registra.
+
+Eso cambia todo respecto de atacar el `/login` online:
+
+| | Crack offline del secreto | Fuerza bruta contra `/login` |
+|---|---|---|
+| ¿Quién procesa los intentos? | La CPU/GPU del atacante | El servidor |
+| Velocidad | Millones por segundo, sin límite | Limitada por la red y el servidor |
+| Rate limit / lockout | No aplica (el server no interviene) | Lo frena (bloqueo tras N intentos) |
+| Logs / alertas | Ninguno; es invisible | Quedan registrados; disparan alertas |
+| Límite real | Solo el tamaño del diccionario y la fuerza del secreto | Defensas del portal |
+
+Implicancia: un secreto débil no se "protege" con rate limiting ni con logs, porque el ataque ni toca el servidor. La única defensa contra el crack offline es que el secreto sea **largo y aleatorio** (alta entropía), de modo que el diccionario y la fuerza bruta sean inviables. Por eso, aunque el `/login` tuviera lockout perfecto, `mate123` cae igual.
+
+### P3 — IDOR en el claim y autorización
+
+Pendiente, asignada a Fernando.
+
+### P4 — `alg:none`
+
+**Lo probé: este servidor NO acepta `alg:none`.** Forjé un token con header `{"alg":"none","typ":"JWT"}`, `role=admin`, `sub=diego` y **firma vacía**, y lo mandé a `/admin` y a `/perfil`: ambos respondieron **401**. Con firma basura, igual. En contraste, un token HS256 firmado con el secreto crackeado (`mate123`) sí entra a `/admin` (200). Script y salida: `evidencia/prueba_alg_none.py` y `evidencia/salidas/alg-none-lautaro.txt`.
+
+El motivo está en cómo verifica: `verificar()` **ignora el header `alg`** del token y siempre recalcula `HMAC-SHA256(secreto, header.payload)`, comparando con `hmac.compare_digest`. Una firma vacía nunca coincide con un HMAC real → rechazo. O sea, el server **fija el algoritmo del lado del servidor**, que es exactamente lo que hay que hacer.
+
+Qué debería hacer un servidor correcto con el claim `alg` del header: **no confiar en él**. El `alg` lo elige el atacante, así que un verificador seguro define de antemano el algoritmo esperado (y rechaza cualquier otro), nunca despacha la verificación según lo que dice el token. Confiar en el `alg` del header es lo que habilita dos ataques clásicos: `alg:none` (firma vacía aceptada) y la confusión RS256→HS256 (verificar con la clave pública usada como secreto HMAC). Este portal está bien en ese punto; su falla real no es el algoritmo sino el **secreto de diccionario**.
+
+### P5 — Defensas priorizadas
+
+Pendiente, asignada a Fernando.
 
 ## 6. Evidencia de progreso
 
