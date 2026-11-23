@@ -1,0 +1,30 @@
+# Linea de tiempo de la filtracion (P1) — Lab Extra 2 · Grupo 07 · Lautaro Marino
+# Derivada de la evidencia ya capturada: r1-git-log-p.txt (git log --patch, fechas
+# de autor) y r2-reflog.txt (git reflog --all). Las fechas de autor son estables;
+# los SHA cortos cambian entre regeneraciones del caso porque el committer-date usa
+# la hora de generacion (por eso R1/R2 muestran una tanda de hashes y R3 otra).
+# Comandos:
+#   git -C caso/repo-delata log --all --date=iso-strict --format='%h %ad %an %s'
+#   git -C caso/repo-delata reflog --all --date=iso-strict
+
+fecha (autor)         evento                                                   secreto
+--------------------  -------------------------------------------------------  ------------------------
+2026-08-05 16:30 -03  rama feature/pasarela-pagos, commit "wip: pasarela de     FLAG{git_rama_abandonada}
+                      pagos (falta todo)" (dev-jperez). Commitea .env.pasarela.  (R3)  nunca mergeada
+2026-08-10 09:12 -03  commit inicial "deploy-tool con token por variable de     -- (correcto: token por
+                      entorno". Sin secreto hardcodeado.                         env var)
+2026-08-10 18:47 -03  "hotfix: deploy roto en produccion (config temporal)":    FLAG{git_log_no_olvida}
+                      INTRODUCE PHANTOM_API_TOKEN hardcodeado. Empieza la         (R1)  entra al arbol
+                      exposicion en el arbol de trabajo.
+2026-08-11 10:05 -03  "fix: sacar credenciales del codigo (ups)": SACA la linea  FLAG{git_log_no_olvida}
+                      del arbol actual (15 h 18 min despues). El secreto QUEDA    sigue en la historia
+                      en la historia (commit hotfix).
+2026-08-12 14:22 -03  commit "wip: notas del cluster nuevo (no mergear todavia)"  FLAG{git_reflog_rescata}
+                      agrega notas con staging_key, y acto seguido reset --hard   (R2)  commit "perdido",
+                      HEAD~1 lo saca de main -> commit inalcanzable (recuperable   recuperable por reflog
+                      por reflog/fsck).
+2026-08-20 11:00 -03  commit "docs: estado del proyecto".                         --
+
+Ventana del token de la API (R1): 15 h 18 min en el arbol de trabajo
+(2026-08-10 18:47 -> 2026-08-11 10:05). En la HISTORIA: indefinida hasta rotar el
+secreto y reescribir/purgar la historia; y una vez clonado/forkeado, fuera de control.

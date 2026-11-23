@@ -2,17 +2,32 @@
 
 **Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero (@Ferca19), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0)
 
-**Estado parcial:** Lorenzo preparó la copia forense privada y documentó P5/research; Fernando agregó evidencia de R1/R2 y P2. Guadalupe completó R3, la evaluación de exposición, el plan de remediación y P3/P4. La línea de tiempo completa (P1) sigue pendiente de Lautaro. Las flags R1–R3 fueron recuperadas y verificadas por `sha256` contra `retos.manifest`; el `ctf submit` se hace desde el host.
+**Estado parcial:** Lorenzo preparó la copia forense privada y documentó P5/research; Fernando agregó evidencia de R1/R2 y P2. Guadalupe completó R3, la evaluación de exposición, el plan de remediación y P3/P4. Lautaro reconstruyó la línea de tiempo completa (P1). Las flags R1–R3 fueron recuperadas y verificadas por `sha256` contra `retos.manifest`; el `ctf submit` se hace desde el host.
 
 **Declaración de uso de IA — Lorenzo:** usé ChatGPT/Codex para consultar documentación oficial y redactar P5/research y esta estructura a partir de mis comandos y evidencia local. Verifiqué la conservación de reflog/objetos en la copia del caso y contrasté las capacidades descritas en las fuentes oficiales enlazadas. No usé IA para inventar ejecuciones ni hallazgos de los otros integrantes. Fernando Cagliero (@Ferca19) usó OpenAI Codex para ejecutar y revisar los comandos Git en el repo ficticio, resumir R1/R2 y redactar P2. No se obtuvieron flags leyendo el generador: se recuperaron con git log, reflog, fsck, show y cat-file. Las salidas crudas se adjuntan. La declaración de Lautaro queda pendiente de su autor.
 
 **Declaración de uso de IA — Guadalupe (@guadagomezgg8):** bloque R3, evaluación de exposición, plan de remediación y P3/P4. Usé **Claude (Anthropic)** para (a) regenerar el caso determinista con `caso/generar-caso.sh` y ejecutar la investigación de la rama abandonada (`git branch -a`, `git log feature/pasarela-pagos --not main`, `git show`), con las salidas en `evidencia/salidas/r3-rama-abandonada.txt`, y (b) redactar R3, la exposición, la remediación, P3/P4 y esta declaración. No se leyó el generador ni `solucion.md`: la flag de R3 salió del contenido del archivo versionado y se validó su `sha256` contra `retos.manifest`. Reviso y puedo explicar cada paso.
 
+**Declaración de uso de IA — Lautaro Mariño (@lautaromarino0):** línea de tiempo (sección 1) y P1. Usé **Claude (Anthropic)** para reconstruir la cronología a partir de la evidencia ya capturada por el grupo (`r1-git-log-p.txt` y `r2-reflog.txt`) y redactar la sección 1 y P1, que revisé antes de commitear. No se obtuvieron flags nuevas: la cronología se arma con las fechas de autor y los mensajes de los commits, no leyendo el generador ni `solucion.md`.
+
 ---
 
 ## 1. Línea de tiempo de la filtración
 
-La reconstrucción completa de P1 corresponde a Lautaro. En R1 se observó la introducción del token en `9333f2b` (2026-08-10 18:47 -03:00) y su eliminación del árbol en `eafb81c` (2026-08-11 10:05 -03:00), 15 h 18 min después. La eliminación no quitó el commit anterior de la historia.
+Reconstruida con `git log --all --date=iso-strict` y `git reflog --all` sobre la copia del caso (salidas en `r1-git-log-p.txt`, `r2-reflog.txt` y el resumen en `timeline-lautaro.txt`). Hay **tres secretos** y cada uno llegó por una vía distinta en la que "git no olvida":
+
+| Fecha (autor) | Evento | Secreto |
+|---|---|---|
+| 2026-08-05 16:30 | Rama `feature/pasarela-pagos`, commit *«wip: pasarela de pagos (falta todo)»* (dev-jperez): commitea `.env.pasarela`. **Nunca se mergeó.** | `FLAG{git_rama_abandonada}` (R3) |
+| 2026-08-10 09:12 | Commit inicial *«deploy-tool con token por variable de entorno»*: correcto, token por variable de entorno, sin secreto en el código. | — |
+| 2026-08-10 **18:47** | *«hotfix: deploy roto en produccion (config temporal)»*: **introduce** `PHANTOM_API_TOKEN` hardcodeado. Acá empieza la exposición. | `FLAG{git_log_no_olvida}` (R1) |
+| 2026-08-11 **10:05** | *«fix: sacar credenciales del codigo (ups)»*: **saca** la línea del árbol actual, 15 h 18 min después. Pero el secreto **queda en la historia** (en el commit del hotfix). | sigue viva |
+| 2026-08-12 14:22 | *«wip: notas del cluster nuevo»* agrega notas con una `staging_key` y, acto seguido, `reset --hard HEAD~1` lo saca de `main`: el commit queda **inalcanzable** pero recuperable por `reflog`/`fsck`. | `FLAG{git_reflog_rescata}` (R2) |
+| 2026-08-20 11:00 | *«docs: estado del proyecto»*. | — |
+
+**Ventana de exposición del token de la API (R1):** 15 h 18 min en el **árbol de trabajo** (18:47 → 10:05 del día siguiente). Pero esa es la ventana engañosa: en la **historia** el secreto queda expuesto de forma indefinida, hasta que se rote y se purgue/reescriba la historia, y una vez que alguien clonó o forkeó, ya está fuera de nuestro control.
+
+> Nota forense: los SHA cortos difieren entre capturas (R1/R2 muestran una tanda, R3 otra) porque el caso se regenera con el *committer-date* en el momento de generación, lo que cambia el hash. Las **fechas de autor** y los mensajes son estables, y sobre ellos se arma esta cronología.
 
 ## 2. Hallazgos
 
@@ -58,7 +73,9 @@ La trampa clásica es invertir 1 y 2 —reescribir y creer que alcanza—: si al
 
 ### P1 — Línea de tiempo
 
-Pendiente: asignado a Lautaro.
+La cronología completa está en la sección 1. El token de la API (R1) lo introdujo el commit *«hotfix…»* del **2026-08-10 18:47** y lo "sacó" el commit *«fix: sacar credenciales (ups)»* del **2026-08-11 10:05**: **15 h 18 min** en el árbol de trabajo.
+
+**¿Alcanza con el commit de limpieza? No.** El commit de limpieza solo borra la línea del **árbol actual** (el estado que ves al clonar y hacer `checkout`). El valor sigue intacto en el commit anterior, y se recupera con un `git log -p`, `git show <hash>` o navegando la historia — de hecho así lo recuperamos en R1. Peor aún: aunque reescribieras la historia (`filter-repo`/BFG + force-push), eso **no** alcanza una vez que el repo se clonó, forkeó o lo indexó un bot: esas copias conservan el objeto. La conclusión es la misma que ordena la remediación (sección 4): **lo único que corta una fuga consumada es rotar el secreto**; borrarlo del árbol da una falsa sensación de limpieza. El token siguió siendo válido todo el tiempo que no se rotó, no 15 horas.
 
 ### P2 — Modelo de objetos de Git
 
