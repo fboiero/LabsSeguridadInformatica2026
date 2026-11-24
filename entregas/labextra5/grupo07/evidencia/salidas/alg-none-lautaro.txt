@@ -1,0 +1,13 @@
+# P4 — prueba de alg:none contra el portal — Lab Extra 5 · Grupo 07 · Lautaro Mariño
+# Entorno: sandbox Linux, Python 3.13.18. Fecha: 2026-11-23T17:41Z
+# Script: evidencia/prueba_alg_none.py (levanta objetivo/server.py y prueba la forja)
+
+$ python3 entregas/labextra5/grupo07/evidencia/prueba_alg_none.py
+[login diego]                 200
+[alg:none role=admin -> /admin]   401   (esperado: 401, rechazado)
+[alg:none role=admin -> /perfil]  401   (esperado: 401, rechazado)
+[HS256+mate123 role=admin -> /admin]  200   {"panel": "admin", "auditoria": "FLAG{jwt_forjado_admin}"}
+
+Conclusión: el portal IGNORA el header alg y siempre verifica HMAC-SHA256
+con el secreto; la firma vacía de alg:none no coincide -> 401. No es vulnerable
+a alg:none. Su falla real es el secreto de diccionario (mate123).

