@@ -1,0 +1,9 @@
+# El backup NO exige sesion/cookie: cualquier GET anonimo lo sirve con 200.
+# (control de acceso roto; no esta protegido tras el login del portal).
+
+$ curl -s -o /dev/null -w "HTTP %{http_code}\n" http://phantomcorp/backup/rrhh.conf
+HTTP 200
+
+# Mismo request SIN ninguna cabecera de sesion -> sigue 200 (no hay autorizacion).
+$ curl -s -o /dev/null -w "HTTP %{http_code}\n" -H "Cookie:" http://phantomcorp/backup/rrhh.conf
+HTTP 200

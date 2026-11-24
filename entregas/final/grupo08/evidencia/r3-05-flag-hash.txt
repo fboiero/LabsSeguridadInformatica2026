@@ -1,0 +1,3 @@
+$ printf '%s' 'FLAG{final_token_looted}' | sha256sum
+66a434f816e74d489f75a6636e627df3be31fade79acd8e7f9bf5a4205f6b4f8
+# == R3 en retos.manifest (66a434f8...) -> flag correcta, no inventada

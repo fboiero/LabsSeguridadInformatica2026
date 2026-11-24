@@ -1,0 +1,8 @@
+404  /admin
+404  /login
+404  /portal
+200  /portal-rrhh
+404  /backup
+404  /api
+200  /robots.txt
+404  /sitemap.xml

