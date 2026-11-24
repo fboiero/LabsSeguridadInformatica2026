@@ -1,0 +1,38 @@
+# Evidencia de comandos — Lab Extra 2 · Grupo 07 · Lorenzo Blanc
+
+Las salidas de investigación se generaron sobre una copia completa y privada del caso en `.loot/labextra2-grupo07/repo-delata/`, que incluye `.git`. No se clonó, limpió ni modificó el repo de práctica durante la captura. La carpeta del caso bajo `labs/` y la copia de `.loot/` no forman parte de la entrega versionada.
+
+Comandos ejecutados, en orden:
+
+1. En el repo del curso: `git status --short --branch`
+2. En el repo del curso: `git branch -a --list '*labextra2-grupo07'`
+3. En el repo del curso: `git switch -c labextra2-grupo07 upstream/main`
+4. Generación autorizada del caso: `./ctf lab extra2`
+5. Copia completa del caso con `.git` a `.loot/labextra2-grupo07/repo-delata/` (PowerShell `Copy-Item -Recurse`, destino verificado inexistente).
+6. En la copia: `git log --oneline --all --decorate` — `salidas/case-log.txt`.
+7. En la copia: `git status --short --branch`.
+8. En la copia: `git reflog --oneline` — `salidas/case-reflog.txt`.
+9. En la copia: `git fsck --no-reflogs --unreachable` — `salidas/case-fsck.txt`.
+10. En el repo del curso: `./ctf status extra2` — `salidas/status-extra2.txt`.
+
+Lorenzo capturó preparación de la copia y estado inicial; el análisis R1/R2 de Fernando se documenta a continuación. R3 sigue pendiente de Guadalupe.
+## R1/R2 — Fernando Cagliero (@Ferca19)
+
+Fecha local: 19/11/2026 (America/Argentina/Buenos_Aires, UTC-03:00).
+Origen: PowerShell/Git Bash en Windows. Caso generado en
+labs/labextra2-git-forense/caso/repo-delata.
+
+1. Generar el caso desde la raíz:
+   & 'C:\Program Files\Git\bin\bash.exe' -c './ctf lab extra2'
+2. R1: git -C labs/labextra2-git-forense/caso/repo-delata log main --date=iso-strict --format='%H %ad %an <%ae> %s' --patch
+   Salida cruda: evidencia/salidas/r1-git-log-p.txt
+3. R2: git -C labs/labextra2-git-forense/caso/repo-delata reflog --all --date=iso-strict
+   git -C labs/labextra2-git-forense/caso/repo-delata fsck --full --no-reflogs --unreachable
+   Salidas: evidencia/salidas/r2-reflog.txt y evidencia/salidas/r2-fsck.txt
+4. Inspeccionar commit/blob: git show --stat --oneline bc9d0dbe6aca41d639a515395cc983e139979102
+   git show bc9d0dbe6aca41d639a515395cc983e139979102
+   git cat-file -p fc979fdad9fb6246fd683eb2087b2d7e94ef0563
+   Salidas: evidencia/salidas/r2-commit-stat.txt, r2-commit-content.txt,
+   r2-unreachable-blob.txt.
+
+No se leyó el generador para recuperar flags y no se ejecutó ./ctf submit.

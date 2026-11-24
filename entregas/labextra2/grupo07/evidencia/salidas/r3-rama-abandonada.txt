@@ -1,0 +1,23 @@
+# Lab Extra 2 — R3: secreto en rama abandonada (Guadalupe)
+# Solo git; caso determinista regenerado con caso/generar-caso.sh.
+# Fecha: 2026-11-20T23:49:59Z UTC
+
+$ git branch -a
+  feature/pasarela-pagos
+* main
+
+$ git log --oneline feature/pasarela-pagos --not main   # lo que vive fuera de main
+f2e54e7 wip: pasarela de pagos (falta todo)
+
+$ git log --all --oneline -- .env.pasarela               # dónde aparece el archivo
+f2e54e7 wip: pasarela de pagos (falta todo)
+
+$ git show -s --format='%H | %an <%ae> | %ad | %s' --date=iso feature/pasarela-pagos
+f2e54e787b7cb891c75b974041069d14101c755e | dev-jperez <jperez@phantomcorp.example> | 2026-08-05 16:30:00 -0300 | wip: pasarela de pagos (falta todo)
+
+$ git show feature/pasarela-pagos:.env.pasarela          # el secreto (R3)
+# NO COMMITEAR ESTO (lo commitee igual, despues lo veo)
+PAGOS_SECRET=FLAG{git_rama_abandonada}
+PAGOS_ENDPOINT=https://pagos.phantomcorp.example
+
+# Verificación: sha256(FLAG{git_rama_abandonada}) == hash de R3 en retos.manifest -> OK
