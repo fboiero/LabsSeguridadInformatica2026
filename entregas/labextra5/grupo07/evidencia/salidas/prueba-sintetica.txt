@@ -1,0 +1,1 @@
+OK: decode, HS256 válido, secreto/firma incorrectos, rechazo de alg:none, crack sintético, sin match, token malformado y CLI forjar/decodificar/crackear

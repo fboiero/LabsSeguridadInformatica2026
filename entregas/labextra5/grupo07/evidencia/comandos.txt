@@ -1,0 +1,28 @@
+# Evidencia de comandos — Lab Extra 5 · Grupo 07 · Lorenzo Blanc
+
+Fecha: 2026-11-20 UTC. Origen de las pruebas: datos/token sintéticos locales generados solo para verificar `jwt_tool.py`; no se levantó ni consultó el servidor del caso y no se usó su diccionario o loot.
+
+1. `./ctf lab extra5` — instrucciones del lab.
+2. `python entregas/labextra5/grupo07/jwt_tool.py --help` — opciones CLI en `salidas/cli-help.txt`.
+3. `python .loot/labextra5-smoke.py` — fixture sintético; salida en `salidas/prueba-sintetica.txt`.
+4. `./ctf status extra5` — salida completa en `salidas/status-extra5.txt`; captura actual tras completar R1–R3: 3/3.
+
+El smoke verificó decodificación base64url/JSON, HS256 válido, rechazo de secreto incorrecto y firma alterada, crackeo offline sobre un diccionario sintético, ausencia de match y token malformado. La interacción con el portal y las evidencias R1–R3 fueron realizadas por Guadalupe; ver `salidas/r1-r3-jwt.txt` y `salidas/status-extra5.txt`.
+
+## P1/P2/P4 (prueba alg:none) — Lautaro Mariño (@lautaromarino0)
+# Desde la raiz del repo. Levanta el portal, forja alg:none y contrasta con HS256+mate123.
+  python3 entregas/labextra5/grupo07/evidencia/prueba_alg_none.py
+# Salida: evidencia/salidas/alg-none-lautaro.txt
+# Resultado: alg:none -> 401 en /admin y /perfil (rechazado). El server ignora el
+# header alg y siempre verifica HMAC-SHA256; no es vulnerable a alg:none. P1/P2 son
+# analisis (integridad vs confidencialidad; crack offline vs fuerza bruta online).
+
+## P3/P5 — Fernando Cagliero (@Ferca19)
+
+Revisión estática local del flujo de identidad/autorización (no inicia el portal
+ni extrae tokens o flags):
+  rg -n -C 3 'payload =|nota_interna|elif path == "/perfil"|USUARIOS.get|elif path == "/admin"|payload.get' labs/labextra5-jwt/objetivo/server.py
+
+Salida del fragmento: salidas/revision-r3-p5.txt. Fuentes conceptuales:
+referencias.md. El flujo de login, el crack offline y las forjas siguen a cargo
+del bloque operativo; no se ejecutaron en esta parte.
