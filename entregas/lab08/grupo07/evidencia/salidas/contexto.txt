@@ -1,0 +1,7 @@
+Lab 08 — contexto de la corrida R5 (Parte D, Lautaro)
+Fecha: 2026-11-20T03:07:38Z UTC == 2026-11-20 00:07 (America/Argentina/Buenos_Aires)
+Python: 3.13.18
+Entorno: sandbox Linux. No se buildearon los contenedores (registro Docker bloqueado en el sandbox).
+Se corrio el host interno del lab (labs/lab08-postexplotacion/entorno/db/server.py) directo.
+El pivot y la segmentacion (victima en labnet+internalnet; db solo en internalnet internal:true)
+no se reproducen aqui: la corrida valida la logica del recolector y la flag R5 (hash contra manifest).

