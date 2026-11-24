@@ -1,8 +1,8 @@
 # Informe — Laboratorio 08 · Post-explotación y automatización
 
-**Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero (@Ferca19), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0) · **Fecha:** 2026-11-19 (America/Buenos_Aires)
+**Grupo:** 07 · **Integrantes:** Lorenzo Blanc (@LoloBlanc), Fernando Cagliero (@Ferca19), Guadalupe Gómez (@guadagomezgg8), Lautaro Mariño (@lautaromarino0) · **Fecha:** 2026-11-23 (America/Buenos_Aires)
 
-> Esta edición cubre el bloque de Lorenzo: R1, R2 y P3. R3–R5, el recolector y las otras preguntas se completan por sus responsables antes de integrar el informe grupal.
+> Informe grupal consolidado (R1–R5, **5/5**). Bloque A — recolector: Fernando. Bloque B — recon/loot y P3: Lorenzo. Bloque C — SUID/pivot y P1: Guadalupe. Bloque D — R5, P2/P5, research y armado: Lautaro.
 
 ## 0. Declaración de uso de IA
 
@@ -19,20 +19,29 @@ Lautaro Mariño (@lautaromarino0) — bloque D: se utilizó **Claude (Anthropic)
 
 
 **Guadalupe Gómez — bloque C (P1; R3/R4 pendientes de operar):** se utilizó **Claude (Anthropic)** para redactar la P1 (binario SUID y el flag `-p`), a partir de la consigna y del vector `system-check` documentado en el lab. **R4 (pivoting)** se operó consultando el host interno `db/server.py` corrido localmente (`GET /` → `FLAG{pivot_internal_host}`, verificada contra el `retos.manifest`, `evidencia/salidas/r4-pivot.txt`), con la salvedad de que así **no se reproduce el pivot** en sí (la segmentación se explica en P2 desde el Compose). **R3 (escalada SUID)** se operó en la víctima Docker: como `operador` (uid=1000), `find / -perm -4000` → `system-check` (copia SUID de bash), y `system-check -p` dio EUID 0 para leer `/root/flag.txt` → `FLAG{privesc_suid_root}`, verificada contra el `retos.manifest` por SHA-256 (`evidencia/salidas/r3-suid.txt`). Guadalupe revisó el contenido y puede explicarlo.
+
 ## 1. Flags capturadas
 
-Estado observado con `./ctf status 08`:
+Estado consolidado con `./ctf status 08` (las cinco enviadas desde el host; cada flag verificada por `sha256` contra `retos.manifest`):
 
 ```text
 R1  Reconocimiento del host comprometido                  resuelto
 R2  Loot de credenciales                                   resuelto
-R3  Escalada de privilegios (SUID)                         pendiente
-R4  Pivoting al host interno                               pendiente
-R5  Automatizacion (fuerza bruta de legajos)               pendiente
-Progreso: 2/5 (40%)
+R3  Escalada de privilegios (SUID)                         resuelto
+R4  Pivoting al host interno                               resuelto
+R5  Automatizacion (fuerza bruta de legajos)               resuelto
+Progreso: 5/5 (100%)
 ```
 
-La salida completa está en `evidencia/salidas/status-08.txt`.
+| Reto | Flag |
+|---|---|
+| R1 | `FLAG{post_situational_awareness}` |
+| R2 | `FLAG{loot_credentials_found}` |
+| R3 | `FLAG{privesc_suid_root}` |
+| R4 | `FLAG{pivot_internal_host}` |
+| R5 | `FLAG{automation_pays_off}` |
+
+La salida completa está en `evidencia/salidas/status-08.txt`. R3/R4/R5 se operaron en un sandbox sin Docker (contra `db/server.py` directo); el pivot y la segmentación reales necesitan el entorno de dos contenedores y se explican en P2.
 
 ## 2. Informe de post-explotación
 
