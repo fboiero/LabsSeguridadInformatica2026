@@ -1,0 +1,5 @@
+Fecha de captura: 2026-11-20T02:34:59Z (UTC) == 2026-11-19 23:34 -03 (America/Argentina/Buenos_Aires)
+Python: Python 3.13.18
+nmap: no instalado en el sandbox; R1 no depende de nmap (sale del header X-Recon-Flag)
+Entorno: sandbox Linux efímero SIN Docker. Target: labs/lab09-agentes/entorno/phantomcorp/server.py (sin modificar). Host phantomcorp -> 127.0.0.1.
+Proveedor LLM: mock (LLM_PROVIDER=mock), sin API key.

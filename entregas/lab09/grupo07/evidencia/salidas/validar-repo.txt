@@ -1,0 +1,4 @@
+bin/validar-repo.sh: line 6: set: pipefail: invalid option name
+bin/validar-repo.sh: line 7: cd: $'bin/..\r': No such file or directory
+bin/validar-repo.sh: line 15: syntax error near unexpected token `done'
+bin/validar-repo.sh: line 15: `done < <(find labs docs bin -name "*.py" 2>/dev/null)'

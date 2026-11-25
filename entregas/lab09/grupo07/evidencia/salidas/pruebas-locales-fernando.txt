@@ -1,0 +1,12 @@
+=== P1/P3: intercambio local con respuestas de proveedor simuladas ===
+1. Acción: {'tipo': 'tool', 'nombre': 'normalizar_nombre', 'argumentos': {'texto': '  Ana  '}, 'id': 'local-01'}
+2. Resultado local: {'id': 'local-01', 'output': 'ana'}
+3. Mensaje vinculado en el adaptador: {'role': 'tool', 'tool_call_id': 'local-01', 'content': 'ana'}
+4. Acción de cierre: {'tipo': 'final', 'texto': 'Nombre normalizado: ana'}
+
+=== R4: prueba aislada del rechazo por alcance ===
+nmap_scan: rechazo local de fuera-de-alcance.invalid
+http_get: rechazo local de fuera-de-alcance.invalid
+http_post: rechazo local de fuera-de-alcance.invalid
+Procesos solicitados: 0
+Operaciones HTTP solicitadas: 0
