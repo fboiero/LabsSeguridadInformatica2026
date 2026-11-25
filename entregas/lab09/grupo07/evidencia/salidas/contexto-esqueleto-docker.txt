@@ -1,0 +1,5 @@
+fecha_utc=2026-11-25T00:57:05+00:00
+python=Python 3.13.5
+proveedor=mock
+contenedor=cyberlab-attacker
+target=phantomcorp

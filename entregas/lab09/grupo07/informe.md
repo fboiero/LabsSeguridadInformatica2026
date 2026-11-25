@@ -1,10 +1,10 @@
 # Informe — Laboratorio 09 · Agentes de pentest
 
-**Grupo:** 07 · **Fecha de corte:** 19/11/2026 (America/Argentina/Buenos_Aires).
+**Grupo:** 07 · **Fecha de corte:** 24/11/2026 (America/Argentina/Buenos_Aires). El registro del contenedor corresponde al 25/11 UTC.
 **Autor de la auditoría:** Lorenzo Blanc — @LoloBlanc — legajo 15034.
 **Proveedor usado:** mock, sin API key.
 
-Este informe integra los aportes B de Fernando y C de Lorenzo. La corrida auditada por Lorenzo es complementaria a las capturas operativas de Fernando y no es el transcript de su aporte ni una ejecución del esqueleto de Lautaro. Al incorporar las corridas restantes habrá que revisar diferencias y auditar el esqueleto propio.
+Este informe integra los aportes A de Lautaro, B de Fernando, C de Lorenzo y D de Guadalupe. La auditoría de referencia de Lorenzo y la corrida de desarrollo de Lautaro son evidencias complementarias; la corrida del esqueleto del grupo en Docker y el cierre 5/5 del validador CTF están documentados en la sección 2 y en las salidas agregadas el 24/11.
 
 ## 0. Declaración de uso de IA
 
@@ -12,7 +12,7 @@ Para el aporte de Lorenzo se utilizó Codex para inspeccionar los módulos autor
 
 El motor `mock` del laboratorio emitió las acciones de la corrida auditada por Lorenzo: sigue un plan determinista y no llama a una API de razonamiento.
 
-Para el bloque B, Fernando usó OpenAI Codex para redactar P1 y P3 y preparar comprobaciones locales. Contrastó las respuestas con la consigna y el contrato de los adaptadores de `llm.py`. La prueba de P1 usa `ClienteOpenAI` con respuestas fijas e interceptadas en el transporte; no ejecutó el proveedor ni el agente de pentest. La declaración afecta sus respuestas y comprobaciones, cuya salida se adjunta para revisión. [Bitácora de Fernando](evidencia/comandos-fernando.txt).
+Para el bloque B, Fernando usó OpenAI Codex para redactar P1 y P3 y preparar comprobaciones locales. Contrastó las respuestas con la consigna y el contrato de los adaptadores de `llm.py`. La prueba de P1 usa `ClienteOpenAI` con respuestas fijas e interceptadas en el transporte; no ejecutó el proveedor ni el agente de pentest. Para el cierre, Codex también asistió en la ejecución del esqueleto del grupo con `LLM_PROVIDER=mock` dentro de Docker, el envío de las cinco flags al validador local del curso y la documentación de la evidencia. No se usó un proveedor LLM real ni una API key. [Bitácora de Fernando](evidencia/comandos-fernando.txt) · [Cierre oficial](evidencia/salidas/transcript-esqueleto-docker.txt).
 
 **Lautaro Mariño — Parte A (agente propio, `agente_esqueleto.py`):** se utilizó **Claude (Anthropic)** como asistente, en dos aspectos. **Redacción:** ayudó a resolver los tres TODO del loop de tool-use y a redactar la sección 2 a partir del análisis de Lautaro, que revisó y ajustó el código y el texto antes de commitearlo. **Contraste de pruebas:** sirvió de soporte para probar el loop, mediante una suite de pruebas aisladas sin red (`evidencia/pruebas_esqueleto.py`) y una corrida del agente propio en modo mock contra el target oficial del Lab 09 levantado en un sandbox Linux sin Docker (`phantomcorp -> 127.0.0.1`). **Verificación:** las cinco flags del transcript provienen de las respuestas del servicio en ejecución, no de leer el código del target ni `solucion.md`; la realimentación (TODO 3) se verificó con una prueba que condiciona el `POST /api/vault` a haber recibido el token por `resultados`. No se ejecutaron proveedores reales ni se subieron API keys. El esqueleto no se copió de `agente_pentest.py`.
 
@@ -20,7 +20,7 @@ Para el bloque B, Fernando usó OpenAI Codex para redactar P1 y P3 y preparar co
 **Guadalupe Gómez — Parte D (P2, P4, P5 y mini-research):** se utilizó **Claude (Anthropic)** como asistente para redactar las respuestas P2, P4 y P5 y el mini-research (tema B). Para fundamentar P4 se leyó el guardrail `_verificar_alcance()` de `herramientas.py` (lectura autorizada por el README) y se citó el bloqueo real de R4 del transcript de la Parte B (`evidencia/salidas/transcript-referencia.txt`); la flag `FLAG{guardrail_fuera_de_alcance}` se verificó contra el `retos.manifest` por SHA-256. El research se apoya en fuentes primarias de OWASP, citadas en `research.md`. Guadalupe revisó el contenido y puede explicarlo; el transcript del agente es evidencia de la Parte B (Fernando).
 ## 1. Flags capturadas
 
-El checkout local de Fernando registró **0/5 flags** al 19/11/2026; esta captura no representa un estado consolidado del grupo. Siguen pendientes las corridas oficiales y sus transcripts. Las cinco flags de la corrida complementaria de C no prueban que se hayan enviado al CTF ni que R5 se haya obtenido con el agente propio. C no envió flags. [Estado local de Fernando](evidencia/salidas/status-09-fernando.txt).
+La captura local de Fernando del 19/11 registró 0/5 y se conserva como estado histórico (`evidencia/salidas/status-09-fernando.txt`). En el cierre del 24/11, el esqueleto del grupo se ejecutó contra el target Docker oficial, sus cinco flags fueron aceptadas por el validador CTF contra `retos.manifest` y el estado local quedó en 5/5: [transcript Docker](evidencia/salidas/transcript-esqueleto-docker.txt), [envíos](evidencia/salidas/submits-09-grupo07.txt) y [status final](evidencia/salidas/status-09-grupo07-final.txt). El 5/5 es la captura de este checkout, no un indicador compartido entre cuentas.
 
 ## 2. Tu agente
 
@@ -32,7 +32,7 @@ Entrego `src/agente_esqueleto.py` completo y corriendo. Los tres TODO del loop d
 
 Mantengo la condición de parada del esqueleto: `MAX_PASOS = 12`. Si el cliente nunca responde `final`, el `for` termina sin `break` y se informa el corte por límite de pasos (es un guardrail de parada, no una auditoría completa). En `src/` copié además `herramientas.py` y `llm.py` sin modificar, porque el esqueleto los importa; son copias de referencia y no se debilitan sus límites.
 
-**Corrida (mock).** Corrí `LLM_PROVIDER=mock python3 agente_esqueleto.py` contra el target oficial del lab (`entorno/phantomcorp/server.py`) levantado tal cual (= CMD del Dockerfile) en un sandbox Linux sin Docker, con `phantomcorp -> 127.0.0.1`. El loop recorrió los 8 pasos del plan y reportó las 5 flags, incluida la capstone de R5 por el encadenamiento `GET /api/token` -> `POST /api/vault`:
+**Corrida de desarrollo (mock, sandbox Linux sin Docker; Lautaro).** Se ejecutó `LLM_PROVIDER=mock python3 agente_esqueleto.py` contra el target oficial del lab (`entorno/phantomcorp/server.py`) levantado tal cual (= CMD del Dockerfile), con `phantomcorp -> 127.0.0.1`. El loop recorrió los 8 pasos del plan y reportó las 5 flags, incluida la capstone de R5 por el encadenamiento `GET /api/token` -> `POST /api/vault`:
 
 - R1 `FLAG{agente_primer_recon}` — header `X-Recon-Flag` en `GET /`.
 - R2 `FLAG{agente_ruta_oculta}` — ruta sacada de `robots.txt`.
@@ -40,9 +40,9 @@ Mantengo la condición de parada del esqueleto: `MAX_PASOS = 12`. Si el cliente 
 - R5 `FLAG{agente_esqueleto_completo}` — `POST /api/vault` con el token.
 - R4 `FLAG{guardrail_fuera_de_alcance}` — el paso 8 intenta `nmap_scan(8.8.8.8)` y el guardrail lo bloquea localmente antes de ejecutar nada.
 
-[Transcript de la corrida](evidencia/salidas/transcript-esqueleto-mock.txt) · [contexto: fecha, versiones, entorno](evidencia/salidas/contexto.txt) · [comandos y procedencia](evidencia/comandos-lautaro.txt).
+[Transcript de desarrollo en sandbox](evidencia/salidas/transcript-esqueleto-mock.txt) · [corrida de cierre en Docker](evidencia/salidas/transcript-esqueleto-docker.txt) · [contexto Docker](evidencia/salidas/contexto-esqueleto-docker.txt) · [comandos y procedencia](evidencia/comandos-lautaro.txt) y [comandos del cierre oficial](evidencia/comandos.txt).
 
-**Qué prueba la corrida mock y qué no.** El paso 1 (`nmap_scan`) devolvió `error nmap: ... 'nmap'` porque el sandbox no tenía nmap instalado; el loop siguió sin romperse y R1 salió igual del header HTTP. La corrida demuestra que el loop ejecuta las tools, realimenta con el `id` correcto y llega a R5. **No** demuestra razonamiento ni extracción dinámica del token: `ClienteMock` sigue un plan fijo y lleva el token escrito en `PLAN`, no lo deduce del resultado del paso 6 (coincide con lo que señala la auditoría de la sección 3). Para probar que es la realimentación —y no el plan fijo— la que habilita el encadenamiento, agregué pruebas aisladas (abajo). El encadenamiento dinámico con un LLM real se vería con `LLM_PROVIDER=claude|openai`; no lo ejecuté (sin API key, y no se suben keys al repo).
+**Qué prueba la corrida de desarrollo y qué no.** El paso 1 (`nmap_scan`) devolvió `error nmap: ... 'nmap'` porque ese sandbox no tenía nmap instalado; el loop siguió sin romperse y R1 salió igual del header HTTP. La corrida demuestra que el loop ejecuta las tools, realimenta con el `id` correcto y llega a R5. **No** demuestra razonamiento ni extracción dinámica del token: `ClienteMock` sigue un plan fijo y lleva el token escrito en `PLAN`, no lo deduce del resultado del paso 6 (coincide con lo que señala la auditoría de la sección 3). Para probar que es la realimentación —y no el plan fijo— la que habilita el encadenamiento, agregué pruebas aisladas (abajo). El encadenamiento dinámico con un LLM real se vería con `LLM_PROVIDER=claude|openai`; no lo ejecuté (sin API key, y no se suben keys al repo).
 
 **Pruebas del loop (sin red).** `evidencia/pruebas_esqueleto.py` inyecta clientes-doble y reemplaza `ejecutar_tool`, sin tocar phantomcorp ni lanzar procesos. Cubre las cuatro situaciones del reparto y pasan todas ([salida](evidencia/salidas/pruebas-esqueleto.txt)):
 
@@ -51,7 +51,7 @@ Mantengo la condición de parada del esqueleto: `MAX_PASOS = 12`. Si el cliente 
 3. Tool desconocida / error: `ejecutar_tool` devuelve un string de error y el loop continúa y lo realimenta sin caerse.
 4. Agotamiento del límite: un cliente que nunca termina corta exactamente en `MAX_PASOS` e informa el corte.
 
-El envío de las flags al CTF (`./ctf submit 09 ...`) y el `status 09` en 5/5 se hacen desde el host con Docker; no se ejecutaron en este sandbox. Según el reparto, B adjunta además la corrida de este mismo esqueleto en el entorno oficial.
+**Cierre CTF (24/11).** Las cinco flags de la corrida Docker se enviaron y fueron aceptadas por el verificador oficial del curso contra el manifest. Como el contenedor monta `/repo` de solo lectura y el verificador escribe `.progreso`, se utilizó una copia temporal escribible de `ctf`, `bin/lib` y `labs/lab09-agentes` bajo `/loot`; el procedimiento y sus salidas están registrados en `evidencia/comandos.txt` y `evidencia/salidas/submits-09-grupo07.txt`. El estado final fue 5/5. El uso de `mock` prueba el loop y la interacción con el target, no razonamiento de un proveedor real.
 
 ## 3. Auditoría crítica del agente — Lorenzo
 
@@ -128,7 +128,7 @@ Se proponen sin quitar el alcance, la allowlist ni el límite actual. Este aport
 
 Pasaron seis pruebas aisladas: bloqueo de las tres tools antes de efectos, rechazo de tool desconocida, errores de argumentos, discrepancia del parser y ausencia de restricción de puerto, construcción de redirección sin I/O y mock independiente de resultados. Son pruebas de auditoría de los módulos oficiales; no son las pruebas del loop de Lautaro.
 
-La corrida real respalda los HTTP 200, las cinco flags en la referencia, el timeout de nmap y el bloqueo R4. Falta contrastar los transcripts de B y el esqueleto de A, especialmente fin, manejo de errores, límite y extracción del token. No se certifica la entrega grupal ni el estado 5/5 del CTF.
+La auditoría de referencia de C respalda las respuestas HTTP, el timeout de nmap y el bloqueo R4. El transcript agregado de B documenta la ejecución del esqueleto propio del grupo dentro de Docker y la captura de R1–R5; las cinco flags fueron aceptadas y el status local quedó en 5/5. En ambas corridas se usó `mock`: esto no acredita razonamiento de un modelo real ni que el token se extrajera dinámicamente del paso anterior; esa limitación está documentada en la sección 2. En el cierre Docker, `nmap_scan` agotó 60 segundos, pero el loop continuó y completó las consultas HTTP y el guardrail.
 
 El validador general falló sobre el checkout Windows por CRLF en los scripts;
 se conserva esa salida en `evidencia/salidas/validar-repo.txt`. Se ejecutó sin
@@ -155,4 +155,4 @@ Así, cambiar `LLM_PROVIDER` permite usar los adaptadores disponibles sin reescr
 
 **P5 — por qué los labs 05–08 eran requisito.** Porque un agente no se puede auditar sin saber hacer a mano lo que hace. El agente del Lab 09 automatiza el recorrido de los labs anteriores: recon (05), enumeración (06), explotación (07) y post-explotación (08). Para decidir si una decisión del agente fue la correcta —si el paso era el que correspondía, si un resultado es un hallazgo real o ruido, si se detuvo donde debía— hay que conocer esas técnicas de primera mano. Quien no hizo la SQLi del 07 a mano no puede saber si el agente la planteó bien o se mandó cualquier cosa. El agente acelera, no reemplaza el criterio: la auditoría (Parte C) y la validación de los hallazgos dependen de un humano que sepa pentesting manual. Por eso 05–08 vienen antes, son el requisito para dirigir y validar al agente en vez de confiar en él a ciegas.
 
-El mini-research está en `research.md`. El armado final del PR queda para el cierre del grupo.
+El mini-research está en `research.md`. Se completaron la corrida oficial del esqueleto y el cierre CTF 5/5; la rama queda lista para que la persona responsable del grupo abra la PR.

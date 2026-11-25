@@ -60,3 +60,42 @@ git diff --cached --check
 El chequeo general señala espacios del transcript original; se preservaron.
 git diff --cached --check -- . ':(exclude)entregas/lab09/grupo07/evidencia/salidas/**'
 La carpeta salidas usa -text en .gitattributes para preservar los bytes en Git.
+---
+
+Cierre oficial de Fernando — 24/11/2026 (America/Argentina/Buenos_Aires; 25/11 UTC)
+
+El bloque anterior registra la captura y el alcance de C al 19/11: en ese aporte no se ejecutó el esqueleto de A ni se enviaron flags. El cierre posterior se hizo en el Docker oficial del lab y queda separado aquí.
+
+Desde la raíz del repositorio, levantar el entorno oficial:
+
+```powershell
+docker compose -p cyberlab --project-directory . -f entorno/docker-compose.yml -f labs/lab09-agentes/entorno/target.compose.yml up -d --build
+```
+
+Ejecutar el agente del grupo en el atacante Docker y conservar stdout/stderr crudos en el volumen de evidencia:
+
+```bash
+docker exec cyberlab-attacker bash -lc 'mkdir -p /loot/lab09-grupo07 && cd /repo/entregas/lab09/grupo07/src && LLM_PROVIDER=mock PYTHONDONTWRITEBYTECODE=1 python3 agente_esqueleto.py > /loot/lab09-grupo07/transcript-agente-oficial.txt 2>&1; rc=$?; printf "\n[codigo de salida] %s\n" "$rc" >> /loot/lab09-grupo07/transcript-agente-oficial.txt; exit "$rc"'
+```
+
+La corrida produjo R1–R5. `nmap_scan(phantomcorp)` agotó el timeout de 60 segundos; el loop continuó. El intento `nmap_scan(8.8.8.8)` fue bloqueado por el guardrail. Python del contenedor: 3.13.5; proveedor: `mock`.
+
+El atacante monta `/repo` de solo lectura, pero `ctf submit` escribe `.progreso` bajo `CTF_ROOT`. Por eso, validar desde `/repo` dentro del contenedor falla por permisos. Se copió temporalmente el verificador y los datos exactos del lab a un directorio escribible del volumen `/loot`, y se corrieron los comandos oficiales `./ctf submit 09 R1 ...` hasta R5 y `./ctf status 09` desde allí. Las cinco flags fueron aceptadas contra `labs/lab09-agentes/retos.manifest`; las salidas están en `evidencia/salidas/submits-09-grupo07.txt` y `status-09-grupo07-final.txt`.
+
+```bash
+# Copia temporal escribible, creada dentro de cyberlab-attacker:
+root=/loot/lab09-grupo07/ctf-root
+mkdir -p "$root/bin" "$root/labs"
+cp /repo/ctf "$root/ctf"
+cp -a /repo/bin/lib "$root/bin/"
+cp -a /repo/labs/lab09-agentes "$root/labs/"
+cd "$root"
+./ctf submit 09 R1 'FLAG{agente_primer_recon}'
+./ctf submit 09 R2 'FLAG{agente_ruta_oculta}'
+./ctf submit 09 R3 'FLAG{agente_api_expuesta}'
+./ctf submit 09 R4 'FLAG{guardrail_fuera_de_alcance}'
+./ctf submit 09 R5 'FLAG{agente_esqueleto_completo}'
+./ctf status 09
+```
+
+Se copió el archivo local `.progreso/09.done` que generó esa validación a este checkout y se confirmó también `./ctf status 09` desde Git Bash: **5/5 (100%)**. `.progreso/` está ignorado por Git; la evidencia versionada es el transcript, la salida de los submits, el status y el contexto en `evidencia/salidas/`.

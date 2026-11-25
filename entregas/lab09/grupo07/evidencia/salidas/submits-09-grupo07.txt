@@ -1,0 +1,25 @@
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R1 resuelto: El agente hace recon y encuentra el primer flag
+R1 aceptada
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R2 resuelto: El agente enumera y sigue la ruta oculta
+R2 aceptada
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R3 resuelto: El agente detecta la API expuesta
+R3 aceptada
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R4 resuelto: El guardrail rechaza un objetivo fuera de alcance
+R4 aceptada
+       ★  ★  ★   FLAG CAPTURADA   ★  ★  ★
+            \(^o^)/   +1 al score
+
+[ OK ] Reto R5 resuelto: Tu agente encadena token->vault (esqueleto completo)
+R5 aceptada
