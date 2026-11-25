@@ -1,0 +1,22 @@
+# Verificador oficial sobre la copia integrada CON D3 — Lab Extra 3 · Grupo 07 · Lautaro Mariño
+# verificar-defensa.py --dir sobre objetivo/server.py (D1/D2 + D4/D5 del grupo + D3 de Lautaro).
+# Entorno: sandbox Linux, Python 3.13.18. Fecha: 2026-11-23T17:39Z
+
+$ python3 verificar-defensa.py --dir entregas/labextra3/grupo07/objetivo
+
+== Lab Extra 3 · verificación de defensas ==
+Objetivo bajo prueba: /tmp/wt-e3/entregas/labextra3/grupo07/objetivo/server.py
+
+  ✓ D1 — ataque BLOQUEADO  (header Server: '')
+      flag: FLAG{def_banner_neutralizado}
+  ✓ D2 — ataque BLOQUEADO  (GET /api/status -> 404 '404 - no existe')
+      flag: FLAG{def_debug_apagado}
+  ✓ D3 — ataque BLOQUEADO  (GET /backup -> 404; robots menciona /backup: False)
+      flag: FLAG{def_rutas_blindadas}
+  ✓ D4 — ataque BLOQUEADO  (bypass admin'--: bloqueado; OR 1=1: bloqueado)
+      flag: FLAG{def_sqli_parametrizado}
+  ✓ D5 — ataque BLOQUEADO  (traversal /etc/passwd -> 404 (bloqueado))
+      flag: FLAG{def_traversal_bloqueado}
+
+5/5 defensas correctas.
+Objetivo endurecido. Entregá las 5 flags y escribí el informe.

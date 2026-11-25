@@ -1,0 +1,29 @@
+# Lab Extra 3 — verificación INTEGRADA del server combinado del grupo (Guadalupe)
+# server.py = D1/D2 (Lorenzo) + D4/D5 (Fernando) ya unificados en entregas/.../objetivo/server.py
+# Verificador oficial: verificar-defensa.py --dir <copia del grupo>
+
+== Lab Extra 3 · verificación de defensas ==
+Objetivo bajo prueba: objetivo/server.py (copia combinada del grupo)
+
+  ✓ D1 — ataque BLOQUEADO  (header Server: '')                         flag: FLAG{def_banner_neutralizado}
+  ✓ D2 — ataque BLOQUEADO  (GET /api/status -> 404 '404 - no existe')  flag: FLAG{def_debug_apagado}
+  ✗ D3 — todavía vulnerable  (GET /backup -> 200; robots menciona /backup: True)   [bloque de Lautaro, pendiente]
+  ✓ D4 — ataque BLOQUEADO  (bypass admin'--: bloqueado; OR 1=1: bloqueado)  flag: FLAG{def_sqli_parametrizado}
+  ✓ D5 — ataque BLOQUEADO  (traversal /etc/passwd -> 404 (bloqueado))   flag: FLAG{def_traversal_bloqueado}
+
+4/5 defensas correctas.   (D3 sigue vulnerable: es el bloque de Lautaro)
+
+== Regresión funcional (lo legítimo sigue andando en el server combinado) ==
+[GET /]                 HTTP 200
+[login legítimo admin]  HTTP 200   (admin / sup3r-s3cr3t0)
+[descarga manual.txt]   HTTP 200
+[robots.txt]            HTTP 200
+# Los parches D1/D2/D4/D5 no rompen la funcionalidad válida.
+
+== Antes / Después (evidencia para P1) ==
+D1 banner:
+  ANTES (original):  Server: PhantomServer/2.4.1-debug
+  DESPUÉS (grupo):   Server: ''           (header neutro)
+D4 login SQLi (payload user=admin'--):
+  ANTES (original):  HTTP 200  "<h1>Bienvenido, admin'--</h1>"   (bypass de auth)
+  DESPUÉS (grupo):   bypass BLOQUEADO (consulta parametrizada; el verificador lo marca ✓)
