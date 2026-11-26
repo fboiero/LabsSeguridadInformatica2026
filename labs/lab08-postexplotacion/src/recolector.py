@@ -50,8 +50,20 @@ def buscar_flag(base: str, desde: int, hasta: int) -> tuple[int, str] | None:
         (los normales tienen 'nombre' y 'area'). Detectala.
       - Apenas lo encuentres, devolvé (id, flag) y cortá: no sigas de gusto.
     """
-    # TODO: completá esto.
-    raise NotImplementedError("Completá buscar_flag()")
+    for id_ in range(desde, hasta + 1):
+        legajo = consultar_legajo(base, id_)
+        if legajo is None:
+            continue
+        # Los legajos normales traen {'id', 'nombre', 'area'}. El que esconde
+        # la flag trae en cambio 'legajo_oculto' (no 'area'): esa es la clave
+        # distinta que lo delata. Buscamos cualquier clave que no sea la
+        # habitual, en vez de hardcodear el nombre exacto.
+        extra = set(legajo.keys()) - {"id", "nombre", "area"}
+        for clave in extra:
+            valor = legajo[clave]
+            if isinstance(valor, str) and valor.startswith("FLAG{"):
+                return id_, valor
+    return None
 
 
 def main() -> int:
