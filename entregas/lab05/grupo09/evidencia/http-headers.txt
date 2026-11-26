@@ -1,0 +1,10 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/1.0 200 OK
+Server: PhantomServer/2.4.1 
+Date: Fri, 23 Oct 2026 22:51:32 GMT
+Content-Type: text/html; charset=utf-8
+X-Powered-By: PhantomCMS 2.4.1
+X-Backend-Flag: FLAG{http_headers_leak_info}
+

@@ -1,0 +1,6 @@
+[
+  {"nombre": "Compromiso de cuentas por falta de MFA (acceso remoto)", "sle": 40000, "aro": 2},
+  {"nombre": "Filtracion de datos de tarjetas por vulnerabilidad en servidor web", "sle": 250000, "aro": 0.3},
+  {"nombre": "Perdida de backups por incendio o robo (disco unico en oficina)", "sle": 100000, "aro": 0.2},
+  {"nombre": "Corte de conectividad a internet (ISP)", "sle": 6000, "aro": 5}
+]
