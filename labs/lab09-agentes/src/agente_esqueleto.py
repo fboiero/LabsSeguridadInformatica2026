@@ -32,11 +32,15 @@ def main() -> int:
         accion = cliente.paso(resultados)
 
         # TODO 1: si la acción es de tipo "final", imprimí el texto y salí del loop.
-        # ...
+        if accion["tipo"] == "final":
+            print(f"[paso {n}] FINAL: {accion['texto']}")
+            break
 
         # TODO 2: si es una tool, ejecutala con ejecutar_tool(nombre, argumentos)
         #         y guardá la salida. Pista: accion["nombre"], accion["argumentos"].
-        salida = ""  # <-- reemplazá esto
+        print(f"[paso {n}] tool={accion['nombre']} args={accion['argumentos']}")
+        salida = ejecutar_tool(accion["nombre"], accion["argumentos"])
+        print(f"[paso {n}] salida: {salida[:200]}")
 
         # (esto ya está: detectar flags en la salida)
         for f in re.findall(r"FLAG\{[^}]*\}", salida):
@@ -44,7 +48,7 @@ def main() -> int:
 
         # TODO 3: devolvele el resultado al LLM para el próximo paso. El formato es
         #         una lista con un dict {"id": accion["id"], "output": salida}.
-        resultados = None  # <-- reemplazá esto
+        resultados = [{"id": accion["id"], "output": salida}]
 
     print(f"\n=== Flags encontradas ({len(flags)}) ===")
     for f in sorted(flags):
