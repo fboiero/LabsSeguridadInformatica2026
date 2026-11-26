@@ -40,8 +40,16 @@ def construir_timeline(path: str, ip: str = None) -> list:
       - si `ip` fue pasada, quedate solo con las de esa IP.
       - el log ya viene en orden cronológico; no hace falta reordenar.
     """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá construir_timeline()")
+    eventos = []
+    with open(path, encoding="utf-8") as f:
+        for linea in f:
+            evento = parsear_linea(linea)
+            if evento is None:
+                continue
+            if ip is not None and evento["ip"] != ip:
+                continue
+            eventos.append(evento)
+    return eventos
 
 
 def clasificar_fase(ruta: str) -> str:
@@ -51,8 +59,23 @@ def clasificar_fase(ruta: str) -> str:
     TODO: mirá las rutas del caso (login, /api/reporte?cmd=, shell.php,
     clientes...) y devolvé la fase que corresponde. Pista: usá 'in' sobre la ruta.
     """
-    # TODO: implementá esto.
-    raise NotImplementedError("Completá clasificar_fase()")
+    if "/api/reporte" in ruta:
+        # aunque el comando mencione shell.php como destino (p. ej. el wget que
+        # la descarga), el vector sigue siendo la RCE vía /api/reporte, no la
+        # webshell en sí (que todavía no existe en el disco en ese momento).
+        return "RCE"
+    if "shell.php" in ruta:
+        return "WEBSHELL"
+    if "/portal-rrhh/login" in ruta:
+        return "EXPLOIT"
+    if "/backup/" in ruta:
+        # no es solo un probe de gobuster: está LEYENDO un archivo filtrado
+        return "EXPLOIT"
+    if ruta in ("/admin", "/login", "/backup", "/portal-rrhh", "/uploads", "/robots.txt"):
+        return "ENUM"
+    if ruta == "/":
+        return "RECON"
+    return "ENUM"
 
 
 def main() -> int:
